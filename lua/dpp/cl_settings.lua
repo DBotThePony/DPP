@@ -154,9 +154,9 @@ function Style.CheckBoxThink(self)
 	
 	self.IMyX = self:GetSize()
 	if isHovered then
-		self.CurrentArrowMove = math.Clamp(self.CurrentArrowMove + 20 / (1/FrameTime()), -10, self.IMyX)
+		self.CurrentArrowMove = math.Clamp(self.CurrentArrowMove + 1000 / (1/FrameTime()), -10, self.IMyX)
 	else
-		self.CurrentArrowMove = math.Clamp(self.CurrentArrowMove - 20 / (1/FrameTime()), -10, self.IMyX)
+		self.CurrentArrowMove = math.Clamp(self.CurrentArrowMove - 1000 / (1/FrameTime()), -10, self.IMyX)
 	end
 	
 	if self.oldThink then self.oldThink() end
