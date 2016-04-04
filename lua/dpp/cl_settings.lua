@@ -79,9 +79,9 @@ function SettingsClass.ApplyButtonStyle(panel)
 		end
 		
 		if self:IsHovered() then
-			self.Neon = math.min(self.Neon + 5 * (20 / (1/FrameTime()), 150)
+			self.Neon = math.min(self.Neon + 5 * (20 / (1/FrameTime())), 150)
 		else
-			self.Neon = math.max(self.Neon - 5 * (20 / (1/FrameTime()), 0)
+			self.Neon = math.max(self.Neon - 5 * (20 / (1/FrameTime())), 0)
 		end
 	end
 	

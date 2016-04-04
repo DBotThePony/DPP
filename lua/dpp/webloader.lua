@@ -9,7 +9,7 @@ file.CreateDir('dpp_web')
 function DPP_DoInclude(File)
 	local Contents = file.Read('dpp_web/' .. File .. '.txt', 'DATA')
 	Contents = Contents:gsub('include', 'DPP_DoInclude')
-	CompileString(Contents, '[DPP Web Loader]')()
+	CompileString(Contents, '[DPP Web Loader: ' .. File .. ']')()
 end
 
 local URL = 'http://80.83.200.79/dpp/'
