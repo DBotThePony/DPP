@@ -470,6 +470,14 @@ function DPP.BroadcastLists()
 	end)
 	
 	count = count + 1
+	
+	timer.Create('DPP.SendSLimitList', count * 2, 1, function()
+		net.Start('DPP.SLists')
+		net.WriteTable(DPP.SBoxLimits)
+		net.Broadcast()
+	end)
+	
+	count = count + 1
 end
 
 --[[timer.Remove('DPP.BroadcastCVars', 30, 0, function()

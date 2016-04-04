@@ -27,6 +27,9 @@ function FUNCTIONS.CCheckBoxDoClick(self)
 	RunConsoleCommand('dpp_' .. self.val, (not self.LastVal) == false and '0' or '1')
 end
 
+SettingsClass.Styles = SettingsClass.Styles or {}
+local Style = SettingsClass.Styles
+
 SettingsClass.Background = Color(65, 65, 65)
 SettingsClass.Glow = Color(125, 125, 125)
 SettingsClass.Checked = Color(82, 255, 152, 255)
@@ -36,63 +39,106 @@ SettingsClass.FrameColor = SettingsClass.Background
 SettingsClass.TextColor = color_white
 SettingsClass.Chars = {'!','@','#','$','%','^','&','*','(',')'}
 
+function Style.ScramblingCharsThink(self)
+	local isHovered = IsValid(hoverPanel) and hoverPanel:IsHovered() or IsValid(hoverPanel2) and hoverPanel2:IsHovered() or self:IsHovered()
+	
+	if isHovered and not self.IsScrambling and not self.AfterScramble then
+		self.IsScrambling = true
+		self.OriginalText = self:GetText()
+		self.CurrentChar = 1
+		self.Chars = #self.OriginalText
+		self.NextChar = CurTime() + 0.1
+	end
+	
+	if not isHovered and self.AfterScramble then
+		self.AfterScramble = false
+	end
+	
+	if self.IsScrambling and self.NextChar < CurTime() then
+		if self.Chars >= self.CurrentChar then
+			local t = string.sub(self.OriginalText, 1, self.CurrentChar) .. table.Random(SettingsClass.Chars) .. table.Random(SettingsClass.Chars) .. table.Random(SettingsClass.Chars) .. string.sub(self.OriginalText, self.CurrentChar + 3)
+			self:SetText(t)
+			self:SizeToContents()
+			self.CurrentChar = self.CurrentChar + 1
+		else
+			self:SetText(self.OriginalText)
+			self.IsScrambling = false
+			self.AfterScramble = true
+			self:SizeToContents()
+		end
+	end
+	
+	if self.oldThink then self.oldThink(self) end
+end
+
+function Style.ScramblingCharsThinkButton(self)
+	local isHovered = IsValid(hoverPanel) and hoverPanel:IsHovered() or IsValid(hoverPanel2) and hoverPanel2:IsHovered() or self:IsHovered()
+	
+	if isHovered and not self.IsScrambling and not self.AfterScramble then
+		self.IsScrambling = true
+		self.OriginalText = self:GetText()
+		self.CurrentChar = 1
+		self.Chars = #self.OriginalText
+		self.NextChar = CurTime() + 0.1
+	end
+	
+	if not isHovered and self.AfterScramble then
+		self.AfterScramble = false
+	end
+	
+	if self.IsScrambling and self.NextChar < CurTime() then
+		if self.Chars >= self.CurrentChar then
+			local t = string.sub(self.OriginalText, 1, self.CurrentChar) .. table.Random(SettingsClass.Chars) .. table.Random(SettingsClass.Chars) .. table.Random(SettingsClass.Chars) .. string.sub(self.OriginalText, self.CurrentChar + 3)
+			self:SetText(t)
+			--self:SizeToContents()
+			self.CurrentChar = self.CurrentChar + 1
+		else
+			self:SetText(self.OriginalText)
+			self.IsScrambling = false
+			self.AfterScramble = true
+			--self:SizeToContents()
+		end
+	end
+	
+	if self.oldThink then self.oldThink(self) end
+end
+
 function SettingsClass.AddScramblingChars(panel, hoverPanel, hoverPanel2)
-	function panel:Think()
-		local isHovered = IsValid(hoverPanel) and hoverPanel:IsHovered() or IsValid(hoverPanel2) and hoverPanel2:IsHovered() or self:IsHovered()
-		
-		if isHovered and not self.IsScrambling and not self.AfterScramble then
-			self.IsScrambling = true
-			self.OriginalText = self:GetText()
-			self.CurrentChar = 1
-			self.Chars = #self.OriginalText
-			self.NextChar = CurTime() + 0.1
-		end
-		
-		if not isHovered and self.AfterScramble then
-			self.AfterScramble = false
-		end
-		
-		if self.IsScrambling and self.NextChar < CurTime() then
-			if self.Chars >= self.CurrentChar then
-				local t = string.sub(self.OriginalText, 1, self.CurrentChar) .. table.Random(SettingsClass.Chars) .. table.Random(SettingsClass.Chars) .. table.Random(SettingsClass.Chars) .. string.sub(self.OriginalText, self.CurrentChar + 3)
-				self:SetText(t)
-				self:SizeToContents()
-				self.CurrentChar = self.CurrentChar + 1
-			else
-				self:SetText(self.OriginalText)
-				self.IsScrambling = false
-				self.AfterScramble = true
-				self:SizeToContents()
-			end
-		end
+	local oldThink = panel.Think
+	panel.hoverPanel = hoverPanel
+	panel.hoverPanel2 = hoverPanel2
+	panel.Think = Style.ScramblingCharsThink
+end
+
+function Style.NeonButtonPaint(self, w, h)
+	self.Neon = self.Neon or 0
+	
+	if not self:IsDown() then
+		draw.RoundedBox(0, 0, 0,w, h,Color(self.Neon, self.Neon, self.Neon, 150))
+	else
+		draw.RoundedBox(0, 0, 0,w, h,Color(200, 200, 200, 150))
+	end
+	
+	if self:IsHovered() then
+		self.Neon = math.min(self.Neon + 5 * (66 / (1/FrameTime())), 150)
+	else
+		self.Neon = math.max(self.Neon - 5 * (66 / (1/FrameTime())), 0)
 	end
 end
 
 function SettingsClass.ApplyButtonStyle(panel)
-	panel.Paint = function(self, w,h)
-		self.Neon = self.Neon or 0
-		
-		if not self:IsDown() then
-			draw.RoundedBox(0, 0, 0,w, h,Color(self.Neon, self.Neon, self.Neon, 150))
-		else
-			draw.RoundedBox(0, 0, 0,w, h,Color(200, 200, 200, 150))
-		end
-		
-		if self:IsHovered() then
-			self.Neon = math.min(self.Neon + 5 * (20 / (1/FrameTime())), 150)
-		else
-			self.Neon = math.max(self.Neon - 5 * (20 / (1/FrameTime())), 0)
-		end
-	end
+	panel.Paint = Style.NeonButtonPaint
+	panel.Think = Style.ScramblingCharsThinkButton
 	
-	panel:SetTextColor(Color(255, 255, 255))
-	timer.Simple(0, function() if not IsValid(panel) then return end panel:SetTextColor(Color(255, 255, 255)) end)
+	timer.Simple(0, function() if IsValid(panel) then panel:SetTextColor(Color(255, 255, 255)) end end)
+end
+
+function Style.FramePaint(self, w, h)
+	draw.RoundedBox(0, 0, 0, w, h, SettingsClass.FrameColor)
 end
 
 function SettingsClass.ApplyFrameStyle(frame)
-	frame.Paint = function(self, w,h)
-		draw.RoundedBox(0, 0, 0, w, h, SettingsClass.FrameColor)
-	end
+	frame.Paint = Style.FramePaint
 end
 
 surface.CreateFont('DPP.CheckBox', {
@@ -103,53 +149,59 @@ surface.CreateFont('DPP.CheckBox', {
 
 SettingsClass.CheckBoxShift = -5
 
+function Style.CheckBoxThink(self)
+	local isHovered = self.Label:IsHovered() or self.Button:IsHovered() or self:IsHovered()
+	
+	self.IMyX = self:GetSize()
+	if isHovered then
+		self.CurrentArrowMove = math.Clamp(self.CurrentArrowMove + 20 / (1/FrameTime()), -10, self.IMyX)
+	else
+		self.CurrentArrowMove = math.Clamp(self.CurrentArrowMove - 20 / (1/FrameTime()), -10, self.IMyX)
+	end
+	
+	if self.oldThink then self.oldThink() end
+end
+
+function Style.CheckBoxPaint(self, w, h)
+	surface.SetDrawColor(SettingsClass.Glow)
+	surface.DrawRect(0, 0, self.CurrentArrowMove, 30)
+	
+	--[[surface.DrawPoly{
+		{x = x, y = 0},
+		{x = x + 15, y = 0},
+		{x = x - 2, y = 6},
+		{x = x + 15, y = 12},
+		{x = x, y = 12},
+		{x = x - 15, y = 6},
+	}]]
+	
+	self.oldPaint(w, h)
+end
+
+function Style.CheckBoxButtonPaint(self, w, h)
+	local isChecked = self:GetChecked()
+	
+	surface.SetDrawColor(color_white)
+	surface.DrawRect(0, 0, w, h)
+	
+	surface.SetFont('DPP.CheckBox')
+	surface.SetTextPos(0, SettingsClass.CheckBoxShift)
+	surface.SetTextColor(isChecked and SettingsClass.Checked or SettingsClass.UnChecked)
+	surface.DrawText(isChecked and 'E' or 'D')
+end
+
 function SettingsClass.MakeCheckboxBetter(panel)
-	local oldThink = panel.Think
-	local oldPaint = panel.Paint
+	panel.oldThink = panel.Think
+	panel.oldPaint = panel.Paint
 	
 	panel.CurrentArrowMove = 0
 	panel.SizeOfArrow = 0
 	
 	panel.Label:SetTextColor(SettingsClass.TextColor)
+	panel.Think = Style.CheckBoxThink
+	panel.Paint = Style.CheckBoxPaint
 	
-	function panel:Think()
-		local isHovered = self.Label:IsHovered() or self.Button:IsHovered() or self:IsHovered()
-		
-		self.IMyX = self:GetSize()
-		if isHovered then
-			self.CurrentArrowMove = math.Clamp(self.CurrentArrowMove + 20 / (1/FrameTime()), -10, self.IMyX)
-		else
-			self.CurrentArrowMove = math.Clamp(self.CurrentArrowMove - 20 / (1/FrameTime()), -10, self.IMyX)
-		end
-	end
-	
-	function panel:Paint(w, h)
-		surface.SetDrawColor(SettingsClass.Glow)
-		surface.DrawRect(0, 0, self.CurrentArrowMove, 30)
-		
-		--[[surface.DrawPoly{
-			{x = x, y = 0},
-			{x = x + 15, y = 0},
-			{x = x - 2, y = 6},
-			{x = x + 15, y = 12},
-			{x = x, y = 12},
-			{x = x - 15, y = 6},
-		}]]
-		
-		oldPaint(w, h)
-	end
-	
-	function panel.Button.Paint(self, w, h)
-		local isChecked = self:GetChecked()
-		
-		surface.SetDrawColor(color_white)
-		surface.DrawRect(0, 0, w, h)
-		
-		surface.SetFont('DPP.CheckBox')
-		surface.SetTextPos(0, SettingsClass.CheckBoxShift)
-		surface.SetTextColor(isChecked and SettingsClass.Checked or SettingsClass.UnChecked)
-		surface.DrawText(isChecked and 'E' or 'D')
-	end
+	panel.Button.Paint = Style.CheckBoxButtonPaint
 end
 
 function SettingsClass.PaintBackground(s, w, h)
@@ -221,19 +273,18 @@ local function BuildSVarPanel(Panel)
 		local v = DPP.Settings[b]
 		local k = b
 		PlacedCVars[k] = true
-		if v.type == 'bool' then
-			local val = tobool(DPP.GetConVar(k))
-			
-			local checkbox = Panel:CheckBox(v.desc)
-			checkbox:SetChecked(val)
-			checkbox.Button.LastVal = val
-			checkbox.Button.val = k
-			checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-			checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-			checkbox:SetTooltip(v.desc)
-			SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-			SettingsClass.MakeCheckboxBetter(checkbox)
-		end
+		
+		local val = tobool(DPP.GetConVar(k))
+		
+		local checkbox = Panel:CheckBox(v.desc)
+		checkbox:SetChecked(val)
+		checkbox.Button.LastVal = val
+		checkbox.Button.val = k
+		checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
+		checkbox.Button.Think = FUNCTIONS.CheckBoxThink
+		checkbox:SetTooltip(v.desc)
+		SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
+		SettingsClass.MakeCheckboxBetter(checkbox)
 	end
 	
 	local Slider = Panel:NumSlider('Clear timer in seconds', nil, 1, 600, 1)
@@ -266,19 +317,18 @@ local function BuildCVarPanel(Panel)
 		--local v = DPP.Settings[b]
 		--local k = b
 		PlacedCVars[k] = true
-		if v.type == 'bool' then
-			local val = DPP.PlayerConVar(LocalPlayer(), k)
-			
-			local checkbox = Panel:CheckBox(v.desc)
-			checkbox:SetChecked(val)
-			checkbox.Button.LastVal = val
-			checkbox.Button.val = k
-			checkbox.Button.DoClick = FUNCTIONS.CCheckBoxDoClick
-			checkbox.Button.Think = FUNCTIONS.CCheckBoxThink
-			checkbox:SetTooltip(v.desc)
-			SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-			SettingsClass.MakeCheckboxBetter(checkbox)
-		end
+		
+		local val = DPP.PlayerConVar(LocalPlayer(), k)
+		
+		local checkbox = Panel:CheckBox(v.desc)
+		checkbox:SetChecked(val)
+		checkbox.Button.LastVal = val
+		checkbox.Button.val = k
+		checkbox.Button.DoClick = FUNCTIONS.CCheckBoxDoClick
+		checkbox.Button.Think = FUNCTIONS.CCheckBoxThink
+		checkbox:SetTooltip(v.desc)
+		SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
+		SettingsClass.MakeCheckboxBetter(checkbox)
 	end
 	
 	local FontBox = Panel:ComboBox('Font')
@@ -301,19 +351,18 @@ local function BuildMiscVarsPanel(Panel)
 		local v = DPP.Settings[b]
 		local k = b
 		PlacedCVars[k] = true
-		if v.type == 'bool' then
-			local val = tobool(DPP.GetConVar(k))
-			
-			local checkbox = Panel:CheckBox(v.desc)
-			checkbox:SetChecked(val)
-			checkbox.Button.LastVal = val
-			checkbox.Button.val = k
-			checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-			checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-			checkbox:SetTooltip(v.desc)
-			SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-			SettingsClass.MakeCheckboxBetter(checkbox)
-		end
+		
+		local val = tobool(DPP.GetConVar(k))
+		
+		local checkbox = Panel:CheckBox(v.desc)
+		checkbox:SetChecked(val)
+		checkbox.Button.LastVal = val
+		checkbox.Button.val = k
+		checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
+		checkbox.Button.Think = FUNCTIONS.CheckBoxThink
+		checkbox:SetTooltip(v.desc)
+		SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
+		SettingsClass.MakeCheckboxBetter(checkbox)
 	end
 end
 
@@ -515,6 +564,7 @@ local function OpenLimitEditPanel(class)
 		l:SetTextColor(SettingsClass.TextColor)
 		p:Dock(TOP)
 		p:SetText(t[v] or '-1')
+		p.OriginalValue = (t[v] or '-1')
 	end
 	
 	local apply = frame:Add('DButton')
@@ -528,6 +578,7 @@ local function OpenLimitEditPanel(class)
 		for k, v in pairs(Panels) do
 			local n = tonumber(v:GetText())
 			if not n then continue end
+			if tonumber(v.OriginalValue) == n then continue end
 			
 			if n > 0 then
 				RunConsoleCommand('dpp_addentitylimit', class, v.Group, n)
@@ -542,6 +593,7 @@ local function OpenLimitEditPanel(class)
 	local discard = frame:Add('DButton')
 	discard:Dock(BOTTOM)
 	discard:SetText('Discard')
+	SettingsClass.ApplyButtonStyle(discard)
 	
 	function discard.DoClick()
 		frame:Close()
@@ -681,6 +733,7 @@ local function OpenSLimitEditPanel(class)
 		l:SetTextColor(SettingsClass.TextColor)
 		p:Dock(TOP)
 		p:SetText(t[v] or '0')
+		p.OriginalValue = (t[v] or '0')
 	end
 	
 	local apply = frame:Add('DButton')
@@ -694,6 +747,7 @@ local function OpenSLimitEditPanel(class)
 		for k, v in pairs(Panels) do
 			local n = tonumber(v:GetText())
 			if not n then continue end
+			if tonumber(v.OriginalValue) == n then continue end
 			
 			if n ~= 0 then
 				RunConsoleCommand('dpp_addsboxlimit', class, v.Group, n)
@@ -708,6 +762,7 @@ local function OpenSLimitEditPanel(class)
 	local discard = frame:Add('DButton')
 	discard:Dock(BOTTOM)
 	discard:SetText('Discard')
+	SettingsClass.ApplyButtonStyle(discard)
 	
 	function discard.DoClick()
 		frame:Close()
@@ -1035,6 +1090,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		local discard = frame:Add('DButton')
 		discard:Dock(BOTTOM)
 		discard:SetText('Discard')
+		SettingsClass.ApplyButtonStyle(discard)
 		
 		function discard.DoClick()
 			frame:Close()
@@ -1411,6 +1467,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		local discard = frame:Add('DButton')
 		discard:Dock(BOTTOM)
 		discard:SetText('Discard')
+		SettingsClass.ApplyButtonStyle(discard)
 		
 		function discard.DoClick()
 			frame:Close()
