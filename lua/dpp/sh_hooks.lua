@@ -1,0 +1,296 @@
+
+function DPP.CanDamage(ply, ent, ignoreEnt)
+	if not DPP.GetConVar('enable_damage') then return true end
+	if DPP.IsEntityBlockedDamage(ent:GetClass()) then return false, 'Damage blocked' end
+	
+	local type = DPP.GetEntityType(ent)
+	DPP.UpdateConstrainedWith(ent)
+	local with = DPP.GetConstrainedWith(ent)
+	
+	local adv = DPP.GetConVar('allow_damage_vehicles')
+	local ads = DPP.GetConVar('allow_damage_sent')
+	local adn = DPP.GetConVar('allow_damage_npc')
+	
+	if type == 'vehicle' and adv then return nil, 'Damage allowed' end
+	if type == 'sent' and DPP.IsOwned(ent) and ads then return nil, 'Damage allowed' end
+	if type == 'npc' and adn then return nil, 'Damage allowed' end
+	
+	ignoreEnt = ignoreEnt or {}
+	
+	for k, v in pairs(with) do
+		if k == ent then continue end
+		if table.HasValue(ignoreEnt, k) then continue end
+		
+		table.insert(ignoreEnt, ent)
+		local can, Reason = DPP.CanDamage(ply, k, ignoreEnt)
+		
+		if can ~= false then
+			return nil, Reason
+		end
+	end
+	
+	return DPP.CanTouch(ply, ent)
+end
+
+function DPP.CanPhysgun(ply, ent)
+	if not DPP.GetConVar('enable_physgun') then return end
+	if DPP.IsEntityBlockedPhysgun(ent:GetClass(), ply) then return false end
+	
+	return DPP.CanTouch(ply, ent)
+end
+
+function DPP.PhysgunPickup(ply, ent)
+	if ent:IsPlayer() then 
+		if DPP.PlayerConVar(ply, 'no_player_touch', false) then return false end
+		return
+	end
+	
+	local can, reason = DPP.CanPhysgun(ply, ent)
+	if not can then return can, reason end
+	if SERVER and DPP.GetGhosted(ent) then DPP.SetGhosted(ent, false) end
+	if SERVER then DPP.CheckUpForGrabs(ent, ply) end
+end
+
+function DPP.CanGravgun(ply, ent)
+	if not DPP.GetConVar('enable_gravgun') then return end
+	
+	if DPP.IsEntityBlockedGravgun(ent:GetClass(), ply) then
+		return false
+	end
+	
+	local can, reason = DPP.CanTouch(ply, ent)
+	if not can then return can, reason end
+end
+
+function DPP.GravgunTouch(ply, ent)
+	if DPP.CanGravgun(ply, ent) == false then return false end
+	--[[if SERVER then 
+		DPP.CheckUpForGrabs(ent, ply)
+		if DPP.GetGhosted(ent) then DPP.SetGhosted(ent, false) end
+	end]]
+end
+
+function DPP.CanGravgunPunt(ply, ent)
+	if DPP.GetConVar('player_cant_punt') then return false end
+	if not DPP.GetConVar('enable_gravgun') then return end
+	
+	if DPP.IsEntityBlockedGravgun(ent:GetClass(), ply) then
+		return false
+	end
+	
+	if SERVER then 
+		DPP.CheckUpForGrabs(ent, ply)
+	end
+	
+	local can, reason = DPP.CanTouch(ply, ent)
+	if not can then return can, reason end
+	
+	if SERVER then
+		if DPP.GetGhosted(ent) then DPP.SetGhosted(ent, false) end
+	end
+end
+
+function DPP.OnPhysgunReload(phys, ply, ignoreConnected, ent)
+	if not DPP.GetConVar('enable_physgun') then return end
+	ent = ent or ply:GetEyeTrace().Entity
+	
+	if SERVER then
+		DPP.CheckUpForGrabs(ent, ply)
+	end
+	
+	local can, reason = DPP.CanTouch(ply, ent)
+	if not can then return can, reason end
+	
+	if SERVER then
+		if DPP.GetGhosted(ent) then DPP.SetGhosted(ent, false) end
+		if not ignoreConnected then
+			local Connected = DPP.GetAllConnectedEntities(ent)
+			
+			for k, v in pairs(Connected) do
+				DPP.OnPhysgunReload(phys, ply, true, v)
+			end
+		end
+	end
+end
+
+local ropeModes = {
+	['rope'] = true,
+	['pulley'] = true,
+	['slider'] = true,
+	['weld'] = true,
+	['hydraulic'] = true,
+	['elastic'] = true,
+	['muscle'] = true,
+}
+
+function DPP.CanTool(ply, ent, mode)
+	if not DPP.GetConVar('enable_tool') then return end
+	
+	if not IsValid(ent) then 
+		if DPP.GetConVar('no_rope_world') then
+			if mode and ropeModes[mode] then
+				return false, 'No rope world'
+			end
+		end
+		return true
+	end
+	
+	if DPP.IsEntityBlockedTool(ent:GetClass(), ply) then
+		return false, 'Toolgun blocked'
+	end
+	
+	if ent:IsPlayer() then
+		local can1 = DPP.GetConVar('toolgun_player')
+		local can2 = DPP.GetConVar('toolgun_player_admin')
+		
+		if ply:IsAdmin() then
+			if can2 then return false, 'Cannot toolgun player' end
+		else
+			if can1 then return false, 'Cannot toolgun player' end
+		end
+	end
+	
+	if DPP.IsRestrictedTool(mode, ply) then 
+		return false, 'Restricted Tool' 
+	end
+	
+	return DPP.CanTouch(ply, ent)
+end
+
+local GRAY = Color(200, 200, 200)
+local RED = Color(255, 0, 0)
+
+function DPP.ToolgunTouch(ply, tr, mode)
+	if DPP.CanTool(ply, tr.Entity, mode) == false then 
+		if SERVER then
+			DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', RED, ' tried ', GRAY, string.format('to use tool %s on %s', mode, tr.Entity))
+		end
+		return false 
+	end
+	
+	if SERVER then
+		if DPP.GetGhosted(tr.Entity) then DPP.SetGhosted(tr.Entity, false) end
+		DPP.CheckUpForGrabs(tr.Entity, ply)
+		DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', GRAY, ' used/tried to use tool ', color_white, mode, GRAY, ' on ', tr.Entity)
+	end
+end
+
+function DPP.CanPlayerEnterVehicle(ply, ent)
+	if not DPP.GetConVar('enable_veh') then return end
+	if ent.IgnoreVehicleProtection then return end
+	if not DPP.IsOwned(ent) then return end
+	local reply = DPP.CanTouch(ply, ent)
+	if not reply then return false end
+end
+
+function DPP.CanEditVariable(ent, ply, key, val, editor)
+	if not DPP.GetConVar('enable_tool') then return end
+	local reply = DPP.CanTool(ply, ent, '')
+	if not reply then return false end
+end
+
+function DPP.CanProperty(ply, str, ent)
+	if string.sub(str, 4) == 'dpp.' then return end
+	if not DPP.GetConVar('enable_tool') then return end
+	if DPP.IsRestrictedProperty(str, ply) then return false end
+	local reply = DPP.CanTool(ply, ent, '')
+	if not reply then return false end
+end
+
+function DPP.PlayerUse(ply, ent)
+	if not DPP.GetConVar('enable_use') then return end
+	if not DPP.IsOwned(ent) then return end
+	local reply = DPP.CanTouch(ply, ent)
+	if not reply then return false end
+end
+
+function DPP.CanDrive(ply, ent)
+	if not DPP.GetConVar('enable_drive') then return end
+	local reply = DPP.CanTouch(ply, ent)
+	if not reply then return false end
+end
+
+DPP.CanDrive = DPP.Wrap(DPP.CanDrive)
+DPP.CanPhysgun = DPP.Wrap(DPP.CanPhysgun, true)
+DPP.CanProperty = DPP.Wrap(DPP.CanProperty)
+DPP.CanGravgun = DPP.Wrap(DPP.CanGravgun, true)
+DPP.CanGravgunPunt = DPP.Wrap(DPP.CanGravgunPunt)
+DPP.OnPhysgunReload = DPP.Wrap(DPP.OnPhysgunReload)
+DPP.CanTool = DPP.Wrap(DPP.CanTool, true)
+DPP.CanEditVariable = DPP.Wrap(DPP.CanEditVariable)
+DPP.CanPlayerEnterVehicle = DPP.Wrap(DPP.CanPlayerEnterVehicle)
+DPP.PlayerUse = DPP.Wrap(DPP.PlayerUse)
+
+hook.Add('PhysgunPickup', '!DPP.Hooks', DPP.PhysgunPickup, -1)
+hook.Add('CanDrive', 'DPP.Hooks', DPP.CanDrive)
+hook.Add('CanProperty', 'DPP.Hooks', DPP.CanProperty)
+hook.Add('GravGunPickupAllowed', 'DPP.Hooks', DPP.GravgunTouch)
+hook.Add('GravGunPunt', 'DPP.Hooks', DPP.CanGravgunPunt)
+hook.Add('OnPhysgunReload', 'DPP.Hooks', DPP.OnPhysgunReload)
+hook.Add('CanTool', 'DPP.Hooks', DPP.ToolgunTouch)
+hook.Add('CanEditVariable', 'DPP.Hooks', DPP.CanEditVariable)
+hook.Add('CanPlayerEnterVehicle', 'DPP.Hooks', DPP.CanPlayerEnterVehicle)
+hook.Add('PlayerUse', 'DPP.Hooks', DPP.PlayerUse)
+
+function DPP.OverrideE2Adv()
+	if not EXPADV then return end
+	local Compiler = EXPADV.Compiler
+	
+	DPP.Message('Detected E2 Advanced, overriding.')
+	--Hello E2 Advanced
+	DPP.__EXPADV_CreateCompiler = DPP.__EXPADV_CreateCompiler or EXPADV.CreateCompiler
+	DPP.__EXPADV_Compile_FUNC = DPP.__EXPADV_Compile_FUNC or Compiler.Compile_FUNC
+	
+	function EXPADV.CreateCompiler(Script, Files)
+		local self = DPP.__EXPADV_CreateCompiler(Script, Files)
+		local name, Ent = debug.getlocal(3, 1)
+		
+		if isentity(Ent) and IsValid(Ent) then
+			self.DPly = DPP.GetOwner(Ent)
+		end
+		
+		return self
+	end
+	
+	function Compiler:Compile_FUNC(Trace, Variable, Expressions)
+		if self.DPly then
+			if DPP.IsRestrictedE2AFunction(Variable, self.DPly) then
+				if SERVER then
+					DPP.Notify(self.DPly, "(SERVERSIDE) DPP: Restricted Function: " .. Variable .. "()", 1)
+				end
+				
+				self:TraceError(Trace, "DPP: Restricted Function: %s()", Variable)
+			end
+		end
+		
+		return DPP.__EXPADV_Compile_FUNC(self, Trace, Variable, Expressions)
+	end
+end
+
+function DPP.OverrideCounts()
+	local plyMeta = FindMetaTable('Player')
+	if not plyMeta then return end
+	if not plyMeta.CheckLimit then return end --Not sandbox
+	
+	DPP.Message('Overriding Player.GetCount Player.CheckLimit')
+	DPP.oldCheckLimit = DPP.oldCheckLimit or plyMeta.CheckLimit
+	
+	function plyMeta:CheckLimit(str)
+		local limit = DPP.GetSBoxLimit(str, self:GetUserGroup())
+		if limit == 0 then return DPP.oldCheckLimit(self, str) end
+		if limit < 0 then return true end
+		
+		local C = self:GetCount(str)
+		if C >= limit then self:LimitHit(str) return false end
+		
+		return DPP.oldCheckLimit(self, str)
+	end
+end
+
+function DPP.ReplaceSharedFunctions()
+	DPP.Message('Overriding shared functions')
+	DPP.OverrideE2Adv()
+	DPP.OverrideCounts()
+end
+
+timer.Simple(0, DPP.ReplaceSharedFunctions)
