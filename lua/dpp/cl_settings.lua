@@ -1073,6 +1073,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
 		apply:SetText('Apply')
+		SettingsClass.ApplyButtonStyle(apply)
 		
 		function apply.DoClick()
 			t.groups = {}
@@ -1450,6 +1451,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
 		apply:SetText('Apply')
+		SettingsClass.ApplyButtonStyle(apply)
 		
 		function apply.DoClick()
 			t.groups = {}
