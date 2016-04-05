@@ -116,6 +116,14 @@ function DPP.IsConstrainedWith(ent, ent2)
 	return ent.DPP_ConstrainedWith[ent2] or false
 end
 
+function DPP.IsSingleOwner(ent, owner)
+	for k, v in pairs(DPP.GetConstrainedTable(ent)) do
+		if v ~= owner then return false end
+	end
+	
+	return true
+end
+
 function DPP.GetEntityType(ent)
 	if ent:GetClass() == 'prop_physics' then
 		return 'prop'

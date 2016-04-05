@@ -484,6 +484,16 @@ end
 	DPP.BroadcastCVars()
 end)]]
 
+--Send constrained with is just half of protection
+function DPP.SendConstrained(ent)
+	ent._DPP_Constrained = ent._DPP_Constrained or {}
+	
+	net.Start('DPP.ConstrainedTable')
+	net.WriteTable({ent})
+	net.WriteTable(ent._DPP_Constrained)
+	net.Broadcast()
+end
+
 do
 	local EntMem = {}
 

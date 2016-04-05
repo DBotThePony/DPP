@@ -435,7 +435,10 @@ local function EntityRemoved(ent)
 		
 		timer.Simple(0, function()
 			if IsValid(ent1) and IsValid(ent2) then
-				if DPP.GetOwner(ent1) ~= DPP.GetOwner(ent2) then
+				local o1 = DPP.GetOwner(ent1)
+				local o2 = DPP.GetOwner(ent2)
+				
+				if o1 ~= o2 or not DPP.IsSingleOwner(ent1, o2) or not DPP.IsSingleOwner(ent2, o1) then
 					DPP.RecalcConstraints(ent1)
 					DPP.RecalcConstraints(ent2)
 				end
@@ -511,7 +514,7 @@ function PostEntityCreated(ent, Timestamp)
 				end
 			end
 			
-			if o1 ~= o2 then
+			if o1 ~= o2 or not DPP.IsSingleOwner(ent1, o2) or not DPP.IsSingleOwner(ent2, o1) then
 				DPP.RecalcConstraints(ent1) --Recalculating only for one entity, because second is constrained with first
 			end
 		end
