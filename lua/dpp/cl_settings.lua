@@ -34,7 +34,7 @@ SettingsClass.Background = Color(65, 65, 65)
 SettingsClass.Glow = Color(125, 125, 125)
 SettingsClass.Checked = Color(82, 255, 152, 255)
 SettingsClass.UnChecked = Color(255, 148, 148, 255)
-SettingsClass.CheckBox = Color(200, 200, 200)
+SettingsClass.CheckBox = Color(145, 145, 145)
 SettingsClass.FrameColor = SettingsClass.Background
 SettingsClass.TextColor = color_white
 SettingsClass.Chars = {'!','@','#','$','%','^','&','*','(',')'}
@@ -181,7 +181,7 @@ end
 function Style.CheckBoxButtonPaint(self, w, h)
 	local isChecked = self:GetChecked()
 	
-	surface.SetDrawColor(color_white)
+	surface.SetDrawColor(SettingsClass.CheckBox)
 	surface.DrawRect(0, 0, w, h)
 	
 	surface.SetFont('DPP.CheckBox')

@@ -211,6 +211,7 @@ function DPP.CanDrive(ply, ent)
 end
 
 DPP.CanDrive = DPP.Wrap(DPP.CanDrive)
+DPP.CanDamage = DPP.Wrap(DPP.CanDamage, true)
 DPP.CanPhysgun = DPP.Wrap(DPP.CanPhysgun, true)
 DPP.CanProperty = DPP.Wrap(DPP.CanProperty)
 DPP.CanGravgun = DPP.Wrap(DPP.CanGravgun, true)

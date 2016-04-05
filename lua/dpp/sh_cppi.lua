@@ -19,18 +19,10 @@ function CPPI.GetInterfaceVersion()
 end
 
 local entMeta = FindMetaTable('Entity')
-local plyMeta = FindMetaTable('Entity')
+local plyMeta = FindMetaTable('Player')
 
 function plyMeta:CPPIGetFriends()
-	if CLIENT and self ~= LocalPlayer() then
-		return CPPI_NOTIMPLEMENTED
-	end
-	
-	if CLIENT then
-		return DPP.FriendsCPPI
-	else
-		return DPP.GetFriendTableCPPI(self)
-	end
+	return DPP.GetFriendTableCPPI(self)
 end
 
 function entMeta:CPPIGetOwner()

