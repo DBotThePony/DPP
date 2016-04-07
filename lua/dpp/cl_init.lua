@@ -248,8 +248,8 @@ local Red = Color(255, 51, 0)
 
 surface.CreateFont(DEFAULT_FONT, {
 	font = 'Roboto',
-	size = 18,
-	weight = 500,
+	size = 16,
+	weight = 1000,
 })
 
 surface.CreateFont('DPP.Arial', {
@@ -319,6 +319,7 @@ surface.CreateFont('DPP.UbuntuLight', {
 })
 
 local Roboto = {
+	['RobotoRegular'] = 'Roboto',
 	['RobotoLight'] = 'Roboto Light',
 	['RobotoItalic'] = 'Roboto Italic',
 	['RobotoBold'] = 'Roboto Bold',
@@ -329,7 +330,7 @@ local Roboto = {
 }
 
 DPP.Fonts = {
-	{id = DEFAULT_FONT, name = 'Roboto (DPP Default)'},
+	{id = DEFAULT_FONT, name = 'Tahoma (DPP Default)'},
 	{id = 'DPP.Arial', name = 'Arial'},
 	
 	--Default fonts
