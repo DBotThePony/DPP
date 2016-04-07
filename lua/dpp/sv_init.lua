@@ -25,6 +25,8 @@ util.AddNetworkString('DPP.ConstrainedTable')
 util.AddNetworkString('DPP.ReceiveFriendList')
 util.AddNetworkString('DPP.SendConstrainedWith')
 
+resource.AddWorkshop('659044893')
+
 function DPP.Notify(ply, message, type)
 	if istable(ply) or IsValid(ply) then
 		net.Start('DPP.Notify')

@@ -247,7 +247,7 @@ local Green = Color(40, 255, 51)
 local Red = Color(255, 51, 0)
 
 surface.CreateFont(DEFAULT_FONT, {
-	font = 'Tahoma',
+	font = 'Roboto',
 	size = 16,
 	weight = 1000,
 })
@@ -306,6 +306,29 @@ surface.CreateFont('DPP.Impact', {
 	weight = 500,
 })
 
+surface.CreateFont('DPP.TNR', {
+	font = 'Times New Roman',
+	size = 20,
+	weight = 500,
+})
+
+surface.CreateFont('DPP.UbuntuLight', {
+	font = 'Ubuntu Light',
+	size = 20,
+	weight = 500,
+})
+
+local Roboto = {
+	['RobotoRegular'] = 'Roboto',
+	['RobotoLight'] = 'Roboto Light',
+	['RobotoItalic'] = 'Roboto Italic',
+	['RobotoBold'] = 'Roboto Bold',
+	['RobotoBoldI'] = 'Roboto Bold Italic',
+	['RobotoThin'] = 'Roboto Thin',
+	['RobotoThinI'] = 'Roboto Thin Italic',
+	['RobotoLI'] = 'Roboto Light Italic',
+}
+
 DPP.Fonts = {
 	{id = DEFAULT_FONT, name = 'Tahoma (DPP Default)'},
 	{id = 'DPP.Arial', name = 'Arial'},
@@ -336,7 +359,18 @@ DPP.Fonts = {
 	{id = 'DPP.LBiolinumG', name = 'Linux Biolinum G'},
 	{id = 'DPP.ComicSans', name = 'Comic Sans (Mustdie Only)'},
 	{id = 'DPP.Impact', name = 'Impact (Mustdie Only)'},
+	{id = 'DPP.TNR', name = 'Times New Roman'},
 }
+
+for k, v in pairs(Roboto) do
+	surface.CreateFont('DPP.' .. k, {
+		font = v,
+		size = 20,
+		weight = 500,
+	})
+	
+	table.insert(DPP.Fonts, {id = 'DPP.' .. k, name = v})
+end
 
 function DPP.GetFont(name)
 	local var = DPP.PlayerConVar(LocalPlayer(), 'font')
