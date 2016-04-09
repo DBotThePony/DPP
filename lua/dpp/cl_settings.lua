@@ -1377,6 +1377,25 @@ local RemoveFromlocked = {
 properties.Add("dpp.addblockedmodel", AddToBlocked)
 properties.Add("dpp.delblockedmodel", RemoveFromlocked)
 
+local CleanupPlayer = {
+	MenuLabel = "Cleanup props of owner",
+	Order = 2501,
+	MenuIcon = "icon16/brick_delete.png",
+
+	Filter = function(self, ent, ply)
+		if not IsValid(ent) then return false end
+		if not ply:IsAdmin() then return false end
+		if not DPP.IsOwned(ent) then return false end
+		return true
+	end,
+	
+	Action = function(self, ent)
+		local Name, UID = DPP.GetOwnerDetails(ent)
+		RunConsoleCommand('dpp_clearbyuid', UID)
+	end,
+}
+properties.Add("dpp.clearbyuid", CleanupPlayer)
+
 for k, v in pairs(DPP.BlockTypes) do
 	local Add = {
 		MenuLabel = "Add to DPP " .. v .. ' blacklist',

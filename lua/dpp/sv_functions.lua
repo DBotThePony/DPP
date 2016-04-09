@@ -229,6 +229,26 @@ function DPP.ClearDisconnectedProps()
 	end
 end
 
+function DPP.GetPropsByUID(uid)
+	DPP.RefreshPropList()
+	local t = {}
+	
+	for k, v in pairs(DPP.PropListing) do
+		local Name, UID, SteamID = DPP.GetOwnerDetails(k)
+		if UID == uid then
+			table.insert(t, k)
+		end
+	end
+	
+	return t
+end
+
+function DPP.ClearByUID(uid)
+	for k, v in pairs(DPP.GetPropsByUID(uid)) do
+		SafeRemoveEntity(v)
+	end
+end
+
 concommand.Add('dpp_cleardisconnected', function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsAdmin() then return end
 	DPP.ClearDisconnectedProps()
@@ -243,6 +263,19 @@ concommand.Add('dpp_clearmap', function(ply, cmd, args)
 		SafeRemoveEntity(v)
 	end
 	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' cleaned up map'}
+	DPP.Notify(player.GetAll(), f)
+	DPP.Message(f)
+end)
+
+concommand.Add('dpp_clearbyuid', function(ply, cmd, args)
+	if IsValid(ply) and not ply:IsAdmin() then return end
+	local uid = args[1]
+	if not tonumber(uid) then DPP.Notify(ply, 'Invalid argument') return end
+	
+	local Target = player.GetByUniqueID(uid)
+	DPP.ClearByUID(uid)
+	
+	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' cleared all ' .. (Target and Target:Nick() or uid) .. '\' props'}
 	DPP.Notify(player.GetAll(), f)
 	DPP.Message(f)
 end)
