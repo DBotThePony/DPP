@@ -716,6 +716,8 @@ function DPP.CanTouch(ply, ent)
 	
 	local admin, adminEverything = ply:IsAdmin(), DPP.GetConVar('admin_can_everything')
 	
+	local isOwned = DPP.IsOwned(ent)
+	
 	for k, owner in pairs(constrained) do
 		if IsValid(owner) and owner:GetClass() == 'gmod_anchor' then continue end
 		
@@ -729,10 +731,17 @@ function DPP.CanTouch(ply, ent)
 		end
 		
 		if not IsValid(owner) then
-			if not DPP.CanTouchWorld(ply, ent) then 
+			if not isOwned and not DPP.CanTouchWorld(ply, ent) then 
 				can = false 
 				reason = 'Belong/Constrained to world'
 				break
+			elseif isOwned then
+				if admin and adminEverything then
+					continue
+				else
+					can = false
+					break
+				end
 			end
 		end
 		
