@@ -186,7 +186,7 @@ function DPP.FreezePlayerEntites(ply)
 end
 
 function DPP.FindPlayerProps(ply)
-	local uid = ply:UniqueID()
+	local uid = tonumber(ply:UniqueID())
 	
 	DPP.RefreshPropList()
 	
