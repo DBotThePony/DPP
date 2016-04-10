@@ -48,39 +48,39 @@ if SERVER then
 end
 
 function entMeta:CPPICanDamage(ply)
-	return DPP.CanDamage(ply, self)
+	return DPP.CanDamage(ply, self) ~= false
 end
 
 function entMeta:CPPICanTool(ply, mode)
-	return DPP.CanTool(ply, self, mode)
+	return DPP.CanTool(ply, self, mode) ~= false
 end
 
 function entMeta:CPPIDrive(ply)
-	return DPP.CanDrive(ply, self)
+	return DPP.CanDrive(ply, self) ~= false
 end
 
 function entMeta:CPPICanEditVariable(ply, key, val, editor)
-	return DPP.CanEditVariable(self, ply, key, val, editor)
+	return DPP.CanEditVariable(self, ply, key, val, editor) ~= false
 end
 
 function entMeta:CPPICanProperty(ply, str)
-	return DPP.CanProperty(ply, str, ent)
+	return DPP.CanProperty(ply, str, ent) ~= false
 end
 
 function entMeta:CPPICanPhysgun(ply)
-	return DPP.CanPhysgun(ply, self)
+	return DPP.CanPhysgun(ply, self) ~= false
 end
 
 function entMeta:CPPICanPickup(ply)
-	return DPP.CanGravgun(ply, self)
+	return DPP.CanGravgun(ply, self) ~= false
 end
 
 function entMeta:CPPICanPunt(ply)
-	return DPP.CanGravgunPunt(ply, self)
+	return DPP.CanGravgunPunt(ply, self) ~= false
 end
 
 function entMeta:CPPICanUse(ply)
-	return DPP.PlayerUse(ply, self)
+	return DPP.PlayerUse(ply, self) ~= false
 end
 
 function entMeta:CPPIIsOwned()
