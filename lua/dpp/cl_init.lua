@@ -154,6 +154,7 @@ end
 function DPP.AddFriendBySteamID(steamid, physgun, gravgun, toolgun, use, vehicle, damage)
 	steamid = string.upper(steamid)
 	
+	local ply = player.GetBySteamID(steamid)
 	local oldNick = DPP.ClientFriends[steamid] and DPP.ClientFriends[steamid].nick or ''
 	
 	if not istable(physgun) then
@@ -164,10 +165,9 @@ function DPP.AddFriendBySteamID(steamid, physgun, gravgun, toolgun, use, vehicle
 			use = use,
 			vehicle = vehicle,
 			damage = damage,
-			nick = '',
+			nick = ply and ply:Nick() or oldNick,
 		}
 	else
-		local ply = player.GetBySteamID(steamid)
 		DPP.ClientFriends[steamid] = {
 			nick = ply and ply:Nick() or oldNick,
 		}
