@@ -29,14 +29,14 @@ function DPP.CanDamage(ply, ent, ignoreEnt)
 		end
 	end
 	
-	return DPP.CanTouch(ply, ent)
+	return DPP.CanTouch(ply, ent, 'damage')
 end
 
 function DPP.CanPhysgun(ply, ent)
 	if not DPP.GetConVar('enable_physgun') then return end
 	if DPP.IsEntityBlockedPhysgun(ent:GetClass(), ply) then return false end
 	
-	return DPP.CanTouch(ply, ent)
+	return DPP.CanTouch(ply, ent, 'physgun')
 end
 
 function DPP.PhysgunPickup(ply, ent)
@@ -45,10 +45,11 @@ function DPP.PhysgunPickup(ply, ent)
 		return
 	end
 	
+	if SERVER then DPP.CheckUpForGrabs(ent, ply) end
+	
 	local can, reason = DPP.CanPhysgun(ply, ent)
 	if not can then return can, reason end
 	if SERVER and DPP.GetGhosted(ent) then DPP.SetGhosted(ent, false) end
-	if SERVER then DPP.CheckUpForGrabs(ent, ply) end
 end
 
 function DPP.CanGravgun(ply, ent)
@@ -58,8 +59,7 @@ function DPP.CanGravgun(ply, ent)
 		return false
 	end
 	
-	local can, reason = DPP.CanTouch(ply, ent)
-	if not can then return can, reason end
+	return DPP.CanTouch(ply, ent, 'gravgun')
 end
 
 function DPP.GravgunTouch(ply, ent)
@@ -82,7 +82,7 @@ function DPP.CanGravgunPunt(ply, ent)
 		DPP.CheckUpForGrabs(ent, ply)
 	end
 	
-	local can, reason = DPP.CanTouch(ply, ent)
+	local can, reason = DPP.CanTouch(ply, ent, 'gravgun')
 	if not can then return can, reason end
 	
 	if SERVER then
@@ -126,6 +126,10 @@ local ropeModes = {
 function DPP.CanTool(ply, ent, mode)
 	if not DPP.GetConVar('enable_tool') then return end
 	
+	if DPP.IsRestrictedTool(mode, ply) then 
+		return false, 'Restricted Tool' 
+	end
+	
 	if not IsValid(ent) then 
 		if DPP.GetConVar('no_rope_world') then
 			if mode and ropeModes[mode] then
@@ -150,17 +154,15 @@ function DPP.CanTool(ply, ent, mode)
 		end
 	end
 	
-	if DPP.IsRestrictedTool(mode, ply) then 
-		return false, 'Restricted Tool' 
-	end
-	
-	return DPP.CanTouch(ply, ent)
+	return DPP.CanTouch(ply, ent, 'toolgun')
 end
 
 local GRAY = Color(200, 200, 200)
 local RED = Color(255, 0, 0)
 
 function DPP.ToolgunTouch(ply, tr, mode)
+	if SERVER then DPP.CheckUpForGrabs(tr.Entity, ply) end
+	
 	if DPP.CanTool(ply, tr.Entity, mode) == false then 
 		if SERVER then
 			DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', RED, ' tried ', GRAY, string.format('to use tool %s on %s', mode, tr.Entity))
@@ -170,7 +172,6 @@ function DPP.ToolgunTouch(ply, tr, mode)
 	
 	if SERVER then
 		if DPP.GetGhosted(tr.Entity) then DPP.SetGhosted(tr.Entity, false) end
-		DPP.CheckUpForGrabs(tr.Entity, ply)
 		DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', GRAY, ' used/tried to use tool ', color_white, mode, GRAY, ' on ', tr.Entity)
 	end
 end
@@ -179,7 +180,7 @@ function DPP.CanPlayerEnterVehicle(ply, ent)
 	if not DPP.GetConVar('enable_veh') then return end
 	if ent.IgnoreVehicleProtection then return end
 	if not DPP.IsOwned(ent) then return end
-	local reply = DPP.CanTouch(ply, ent)
+	local reply = DPP.CanTouch(ply, ent, 'vehicle')
 	if not reply then return false end
 end
 
@@ -197,16 +198,28 @@ function DPP.CanProperty(ply, str, ent)
 	if not reply then return false end
 end
 
+function DPP.PropertyTouch(ply, str, ent)
+	if SERVER then DPP.CheckUpForGrabs(ent, ply) end
+	
+	if DPP.CanProperty(ply, str, ent) == false then return false end
+end
+
 function DPP.PlayerUse(ply, ent)
 	if not DPP.GetConVar('enable_use') then return end
 	if not DPP.IsOwned(ent) then return end
-	local reply = DPP.CanTouch(ply, ent)
+	local reply = DPP.CanTouch(ply, ent, 'use')
 	if not reply then return false end
+end
+
+function DPP.UseTouch(ply, ent)
+	if SERVER then DPP.CheckUpForGrabs(ent, ply) end
+	
+	if DPP.PlayerUse(ply, ent) == false then return false end
 end
 
 function DPP.CanDrive(ply, ent)
 	if not DPP.GetConVar('enable_drive') then return end
-	local reply = DPP.CanTouch(ply, ent)
+	local reply = DPP.CanTouch(ply, ent, 'physgun') --I will mean Drive as Physgun
 	if not reply then return false end
 end
 
@@ -222,16 +235,17 @@ DPP.CanEditVariable = DPP.Wrap(DPP.CanEditVariable)
 DPP.CanPlayerEnterVehicle = DPP.Wrap(DPP.CanPlayerEnterVehicle)
 DPP.PlayerUse = DPP.Wrap(DPP.PlayerUse)
 
+--Maximal Priority
 hook.Add('PhysgunPickup', '!DPP.Hooks', DPP.PhysgunPickup, -1)
-hook.Add('CanDrive', 'DPP.Hooks', DPP.CanDrive)
-hook.Add('CanProperty', 'DPP.Hooks', DPP.CanProperty)
-hook.Add('GravGunPickupAllowed', 'DPP.Hooks', DPP.GravgunTouch)
-hook.Add('GravGunPunt', 'DPP.Hooks', DPP.CanGravgunPunt)
-hook.Add('OnPhysgunReload', 'DPP.Hooks', DPP.OnPhysgunReload)
-hook.Add('CanTool', 'DPP.Hooks', DPP.ToolgunTouch)
-hook.Add('CanEditVariable', 'DPP.Hooks', DPP.CanEditVariable)
-hook.Add('CanPlayerEnterVehicle', 'DPP.Hooks', DPP.CanPlayerEnterVehicle)
-hook.Add('PlayerUse', 'DPP.Hooks', DPP.PlayerUse)
+hook.Add('CanDrive', '!DPP.Hooks', DPP.CanDrive, -1)
+hook.Add('CanProperty', '!DPP.Hooks', DPP.PropertyTouch, -1)
+hook.Add('GravGunPickupAllowed', '!DPP.Hooks', DPP.GravgunTouch, -1)
+hook.Add('GravGunPunt', '!DPP.Hooks', DPP.CanGravgunPunt, -1)
+hook.Add('OnPhysgunReload', '!DPP.Hooks', DPP.OnPhysgunReload, -1)
+hook.Add('CanTool', '!DPP.Hooks', DPP.ToolgunTouch, -1)
+hook.Add('CanEditVariable', '!DPP.Hooks', DPP.CanEditVariable, -1)
+hook.Add('CanPlayerEnterVehicle', '!DPP.Hooks', DPP.CanPlayerEnterVehicle, -1)
+hook.Add('PlayerUse', '!DPP.Hooks', DPP.UseTouch, -1)
 
 function DPP.OverrideE2Adv()
 	if not EXPADV then return end

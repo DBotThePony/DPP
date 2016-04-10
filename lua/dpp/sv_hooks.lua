@@ -720,3 +720,31 @@ end
 
 hook.Add('PhysgunDrop', 'DPP.PreventPropThrow', PhysgunDrop)
 
+local EmptyVector = Vector(0, 0, 0)
+
+function DPP.HandleTakeDamage(ent, dmg)
+	if ent:IsPlayer() then return end
+	local a = dmg:GetAttacker()
+	if not a:IsPlayer() then return end
+	
+	local reply = DPP.CanDamage(a, ent)
+	
+	if reply == false then
+		dmg:SetDamage(0)
+		dmg:SetDamageForce(EmptyVector)
+		dmg:SetDamageBonus(0)
+		dmg:SetDamageType(0)
+		local isOnFire = ent:IsOnFire()
+		
+		timer.Simple(0.5, function()
+			if IsValid(ent) and not isOnFire then
+				ent:Extinguish() --Prevent burning weapons
+			end
+		end)
+		
+		return false
+	end
+end
+
+hook.Add('EntityTakeDamage', 'DPP.Hooks', DPP.HandleTakeDamage, -2)
+

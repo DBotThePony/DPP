@@ -58,6 +58,31 @@ function DPP.SetConstrainedBetween(ent1, ent2, status)
 	end
 end
 
+function DPP.RecalculatePlayerList()
+	DPP.RefreshPropList()
+	local r = {}
+	
+	for ent, v in pairs(DPP.PropListing) do
+		local Name, UID, SteamID = DPP.GetOwnerDetails(ent)
+		r[UID] = r[UID] or {Name = Name, SteamID = SteamID, UID = UID}
+	end
+	
+	local r2 = {}
+	
+	for k, v in pairs(r) do
+		table.insert(r2, v)
+	end
+	
+	DPP.PlayerList = r2
+	return r2
+end
+
+function DPP.SendPlayerList()
+	net.Start('DPP.PlayerList')
+	net.WriteTable(DPP.PlayerList)
+	net.Broadcast()
+end
+
 function DPP.CheckSizes(ent, ply)
 	if not DPP.GetConVar('enable') then return end
 	if not DPP.GetConVar('check_sizes') then return end
@@ -172,6 +197,9 @@ function DPP.ClearPlayerEntites(ply)
 	for k, v in pairs(Ents) do
 		SafeRemoveEntity(v)
 	end
+	
+	DPP.RecalculatePlayerList()
+	DPP.SendPlayerList()
 end
 
 function DPP.FreezePlayerEntites(ply)
@@ -181,6 +209,17 @@ function DPP.FreezePlayerEntites(ply)
 		local phys = v:GetPhysicsObject()
 		if IsValid(phys) then
 			phys:EnableMotion(false)
+		end
+	end
+end
+
+function DPP.UnFreezePlayerEntites(ply)
+	local Ents = DPP.GetPlayerEntities(ply)
+	
+	for k, v in pairs(Ents) do
+		local phys = v:GetPhysicsObject()
+		if IsValid(phys) then
+			phys:EnableMotion(true)
 		end
 	end
 end
@@ -227,6 +266,9 @@ function DPP.ClearDisconnectedProps()
 	for k, v in pairs(DPP.GetUnownedProps()) do
 		SafeRemoveEntity(v)
 	end
+	
+	DPP.RecalculatePlayerList()
+	DPP.SendPlayerList()
 end
 
 function DPP.GetPropsByUID(uid)
@@ -246,6 +288,31 @@ end
 function DPP.ClearByUID(uid)
 	for k, v in pairs(DPP.GetPropsByUID(uid)) do
 		SafeRemoveEntity(v)
+	end
+	
+	DPP.RecalculatePlayerList()
+	DPP.SendPlayerList()
+end
+
+function DPP.FreezeByUID(uid)
+	local Ents = DPP.GetPropsByUID(uid)
+	
+	for k, v in pairs(Ents) do
+		local phys = v:GetPhysicsObject()
+		if IsValid(phys) then
+			phys:EnableMotion(false)
+		end
+	end
+end
+
+function DPP.UnFreezeByUID(uid)
+	local Ents = DPP.GetPropsByUID(uid)
+	
+	for k, v in pairs(Ents) do
+		local phys = v:GetPhysicsObject()
+		if IsValid(phys) then
+			phys:EnableMotion(true)
+		end
 	end
 end
 
@@ -275,7 +342,7 @@ concommand.Add('dpp_clearbyuid', function(ply, cmd, args)
 	local Target = player.GetByUniqueID(uid)
 	DPP.ClearByUID(uid)
 	
-	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' cleared all ' .. (Target and Target:Nick() or uid) .. '\' props'}
+	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' cleared all ' .. (Target and Target:Nick() or DPP.DisconnectedPlayerNick(uid)) .. '\' props'}
 	DPP.Notify(player.GetAll(), f)
 	DPP.Message(f)
 end)
@@ -294,17 +361,6 @@ concommand.Add('dpp_freezeall', function(ply, cmd, args)
 	DPP.Notify(player.GetAll(), f)
 	DPP.Message(f)
 end)
-
-function DPP.UnFreezePlayerEntites(ply)
-	local Ents = DPP.GetPlayerEntities(ply)
-	
-	for k, v in pairs(Ents) do
-		local phys = v:GetPhysicsObject()
-		if IsValid(phys) then
-			phys:EnableMotion(true)
-		end
-	end
-end
 
 concommand.Add('dpp_clearplayer', function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsAdmin() then return end
@@ -366,6 +422,36 @@ concommand.Add('dpp_freezeplayer', function(ply, cmd, args)
 	DPP.Message(f)
 end)
 
+concommand.Add('dpp_freezebyuid', function(ply, cmd, args)
+	if IsValid(ply) and not ply:IsAdmin() then return end
+	
+	local uid = args[1]
+	
+	if not tonumber(args[1]) then DPP.Notify(ply, 'Invalid argument') return end
+	
+	local Target = player.GetByUniqueID(uid)
+	DPP.FreezeByUID(uid)
+		
+	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' freeze all ' .. (Target and Target:Nick() or DPP.DisconnectedPlayerNick(uid)) .. '\'s entites'}
+	DPP.Notify(player.GetAll(), f)
+	DPP.Message(f)
+end)
+
+concommand.Add('dpp_unfreezebyuid', function(ply, cmd, args)
+	if IsValid(ply) and not ply:IsAdmin() then return end
+	
+	local uid = args[1]
+	
+	if not tonumber(args[1]) then DPP.Notify(ply, 'Invalid argument') return end
+	
+	local Target = player.GetByUniqueID(uid)
+	DPP.UnFreezeByUID(uid)
+		
+	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' unfreeze all ' .. (Target and Target:Nick() or DPP.DisconnectedPlayerNick(uid)) .. '\'s entites'}
+	DPP.Notify(player.GetAll(), f)
+	DPP.Message(f)
+end)
+
 concommand.Add('dpp_unfreezeplayer', function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsAdmin() then return end
 	if not args[1] then DPP.Notify(ply, 'Invalid argument') return end
@@ -394,6 +480,49 @@ concommand.Add('dpp_unfreezeplayer', function(ply, cmd, args)
 	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' unfreeze all ' .. found:Nick() .. '\'s entites'}
 	DPP.Notify(player.GetAll(), f)
 	DPP.Message(f)
+end)
+
+function DPP.RecalculateShare(ent)
+	local hit = false
+	
+	for k, v in pairs(DPP.ShareTypes) do
+		if DPP.IsSharedType(ent, k) then
+			hit = true
+			break
+		end
+	end
+	
+	ent:SetNWBool('DPP.IsShared', hit)
+end
+
+function DPP.SetIsShared(ent, mode, status)
+	if status then
+		ent:SetNWBool('DPP.IsShared', true)
+	end
+	
+	ent:SetNWBool('DPP.Share' .. mode, status)
+	
+	timer.Create('DPP.RecalculateShared.' .. ent:EntIndex(), 0, 0, function()
+		if IsValid(ent) then DPP.RecalculateShare(ent) end
+	end)
+end
+
+concommand.Add('dpp_share', function(ply, cmd, args)
+	local num = tonumber(args[1])
+	local type = args[2]
+	local status = args[3]
+	
+	if not num then DPP.Notify(ply, 'Invalid argument') return end
+	if not type then DPP.Notify(ply, 'Invalid argument') return end
+	if not status then DPP.Notify(ply, 'Invalid argument') return end
+	
+	local ent = Entity(num)
+	if not IsValid(ent) then DPP.Notify(ply, 'Entity does not exists') return end
+	if IsValid(ply) and DPP.GetOwner(ent) ~= ply then DPP.Notify(ply, 'Not a owner') return end
+	
+	status = tobool(status)
+	
+	DPP.SetIsShared(ent, type, status)
 end)
 
 DPP.ANTISPAM_VALID = 0

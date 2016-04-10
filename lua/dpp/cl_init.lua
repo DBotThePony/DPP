@@ -28,6 +28,8 @@ function DPP.RefreshFriends()
 		DPP.ActiveFriends[ply] = {}
 		table.Merge(DPP.ActiveFriends[ply], v)
 		DPP.ActiveFriends[ply].steamid = k
+		DPP.ActiveFriends[ply].nick = ply:Nick()
+		DPP.ClientFriends[k].nick = ply:Nick()
 	end
 	
 	LocalPlayer().DPP_Friends = DPP.ActiveFriends
@@ -62,6 +64,15 @@ function DPP.GetOwnerName(ent)
 	return owner:Nick()
 end
 
+function DPP.CheckFriendArgs(t)
+	if t.physgun == nil then t.physgun = true end
+	if t.gravgun == nil then t.gravgun = true end
+	if t.toolgun == nil then t.toolgun = true end
+	if t.use == nil then t.use = true end
+	if t.vehicle == nil then t.vehicle = true end
+	if t.damage == nil then t.damage = true end
+end
+
 function DPP.LoadFriends()
 	local FILE = 'dpp/friends.txt'
 	local content = file.Read(FILE, 'DATA')
@@ -79,6 +90,10 @@ function DPP.LoadFriends()
 	end
 	
 	DPP.ClientFriends = out
+	
+	for k, v in pairs(out) do
+		DPP.CheckFriendArgs(v)
+	end
 	
 	DPP.Message('Friendlist loaded...')
 	timer.Simple(0, DPP.RefreshFriends)
@@ -101,17 +116,30 @@ function DPP.SendFriends()
 	net.SendToServer()
 end
 
-function DPP.AddFriend(ply)
+function DPP.AddFriend(ply, physgun, gravgun, toolgun, use, vehicle, damage)
 	if ply == LocalPlayer() then return end
+	
 	local steamid = ply:SteamID()
-	DPP.ClientFriends[steamid] = {
-		physgun = true,
-		gravgun = true,
-		toolgun = true,
-		use = true,
-		vehicle = true,
-		nick = ply:Nick(),
-	}
+	
+	if not istable(physgun) then
+		DPP.ClientFriends[steamid] = {
+			physgun = physgun,
+			gravgun = gravgun,
+			toolgun = toolgun,
+			use = use,
+			vehicle = vehicle,
+			damage = damage,
+			nick = ply:Nick(),
+		}
+	else
+		DPP.ClientFriends[steamid] = {
+			nick = ply:Nick(),
+		}
+		
+		table.Merge(DPP.ClientFriends[steamid], physgun)
+	end
+	
+	DPP.CheckFriendArgs(DPP.ClientFriends[steamid])
 	
 	DPP.Message('Friend added')
 	
@@ -123,16 +151,31 @@ function DPP.AddFriend(ply)
 	hook.Run('DPP.FriendsChanged')
 end
 
-function DPP.AddFriendBySteamID(steamid)
-	if ply == LocalPlayer() then return end
-	DPP.ClientFriends[steamid] = {
-		physgun = true,
-		gravgun = true,
-		toolgun = true,
-		use = true,
-		vehicle = true,
-		nick = '',
-	}
+function DPP.AddFriendBySteamID(steamid, physgun, gravgun, toolgun, use, vehicle, damage)
+	steamid = string.upper(steamid)
+	
+	local oldNick = DPP.ClientFriends[steamid] and DPP.ClientFriends[steamid].nick or ''
+	
+	if not istable(physgun) then
+		DPP.ClientFriends[steamid] = {
+			physgun = physgun,
+			gravgun = gravgun,
+			toolgun = toolgun,
+			use = use,
+			vehicle = vehicle,
+			damage = damage,
+			nick = '',
+		}
+	else
+		local ply = player.GetBySteamID(steamid)
+		DPP.ClientFriends[steamid] = {
+			nick = ply and ply:Nick() or oldNick,
+		}
+		
+		table.Merge(DPP.ClientFriends[steamid], physgun)
+	end
+	
+	DPP.CheckFriendArgs(DPP.ClientFriends[steamid])
 	
 	DPP.Message('Friend added')
 	
@@ -181,6 +224,16 @@ function DPP.RemoveFriendBySteamID(steamid)
 	hook.Run('DPP.FriendsChanged')
 end
 
+local function ArgBool(val)
+	if val == nil then return true end
+	
+	local n = tonumber(val)
+	if not n then return true end
+	
+	if n <= 0 then return false end
+	return true
+end
+
 concommand.Add('dpp_addfriend', function(ply, cmd, args)
 	if not args[1] then
 		DPP.Message('Invalid argument')
@@ -191,14 +244,14 @@ concommand.Add('dpp_addfriend', function(ply, cmd, args)
 	
 	if string.sub(ply, 1, 5) == 'steam' then
 		ply = string.upper(args[1])
-		DPP.RemoveFriendBySteamID(ply)
+		DPP.AddFriendBySteamID(ply, ArgBool(args[2]), ArgBool(args[3]), ArgBool(args[4]), ArgBool(args[5]), ArgBool(args[6]), ArgBool(args[7]))
 		return
 	end
 	
 	local found
 	
 	for k, v in pairs(player.GetAll()) do
-		if string.find(string.lower(v:Nick()), ply) then
+		if string.find(string.lower(v:Nick()), ply, ArgBool(args[2]), ArgBool(args[3]), ArgBool(args[4]), ArgBool(args[5]), ArgBool(args[6]), ArgBool(args[7])) then
 			found = v
 		end
 	end
@@ -425,7 +478,7 @@ local function PostDrawHUD()
 			local CanTouch1, reason = DPP.CanTool(LocalPlayer(), ent, curWeapon:GetMode())
 			CanTouch = CanTouch1 ~= false
 			
-			if reason then
+			if reason and reason ~= 'Not a friend of owner/constrained' then
 				name = name .. '\n' .. reason
 			end
 			
@@ -433,8 +486,9 @@ local function PostDrawHUD()
 		end
 		
 		if class == 'weapon_physgun' then
-			local status = DPP.IsEntityBlockedPhysgun(ent:GetClass(), LocalPlayer())
-			CanTouch, reason = DPP.CanPhysgun(LocalPlayer(), ent) ~= false and not status
+			CanTouch, reason = DPP.CanPhysgun(LocalPlayer(), ent)
+			CanTouch = CanTouch ~= false
+			
 			if DPP.GetConVar('enable_physgun') then
 				if status then
 					name = name .. '\nPhysgun blocked'
@@ -443,7 +497,7 @@ local function PostDrawHUD()
 				CanTouch = true
 			end
 			
-			if reason then
+			if reason and reason ~= 'Not a friend of owner/constrained' then
 				name = name .. '\n' .. reason
 			end
 			
@@ -461,7 +515,7 @@ local function PostDrawHUD()
 				CanTouch = true
 			end
 			
-			if reason then
+			if reason and reason ~= 'Not a friend of owner/constrained' then
 				name = name .. '\n' .. reason
 			end
 			
@@ -484,6 +538,7 @@ local function PostDrawHUD()
 	end
 	
 	local CanDamage, reason = DPP.CanDamage(LocalPlayer(), ent)
+	
 	if reason then
 		name = name .. '\n' .. reason
 	end
@@ -579,6 +634,13 @@ net.Receive('DPP.SLists', function()
 	
 	hook.Run('DPP.EntsLimitsReloaded', DPP.SBoxLimits)
 	DPP.Message('SBox limit list received from server, reloading')
+end)
+
+net.Receive('DPP.PlayerList', function()
+	DPP.PlayerList = net.ReadTable()
+	
+	hook.Run('DPP.PlayerListChanged', DPP.PlayerList)
+	DPP.Message('Player list changed, reloading')
 end)
 
 net.Receive('DPP.ModelLists', function()

@@ -23,10 +23,34 @@ function DPP.GetConstrainedTable(ent)
 	return ent._DPP_Constrained
 end
 
-function DPP.IsFriend(ply, ply2)
+function DPP.IsShared(ent)
+	return ent:GetNWBool('DPP.IsShared')
+end
+
+function DPP.IsSharedType(ent, mode)
+	return ent:GetNWBool('DPP.Share' .. mode)
+end
+
+function DPP.GetSharedTable(ent)
+	local t = {}
+	
+	for k, v in pairs(DPP.ShareTypes) do
+		t[k] = DPP.IsSharedType(ent, k)
+	end
+	
+	return t
+end
+
+function DPP.IsFriend(ply, ply2, mode)
 	if ply == ply2 then return true end
 	local t = DPP.GetFriendTable(ply2)
-	if t[ply] then return true else return false end
+	
+	if mode then
+		if not t[ply] then return false end
+		return t[ply][mode] ~= false --???, i would return true if mode does not exist or ply2 is a generic friend to ply
+	end
+	
+	return t[ply] ~= nil
 end
 
 function DPP.IsPlayerInEntity(ply, ent) --From DLib
@@ -140,4 +164,37 @@ function DPP.GetEntityType(ent)
 	else
 		return 'sent'
 	end
+end
+
+function DPP.DisconnectedPlayerNick(uid)
+	for k, v in pairs(DPP.PlayerList) do
+		if v.UID == uid then return v.Name end
+	end
+	
+	return uid
+end
+
+local function UIDTableHasValue(t, uid)
+	for i = 1, #t do
+		if t[i].UID == uid then return true end
+	end
+	
+	return false
+end
+
+function DPP.GetPlayerList()
+	local plys = player.GetAll()
+	
+	local r = {}
+	
+	for k, v in pairs(plys) do
+		table.insert(r, {UID = v:UniqueID(), SteamID = v:SteamID(), Name = v:Nick()})
+	end
+	
+	for k, v in pairs(DPP.PlayerList) do
+		if UIDTableHasValue(r, v.UID) then continue end
+		table.insert(r, v)
+	end
+	
+	return r
 end

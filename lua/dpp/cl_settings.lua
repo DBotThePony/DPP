@@ -27,6 +27,141 @@ function FUNCTIONS.CCheckBoxDoClick(self)
 	RunConsoleCommand('dpp_' .. self.val, (not self.LastVal) == false and '0' or '1')
 end
 
+function DPP.OpenFriendEditMenu(steamid)
+	steamid = string.upper(steamid)
+	local t = DPP.ClientFriends[steamid] or {
+		nick = '',
+	}
+	
+	DPP.CheckFriendArgs(t)
+	
+	local height = 50
+	
+	local frame = vgui.Create('DFrame')
+	frame:SetTitle('Modifying ' .. steamid)
+	SettingsClass.ApplyFrameStyle(frame)
+	
+	local groups = DPP.GetGroups()
+	local Panels = {}
+	
+	for k, v in pairs(t) do
+		if k == 'nick' then continue end
+		height = height + 20
+		
+		local p = frame:Add('DCheckBoxLabel')
+		Panels[k] = p
+		p:Dock(TOP)
+		p:SetText(string.gsub(k, '^.', string.upper) .. ' buddy')
+		p:SetChecked(v)
+		p.Type = k
+	end
+	
+	height = height + 30
+	
+	local apply = frame:Add('DButton')
+	apply:Dock(BOTTOM)
+	apply:SetText('Apply')
+	SettingsClass.ApplyButtonStyle(apply)
+	
+	function apply.DoClick()
+		local t = {}
+		
+		for k, v in pairs(Panels) do
+			t[k] = v:GetChecked()
+		end
+		
+		DPP.AddFriendBySteamID(steamid, t)
+		frame:Close()
+	end
+	
+	local discard = frame:Add('DButton')
+	discard:Dock(BOTTOM)
+	discard:SetText('Discard')
+	SettingsClass.ApplyButtonStyle(discard)
+	
+	function discard.DoClick()
+		frame:Close()
+	end
+	
+	frame:SetHeight(height)
+	frame:SetWidth(200)
+	frame:Center()
+	frame:MakePopup()
+end
+
+function DPP.OpenShareMenu(ent)
+	if DPP.GetOwner(ent) ~= LocalPlayer() then return end
+	local t = DPP.GetSharedTable(ent)
+	
+	local height = 50
+	
+	local frame = vgui.Create('DFrame')
+	frame:SetTitle('Share of ' .. tostring(ent))
+	SettingsClass.ApplyFrameStyle(frame)
+	
+	local groups = DPP.GetGroups()
+	local Panels = {}
+	
+	for k, v in pairs(DPP.ShareTypes) do
+		height = height + 20
+		
+		local p = frame:Add('DCheckBoxLabel')
+		Panels[k] = p
+		p:Dock(TOP)
+		p:SetText(v .. ' share')
+		p:SetChecked(t[k])
+		p.Type = k
+	end
+	
+	height = height + 50
+	
+	local apply = frame:Add('DButton')
+	apply:Dock(BOTTOM)
+	apply:SetText('Apply')
+	SettingsClass.ApplyButtonStyle(apply)
+	
+	function apply.DoClick()
+		if IsValid(ent) then
+			local inx = ent:EntIndex()
+			for k, v in pairs(Panels) do
+				RunConsoleCommand('dpp_share', inx, k, v:GetChecked() and '1' or '0')
+			end
+		end
+		
+		frame:Close()
+	end
+	
+	local discard = frame:Add('DButton')
+	discard:Dock(BOTTOM)
+	discard:SetText('Discard')
+	SettingsClass.ApplyButtonStyle(discard)
+	
+	function discard.DoClick()
+		frame:Close()
+	end
+	
+	local unselectall = frame:Add('DButton')
+	unselectall:Dock(BOTTOM)
+	unselectall:SetText('Unshare')
+	SettingsClass.ApplyButtonStyle(unselectall)
+	
+	function unselectall.DoClick()
+		if IsValid(ent) then
+			local inx = ent:EntIndex()
+			for k, v in pairs(Panels) do
+				RunConsoleCommand('dpp_share', inx, k, '0')
+			end
+		end
+		
+		frame:Close()
+	end
+	
+	frame:SetHeight(height)
+	frame:SetWidth(400)
+	frame:Center()
+	frame:MakePopup()
+end
+
 SettingsClass.Styles = SettingsClass.Styles or {}
 local Style = SettingsClass.Styles
 
@@ -469,13 +604,13 @@ local function BuildPlayerList(Panel)
 	SettingsClass.ApplyButtonStyle(Panel:Button('Freeze all player\'s entities', 'dpp_freezeall'))
 	SettingsClass.ApplyButtonStyle(Panel:Button('Delete disconnected player entities', 'dpp_cleardisconnected'))
 	
-	for k, v in pairs(player.GetAll()) do
-		local lab = Label(v:Nick())
+	for k, v in pairs(DPP.GetPlayerList()) do
+		local lab = Label(v.Name)
 		Panel:AddItem(lab)
 		lab:SetTextColor(SettingsClass.TextColor)
-		SettingsClass.ApplyButtonStyle(Panel:Button('Delete ' .. v:Nick() .. ' entites', 'dpp_clearplayer', tostring(v:UserID())))
-		SettingsClass.ApplyButtonStyle(Panel:Button('Freeze ' .. v:Nick() .. ' entites', 'dpp_freezeplayer', tostring(v:UserID())))
-		SettingsClass.ApplyButtonStyle(Panel:Button('UnFreeze ' .. v:Nick() .. ' entites', 'dpp_unfreezeplayer', tostring(v:UserID())))
+		SettingsClass.ApplyButtonStyle(Panel:Button('Delete ' .. v.Name .. ' entites', 'dpp_clearbyuid', v.UID))
+		SettingsClass.ApplyButtonStyle(Panel:Button('Freeze ' .. v.Name .. ' entites', 'dpp_freezebyuid', v.UID))
+		SettingsClass.ApplyButtonStyle(Panel:Button('UnFreeze ' .. v.Name .. ' entites', 'dpp_unfreezebyuid', v.UID))
 	end
 end
 
@@ -1232,6 +1367,10 @@ local function BuildFriendsPanel(Panel)
 			SetClipboardText(steamid)
 		end)
 		
+		menu:AddOption('Edit...', function()
+			DPP.OpenFriendEditMenu(steamid)
+		end)
+		
 		menu:AddOption('Remove from friends', function()
 			DPP.RemoveFriendBySteamID(steamid)
 		end)
@@ -1248,7 +1387,7 @@ local function BuildFriendsPanel(Panel)
 		local b = Panel:Button('Add ' .. v:Nick() .. ' to friendlist')
 		SettingsClass.ApplyButtonStyle(b)
 		b.DoClick = function()
-			DPP.AddFriend(v)
+			DPP.OpenFriendEditMenu(v:SteamID())
 		end
 	end
 	
@@ -1256,7 +1395,7 @@ local function BuildFriendsPanel(Panel)
 	Panel:AddItem(entry)
 	local Apply = Panel:Button('Add by SteamID')
 	Apply.DoClick = function()
-		DPP.AddFriendBySteamID(entry:GetText())
+		DPP.OpenFriendEditMenu(entry:GetText())
 	end
 	SettingsClass.ApplyButtonStyle(Apply)
 end
@@ -1340,6 +1479,10 @@ net.Receive('DPP.RefreshPlayerList', function()
 	BuildPlayerList(DPP.SettingsClass.PlayerPanel)
 end)
 
+hook.Add('DPP.PlayerListChanged', 'DPP.Menu', function()
+	BuildPlayerList(DPP.SettingsClass.PlayerPanel)
+end)
+
 local AddToBlocked = {
 	MenuLabel = "Add to DPP Blocked Models",
 	Order = 2500,
@@ -1379,7 +1522,7 @@ properties.Add("dpp.delblockedmodel", RemoveFromlocked)
 
 local CleanupPlayer = {
 	MenuLabel = "Cleanup props of owner",
-	Order = 2501,
+	Order = 2400,
 	MenuIcon = "icon16/brick_delete.png",
 
 	Filter = function(self, ent, ply)
@@ -1396,6 +1539,22 @@ local CleanupPlayer = {
 }
 properties.Add("dpp.clearbyuid", CleanupPlayer)
 
+local ShareMenu = {
+	MenuLabel = "Share this prop",
+	Order = 2400,
+	MenuIcon = "icon16/brick_edit.png",
+
+	Filter = function(self, ent, ply)
+		if not IsValid(ent) then return false end
+		return DPP.GetOwner(ent) == ply
+	end,
+	
+	Action = function(self, ent)
+		DPP.OpenShareMenu(ent)
+	end,
+}
+properties.Add("dpp.share", ShareMenu)
+
 for k, v in pairs(DPP.BlockTypes) do
 	local Add = {
 		MenuLabel = "Add to DPP " .. v .. ' blacklist',
@@ -1405,7 +1564,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		Filter = function(self, ent, ply)
 			if not IsValid(ent) then return false end
 			if not ply:IsSuperAdmin() then return false end
-			if DPP['IsEntityBlocked' .. v](ent:GetClass(), ply) then return false end
+			if DPP['IsEvenBlocked' .. v](ent:GetClass(), ply) then return false end
 			return true
 		end,
 		
@@ -1422,7 +1581,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		Filter = function(self, ent, ply)
 			if not IsValid(ent) then return false end
 			if not ply:IsSuperAdmin() then return false end
-			if not DPP['IsEntityBlocked' .. v](ent:GetClass(), ply) then return false end
+			if not DPP['IsEvenBlocked' .. v](ent:GetClass(), ply) then return false end
 			return true
 		end,
 		

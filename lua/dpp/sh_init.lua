@@ -50,6 +50,8 @@ end
 include('sh_cppi.lua')
 include('sh_functions.lua')
 
+DPP.PlayerList = DPP.PlayerList or {}
+
 DPP.Settings = {
 	['enable'] = {
 		type = 'bool',
@@ -365,6 +367,14 @@ DPP.BlockTypes = {
 	pickup = 'Pickup',
 }
 
+DPP.ShareTypes = {
+	use = 'Use',
+	toolgun = 'Toolgun',
+	physgun = 'Physgun',
+	gravgun = 'Gravgun',
+	damage = 'Damage',
+}
+
 DPP.RestrictTypes = {
 	tool = 'Tool',
 	sent = 'SENT',
@@ -542,6 +552,14 @@ for k, v in pairs(DPP.BlockTypes) do
 			end
 		end
 	end
+	
+	DPP['IsEvenBlocked' .. v] = function(ent)
+		if isentity(ent) then
+			ent = ent:GetClass()
+		end
+		
+		return DPP.BlockedEntites[k][ent] ~= nil
+	end
 end
 
 DPP.AdminGroups = {
@@ -705,13 +723,14 @@ function DPP.AddDuplicatorType(str)
 	DPP.DTypes[str] = true
 end
 
-function DPP.CanTouch(ply, ent)
+function DPP.CanTouch(ply, ent, mode)
 	if not DPP.GetConVar('enable') then return true end
 	if not IsValid(ply) then return true end
 	if not IsValid(ent) then return false end
 	if ent:IsPlayer() then return end
 	
 	local owner = DPP.GetOwner(ent)
+	local realOwner = owner
 	local constrained = DPP.GetConstrainedTable(ent)
 	local INDEX = table.insert(constrained, owner)
 	
@@ -721,6 +740,10 @@ function DPP.CanTouch(ply, ent)
 	local admin, adminEverything = ply:IsAdmin(), DPP.GetConVar('admin_can_everything')
 	
 	local isOwned = DPP.IsOwned(ent)
+	local isShared = DPP.IsShared(ent)
+	if mode and DPP.ShareTypes[mode] then
+		isShared = DPP.IsSharedType(ent, mode)
+	end
 	
 	for k, owner in pairs(constrained) do
 		if IsValid(owner) and owner:GetClass() == 'gmod_anchor' then continue end
@@ -749,22 +772,28 @@ function DPP.CanTouch(ply, ent)
 			end
 		end
 		
-		local friend = DPP.IsFriend(ply, owner)
-		
-		if admin then
-			if adminEverything then
-				continue
-			elseif not friend then
-				can = false
-				break
+		if not isShared or realOwner ~= owner then
+			local friend = DPP.IsFriend(ply, owner, mode)
+			
+			if admin then
+				if adminEverything then
+					continue
+				elseif not friend then
+					can = false
+					reason = 'Not a friend of owner/constrained'
+					break
+				end
 			end
-		end
-		
-		if owner:IsPlayer() then
-			if not friend then 
-				can = false 
-				break
+			
+			if owner:IsPlayer() then
+				if not friend then 
+					can = false 
+					reason = 'Not a friend of owner/constrained'
+					break
+				end
 			end
+		else
+			reason = 'Shared ' .. (mode and string.gsub(mode, '^.', string.upper) or '')
 		end
 	end
 	

@@ -24,6 +24,7 @@ util.AddNetworkString('DPP.SetConVar')
 util.AddNetworkString('DPP.ConstrainedTable')
 util.AddNetworkString('DPP.ReceiveFriendList')
 util.AddNetworkString('DPP.SendConstrainedWith')
+util.AddNetworkString('DPP.PlayerList')
 
 resource.AddWorkshop('659044893')
 
@@ -172,13 +173,16 @@ local function PlayerInitialSpawn(ply)
 		net.Start('DPP.ReloadFiendList')
 		net.Broadcast()
 		
+		--Still would call twice rebuilding player list on client
 		net.Start('DPP.RefreshPlayerList')
 		net.Broadcast()
+		
+		DPP.RecalculatePlayerList()
+		DPP.SendPlayerList()
 	end)
 	
 	timer.Simple(10, function()
 		DPP.BroadcastLists()
-		--DPP.BroadcastCVars()
 		DPP.ReBroadcastCVars()
 	end)
 end
@@ -215,6 +219,9 @@ function DPP.PlayerDisconnected(ply)
 				
 				DPP.Notify(player.GetAll(), name .. '\'s props has been cleaned up', 2)
 				DPP.Message(name .. '\'s props has been cleaned up')
+				
+				DPP.RecalculatePlayerList()
+				DPP.SendPlayerList()
 			end)
 		end
 	end
@@ -233,6 +240,9 @@ function DPP.PlayerDisconnected(ply)
 				
 				DPP.Notify(player.GetAll(), name .. '\'s props is now up for grabs!')
 				DPP.Message(name .. '\'s props is now up for grabs!')
+				
+				DPP.RecalculatePlayerList()
+				DPP.SendPlayerList()
 			end)
 		end
 	end
@@ -241,32 +251,6 @@ function DPP.PlayerDisconnected(ply)
 		net.Start('DPP.RefreshPlayerList')
 		net.Broadcast()
 	end)
-end
-
-local EmptyVector = Vector(0, 0, 0)
-
-function DPP.HandleTakeDamage(ent, dmg)
-	if ent:IsPlayer() then return end
-	local a = dmg:GetAttacker()
-	if not a:IsPlayer() then return end
-	
-	local reply = DPP.CanDamage(a, ent)
-	
-	if reply == false then
-		dmg:SetDamage(0)
-		dmg:SetDamageForce(EmptyVector)
-		dmg:SetDamageBonus(0)
-		dmg:SetDamageType(0)
-		local isOnFire = ent:IsOnFire()
-		
-		timer.Simple(0.5, function()
-			if IsValid(ent) and not isOnFire then
-				ent:Extinguish() --Prevent burning weapons
-			end
-		end)
-		
-		return false
-	end
 end
 
 net.Receive('DPP.ReloadFiendList', function(len, ply)
@@ -289,7 +273,6 @@ end)
 
 hook.Add('PlayerInitialSpawn', 'DPP.Hooks', PlayerInitialSpawn)
 hook.Add('PlayerDisconnected', 'DPP.Hooks', DPP.PlayerDisconnected)
-hook.Add('EntityTakeDamage', 'DPP.Hooks', DPP.HandleTakeDamage, -2)
 
 include('sv_hooks.lua')
 include('sv_misc.lua')
