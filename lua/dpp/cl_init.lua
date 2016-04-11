@@ -251,7 +251,7 @@ concommand.Add('dpp_addfriend', function(ply, cmd, args)
 	local found
 	
 	for k, v in pairs(player.GetAll()) do
-		if string.find(string.lower(v:Nick()), ply, ArgBool(args[2]), ArgBool(args[3]), ArgBool(args[4]), ArgBool(args[5]), ArgBool(args[6]), ArgBool(args[7])) then
+		if string.find(string.lower(v:Nick()), ply) then
 			found = v
 		end
 	end
@@ -261,7 +261,7 @@ concommand.Add('dpp_addfriend', function(ply, cmd, args)
 		return
 	end
 	
-	DPP.AddFriend(found)
+	DPP.AddFriend(found, ArgBool(args[2]), ArgBool(args[3]), ArgBool(args[4]), ArgBool(args[5]), ArgBool(args[6]), ArgBool(args[7]))
 end)
 
 concommand.Add('dpp_remfriend', function(ply, cmd, args)
