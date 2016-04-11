@@ -355,6 +355,8 @@ end
 
 local SortedConVars = {
 	'enable',
+	'enable_lists',
+	'enable_blocked',
 	'enable_tool',
 	'enable_physgun',
 	'enable_gravgun',
@@ -401,8 +403,12 @@ local function BuildSVarPanel(Panel)
 	
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
-	Lab:SetText('DPP is created by DBot')
+	local TopText = 'DPP is created by DBot\nNOTE: "Main Power Switch" disables blacklists and protection\nmodules, but restrist lists are not disabled'
+	Lab:SetText(TopText)
 	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SizeToContents()
+	Lab:SetTooltip(TopText)
+	
 	
 	for a, b in pairs(SortedConVars) do
 		local v = DPP.Settings[b]
@@ -1491,7 +1497,7 @@ local AddToBlocked = {
 	Filter = function(self, ent, ply)
 		if not IsValid(ent) then return false end
 		if not ply:IsSuperAdmin() then return false end
-		if DPP.IsBlockedModel(ent:GetModel()) then return false end
+		if DPP.IsModelEvenBlocked(ent:GetModel()) then return false end
 		return true
 	end,
 	
@@ -1508,7 +1514,7 @@ local RemoveFromlocked = {
 	Filter = function(self, ent, ply)
 		if not IsValid(ent) then return false end
 		if not ply:IsSuperAdmin() then return false end
-		if not DPP.IsBlockedModel(ent:GetModel()) then return false end
+		if not DPP.IsModelEvenBlocked(ent:GetModel()) then return false end
 		return true
 	end,
 	
@@ -1713,6 +1719,131 @@ for k, v in pairs(DPP.RestrictTypes) do
 		
 		Action = function(self, ent)
 			OpenModifyPanel(ent:GetClass(), false)
+		end,
+	}
+
+	properties.Add("dpp.addrestricted" .. k, Add)
+	properties.Add("dpp.removerestricted" .. k, Remove)
+	properties.Add("dpp.modifyrestricted" .. k, Modify)
+end
+
+--Copy paste
+do
+	local k = 'model'
+	local v = 'Model'
+	
+	local function OpenModifyPanel(class, isNew)
+		local t = DPP.RestrictedTypes[k][class] or {
+			groups = {},
+			iswhite = false
+		}
+		
+		local height = 50
+		
+		local frame = vgui.Create('DFrame')
+		frame:SetTitle('Modifying ' .. class)
+		SettingsClass.ApplyFrameStyle(frame)
+		
+		local groups = DPP.GetGroups()
+		local Panels = {}
+		
+		for k, v in pairs(groups) do
+			height = height + 20
+			local p = frame:Add('DCheckBoxLabel')
+			table.insert(Panels, p)
+			p:Dock(TOP)
+			p:SetText(v)
+			p:SetChecked(table.HasValue(t.groups, v))
+			p.Group = v
+		end
+		
+		height = height + 30
+		local iswhite = frame:Add('DCheckBoxLabel')
+		iswhite:Dock(TOP)
+		iswhite:SetText('Is White List')
+		iswhite:SetChecked(t.iswhite)
+		
+		local apply = frame:Add('DButton')
+		apply:Dock(BOTTOM)
+		apply:SetText('Apply')
+		SettingsClass.ApplyButtonStyle(apply)
+		
+		function apply.DoClick()
+			t.groups = {}
+			for k, v in pairs(Panels) do
+				if v:GetChecked() then
+					table.insert(t.groups, v.Group)
+				end
+			end
+			t.iswhite = iswhite:GetChecked()
+			
+			RunConsoleCommand('dpp_restrict' .. k, class, table.concat(t.groups, ','), t.iswhite and '1' or '0')
+			frame:Close()
+		end
+		
+		local discard = frame:Add('DButton')
+		discard:Dock(BOTTOM)
+		discard:SetText('Discard')
+		SettingsClass.ApplyButtonStyle(discard)
+		
+		function discard.DoClick()
+			frame:Close()
+		end
+		
+		frame:SetHeight(height)
+		frame:SetWidth(400)
+		frame:Center()
+		frame:MakePopup()
+	end
+	
+	local Add = {
+		MenuLabel = "Add to DPP " .. v .. ' restrict black/white list',
+		Order = 2520,
+		MenuIcon = 'icon16/cross.png',
+
+		Filter = function(self, ent, ply)
+			if not IsValid(ent) then return false end
+			if not ply:IsSuperAdmin() then return false end
+			if DPP['IsEvenRestricted' .. v](ent:GetModel()) then return false end
+			return true
+		end,
+		
+		Action = function(self, ent)
+			OpenModifyPanel(ent:GetModel(), true)
+		end,
+	}
+	
+	local Remove = {
+		MenuLabel = "Remove from DPP " .. v .. ' restrict black/white list',
+		Order = 2520,
+		MenuIcon = 'icon16/accept.png',
+
+		Filter = function(self, ent, ply)
+			if not IsValid(ent) then return false end
+			if not ply:IsSuperAdmin() then return false end
+			if not DPP['IsEvenRestricted' .. v](ent:GetModel()) then return false end
+			return true
+		end,
+		
+		Action = function(self, ent)
+			RunConsoleCommand('dpp_unrestrict' .. k, ent:GetModel())
+		end,
+	}
+
+	local Modify = {
+		MenuLabel = "Modify DPP " .. v .. ' restriction...',
+		Order = 2520,
+		MenuIcon = 'icon16/pencil.png',
+
+		Filter = function(self, ent, ply)
+			if not IsValid(ent) then return false end
+			if not ply:IsSuperAdmin() then return false end
+			if not DPP['IsEvenRestricted' .. v](ent:GetModel()) then return false end
+			return true
+		end,
+		
+		Action = function(self, ent)
+			OpenModifyPanel(ent:GetModel(), false)
 		end,
 	}
 

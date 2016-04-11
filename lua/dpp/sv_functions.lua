@@ -580,20 +580,6 @@ function DPP.CheckAntispam(ply, ent)
 	end
 end
 
-function DPP.IsModelBlocked(model, ply)
-	if not DPP.GetConVar('model_blacklist') then return end
-	local white = DPP.GetConVar('model_whitelist')
-	local status = DPP.BlockedModels[model] or false
-	
-	if white then status = not status end
-	
-	if status and IsValid(ply) then
-		DPP.Notify(ply, 'Model of that entity is in the black list!', 1)
-	end
-	
-	return status
-end
-
 function DPP.BroadcastLists()
 	local count = 0
 	

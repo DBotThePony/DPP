@@ -168,6 +168,7 @@ end
 
 for k, v in pairs(DPP.BlockTypes) do
 	DPP['AddBlockedEntity' .. v] = function(ent)
+		ent = string.lower(ent)
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 		
 		net.Start('DPP.ListsInsert')
@@ -181,6 +182,7 @@ for k, v in pairs(DPP.BlockTypes) do
 	end
 	
 	DPP['RemoveBlockedEntity' .. v] = function(ent)
+		ent = string.lower(ent)
 		if blockedEnts[ent] then return end
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 		
@@ -217,6 +219,7 @@ end
 
 for k, v in pairs(DPP.RestrictTypes) do
 	DPP['Restrict' .. v] = function(class, groups, isWhite)
+		class = string.lower(class)
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 		
 		net.Start('DPP.RListsInsert')
@@ -235,7 +238,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 	end
 	
 	DPP['UnRestrict' .. v] = function(class, groups, isWhite)
-		if blockedEnts[ent] then return end
+		class = string.lower(class)
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 		
 		net.Start('DPP.RListsInsert')
@@ -290,6 +293,7 @@ end
 
 function DPP.AddEntityLimit(class, group, val)
 	if not val then return end
+	class = string.lower(class)
 	val = math.max(val, 1)
 	DPP.EntsLimits[class] = DPP.EntsLimits[class] or {}
 	DPP.EntsLimits[class][group] = val
@@ -305,6 +309,8 @@ function DPP.AddEntityLimit(class, group, val)
 end
 
 function DPP.RemoveEntityLimit(class, group)
+	class = string.lower(class)
+	
 	if group then
 		DPP.EntsLimits[class] = DPP.EntsLimits[class] or {}
 		DPP.EntsLimits[class][group] = nil
@@ -325,6 +331,9 @@ end
 
 function DPP.AddSBoxLimit(class, group, val)
 	if not val then return end
+	
+	class = string.lower(class)
+	
 	DPP.SBoxLimits[class] = DPP.SBoxLimits[class] or {}
 	DPP.SBoxLimits[class][group] = val
 	
@@ -339,6 +348,8 @@ function DPP.AddSBoxLimit(class, group, val)
 end
 
 function DPP.RemoveSBoxLimit(class, group)
+	class = string.lower(class)
+	
 	if group then
 		DPP.SBoxLimits[class] = DPP.SBoxLimits[class] or {}
 		DPP.SBoxLimits[class][group] = nil

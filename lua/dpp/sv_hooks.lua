@@ -53,28 +53,56 @@ local function CheckEntityLimit(ply, class)
 end
 
 local function CheckBlocked(ply, ent)
-	local model = ent:GetModel()
-	if DPP.BlockedModels[model] then
+	local model = string.lower(ent:GetModel())
+	
+	if DPP.IsRestrictedModel(model, ply) then 
 		SafeRemoveEntity(ent)
+		
 		if ply then
-			DPP.Notify(ply, 'Model of that entity is in the blacklist!', 1)
+			DPP.Notify(ply, 'Model of that entity is restricted', 1)
+		end
+		
+		return false
+	end
+	
+	if DPP.GetConVar('enable_lists') then
+		if DPP.BlockedModels[model] then
+			SafeRemoveEntity(ent)
+			if ply then
+				DPP.Notify(ply, 'Model of that entity is in the blacklist!', 1)
+			end
 		end
 	end
 end
 
 local function CheckBlocked2(ply, model)
-	if DPP.BlockedModels[model] then
+	model = string.lower(model) --Fucking upper case
+	
+	if DPP.IsRestrictedModel(model, ply) then
 		if ply then
-			DPP.Notify(ply, 'Model of that entity is in the blacklist!', 1)
+			DPP.Notify(ply, 'Model of that entity is restricted', 1)
 		end
 		
 		return false
+	end
+	
+	if DPP.GetConVar('enable_lists') then
+		if DPP.BlockedModels[model] then
+			if ply then
+				DPP.Notify(ply, 'Model of that entity is in the blacklist!', 1)
+			end
+			
+			return false
+		end
 	end
 	
 	return true
 end
 
 function SpawnFunctions.PlayerSpawnedNPC(ply, ent, shouldHideLog)
+	if ent.DPP_SpawnTime  == CurTime() then return end
+	ent.DPP_SpawnTime = CurTime()
+	
 	if DPP.IsRestrictedNPC(ent:GetClass(), ply) then 
 		LogTryPost(ply, 'NPC', ent)
 		DPP.Notify(ply, 'That entity is restricted', 1)
@@ -179,6 +207,8 @@ local function cleanup_Add(ply, type, ent)
 end
 
 function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog)
+	if ent.DPP_SpawnTime  == CurTime() then return end
+	ent.DPP_SpawnTime = CurTime()
 	if CheckEntityLimit(ply, ent:GetClass()) then 
 		LogTryPost(ply, 'Prop', ent)
 		SafeRemoveEntity(ent)
@@ -206,6 +236,8 @@ function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog)
 end
 
 function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog)
+	if ent.DPP_SpawnTime  == CurTime() then return end
+	ent.DPP_SpawnTime = CurTime()
 	if CheckEntityLimit(ply, ent:GetClass()) then 
 		LogTryPost(ply, 'Ragdoll', ent)
 		SafeRemoveEntity(ent)
@@ -220,6 +252,8 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog)
 end
 
 function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog)
+	if ent.DPP_SpawnTime  == CurTime() then return end
+	ent.DPP_SpawnTime = CurTime()
 	if DPP.IsRestrictedSENT(ent:GetClass(), ply) then 
 		LogTryPost(ply, 'SENT', ent)
 		DPP.Notify(ply, 'That entity is restricted', 1)
@@ -241,6 +275,8 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog)
 end
 
 function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog)
+	if ent.DPP_SpawnTime  == CurTime() then return end
+	ent.DPP_SpawnTime = CurTime()
 	if DPP.IsRestrictedSWEP(ent:GetClass(), ply) then 
 		LogTryPost(ply, 'SWEP', ent)
 		DPP.Notify(ply, 'That SWEP is restricted', 1)
@@ -261,13 +297,15 @@ function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog)
 end
 
 function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog)
+	if ent.DPP_SpawnTime  == CurTime() then return end
+	ent.DPP_SpawnTime = CurTime()
 	if DPP.IsRestrictedVehicle(ent:GetClass(), ply) then 
 		LogTryPost(ply, 'Vehicle', ent)
 		DPP.Notify(ply, 'That vehicle is restricted', 1)
 		SafeRemoveEntity(ent)
 		return false
 	end
-	
+
 	if CheckEntityLimit(ply, ent:GetClass()) then 
 		LogTryPost(ply, 'Vehicle', ent)
 		SafeRemoveEntity(ent)
@@ -414,7 +452,7 @@ function SpawnFunctions.PlayerSpawnNPC(ply, ent)
 end
 
 for k, v in pairs(SpawnFunctions) do
-	hook.Add(k, 'DPP.SpawnHooks', v)
+	hook.Add(k, '!DPP.SpawnHooks', v, -1)
 end
 
 local function CanPickup(ply, ent)

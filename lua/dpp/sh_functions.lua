@@ -198,3 +198,23 @@ function DPP.GetPlayerList()
 	
 	return r
 end
+
+function DPP.IsModelBlocked(model, ply)
+	if not DPP.GetConVar('enable_blocked') then return false end
+	if not DPP.GetConVar('model_blacklist') then return false end
+	local white = DPP.GetConVar('model_whitelist')
+	local status = DPP.BlockedModels[model] ~= nil
+	
+	if white then status = not status end
+	
+	if status and IsValid(ply) then
+		DPP.Notify(ply, 'Model of that entity is in the black list!', 1)
+	end
+	
+	return status
+end
+
+function DPP.IsModelEvenBlocked(model)
+	return DPP.BlockedModels[model] ~= nil
+end
+

@@ -56,7 +56,19 @@ DPP.Settings = {
 	['enable'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Main power switch',
+		desc = 'Main power switch (Enable Protection)',
+	},
+	
+	['enable_lists'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Enable restrict lists',
+	},
+	
+	['enable_blocked'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Enable blacklists',
 	},
 	
 	['clear_disconnected'] = {
@@ -526,6 +538,7 @@ for k, v in pairs(DPP.BlockTypes) do
 	
 	DPP['IsEntityBlocked' .. v] = function(ent, ply)
 		if not DPP.GetConVar('enable') then return false end
+		if not DPP.GetConVar('enable_blocked') then return false end
 		if not DPP.GetConVar('blacklist_' .. k) then return false end
 		
 		if isentity(ent) then
@@ -589,7 +602,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 	})
 	
 	DPP['IsRestricted' .. v] = function(class, group)
-		if not DPP.GetConVar('enable') then return false end
+		if not DPP.GetConVar('enable_lists') then return false end
 		if not DPP.GetConVar('restrict_' .. k) then return false end
 		local isWhite = DPP.GetConVar('restrict_' .. k .. '_white')
 		local adminBypass = DPP.GetConVar('restrict_' .. k .. '_white_bypass')
@@ -728,6 +741,13 @@ function DPP.CanTouch(ply, ent, mode)
 	if not IsValid(ply) then return true end
 	if not IsValid(ent) then return false end
 	if ent:IsPlayer() then return end
+	
+	local model = ent:GetModel()
+	if model then
+		if DPP.IsModelBlocked(model) then
+			return false, 'Model is blacklisted'
+		end
+	end
 	
 	local owner = DPP.GetOwner(ent)
 	local realOwner = owner
