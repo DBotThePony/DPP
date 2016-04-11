@@ -518,9 +518,11 @@ local function Load()
 		
 		if data2 then
 			for a, b in pairs(data2) do
-				DPP.BlockedEntities[k][b.ENTITY] = true
+				DPP['AddBlockedEntity' .. v](b.ENTITY)
 			end
 		end
+		
+		sql.Query('DROP TABLE dpp_blockedentites')
 	end
 	
 	for k, v in pairs(DPP.RestrictTypes) do
