@@ -35,7 +35,7 @@ function DPP.CreateTables()
 	
 	for k, v in pairs(DPP.BlockTypes) do
 		sql.Query([[
-			CREATE TABLE IF NOT EXISTS dpp_blockedentites]] .. k .. [[ (
+			CREATE TABLE IF NOT EXISTS dpp_blockedentities]] .. k .. [[ (
 				ENTITY VARCHAR(64) NOT NULL,
 				PRIMARY KEY (ENTITY)
 			)
@@ -84,7 +84,7 @@ local blockedEnts = {
 	["bodyqueue"] = true,
 	["phys_bone_follower"] = true,
 	
-	--Some DPP additions. This list is trying to predict entites like above
+	--Some DPP additions. This list is trying to predict entities like above
 	["info_spawn"] = true,
 	["info_spawnpoint"] = true,
 	["info_light"] = true,
@@ -98,7 +98,7 @@ local blockedEnts = {
 	["gmod_anchor"] = true,
 }
 
-function DPP.FindInfoEntites() --Add custom entities
+function DPP.FindInfoEntities() --Add custom entities
 	local list = scripted_ents.GetList()
 	for k, v in pairs(list) do
 		if string.find(k, 'info_') then
@@ -177,8 +177,8 @@ for k, v in pairs(DPP.BlockTypes) do
 		net.WriteBool(true)
 		net.Broadcast()
 		
-		DPP.BlockedEntites[k][ent] = true
-		sql.Query('REPLACE INTO dpp_blockedentites' .. k .. ' (ENTITY) VALUES ("' .. ent .. '")')
+		DPP.BlockedEntities[k][ent] = true
+		sql.Query('REPLACE INTO dpp_blockedentities' .. k .. ' (ENTITY) VALUES ("' .. ent .. '")')
 	end
 	
 	DPP['RemoveBlockedEntity' .. v] = function(ent)
@@ -192,8 +192,8 @@ for k, v in pairs(DPP.BlockTypes) do
 		net.WriteBool(false)
 		net.Broadcast()
 		
-		DPP.BlockedEntites[k][ent] = nil
-		sql.Query('DELETE FROM dpp_blockedentites' .. k .. ' WHERE ENTITY = "' .. ent .. '"')
+		DPP.BlockedEntities[k][ent] = nil
+		sql.Query('DELETE FROM dpp_blockedentities' .. k .. ' WHERE ENTITY = "' .. ent .. '"')
 	end
 	
 	concommand.Add('dpp_addblockedentity' .. k, function(ply, cmd, args)
@@ -507,11 +507,19 @@ local function Load()
 	DPP.LoadCVars()
 	
 	for k, v in pairs(DPP.BlockTypes) do
-		DPP.BlockedEntites[k] = {}
-		local data = sql.Query('SELECT * FROM dpp_blockedentites' .. k)
-		if not data then continue end
-		for a, b in pairs(data) do
-			DPP.BlockedEntites[k][b.ENTITY] = true
+		DPP.BlockedEntities[k] = {}
+		local data = sql.Query('SELECT * FROM dpp_blockedentities' .. k)
+		local data2 = sql.Query('SELECT * FROM dpp_blockedentites' .. k)
+		if data then
+			for a, b in pairs(data) do
+				DPP.BlockedEntities[k][b.ENTITY] = true
+			end
+		end
+		
+		if data2 then
+			for a, b in pairs(data2) do
+				DPP.BlockedEntities[k][b.ENTITY] = true
+			end
 		end
 	end
 	
@@ -530,7 +538,7 @@ local function Load()
 	
 	DPP.BroadcastLists()
 	
-	DPP.FindInfoEntites()
+	DPP.FindInfoEntities()
 	DPP.InitializeDefaultBlock()
 end
 

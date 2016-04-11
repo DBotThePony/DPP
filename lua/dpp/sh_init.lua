@@ -120,7 +120,7 @@ DPP.Settings = {
 	['can_touch_world'] = {
 		type = 'bool',
 		value = '0',
-		desc = 'Can player touch world entites',
+		desc = 'Can player touch world entities',
 	},
 	
 	['log_spawns'] = {
@@ -138,7 +138,7 @@ DPP.Settings = {
 	['can_admin_physblocked'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Can admins physgun blocked entites',
+		desc = 'Can admins physgun blocked entities',
 	},
 	
 	['admin_can_everything'] = {
@@ -248,7 +248,7 @@ DPP.Settings = {
 	['experemental_spawn_checks'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Experemental spawn checks (DISABLE THIS IF IF YOU THINK THIS IS CAUSING PROBLEMS; Replaces GetPlayer and SetPlayer functions for entites)',
+		desc = 'Experemental spawn checks (DISABLE THIS IF IF YOU THINK THIS IS CAUSING PROBLEMS; Replaces GetPlayer and SetPlayer functions for entities)',
 	},
 	
 	['allow_damage_vehicles'] = {
@@ -285,7 +285,7 @@ DPP.Settings = {
 	['check_sizes'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Check sizes of entites',
+		desc = 'Check sizes of entities',
 	},
 	
 	['max_size'] = {
@@ -329,7 +329,7 @@ DPP.Settings = {
 	['antispam_max'] = {
 		type = 'int',
 		value = '30',
-		desc = 'Max amount of counted entites (max cooldown in spawned count)',
+		desc = 'Max amount of counted entities (max cooldown in spawned count)',
 	},
 	
 	['check_stuck'] = {
@@ -364,7 +364,7 @@ DPP.Settings = {
 	},
 }
 
-DPP.BlockedEntites = DPP.BlockedEntites or {}
+DPP.BlockedEntities = DPP.BlockedEntities or {}
 DPP.EntsLimits = DPP.EntsLimits or {}
 DPP.SBoxLimits = DPP.SBoxLimits or {}
 DPP.RestrictedTypes = DPP.RestrictedTypes or {}
@@ -510,7 +510,7 @@ function DPP.AddConVar(k, tab)
 end
 
 for k, v in pairs(DPP.BlockTypes) do
-	DPP.BlockedEntites[k] = DPP.BlockedEntites[k] or {}
+	DPP.BlockedEntities[k] = DPP.BlockedEntities[k] or {}
 	
 	DPP.AddConVar('blacklist_' .. k .. '_white', {
 		desc = v .. ' blacklist is a white list.',
@@ -546,12 +546,12 @@ for k, v in pairs(DPP.BlockTypes) do
 		end
 		
 		if not ply then
-			local status = DPP.BlockedEntites[k][ent]
+			local status = DPP.BlockedEntities[k][ent]
 			if not status then return false else return true end
 		else
 			local isAdmin = ply:IsAdmin()
 			local c, cA = DPP.GetConVar('blacklist_' .. k .. '_player_can'), DPP.GetConVar('blacklist_' .. k .. '_admin_can')
-			local status = DPP.BlockedEntites[k][ent] or false
+			local status = DPP.BlockedEntities[k][ent] or false
 			if not status then return false end
 			
 			if c then 
@@ -571,7 +571,7 @@ for k, v in pairs(DPP.BlockTypes) do
 			ent = ent:GetClass()
 		end
 		
-		return DPP.BlockedEntites[k][ent] ~= nil
+		return DPP.BlockedEntities[k][ent] ~= nil
 	end
 end
 

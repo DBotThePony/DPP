@@ -608,9 +608,9 @@ end)
 
 net.Receive('DPP.Lists', function()
 	local str = net.ReadString()
-	DPP.BlockedEntites[str] = net.ReadTable()
+	DPP.BlockedEntities[str] = net.ReadTable()
 	
-	hook.Run('DPP.BlockedEntitesReloaded', str, DPP.BlockedEntites[str])
+	hook.Run('DPP.BlockedEntitiesReloaded', str, DPP.BlockedEntities[str])
 	DPP.Message('Blacklist "' .. str .. '" received from server, reloading')
 end)
 
@@ -664,12 +664,12 @@ net.Receive('DPP.ListsInsert', function()
 	local s1, s2, b = net.ReadString(), net.ReadString(), net.ReadBool()
 	
 	if b then
-		DPP.BlockedEntites[s1][s2] = b
+		DPP.BlockedEntities[s1][s2] = b
 	else
-		DPP.BlockedEntites[s1][s2] = nil
+		DPP.BlockedEntities[s1][s2] = nil
 	end
 	
-	hook.Run('DPP.BlockedEntitesChanged', s1, s2, b)
+	hook.Run('DPP.BlockedEntitiesChanged', s1, s2, b)
 end)
 
 net.Receive('DPP.RListsInsert', function()

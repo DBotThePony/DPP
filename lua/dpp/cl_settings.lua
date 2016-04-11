@@ -512,7 +512,7 @@ local function BuildAntispamPanel(Panel)
 	Panel:Clear()
 	SettingsClass.SetupBackColor(Panel)
 	
-	local checkbox = Panel:CheckBox('Check sizes of entites')
+	local checkbox = Panel:CheckBox('Check sizes of entities')
 	checkbox.Button.val = 'check_sizes'
 	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
 	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
@@ -554,10 +554,10 @@ local function BuildAntispamPanel(Panel)
 		end)
 	end
 	
-	local Slider = Panel:NumSlider('Antispam remove multiplier Lower \nmeans removing entites earlier', nil, 4, 20, 1)
+	local Slider = Panel:NumSlider('Antispam remove multiplier Lower \nmeans removing entities earlier', nil, 4, 20, 1)
 	SettingsClass.ApplySliderStyle(Slider)
 	Slider:SetValue(DPP.GetConVar('antispam_remove'))
-	Slider:SetTooltip('Antispam remove multiplier Lower \nmeans removing entites earlier')
+	Slider:SetTooltip('Antispam remove multiplier Lower \nmeans removing entities earlier')
 	Slider.OnValueChanged = function()
 		local v = math.floor(tonumber(Slider:GetValue()))
 		timer.Create('DPP.AntispamRemove', 1, 1, function()
@@ -565,9 +565,9 @@ local function BuildAntispamPanel(Panel)
 		end)
 	end
 	
-	local Slider = Panel:NumSlider('Antispam ghost multiplier Lower \nmeans ghosting entites earlier', nil, 1, 10, 1)
+	local Slider = Panel:NumSlider('Antispam ghost multiplier Lower \nmeans ghosting entities earlier', nil, 1, 10, 1)
 	SettingsClass.ApplySliderStyle(Slider)
-	Slider:SetTooltip('Antispam ghost multiplier Lower \nmeans ghosting entites earlier')
+	Slider:SetTooltip('Antispam ghost multiplier Lower \nmeans ghosting entities earlier')
 	Slider:SetValue(DPP.GetConVar('antispam_ghost'))
 	Slider.OnValueChanged = function()
 		local v = math.floor(tonumber(Slider:GetValue()))
@@ -576,10 +576,10 @@ local function BuildAntispamPanel(Panel)
 		end)
 	end
 	
-	local Slider = Panel:NumSlider('Antispam max cooldown multiplier Lower \nmeans removing entites earlier', nil, 1, 10, 1)
+	local Slider = Panel:NumSlider('Antispam max cooldown multiplier Lower \nmeans removing entities earlier', nil, 1, 10, 1)
 	SettingsClass.ApplySliderStyle(Slider)
 	Slider:SetValue(DPP.GetConVar('antispam_max'))
-	Slider:SetTooltip('Antispam max cooldown multiplier Lower \nmeans removing entites earlier')
+	Slider:SetTooltip('Antispam max cooldown multiplier Lower \nmeans removing entities earlier')
 	Slider.OnValueChanged = function()
 		local v = math.floor(tonumber(Slider:GetValue()))
 		timer.Create('DPP.AntispamGhost', 1, 1, function()
@@ -614,9 +614,9 @@ local function BuildPlayerList(Panel)
 		local lab = Label(v.Name)
 		Panel:AddItem(lab)
 		lab:SetTextColor(SettingsClass.TextColor)
-		SettingsClass.ApplyButtonStyle(Panel:Button('Delete ' .. v.Name .. ' entites', 'dpp_clearbyuid', v.UID))
-		SettingsClass.ApplyButtonStyle(Panel:Button('Freeze ' .. v.Name .. ' entites', 'dpp_freezebyuid', v.UID))
-		SettingsClass.ApplyButtonStyle(Panel:Button('UnFreeze ' .. v.Name .. ' entites', 'dpp_unfreezebyuid', v.UID))
+		SettingsClass.ApplyButtonStyle(Panel:Button('Delete ' .. v.Name .. ' entities', 'dpp_clearbyuid', v.UID))
+		SettingsClass.ApplyButtonStyle(Panel:Button('Freeze ' .. v.Name .. ' entities', 'dpp_freezebyuid', v.UID))
+		SettingsClass.ApplyButtonStyle(Panel:Button('UnFreeze ' .. v.Name .. ' entities', 'dpp_unfreezebyuid', v.UID))
 	end
 end
 
@@ -1038,7 +1038,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		list:SetHeight(600)
 		list:AddColumn('Entity')
 		
-		local L = DPP.BlockedEntites[k]
+		local L = DPP.BlockedEntities[k]
 		local New = {}
 		for k, v in pairs(L) do
 			table.insert(New, k)
@@ -1438,7 +1438,7 @@ local function PopulateToolMenu()
 	end
 end
 
-hook.Add('DPP.BlockedEntitesChanged', 'DPP.Menu', function(s1, s2, b)
+hook.Add('DPP.BlockedEntitiesChanged', 'DPP.Menu', function(s1, s2, b)
 	if PanelsFunctions[s1] then
 		PanelsFunctions[s1](DPP.SettingsClass.ValidPanels[s1])
 	end
@@ -1464,7 +1464,7 @@ hook.Add('DPP.FriendsChanged', 'DPP.Menu', function()
 	BuildFriendsPanel(DPP.SettingsClass.FriendPanel)
 end)
 
-hook.Add('DPP.BlockedEntitesReloaded', 'DPP.Menu', function(s1)
+hook.Add('DPP.BlockedEntitiesReloaded', 'DPP.Menu', function(s1)
 	if PanelsFunctions[s1] then
 		PanelsFunctions[s1](DPP.SettingsClass.ValidPanels[s1])
 	end

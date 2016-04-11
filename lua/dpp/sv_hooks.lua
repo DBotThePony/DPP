@@ -43,7 +43,7 @@ local function CheckEntityLimit(ply, class)
 	local limit = DPP.GetEntityLimit(class, ply:GetUserGroup())
 	if limit <= 0 then return false end
 
-	local count = #DPP.FindEntitesByClass(ply,	class)
+	local count = #DPP.FindEntitiesByClass(ply,	class)
 	local status = count + 1 > limit
 	if status then
 		DPP.Notify(ply, 'You hit ' .. class .. ' limit!', 1)
@@ -209,6 +209,7 @@ end
 function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog)
 	if ent.DPP_SpawnTime  == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
+	
 	if CheckEntityLimit(ply, ent:GetClass()) then 
 		LogTryPost(ply, 'Prop', ent)
 		SafeRemoveEntity(ent)
@@ -238,6 +239,7 @@ end
 function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog)
 	if ent.DPP_SpawnTime  == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
+	
 	if CheckEntityLimit(ply, ent:GetClass()) then 
 		LogTryPost(ply, 'Ragdoll', ent)
 		SafeRemoveEntity(ent)
@@ -254,6 +256,7 @@ end
 function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog)
 	if ent.DPP_SpawnTime  == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
+	
 	if DPP.IsRestrictedSENT(ent:GetClass(), ply) then 
 		LogTryPost(ply, 'SENT', ent)
 		DPP.Notify(ply, 'That entity is restricted', 1)
@@ -277,6 +280,7 @@ end
 function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog)
 	if ent.DPP_SpawnTime  == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
+	
 	if DPP.IsRestrictedSWEP(ent:GetClass(), ply) then 
 		LogTryPost(ply, 'SWEP', ent)
 		DPP.Notify(ply, 'That SWEP is restricted', 1)
@@ -299,6 +303,7 @@ end
 function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog)
 	if ent.DPP_SpawnTime  == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
+	
 	if DPP.IsRestrictedVehicle(ent:GetClass(), ply) then 
 		LogTryPost(ply, 'Vehicle', ent)
 		DPP.Notify(ply, 'That vehicle is restricted', 1)
