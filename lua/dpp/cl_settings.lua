@@ -680,6 +680,18 @@ local function BuildModelsList(Panel)
 		RunConsoleCommand('dpp_removeblockedmodel', ent:GetModel())
 	end
 	SettingsClass.ApplyButtonStyle(Apply)
+	
+	local idx = 'model_blacklist'
+	local val = tobool(DPP.GetConVar(idx))
+	local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
+	checkbox:SetChecked(val)
+	checkbox.Button.LastVal = val
+	checkbox.Button.val = idx
+	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
+	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
+	checkbox:SetTooltip(DPP.Settings[idx].desc)
+	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
+	SettingsClass.MakeCheckboxBetter(checkbox)
 end
 
 local function OpenLimitEditPanel(class)
