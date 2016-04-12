@@ -105,7 +105,7 @@ local function PhysgunDrop(ply, ent)
 			phys:SetVelocity(EmptyVector)
 		else
 			if ent._DPP_PhysGunDropVelocity then
-				phys:SetVelocity(ent.DPP_PhysGunDropVelocity)
+				phys:SetVelocity(ent._DPP_PhysGunDropVelocity)
 				ent._DPP_PhysGunDropVelocity = nil
 			end
 		end
@@ -115,8 +115,7 @@ end
 local function Think()
 	if not DPP.GetConVar('apropkill_enable') then return end
 	
-	local CLAMP_VALUE = DPP.GetConVar('apropkill_clampspeed_val') * FrameTime() * 22 --Server where it was tested has 22 tickrate
-	local VEC_CLAMP_VALUE = CLAMP_VALUE * 2
+	local CLAMP_VALUE = DPP.GetConVar('apropkill_clampspeed_val') * FrameTime() * 138
 	
 	for ent, collision in pairs(HoldingEntities) do
 		if not IsValid(ent) then
@@ -134,27 +133,16 @@ local function Think()
 			local phys = ent:GetPhysicsObject()
 			local spos = ent:GetPos()
 			
+			ent._DPP_PhysGunLastPos = ent._DPP_PhysGunLastPos or spos
+			
 			local Dist = spos:Distance(ent._DPP_PhysGunLastPos)
 			
 			if IsValid(phys) then
-				local vel = phys:GetVelocity()
-				ent._DPP_PhysGunDropVelocity = Vector(vel.x, vel.y, vel.z)
-				vel.x = math.Clamp(vel.x, -CLAMP_VALUE, CLAMP_VALUE)
-				vel.y = math.Clamp(vel.y, -CLAMP_VALUE, CLAMP_VALUE)
-				vel.z = math.Clamp(vel.z, -CLAMP_VALUE, CLAMP_VALUE)
-				phys:SetVelocity(vel)
-				phys:SetVelocityInstantaneous(vel)
-				ent:SetVelocity(vel)
+				ent._DPP_PhysGunDropVelocity = phys:GetVelocity()
 			end
 			
-			ent._DPP_PhysGunLastPos = ent._DPP_PhysGunLastPos or spos
-			
-			if Dist > VEC_CLAMP_VALUE then
-				local mult = VEC_CLAMP_VALUE/Dist
-				
-				local Change = LerpVector(mult, ent._DPP_PhysGunLastPos, spos)
-				
-				ent:SetPos(Change)
+			if Dist > CLAMP_VALUE then
+				ent:SetPos(LerpVector(CLAMP_VALUE/Dist, ent._DPP_PhysGunLastPos, spos))
 			end
 			
 			ent._DPP_PhysGunLastPos = ent:GetPos()
