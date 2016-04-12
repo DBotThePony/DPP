@@ -88,28 +88,33 @@ local HoldingEntities = {}
 
 local function PhysgunPickup(ply, ent)
 	if not DPP.GetConVar('apropkill_enable') then return end
-	if not DPP.GetConVar('apropkill_nopush') then return end
 	if ent:IsPlayer() or ent:IsNPC() then return end
 	
-	if HoldingEntities[ent] then return end --Already holding
-	HoldingEntities[ent] = ent:GetCollisionGroup()
-	ent:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
+	HoldingEntities[ent] = HoldingEntities[ent] or ent:GetCollisionGroup()
+	
+	if DPP.GetConVar('apropkill_nopush') then
+		ent:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
+	end
 end
 
 local function PhysgunDrop(ply, ent)
 	if not DPP.GetConVar('apropkill_enable') then return end
-	if not DPP.GetConVar('apropkill_nopush') then return end
-	
 	if not IsValid(ent) then return end --Dropping deleted entity
 	if ent:IsPlayer() or ent:IsNPC() then return end
-	if not HoldingEntities[ent] then return end
-	ent:SetCollisionGroup(HoldingEntities[ent])
+	
+	if DPP.GetConVar('apropkill_nopush') then
+		if HoldingEntities[ent] then ent:SetCollisionGroup(HoldingEntities[ent]) end
+	end
+	
 	HoldingEntities[ent] = nil
+	ent._DPP_PhysGunLastPos = nil
 end
 
 local function Think()
 	if not DPP.GetConVar('apropkill_enable') then return end
-	if not DPP.GetConVar('apropkill_nopush') then return end
+	
+	local CLAMP_VALUE = DPP.GetConVar('apropkill_clampspeed_val')
+	local VEC_CLAMP_VALUE = CLAMP_VALUE * 2
 	
 	for ent, collision in pairs(HoldingEntities) do
 		if not IsValid(ent) then
@@ -117,8 +122,37 @@ local function Think()
 			continue
 		end
 		
-		if ent:GetCollisionGroup() ~= COLLISION_GROUP_PASSABLE_DOOR then
-			ent:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
+		if DPP.GetConVar('apropkill_nopush') then 
+			if ent:GetCollisionGroup() ~= COLLISION_GROUP_PASSABLE_DOOR then
+				ent:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
+			end
+		end
+		
+		if DPP.GetConVar('apropkill_clampspeed') then
+			local phys = ent:GetPhysicsObject()
+			local spos = ent:GetPos()
+			
+			if IsValid(phys) then
+				local vel = phys:GetVelocity()
+				vel.x = math.Clamp(vel.x, -CLAMP_VALUE, CLAMP_VALUE)
+				vel.y = math.Clamp(vel.y, -CLAMP_VALUE, CLAMP_VALUE)
+				vel.z = math.Clamp(vel.z, -CLAMP_VALUE, CLAMP_VALUE)
+				phys:SetVelocity(vel)
+				phys:SetVelocityInstantaneous(vel)
+				ent:SetVelocity(vel)
+			end
+			
+			ent._DPP_PhysGunLastPos = ent._DPP_PhysGunLastPos or spos
+			
+			if spos:Distance(ent._DPP_PhysGunLastPos) > VEC_CLAMP_VALUE then
+				ent:SetPos(Vector(
+					ent._DPP_PhysGunLastPos.x - math.Clamp(ent._DPP_PhysGunLastPos.x - spos.x, -VEC_CLAMP_VALUE, VEC_CLAMP_VALUE),
+					ent._DPP_PhysGunLastPos.y - math.Clamp(ent._DPP_PhysGunLastPos.y - spos.y, -VEC_CLAMP_VALUE, VEC_CLAMP_VALUE),
+					ent._DPP_PhysGunLastPos.z - math.Clamp(ent._DPP_PhysGunLastPos.z - spos.z, -VEC_CLAMP_VALUE, VEC_CLAMP_VALUE)
+				))
+			end
+			
+			ent._DPP_PhysGunLastPos = spos
 		end
 	end
 end

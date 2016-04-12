@@ -399,6 +399,7 @@ local APropKillVars = {
 	'apropkill_damage',
 	'prevent_prop_throw',
 	'prevent_player_stuck',
+	'apropkill_clampspeed',
 }
 
 local PlacedCVars = {}

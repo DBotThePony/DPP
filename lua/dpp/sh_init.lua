@@ -83,6 +83,18 @@ DPP.Settings = {
 		desc = 'Prevent players from killing others using props',
 	},
 	
+	['apropkill_clampspeed'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Clamp the maximal speed of prop move using physgun',
+	},
+	
+	['apropkill_clampspeed_val'] = {
+		type = 'int',
+		value = '40',
+		desc = 'Clamp value. Change with caution!',
+	},
+	
 	['apropkill_damage_vehicle'] = {
 		type = 'bool',
 		value = '1',
