@@ -17,17 +17,6 @@ function DPP.CheckDroppedEntity(ply, ent)
 	end
 end
 
-local function PhysgunDrop2(ply, ent)
-	if not DPP.GetConVar('apropkill_enable') then return end
-	if ent:IsPlayer() or ent:IsNPC() then return end
-	if not DPP.GetConVar('prevent_prop_throw') then return end
-	
-	local phys = ent:GetPhysicsObject()
-	if IsValid(phys) then
-		phys:SetVelocity(Vector(0, 0, 0))
-	end
-end
-
 local function EntityTakeDamage(ent, dmg)
 	if not DPP.GetConVar('apropkill_enable') then return end
 	if not DPP.GetConVar('apropkill_damage') then return end
@@ -108,6 +97,13 @@ local function PhysgunDrop(ply, ent)
 	
 	HoldingEntities[ent] = nil
 	ent._DPP_PhysGunLastPos = nil
+	
+	if DPP.GetConVar('prevent_prop_throw') then
+		local phys = ent:GetPhysicsObject()
+		if IsValid(phys) then
+			phys:SetVelocity(EmptyVector)
+		end
+	end
 end
 
 local function Think()
@@ -164,5 +160,4 @@ hook.Add('PhysgunPickup', 'DPP.APropKill', PhysgunPickup)
 hook.Add('PlayerSpawnedVehicle', 'DPP.APropKill', PlayerSpawnedVehicle)
 hook.Add('PlayerEnteredVehicle', 'DPP.APropKill', PlayerEnteredVehicle)
 
-hook.Add('PhysgunDrop', 'DPP.PreventPropThrow', PhysgunDrop2)
 hook.Add('PhysgunDrop', 'DPP.PreventPlayerStuck', DPP.CheckDroppedEntity)
