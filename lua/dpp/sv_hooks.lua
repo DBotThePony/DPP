@@ -126,7 +126,7 @@ function SpawnFunctions.PlayerSpawnedNPC(ply, ent, shouldHideLog)
 	Spawned(ply, ent)
 	if not shouldHideLog then LogSpawn(ply, ent, 'NPC') end
 	
-	DPP.CheckAntispam(ply, ent)
+	DPP.CheckAntispamDelay(ply, ent)
 	DPP.CheckDroppedEntity(ply, ent)
 	CheckBlocked(ply, ent)
 end
@@ -135,7 +135,7 @@ function SpawnFunctions.PlayerSpawnedEffect(ply, model, ent, shouldHideLog)
 	Spawned(ply, ent)
 	if not shouldHideLog then LogSpawn(ply, ent, 'Effect') end
 	
-	DPP.CheckAntispam(ply, ent)
+	DPP.CheckAntispamDelay(ply, ent)
 	CheckBlocked(ply, ent)
 end
 
@@ -264,7 +264,7 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog)
 	Spawned(ply, ent)
 	DPP.CheckSizes(ent, ply)
 	if not shouldHideLog then LogSpawn(ply, ent, 'Ragdoll') end
-	DPP.CheckAntispam(ply, ent)
+	DPP.CheckAntispamDelay(ply, ent)
 	CheckBlocked(ply, ent)
 end
 
@@ -295,7 +295,7 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog)
 	Spawned(ply, ent)
 	DPP.CheckSizes(ent, ply)
 	if not shouldHideLog then LogSpawn(ply, ent, 'SENT') end
-	DPP.CheckAntispam(ply, ent)
+	DPP.CheckAntispamDelay(ply, ent)
 	CheckBlocked(ply, ent)
 end
 
@@ -325,7 +325,7 @@ function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog)
 	
 	Spawned(ply, ent)
 	if not shouldHideLog then LogSpawn(ply, ent, 'SWEP') end
-	DPP.CheckAntispam(ply, ent)
+	DPP.CheckAntispamDelay(ply, ent)
 	CheckBlocked(ply, ent)
 end
 
@@ -355,7 +355,7 @@ function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog)
 	
 	Spawned(ply, ent)
 	if not shouldHideLog then LogSpawn(ply, ent, 'Vehicle') end
-	DPP.CheckAntispam(ply, ent)
+	DPP.CheckAntispamDelay(ply, ent)
 	CheckBlocked(ply, ent)
 end
 
@@ -801,9 +801,15 @@ hook.Add('EntityTakeDamage', 'DPP.Hooks', DPP.HandleTakeDamage, -2)
 function DPP.CheckDroppedStuck(ply, ent)
 	if not DPP.GetConVar('check_stuck') then return end
 	
+	--I think if entity have MOVETYPE_NONE it can not create lags because moving is not calculated
+	if ent:GetSolid() == SOLID_NONE then return end
+	if ent:GetMoveType() == MOVETYPE_NONE then return end
+	
 	for k, v in pairs(ents.FindInSphere(ent:GetPos(), 32)) do
 		if v:IsPlayer() then continue end
 		if v:IsWeapon() and IsValid(v:GetOwner()) then continue end
+		if v:GetSolid() == SOLID_NONE then return end
+		if v:GetMoveType() == MOVETYPE_NONE then return end
 		if DPP.GetGhosted(v) then continue end
 		if DPP.CheckStuck(ply, ent, v) then break end
 	end

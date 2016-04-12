@@ -117,6 +117,11 @@ function DPP.CheckStuck(ply, ent1, ent2)
 	if ply:InVehicle() then return end
 	if ent1 == ent2 then return end
 	
+	if ent1:GetSolid() == SOLID_NONE then return end
+	if ent1:GetMoveType() == MOVETYPE_NONE then return end
+	if ent2:GetSolid() == SOLID_NONE then return end
+	if ent2:GetMoveType() == MOVETYPE_NONE then return end
+	
 	local parent1, parent2 = ent1:GetParent(), ent2:GetParent()
 	
 	if parent1 == ent2 or parent2 == ent1 then return end
@@ -567,8 +572,17 @@ function DPP.CheckAntispam_NoEnt(ply, updatecount, updatetime)
 	return DPP.ANTISPAM_VALID
 end
 
+function DPP.CheckAntispamDelay(ply, ent)
+	timer.Create('DPP.CheckAntispamDelay[' .. ply:EntIndex() .. '][' .. ent:EntIndex() .. ']', 0, 1, function()
+		if IsValid(ply) and IsValid(ent) then DPP.CheckAntispam(ply, ent) end
+	end)
+end
+
 function DPP.CheckAntispam(ply, ent)
 	if not DPP.GetConVar('antispam') then return end
+	
+	if ent:GetSolid() == SOLID_NONE then return end
+	if ent:GetMoveType() == MOVETYPE_NONE then return end
 	
 	local reply = DPP.CheckAntispam_NoEnt(ply, true, true)
 	
