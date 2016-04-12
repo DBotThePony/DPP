@@ -98,10 +98,16 @@ local function PhysgunDrop(ply, ent)
 	HoldingEntities[ent] = nil
 	ent._DPP_PhysGunLastPos = nil
 	
-	if DPP.GetConVar('prevent_prop_throw') then
-		local phys = ent:GetPhysicsObject()
-		if IsValid(phys) then
+	local phys = ent:GetPhysicsObject()
+	
+	if IsValid(phys) then
+		if DPP.GetConVar('prevent_prop_throw') then
 			phys:SetVelocity(EmptyVector)
+		else
+			if ent._DPP.PhysGunDropVelocity then
+				phys:SetVelocity(ent._DPP.PhysGunDropVelocity)
+				ent._DPP.PhysGunDropVelocity = nil
+			end
 		end
 	end
 end
@@ -129,13 +135,7 @@ local function Think()
 			local spos = ent:GetPos()
 			
 			if IsValid(phys) then
-				local vel = phys:GetVelocity()
-				vel.x = math.Clamp(vel.x, -CLAMP_VALUE, CLAMP_VALUE)
-				vel.y = math.Clamp(vel.y, -CLAMP_VALUE, CLAMP_VALUE)
-				vel.z = math.Clamp(vel.z, -CLAMP_VALUE, CLAMP_VALUE)
-				phys:SetVelocity(vel)
-				phys:SetVelocityInstantaneous(vel)
-				ent:SetVelocity(vel)
+				ent._DPP.PhysGunDropVelocity = ent:GetVelocity()
 			end
 			
 			ent._DPP_PhysGunLastPos = ent._DPP_PhysGunLastPos or spos
