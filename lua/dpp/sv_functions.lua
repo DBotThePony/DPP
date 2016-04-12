@@ -126,6 +126,13 @@ function DPP.CheckStuck(ply, ent1, ent2)
 	
 	if parent1 == ent2 or parent2 == ent1 then return end
 	
+	if DPP.GetConVar('stuck_ignore_frozen') then
+		local phys1, phys2 = ent1:GetPhysicsObject(), ent2:GetPhysicsObject()
+		
+		if IsValid(phys1) and not phys1:IsMotionEnabled() then return end
+		if IsValid(phys2) and not phys2:IsMotionEnabled() then return end
+	end
+	
 	local pos1, pos2 = ent1:GetPos(), ent2:GetPos()
 	
 	local min1, max1 = ent1:WorldSpaceAABB()

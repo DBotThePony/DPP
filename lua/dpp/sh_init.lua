@@ -380,6 +380,12 @@ DPP.Settings = {
 		desc = 'Prevent spawning prop in prop',
 	},
 	
+	['stuck_ignore_frozen'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Ignore frozen entities when doing "stuck check"',
+	},
+	
 	--Block switches
 	['model_blacklist'] = {
 		type = 'bool',

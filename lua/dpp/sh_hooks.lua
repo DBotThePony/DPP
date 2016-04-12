@@ -1,4 +1,7 @@
 
+local GRAY = Color(200, 200, 200)
+local RED = Color(255, 0, 0)
+
 function DPP.CanDamage(ply, ent, ignoreEnt)
 	if not DPP.GetConVar('enable_damage') then return true end
 	if DPP.IsEntityBlockedDamage(ent:GetClass()) then return false, 'Damage blocked' end
@@ -198,9 +201,6 @@ function DPP.CanTool(ply, ent, mode)
 	
 	return DPP.CanTouch(ply, ent, 'toolgun')
 end
-
-local GRAY = Color(200, 200, 200)
-local RED = Color(255, 0, 0)
 
 function DPP.CanPlayerEnterVehicle(ply, ent)
 	if not DPP.GetConVar('enable_veh') then return end

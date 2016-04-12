@@ -548,6 +548,18 @@ local function BuildAntispamPanel(Panel)
 	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 	SettingsClass.MakeCheckboxBetter(checkbox)
 	
+	local idx = 'stuck_ignore_frozen'
+	local val = tobool(DPP.GetConVar(idx))
+	local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
+	checkbox:SetChecked(val)
+	checkbox.Button.LastVal = val
+	checkbox.Button.val = idx
+	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
+	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
+	checkbox:SetTooltip(DPP.Settings[idx].desc)
+	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
+	SettingsClass.MakeCheckboxBetter(checkbox)
+	
 	local checkbox = Panel:CheckBox('Prevent prop from stucking in each other')
 	checkbox.Button.val = 'check_stuck'
 	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
