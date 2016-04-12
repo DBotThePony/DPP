@@ -55,30 +55,38 @@ end
 
 function DPP.IsPlayerInEntity(ply, ent) --From DLib
 	local pos = ply:GetPos()
+	local epos = ply:EyePos()
+	
+	pos.z = pos.z - 10
+	epos.z = epos.z + 10
+	
+	local Mins, Maxs = ply:WorldSpaceAABB()
+	Mins = Mins - pos
+	Maxs = Maxs - pos
 	
 	local hit = false
 	local function fn(E)
-		if E == ent then hit = true end
-		if E == ent then return false else return true end
+		if E == ent then return true end
+		return false
 	end
 
 	local tr = util.TraceHull{
-		start = pos + Vector(0,0,3),
-		endpos = pos + Vector(0,0,80),
-		mins = Vector(-15, -15, -15),
-		maxs = Vector(15, 15, 15),
+		start = pos,
+		endpos = epos,
+		mins = Mins,
+		maxs = Maxs,
 		ignoreworld = true,
 		filter = fn,
 	}
 	
 	local tr2 = util.TraceLine{
 		start = pos,
-		endpos = pos,
+		endpos = epos,
 		ignoreworld = true,
 		filter = fn,
 	}
 	
-	return hit
+	return tr.Entity == ent or tr2.Entity == ent
 end
 
 local default = {'user', 'admin', 'superadmin'}
