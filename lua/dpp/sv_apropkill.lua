@@ -115,7 +115,7 @@ end
 local function Think()
 	if not DPP.GetConVar('apropkill_enable') then return end
 	
-	local CLAMP_VALUE = DPP.GetConVar('apropkill_clampspeed_val') * FrameTime() * 138
+	local CLAMP_VALUE = DPP.GetConVar('apropkill_clampspeed_val') * FrameTime() * 33
 	
 	for ent, collision in pairs(HoldingEntities) do
 		if not IsValid(ent) then
