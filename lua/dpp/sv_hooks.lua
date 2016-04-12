@@ -803,7 +803,7 @@ function DPP.CheckDroppedStuck(ply, ent)
 	
 	for k, v in pairs(ents.FindInSphere(ent:GetPos(), 32)) do
 		if v:IsPlayer() then continue end
-		if v:IsWeapon() and IsValid(v:GetOwner) then continue end
+		if v:IsWeapon() and IsValid(v:GetOwner()) then continue end
 		if DPP.GetGhosted(v) then continue end
 		if DPP.CheckStuck(ply, ent, v) then break end
 	end
