@@ -91,7 +91,7 @@ DPP.Settings = {
 	
 	['apropkill_clampspeed_val'] = {
 		type = 'int',
-		value = '40',
+		value = '15',
 		desc = 'Clamp value. Change with caution!',
 	},
 	

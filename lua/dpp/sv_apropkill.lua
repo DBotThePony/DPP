@@ -113,7 +113,7 @@ end
 local function Think()
 	if not DPP.GetConVar('apropkill_enable') then return end
 	
-	local CLAMP_VALUE = DPP.GetConVar('apropkill_clampspeed_val')
+	local CLAMP_VALUE = DPP.GetConVar('apropkill_clampspeed_val') * FrameTime() * 22 --Server where it was tested has 22 tickrate
 	local VEC_CLAMP_VALUE = CLAMP_VALUE * 2
 	
 	for ent, collision in pairs(HoldingEntities) do
@@ -152,7 +152,7 @@ local function Think()
 				))
 			end
 			
-			ent._DPP_PhysGunLastPos = spos
+			ent._DPP_PhysGunLastPos = ent:GetPos()
 		end
 	end
 end
