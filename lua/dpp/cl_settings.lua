@@ -379,11 +379,10 @@ local SortedConVars = {
 }
 
 local MiscConVars = {
+	'check_stuck',
 	'no_rope_world',
 	'log_spawns',
 	'player_cant_punt',
-	'prevent_prop_throw',
-	'prevent_player_stuck',
 	'prevent_explosions_crash',
 	'advanced_spawn_checks',
 	'experemental_spawn_checks',
@@ -391,6 +390,15 @@ local MiscConVars = {
 	'allow_damage_vehicles',
 	'allow_damage_sent',
 	'allow_damage_npc',
+}
+
+local APropKillVars = {
+	'apropkill_enable',
+	'apropkill_nopush',
+	'apropkill_vehicle',
+	'apropkill_damage',
+	'prevent_prop_throw',
+	'prevent_player_stuck',
 }
 
 local PlacedCVars = {}
@@ -455,10 +463,7 @@ local function BuildCVarPanel(Panel)
 	SettingsClass.SetupBackColor(Panel)
 	
 	for k, v in pairs(DPP.CSettings) do
-		--local v = DPP.Settings[b]
-		--local k = b
-		PlacedCVars[k] = true
-		
+		if not v.bool then continue end
 		local val = DPP.PlayerConVar(LocalPlayer(), k)
 		
 		local checkbox = Panel:CheckBox(v.desc)
@@ -492,6 +497,29 @@ local function BuildMiscVarsPanel(Panel)
 		local v = DPP.Settings[b]
 		local k = b
 		PlacedCVars[k] = true
+		
+		local val = tobool(DPP.GetConVar(k))
+		
+		local checkbox = Panel:CheckBox(v.desc)
+		checkbox:SetChecked(val)
+		checkbox.Button.LastVal = val
+		checkbox.Button.val = k
+		checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
+		checkbox.Button.Think = FUNCTIONS.CheckBoxThink
+		checkbox:SetTooltip(v.desc)
+		SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
+		SettingsClass.MakeCheckboxBetter(checkbox)
+	end
+end
+
+local function BuildAPropKillVarsPanel(Panel)
+	if not IsValid(Panel) then return end
+	Panel:Clear()
+	SettingsClass.SetupBackColor(Panel)
+	
+	for a, b in pairs(APropKillVars) do
+		local v = DPP.Settings[b]
+		local k = b
 		
 		local val = tobool(DPP.GetConVar(k))
 		
@@ -1422,6 +1450,7 @@ local function PopulateToolMenu()
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.SVars', 'Server ConVars', '', '', BuildSVarPanel)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Players', 'Player Controls', '', '', BuildPlayerList)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Misc', 'Other Server ConVars', '', '', BuildMiscVarsPanel)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.APropKill', 'Anti Prop Kill', '', '', BuildAPropKillVarsPanel)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.CVars', 'Client ConVars', '', '', BuildCVarPanel)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.APanel', 'Antispam Settings', '', '', BuildAntispamPanel)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Limits', 'Entity Limits', '', '', BuildLimitsList)

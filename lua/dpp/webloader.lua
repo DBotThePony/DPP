@@ -26,6 +26,7 @@ local Files = {
 	'sv_init.lua',
 	'sv_savedata.lua',
 	'sv_misc.lua',
+	'sv_apropkill.lua',
 }
 
 for k, v in pairs(Files) do

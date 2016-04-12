@@ -436,7 +436,7 @@ function DPP.GetFont(name)
 	end
 end
 
-local function PostDrawHUD()
+local function PostDrawHUDDefault()
 	local ent = LocalPlayer():GetEyeTrace().Entity
 	if not IsValid(ent) then return end
 	--if ent:IsPlayer() then return end
@@ -505,8 +505,10 @@ local function PostDrawHUD()
 		end
 		
 		if class == 'weapon_physcannon' then
-			local status = DPP.IsEntityBlockedGravgun(ent:GetClass(), LocalPlayer())
-			CanTouch, reason = DPP.CanGravgun(LocalPlayer(), ent) ~= false and not status
+			CanTouch, reason = DPP.CanGravgun(LocalPlayer(), ent)
+			
+			CanTouch = CanTouch ~= false
+			
 			if DPP.GetConVar('enable_gravgun') then
 				if status then
 					name = name .. '\nGravgun blocked'
@@ -537,10 +539,10 @@ local function PostDrawHUD()
 		end
 	end
 	
-	local CanDamage, reason = DPP.CanDamage(LocalPlayer(), ent)
+	local CanDamage, dreason = DPP.CanDamage(LocalPlayer(), ent)
 	
-	if reason then
-		name = name .. '\n' .. reason
+	if dreason and dreason ~= reason then
+		name = name .. '\n' .. dreason
 	end
 	
 	if disconnected then
@@ -567,7 +569,109 @@ local function PostDrawHUD()
 	end
 end
 
-hook.Add('HUDPaint', 'DPP.Hooks', PostDrawHUD)
+local function HUDPaintSimple()
+	local ent = LocalPlayer():GetEyeTrace().Entity
+	if not IsValid(ent) then return end
+	--if ent:IsPlayer() then return end
+	
+	local curWeapon = LocalPlayer():GetActiveWeapon()
+	
+	local CanTouch, reason
+	
+	local name = DPP.GetOwnerName(ent)
+	
+	local Owned
+	local Owne
+	local Nick, UID, SteamID
+	local disconnected = false
+	
+	if not ent:IsPlayer() then
+		Owned = DPP.IsOwned(ent)
+		Owner = DPP.GetOwner(ent)
+		disconnected = false
+		
+		if Owned and not IsValid(Owner) then
+			Nick, UID, SteamID = DPP.GetOwnerDetails(ent)
+			name = Nick
+			disconnected = true
+		end
+	else
+		Owned = false
+		Owner = ent
+		name = ent:Nick()
+	end
+	
+	if IsValid(curWeapon) and DPP.GetConVar('enable') then
+		local class = curWeapon:GetClass()
+		local hit = false
+		
+		if class == 'gmod_tool' then
+			local CanTouch1, reason = DPP.CanTool(LocalPlayer(), ent, curWeapon:GetMode())
+			CanTouch = CanTouch1 ~= false
+			
+			hit = true
+		end
+		
+		if class == 'weapon_physgun' then
+			CanTouch, reason = DPP.CanPhysgun(LocalPlayer(), ent)
+			CanTouch = CanTouch ~= false
+			
+			hit = true
+		end
+		
+		if class == 'weapon_physcannon' then
+			local status = DPP.IsEntityBlockedGravgun(ent:GetClass(), LocalPlayer())
+			CanTouch, reason = DPP.CanGravgun(LocalPlayer(), ent) ~= false and not status
+			
+			hit = true
+		end
+		
+		if not hit then
+			if ent:IsPlayer() then
+				CanTouch = true
+			else
+				CanTouch = DPP.CanTouch(LocalPlayer(), ent)
+			end
+		end
+	else
+		if ent:IsPlayer() then
+			CanTouch = true
+		else
+			CanTouch = DPP.CanTouch(LocalPlayer(), ent)
+		end
+	end
+	
+	if disconnected then
+		name = name .. '\nDisconnected Player'
+	end
+	
+	if DPP.IsUpForGrabs(ent) then
+		name = name .. '\nUp for grabs!'
+	end
+	
+	local get = DPP.GetFont()
+	surface.SetFont(get)
+	local W, H = surface.GetTextSize(name)
+	surface.SetDrawColor(0, 0, 0, 200)
+	surface.DrawRect(X, Y, W + 8, H + 4)
+
+	
+	if CanTouch then
+		draw.DrawText(name, get, X + 4, Y + 3, Green)
+	else
+		draw.DrawText(name, get, X + 4, Y + 3, Red)
+	end
+end
+
+local function HUDPaint()
+	if not DPP.PlayerConVar(_, 'simple_hud') then
+		PostDrawHUDDefault()
+	else
+		HUDPaintSimple()
+	end
+end
+
+hook.Add('HUDPaint', 'DPP.Hooks', HUDPaint)
 
 local LastSound = 0
 

@@ -71,6 +71,36 @@ DPP.Settings = {
 		desc = 'Enable blacklists',
 	},
 	
+	['apropkill_enable'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Main Anti Prop Kill switch',
+	},
+	
+	['apropkill_damage'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Prevent players from killing others using props',
+	},
+	
+	['apropkill_damage_vehicle'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Prevent players from killing others using vehicles',
+	},
+	
+	['apropkill_vehicle'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'No Collide Vehicles',
+	},
+	
+	['apropkill_nopush'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Prevent players from pushing others using physgun',
+	},
+	
 	['clear_disconnected'] = {
 		type = 'bool',
 		value = '1',
@@ -413,6 +443,12 @@ DPP.CSettings = {
 		desc = 'I don\'t want to touch other players (if admin)',
 	},
 	
+	['simple_hud'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Simple DPP HUD panel',
+	},
+	
 	['font'] = {
 		type = 'int',
 		value = '1',
@@ -667,6 +703,10 @@ end
 DPP_NO_LIMIT = 0
 DPP_NO_LIMIT_DEFINED = -1
 
+function DPP.IsAPKEnabled()
+	return DPP.GetConVar('apropkill_enable')
+end
+
 function DPP.GetEntityLimit(class, group)
 	if not DPP.GetConVar('ent_limits_enable') then return DPP_NO_LIMIT_DEFINED end
 	local T = DPP.EntsLimits[class]
@@ -825,6 +865,7 @@ end
 include('sh_hooks.lua')
 if SERVER then
 	include('sv_savedata.lua')
+	include('sv_apropkill.lua')
 else
 	include('cl_settings.lua')
 end

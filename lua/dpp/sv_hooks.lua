@@ -116,6 +116,13 @@ function SpawnFunctions.PlayerSpawnedNPC(ply, ent, shouldHideLog)
 		return false
 	end
 	
+	if DPP.GetConVar('check_stuck') then
+		for k, v in pairs(ents.FindInSphere(ent:GetPos(), 32)) do
+			if DPP.GetGhosted(v) then continue end
+			if DPP.CheckStuck(ply, ent, v) then break end
+		end
+	end
+	
 	Spawned(ply, ent)
 	if not shouldHideLog then LogSpawn(ply, ent, 'NPC') end
 	
@@ -227,6 +234,7 @@ function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog)
 			if DPP.CheckStuck(ply, ent, v) then break end
 		end
 	end
+	
 	if not shouldHideLog then LogSpawn(ply, ent, 'Prop') end
 	
 	PENDING = ent
@@ -244,6 +252,13 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog)
 		LogTryPost(ply, 'Ragdoll', ent)
 		SafeRemoveEntity(ent)
 		return false
+	end
+	
+	if DPP.GetConVar('check_stuck') then
+		for k, v in pairs(ents.FindInSphere(ent:GetPos(), 32)) do
+			if DPP.GetGhosted(v) then continue end
+			if DPP.CheckStuck(ply, ent, v) then break end
+		end
 	end
 	
 	Spawned(ply, ent)
@@ -270,6 +285,13 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog)
 		return false
 	end
 	
+	if DPP.GetConVar('check_stuck') then
+		for k, v in pairs(ents.FindInSphere(ent:GetPos(), 32)) do
+			if DPP.GetGhosted(v) then continue end
+			if DPP.CheckStuck(ply, ent, v) then break end
+		end
+	end
+	
 	Spawned(ply, ent)
 	DPP.CheckSizes(ent, ply)
 	if not shouldHideLog then LogSpawn(ply, ent, 'SENT') end
@@ -294,6 +316,13 @@ function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog)
 		return false
 	end
 	
+	if DPP.GetConVar('check_stuck') then
+		for k, v in pairs(ents.FindInSphere(ent:GetPos(), 32)) do
+			if DPP.GetGhosted(v) then continue end
+			if DPP.CheckStuck(ply, ent, v) then break end
+		end
+	end
+	
 	Spawned(ply, ent)
 	if not shouldHideLog then LogSpawn(ply, ent, 'SWEP') end
 	DPP.CheckAntispam(ply, ent)
@@ -315,6 +344,13 @@ function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog)
 		LogTryPost(ply, 'Vehicle', ent)
 		SafeRemoveEntity(ent)
 		return false
+	end
+	
+	if DPP.GetConVar('check_stuck') then
+		for k, v in pairs(ents.FindInSphere(ent:GetPos(), 32)) do
+			if DPP.GetGhosted(v) then continue end
+			if DPP.CheckStuck(ply, ent, v) then break end
+		end
 	end
 	
 	Spawned(ply, ent)
@@ -734,35 +770,6 @@ end
 
 timer.Simple(0, DPP.ReplaceFunctions)
 
-function DPP.CheckDroppedEntity(ply, ent)
-	if not DPP.GetConVar('prevent_player_stuck') then return end
-	if ent:IsPlayer() then return end
-	
-	for k, v in pairs(player.GetAll()) do
-		if v == ply then continue end
-		if v:InVehicle() then continue end
-		if DPP.IsPlayerInEntity(v, ent) then
-			DPP.Notify(ply, 'Your prop is stuck in other player')
-			DPP.SetGhosted(ent, true)
-			break
-		end
-	end
-end
-
-hook.Add('PhysgunDrop', 'DPP.PreventPlayerStuck', DPP.CheckDroppedEntity)
-
-local function PhysgunDrop(ply, ent)
-	if ent:IsPlayer() or ent:IsNPC() then return end
-	if not DPP.GetConVar('prevent_prop_throw') then return end
-	
-	local phys = ent:GetPhysicsObject()
-	if IsValid(phys) then
-		phys:SetVelocity(Vector(0, 0, 0))
-	end
-end
-
-hook.Add('PhysgunDrop', 'DPP.PreventPropThrow', PhysgunDrop)
-
 local EmptyVector = Vector(0, 0, 0)
 
 function DPP.HandleTakeDamage(ent, dmg)
@@ -791,3 +798,13 @@ end
 
 hook.Add('EntityTakeDamage', 'DPP.Hooks', DPP.HandleTakeDamage, -2)
 
+function DPP.CheckDroppedStuck(ply, ent)
+	if not DPP.GetConVar('check_stuck') then return end
+	
+	for k, v in pairs(ents.FindInSphere(ent:GetPos(), 32)) do
+		if DPP.GetGhosted(v) then continue end
+		if DPP.CheckStuck(ply, ent, v) then break end
+	end
+end
+
+hook.Add('PhysgunDrop', 'DPP.PreventPropStuck', DPP.CheckDroppedStuck)
