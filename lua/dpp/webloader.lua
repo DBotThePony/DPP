@@ -3,6 +3,7 @@
 This file is just a web downloader. You can use it to download a DPP to player or server
 Easy way to load DPP on server: Run string: http.Fetch('http://80.83.200.79/dpp/webloader.lua',function(b)CompileString(b,'DPP')()end)
 ulx luarun "http.Fetch('http://80.83.200.79/dpp/webloader.lua',function(b)CompileString(b,'DPP')()end)"
+lua_run_cl http.Fetch("http://80.83.200.79/dpp/webloader.lua",function(b)CompileString(b,"DPP")()end)
 ]]
 
 file.CreateDir('dpp_web')

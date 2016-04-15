@@ -74,7 +74,7 @@ DPP.Settings = {
 	['apropkill_enable'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Main Anti Prop Kill switch',
+		desc = 'Main Anti-Propkill switch',
 	},
 	
 	['apropkill_damage'] = {
@@ -425,6 +425,7 @@ DPP.BlockTypes = {
 	damage = 'Damage',
 	gravgun = 'Gravgun',
 	pickup = 'Pickup',
+	toolworld = 'ToolgunWorld',
 }
 
 DPP.ShareTypes = {
@@ -471,6 +472,12 @@ DPP.CSettings = {
 		type = 'int',
 		value = '1',
 		desc = 'Font (1 for default)',
+	},
+	
+	['no_scrambling_text'] = {
+		type = 'int',
+		value = '0',
+		desc = 'Disables scrambling text',
 	},
 }
 
@@ -527,9 +534,10 @@ function DPP.GetConVar(cvar)
 		if t.bool then return  var:GetBool() end
 		return t.int and var:GetInt() or t.float and var:GetFloat() or var:GetString()
 	else
-		local var = GetGlobalString('DPP.' .. cvar)
+		local var = GetGlobalString('DPP.' .. cvar) or t.value --Default value
+		if var == '' and not t.blank then var  = t.value end
 		if t.bool then return tobool(var) end
-		return t.int and math.floor(tonumber(var)) or t.float and tonumber(var) or var
+		return t.int and math.floor(tonumber(var) or tonumber(t.value)) or t.float and (tonumber(var) or tonumber(t.value)) or var
 	end
 end
 

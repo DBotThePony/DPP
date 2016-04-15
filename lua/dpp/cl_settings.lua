@@ -167,14 +167,15 @@ local Style = SettingsClass.Styles
 
 SettingsClass.Background = Color(65, 65, 65)
 SettingsClass.Glow = Color(125, 125, 125)
-SettingsClass.Checked = Color(82, 255, 152, 255)
-SettingsClass.UnChecked = Color(255, 148, 148, 255)
-SettingsClass.CheckBox = Color(145, 145, 145)
+SettingsClass.Checked = Color(105, 255, 250)
+SettingsClass.UnChecked = Color(255, 148, 148)
+SettingsClass.CheckBox = Color(50, 50, 50)
 SettingsClass.FrameColor = SettingsClass.Background
 SettingsClass.TextColor = color_white
 SettingsClass.Chars = {'!','@','#','$','%','^','&','*','(',')'}
 
 function Style.ScramblingCharsThink(self)
+	if DPP.PlayerConVar(nil, 'no_scrambling_text') then return end
 	local isHovered = IsValid(hoverPanel) and hoverPanel:IsHovered() or IsValid(hoverPanel2) and hoverPanel2:IsHovered() or self:IsHovered()
 	
 	if isHovered and not self.IsScrambling and not self.AfterScramble then
@@ -207,6 +208,7 @@ function Style.ScramblingCharsThink(self)
 end
 
 function Style.ScramblingCharsThinkButton(self)
+	if DPP.PlayerConVar(nil, 'no_scrambling_text') then return end
 	local isHovered = IsValid(hoverPanel) and hoverPanel:IsHovered() or IsValid(hoverPanel2) and hoverPanel2:IsHovered() or self:IsHovered()
 	
 	if isHovered and not self.IsScrambling and not self.AfterScramble then
@@ -319,10 +321,8 @@ function Style.CheckBoxButtonPaint(self, w, h)
 	surface.SetDrawColor(SettingsClass.CheckBox)
 	surface.DrawRect(0, 0, w, h)
 	
-	surface.SetFont('DPP.CheckBox')
-	surface.SetTextPos(0, SettingsClass.CheckBoxShift)
-	surface.SetTextColor(isChecked and SettingsClass.Checked or SettingsClass.UnChecked)
-	surface.DrawText(isChecked and 'E' or 'D')
+	surface.SetDrawColor(isChecked and SettingsClass.Checked or SettingsClass.UnChecked)
+	surface.DrawRect(2, 2, w - 4, h - 4)
 end
 
 function SettingsClass.MakeCheckboxBetter(panel)
@@ -1066,7 +1066,122 @@ local function SORTER(a, b)
 	return a < b
 end
 
+local CustomBlockMenus = {}
+
+--Too lazy for adding new panel
+function CustomBlockMenus.toolworld(Panel)
+	local k = 'toolworld'
+	local v = 'ToolgunWorld'
+	if not IsValid(Panel) then return end
+	Panel:Clear()
+	SettingsClass.SetupBackColor(Panel)
+	ValidPanels[k] = Panel
+	
+	local list = vgui.Create('DListView', Panel)
+	Panel:AddItem(list)
+	
+	list:SetHeight(600)
+	list:AddColumn('Entity')
+	
+	local L = DPP.BlockedEntities[k]
+	local New = {}
+	for k, v in pairs(L) do
+		table.insert(New, k)
+	end
+	
+	table.sort(New, SORTER)
+	
+	for k, v in pairs(New) do
+		list:AddLine(v)
+	end
+	
+	list.OnRowRightClick = function(self, line)
+		local val = self:GetLine(line):GetValue(1)
+		local menu = vgui.Create('DMenu')
+		menu:AddOption('Copy tool mode to clipboard', function()
+			SetClipboardText(val)
+		end)
+		
+		menu:AddOption('Remove from blacklist', function()
+			RunConsoleCommand('dpp_removeblockedentity' .. k, val)
+		end)
+		menu:Open()
+	end
+	
+	local entry = vgui.Create('DTextEntry', Panel)
+	Panel:AddItem(entry)
+	local Apply = Panel:Button('Add tool mode')
+	Apply.DoClick = function()
+		RunConsoleCommand('dpp_addblockedentity' .. k, entry:GetText())
+	end
+	SettingsClass.ApplyButtonStyle(Apply)
+	
+	local Apply = Panel:Button('Remove tool mode')
+	Apply.DoClick = function()
+		RunConsoleCommand('dpp_removeblockedentity' .. k, entry:GetText())
+	end
+	SettingsClass.ApplyButtonStyle(Apply)
+	
+	local idx = 'blacklist_' .. k
+	PlacedCVars[idx] = true
+	local val = tobool(DPP.GetConVar(idx))
+	local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
+	checkbox:SetChecked(val)
+	checkbox.Button.LastVal = val
+	checkbox.Button.val = idx
+	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
+	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
+	checkbox:SetTooltip(DPP.Settings[idx].desc)
+	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
+	SettingsClass.MakeCheckboxBetter(checkbox)
+	
+	local idx = 'blacklist_' .. k .. '_white'
+	PlacedCVars[idx] = true
+	local val = tobool(DPP.GetConVar(idx))
+	local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
+	checkbox:SetChecked(val)
+	checkbox.Button.LastVal = val
+	checkbox.Button.val = idx
+	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
+	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
+	checkbox:SetTooltip(DPP.Settings[idx].desc)
+	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
+	SettingsClass.MakeCheckboxBetter(checkbox)
+	
+	
+	local idx = 'blacklist_' .. k .. '_player_can'
+	PlacedCVars[idx] = true
+	local val = tobool(DPP.GetConVar(idx))
+	local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
+	checkbox:SetChecked(val)
+	checkbox.Button.LastVal = val
+	checkbox.Button.val = idx
+	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
+	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
+	checkbox:SetTooltip(DPP.Settings[idx].desc)
+	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
+	SettingsClass.MakeCheckboxBetter(checkbox)
+	
+	local idx = 'blacklist_' .. k .. '_admin_can'
+	PlacedCVars[idx] = true
+	local val = tobool(DPP.GetConVar(idx))
+	local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
+	checkbox:SetChecked(val)
+	checkbox.Button.LastVal = val
+	checkbox.Button.val = idx
+	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
+	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
+	checkbox:SetTooltip(DPP.Settings[idx].desc)
+	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
+	SettingsClass.MakeCheckboxBetter(checkbox)
+end
+
 for k, v in pairs(DPP.BlockTypes) do
+	if CustomBlockMenus[k] then
+		PanelsFunctions[k] = CustomBlockMenus[k]
+		continue
+	end
+	
 	PanelsFunctions[k] = function(Panel)
 		if not IsValid(Panel) then return end
 		Panel:Clear()
@@ -1463,7 +1578,7 @@ local function PopulateToolMenu()
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.SVars', 'Server ConVars', '', '', BuildSVarPanel)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Players', 'Player Controls', '', '', BuildPlayerList)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Misc', 'Other Server ConVars', '', '', BuildMiscVarsPanel)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.APropKill', 'Anti Prop Kill', '', '', BuildAPropKillVarsPanel)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.APropKill', 'Anti-PropKill', '', '', BuildAPropKillVarsPanel)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.CVars', 'Client ConVars', '', '', BuildCVarPanel)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.APanel', 'Antispam Settings', '', '', BuildAntispamPanel)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Limits', 'Entity Limits', '', '', BuildLimitsList)

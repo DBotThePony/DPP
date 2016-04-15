@@ -181,6 +181,11 @@ function DPP.CanTool(ply, ent, mode)
 				return false, 'No rope world'
 			end
 		end
+		
+		if mode and DPP.IsEntityBlockedToolgunWorld(mode, ply) then
+			return false, 'Toolgun on world is blocked'
+		end
+		
 		return true
 	end
 	
