@@ -122,7 +122,7 @@ function DPP.SetOwner(ent, ply)
 	
 	if IsValid(old) then
 		old.DPP_Ents = old.DPP_Ents or {}
-		old.DPP_Ents[ent] = true
+		old.DPP_Ents[ent] = nil
 	end
 end
 

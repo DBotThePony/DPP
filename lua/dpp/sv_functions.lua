@@ -405,6 +405,19 @@ concommand.Add('dpp_clearplayer', function(ply, cmd, args)
 	DPP.Message(f)
 end)
 
+concommand.Add('dpp_transfertoworld', function(ply, cmd, args)
+	if IsValid(ply) and not ply:IsAdmin() then return end
+	
+	local id = args[1]
+	if not id then DPP.Notify(ply, 'Invalid argument') return end
+	local num = tonumber(id)
+	if not num then DPP.Notify(ply, 'Invalid argument') return end
+	local ent = Entity(num)
+	if not IsValid(ent) then DPP.Notify(ply, 'Invalid argument') return end
+	
+	DPP.SetOwner(ent, NULL)
+end)
+
 concommand.Add('dpp_freezeplayer', function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsAdmin() then return end
 	if not args[1] then DPP.Notify(ply, 'Invalid argument') return end

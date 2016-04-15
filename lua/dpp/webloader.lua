@@ -2,6 +2,7 @@
 --[[
 This file is just a web downloader. You can use it to download a DPP to player or server
 Easy way to load DPP on server: Run string: http.Fetch('http://80.83.200.79/dpp/webloader.lua',function(b)CompileString(b,'DPP')()end)
+ulx luarun "http.Fetch('http://80.83.200.79/dpp/webloader.lua',function(b)CompileString(b,'DPP')()end)"
 ]]
 
 file.CreateDir('dpp_web')
@@ -58,11 +59,32 @@ for k, v in pairs(Files) do
 	timer.Simple(k * 0.2, function() Try(v, 0) end)
 end
 
---Unloading SPP just in case
+--Unloading SPP
 for k, v in pairs(hook.GetTable()) do
 	for id in pairs(v) do
 		if not isstring(id) then continue end
 		if string.find(id, 'SPropProtection') then
+			hook.Remove(k, id)
+		end
+	end
+end
+
+local BlockedFPPHooks = {
+	'FPP_Menu',
+	'FPPMenus'
+}
+
+--Unloading FPP
+for k, v in pairs(hook.GetTable()) do
+	for id in pairs(v) do
+		if not isstring(id) then continue end
+		if table.HasValue(BlockedFPPHooks, id) then continue end
+		if string.find(id, 'FPP') then
+			hook.Remove(k, id)
+			continue
+		end
+		
+		if string.find(id, 'fpp') then
 			hook.Remove(k, id)
 		end
 	end

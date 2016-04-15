@@ -1613,7 +1613,24 @@ local ShareMenu = {
 		DPP.OpenShareMenu(ent)
 	end,
 }
+
 properties.Add("dpp.share", ShareMenu)
+
+local transfertoworld = {
+	MenuLabel = "Transfer ownership to world",
+	Order = 2700,
+	MenuIcon = "icon16/world.png",
+
+	Filter = function(self, ent, ply)
+		return IsValid(ent) and ply:IsAdmin() and DPP.IsOwned(ent)
+	end,
+	
+	Action = function(self, ent)
+		RunConsoleCommand('dpp_transfertoworld', ent:EntIndex())
+	end,
+}
+
+properties.Add("dpp.transfertoworld", transfertoworld)
 
 for k, v in pairs(DPP.BlockTypes) do
 	local Add = {
