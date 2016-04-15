@@ -61,8 +61,8 @@ function DPP.IsPlayerInEntity(ply, ent) --From DLib
 	epos.z = epos.z + 10
 	
 	local Mins, Maxs = ply:WorldSpaceAABB()
-	Mins = Mins - pos
-	Maxs = Maxs - pos
+	Mins = (Mins - pos) * 1.3 --Make wider
+	Maxs = (Maxs - pos) * 1.3
 	
 	local hit = false
 	local function fn(E)

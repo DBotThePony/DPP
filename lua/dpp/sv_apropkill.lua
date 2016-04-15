@@ -17,6 +17,12 @@ function DPP.CheckDroppedEntity(ply, ent)
 	end
 end
 
+local function CanTool(ply, tr)
+	--This hook must be runned after DPP protection module
+	if not IsValid(tr.Entity) then return end
+	DPP.CheckDroppedEntity(ply, tr.Entity)
+end
+
 local function EntityTakeDamage(ent, dmg)
 	if not DPP.GetConVar('apropkill_enable') then return end
 	if not DPP.GetConVar('apropkill_damage') then return end
@@ -156,5 +162,7 @@ hook.Add('PhysgunDrop', 'DPP.APropKill', PhysgunDrop)
 hook.Add('PhysgunPickup', 'DPP.APropKill', PhysgunPickup)
 hook.Add('PlayerSpawnedVehicle', 'DPP.APropKill', PlayerSpawnedVehicle)
 hook.Add('PlayerEnteredVehicle', 'DPP.APropKill', PlayerEnteredVehicle)
+
+hook.Add('CanTool', 'DPP.APropKill', CanTool, 2) --Extra low priority if we have UHook (ULib's Hook)/DHook installed
 
 hook.Add('PhysgunDrop', 'DPP.PreventPlayerStuck', DPP.CheckDroppedEntity)
