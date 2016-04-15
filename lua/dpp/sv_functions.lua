@@ -195,6 +195,7 @@ end
 
 function DPP.CheckUpForGrabs(ent, ply)
 	if not DPP.IsUpForGrabs(ent) then return end
+	DPP.DeleteEntityUndo(ent)
 	DPP.SetOwner(ent, ply) 
 	DPP.SetUpForGrabs(ent, false) 
 	DPP.Notify(ply, 'You now own this prop')
@@ -202,6 +203,22 @@ function DPP.CheckUpForGrabs(ent, ply)
 	undo.AddEntity(ent)
 	undo.SetPlayer(ply)
 	undo.Finish()
+end
+
+function DPP.DeleteEntityUndo(ent)
+	local tab = undo.GetTable()
+	
+	for uid, data in pairs(tab) do
+		for index, udata in pairs(data) do
+			udata.Entities = udata.Entities or {}
+			
+			for k, v in pairs(udata.Entities) do
+				if v == ent then
+					udata.Entities[k] = NULL
+				end
+			end
+		end
+	end
 end
 
 function DPP.ClearPlayerEntities(ply)
@@ -416,6 +433,7 @@ concommand.Add('dpp_transfertoworld', function(ply, cmd, args)
 	if not IsValid(ent) then DPP.Notify(ply, 'Invalid argument') return end
 	
 	DPP.SetOwner(ent, NULL)
+	DPP.DeleteEntityUndo(ent)
 end)
 
 concommand.Add('dpp_freezeplayer', function(ply, cmd, args)
