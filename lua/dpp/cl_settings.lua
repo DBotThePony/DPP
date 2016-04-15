@@ -412,7 +412,7 @@ local function BuildSVarPanel(Panel)
 	
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
-	local TopText = 'DPP is created by DBot\nNOTE: "Main Power Switch" disables blacklists and protection\nmodules, but restrist lists are not disabled'
+	local TopText = 'DPP was created by DBot\nNOTE "Main Power Switch" disables blacklists \nand protection modules, but not restrictions.'
 	Lab:SetText(TopText)
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SizeToContents()
@@ -560,15 +560,16 @@ local function BuildAntispamPanel(Panel)
 	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 	SettingsClass.MakeCheckboxBetter(checkbox)
 	
-	local checkbox = Panel:CheckBox('Prevent prop from stucking in each other')
+	local checkbox = Panel:CheckBox('Prevent props from getting stuck in each other')
 	checkbox.Button.val = 'check_stuck'
 	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
 	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
 	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 	SettingsClass.MakeCheckboxBetter(checkbox)
 	
-	local Slider = Panel:NumSlider('Max size of props \nbefore they ghosted', nil, 200, 4000, 1)
+	local Slider = Panel:NumSlider('Maximum size of props before ghosting', nil, 200, 4000, 1)
 	SettingsClass.ApplySliderStyle(Slider)
+	Slider:SetTooltip('Maximum size of props before ghosting')
 	Slider:SetValue(DPP.GetConVar('max_size'))
 	Slider.OnValueChanged = function()
 		local v = tostring(math.floor(tonumber(Slider:GetValue())))
@@ -584,10 +585,10 @@ local function BuildAntispamPanel(Panel)
 	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 	SettingsClass.MakeCheckboxBetter(checkbox)
 	
-	local Slider = Panel:NumSlider('Antispam delay Higher \nmeans more strict antispam', nil, 0, 4, 1)
+	local Slider = Panel:NumSlider('Antispam delay: Higher is stricter', nil, 0, 4, 1)
 	SettingsClass.ApplySliderStyle(Slider)
 	Slider:SetValue(DPP.GetConVar('antispam_delay'))
-	Slider:SetTooltip('Antispam delay Higher \nmeans more strict antispam')
+	Slider:SetTooltip('Antispam delay: Higher is stricter')
 	Slider.OnValueChanged = function()
 		local v = tonumber(Slider:GetValue())
 		timer.Create('DPP.AntispamDelay', 1, 1, function()
@@ -595,10 +596,10 @@ local function BuildAntispamPanel(Panel)
 		end)
 	end
 	
-	local Slider = Panel:NumSlider('Antispam remove multiplier Lower \nmeans removing entities earlier', nil, 4, 20, 1)
+	local Slider = Panel:NumSlider('Antispam remove multiplier: Lower removes earlier', nil, 4, 20, 1)
 	SettingsClass.ApplySliderStyle(Slider)
 	Slider:SetValue(DPP.GetConVar('antispam_remove'))
-	Slider:SetTooltip('Antispam remove multiplier Lower \nmeans removing entities earlier')
+	Slider:SetTooltip('Antispam remove multiplier: Lower removes earlier')
 	Slider.OnValueChanged = function()
 		local v = math.floor(tonumber(Slider:GetValue()))
 		timer.Create('DPP.AntispamRemove', 1, 1, function()
@@ -606,9 +607,9 @@ local function BuildAntispamPanel(Panel)
 		end)
 	end
 	
-	local Slider = Panel:NumSlider('Antispam ghost multiplier Lower \nmeans ghosting entities earlier', nil, 1, 10, 1)
+	local Slider = Panel:NumSlider('Antispam ghost multiplier: Lower ghosts earlier', nil, 1, 10, 1)
 	SettingsClass.ApplySliderStyle(Slider)
-	Slider:SetTooltip('Antispam ghost multiplier Lower \nmeans ghosting entities earlier')
+	Slider:SetTooltip('Antispam ghost multiplier: Lower ghosts earlier')
 	Slider:SetValue(DPP.GetConVar('antispam_ghost'))
 	Slider.OnValueChanged = function()
 		local v = math.floor(tonumber(Slider:GetValue()))
@@ -617,10 +618,10 @@ local function BuildAntispamPanel(Panel)
 		end)
 	end
 	
-	local Slider = Panel:NumSlider('Antispam max cooldown multiplier Lower \nmeans removing entities earlier', nil, 1, 10, 1)
+	local Slider = Panel:NumSlider('Antispam max cooldown multiplier: Removes entities earlier', nil, 1, 10, 1)
 	SettingsClass.ApplySliderStyle(Slider)
 	Slider:SetValue(DPP.GetConVar('antispam_max'))
-	Slider:SetTooltip('Antispam max cooldown multiplier Lower \nmeans removing entities earlier')
+	Slider:SetTooltip('Antispam max cooldown multiplier: Removes entities earlier')
 	Slider.OnValueChanged = function()
 		local v = math.floor(tonumber(Slider:GetValue()))
 		timer.Create('DPP.AntispamGhost', 1, 1, function()
@@ -628,10 +629,10 @@ local function BuildAntispamPanel(Panel)
 		end)
 	end
 	
-	local Slider = Panel:NumSlider('Antispam cooldown divider Lower \nmeans faster cooldown', nil, 0, 4, 1)
+	local Slider = Panel:NumSlider('Antispam cooldown divider: Lower is faster', nil, 0, 4, 1)
 	SettingsClass.ApplySliderStyle(Slider)
 	Slider:SetValue(DPP.GetConVar('antispam_cooldown_divider'))
-	Slider:SetTooltip('Antispam cooldown divider Lower \nmeans faster cooldown')
+	Slider:SetTooltip('Antispam cooldown divider: Lower is faster')
 	Slider.OnValueChanged = function()
 		local v = tonumber(Slider:GetValue())
 		timer.Create('DPP.AntispamCooldown', 1, 1, function()
@@ -647,17 +648,17 @@ local function BuildPlayerList(Panel)
 	
 	DPP.SettingsClass.PlayerPanel = Panel
 	
-	SettingsClass.ApplyButtonStyle(Panel:Button('Delete all player\'s entities', 'dpp_clearmap'))
-	SettingsClass.ApplyButtonStyle(Panel:Button('Freeze all player\'s entities', 'dpp_freezeall'))
+	SettingsClass.ApplyButtonStyle(Panel:Button('Delete all player entities', 'dpp_clearmap'))
+	SettingsClass.ApplyButtonStyle(Panel:Button('Freeze all player entities', 'dpp_freezeall'))
 	SettingsClass.ApplyButtonStyle(Panel:Button('Delete disconnected player entities', 'dpp_cleardisconnected'))
 	
 	for k, v in pairs(DPP.GetPlayerList()) do
 		local lab = Label(v.Name)
 		Panel:AddItem(lab)
 		lab:SetTextColor(SettingsClass.TextColor)
-		SettingsClass.ApplyButtonStyle(Panel:Button('Delete ' .. v.Name .. ' entities', 'dpp_clearbyuid', v.UID))
-		SettingsClass.ApplyButtonStyle(Panel:Button('Freeze ' .. v.Name .. ' entities', 'dpp_freezebyuid', v.UID))
-		SettingsClass.ApplyButtonStyle(Panel:Button('UnFreeze ' .. v.Name .. ' entities', 'dpp_unfreezebyuid', v.UID))
+		SettingsClass.ApplyButtonStyle(Panel:Button('Delete ' .. v.Name .. '\'s entities', 'dpp_clearbyuid', v.UID))
+		SettingsClass.ApplyButtonStyle(Panel:Button('Freeze ' .. v.Name .. '\'s entities', 'dpp_freezebyuid', v.UID))
+		SettingsClass.ApplyButtonStyle(Panel:Button('Unfreeze ' .. v.Name .. '\'s entities', 'dpp_unfreezebyuid', v.UID))
 	end
 end
 
@@ -808,7 +809,7 @@ local function BuildLimitsList(Panel)
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
 	Lab:SetTextColor(SettingsClass.TextColor)
-	Lab:SetText('NOTE: It just prevent player from spawning entities with given class\nif player spawned gived amount of entities with this class.\nThat means it DOES NOT allow group to spawn unlimited\namout of entities with that type.\nFor that use SBox limits list instead.')
+	Lab:SetText('NOTE: This just prevents the player from spawning\n entities with the given class if the player spawned\n the given amount of entities within this class.\nThat means it DOES NOT allow groups to spawn\n unlimited amounts of entities within that\n type. For that use the Sandbox limits\n instead.')
 	Lab:SizeToContents()
 	
 	local list = vgui.Create('DListView', Panel)
@@ -862,7 +863,7 @@ local function BuildLimitsList(Panel)
 	end
 	SettingsClass.ApplyButtonStyle(Apply)
 	
-	local Apply = Panel:Button('Add limit of entity that you are looking at')
+	local Apply = Panel:Button('Add a limit for the entity you\'re looking at')
 	Apply.DoClick = function()
 		local ent = LocalPlayer():GetEyeTrace().Entity
 		if not IsValid(ent) then return end
@@ -870,7 +871,7 @@ local function BuildLimitsList(Panel)
 	end
 	SettingsClass.ApplyButtonStyle(Apply)
 	
-	local Apply = Panel:Button('Remove limit of entity that you are looking at')
+	local Apply = Panel:Button('Remove the limit for the entity you\'re looking at')
 	Apply.DoClick = function()
 		local ent = LocalPlayer():GetEyeTrace().Entity
 		if not IsValid(ent) then return end
@@ -976,9 +977,11 @@ local function BuildSLimitsList(Panel)
 	
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
+	local t = 'WHAT THIS DOES:\nIt\'s the console variable sbox_max<...> overrides for user groups.\nTo add values, you must know the console variable you\'re changing.\nExample: Modifying prop limits would be "props" (sbox_maxprops).\nA value of -1 is unlimited, and 0 leaves the limit unmodified.'
 	Lab:SetTextColor(SettingsClass.TextColor)
-	Lab:SetText('WHAT THIS DOES:\nIt is convar sbox_max<...> overrides for user groups.\nTo add values, you must know what convar you are changing.\nFor example, if you want modify\nprop limits, id would be "props" (sbox_maxprops).\nONLY there -1 means no limit, and 0 means limits\nis not modified')
+	Lab:SetText(t)
 	Lab:SizeToContents()
+	Lab:SetTooltip(t)
 	
 	local list = vgui.Create('DListView', Panel)
 	Panel:AddItem(list)
@@ -1125,26 +1128,26 @@ function CustomBlockMenus.toolworld(Panel)
 	local idx = 'blacklist_' .. k
 	PlacedCVars[idx] = true
 	local val = tobool(DPP.GetConVar(idx))
-	local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
+	local checkbox = Panel:CheckBox('Enable this blacklist')
 	checkbox:SetChecked(val)
 	checkbox.Button.LastVal = val
 	checkbox.Button.val = idx
 	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
 	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-	checkbox:SetTooltip(DPP.Settings[idx].desc)
+	checkbox:SetTooltip('Enable this blacklist')
 	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 	SettingsClass.MakeCheckboxBetter(checkbox)
 	
 	local idx = 'blacklist_' .. k .. '_white'
 	PlacedCVars[idx] = true
 	local val = tobool(DPP.GetConVar(idx))
-	local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
+	local checkbox = Panel:CheckBox('This is a whitelist')
 	checkbox:SetChecked(val)
 	checkbox.Button.LastVal = val
 	checkbox.Button.val = idx
 	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
 	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-	checkbox:SetTooltip(DPP.Settings[idx].desc)
+	checkbox:SetTooltip('This is a whitelist')
 	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 	SettingsClass.MakeCheckboxBetter(checkbox)
 	
@@ -1152,26 +1155,26 @@ function CustomBlockMenus.toolworld(Panel)
 	local idx = 'blacklist_' .. k .. '_player_can'
 	PlacedCVars[idx] = true
 	local val = tobool(DPP.GetConVar(idx))
-	local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
+	local checkbox = Panel:CheckBox('Disable for players')
 	checkbox:SetChecked(val)
 	checkbox.Button.LastVal = val
 	checkbox.Button.val = idx
 	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
 	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-	checkbox:SetTooltip(DPP.Settings[idx].desc)
+	checkbox:SetTooltip('Disable for players')
 	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 	SettingsClass.MakeCheckboxBetter(checkbox)
 	
 	local idx = 'blacklist_' .. k .. '_admin_can'
 	PlacedCVars[idx] = true
 	local val = tobool(DPP.GetConVar(idx))
-	local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
+	local checkbox = Panel:CheckBox('Disable for admins')
 	checkbox:SetChecked(val)
 	checkbox.Button.LastVal = val
 	checkbox.Button.val = idx
 	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
 	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-	checkbox:SetTooltip(DPP.Settings[idx].desc)
+	checkbox:SetTooltip('Disable for admins')
 	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 	SettingsClass.MakeCheckboxBetter(checkbox)
 end
@@ -1241,19 +1244,19 @@ for k, v in pairs(DPP.BlockTypes) do
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 		
-		local Apply = Panel:Button('Add that entity to ALL blacklists')
+		local Apply = Panel:Button('Add this entity to ALL blacklists')
 		Apply.DoClick = function()
 			ADD_ALL(entry:GetText())
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 		
-		local Apply = Panel:Button('Remove that entity from ALL blacklists')
+		local Apply = Panel:Button('Remove this entity from ALL blacklists')
 		Apply.DoClick = function()
 			REMOVE_ALL(entry:GetText())
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 		
-		local Apply = Panel:Button('Add entity that you are looking at to blacklist')
+		local Apply = Panel:Button('Add the entity you\'re looking at to the blacklist')
 		Apply.DoClick = function()
 			local ent = LocalPlayer():GetEyeTrace().Entity
 			if not IsValid(ent) then return end
@@ -1261,7 +1264,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 		
-		local Apply = Panel:Button('Remove entity that you are looking at from blacklist')
+		local Apply = Panel:Button('Remove the entity you\'re looking at to the blacklist')
 		Apply.DoClick = function()
 			local ent = LocalPlayer():GetEyeTrace().Entity
 			if not IsValid(ent) then return end
@@ -1269,7 +1272,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 		
-		local Apply = Panel:Button('Add entity that you are looking at to ALL blacklists')
+		local Apply = Panel:Button('Add the entity you\'re looking at to ALL blacklists')
 		Apply.DoClick = function()
 			local ent = LocalPlayer():GetEyeTrace().Entity
 			if not IsValid(ent) then return end
@@ -1277,7 +1280,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 		
-		local Apply = Panel:Button('Remove entity that you are looking at from ALL blacklists')
+		local Apply = Panel:Button('Remove the entity you\'re looking at to ALL blacklists')
 		Apply.DoClick = function()
 			local ent = LocalPlayer():GetEyeTrace().Entity
 			if not IsValid(ent) then return end
@@ -1558,7 +1561,7 @@ local function BuildFriendsPanel(Panel)
 	for k, v in pairs(plys) do
 		if v == LocalPlayer() then continue end
 		if active[v] then continue end
-		local b = Panel:Button('Add ' .. v:Nick() .. ' to friendlist')
+		local b = Panel:Button('Add ' .. v:Nick() .. ' to friends list')
 		SettingsClass.ApplyButtonStyle(b)
 		b.DoClick = function()
 			DPP.OpenFriendEditMenu(v:SteamID())
@@ -1575,14 +1578,14 @@ local function BuildFriendsPanel(Panel)
 end
 
 local function PopulateToolMenu()
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.SVars', 'Server ConVars', '', '', BuildSVarPanel)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.SVars', 'Server Variables', '', '', BuildSVarPanel)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Players', 'Player Controls', '', '', BuildPlayerList)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Misc', 'Other Server ConVars', '', '', BuildMiscVarsPanel)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Misc', 'Secondary Server Variables', '', '', BuildMiscVarsPanel)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.APropKill', 'Anti-PropKill', '', '', BuildAPropKillVarsPanel)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.CVars', 'Client ConVars', '', '', BuildCVarPanel)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.CVars', 'Client Variables', '', '', BuildCVarPanel)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.APanel', 'Antispam Settings', '', '', BuildAntispamPanel)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Limits', 'Entity Limits', '', '', BuildLimitsList)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.SLimits', 'SBox Limits', '', '', BuildSLimitsList)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.SLimits', 'Sandbox Limits', '', '', BuildSLimitsList)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP Blacklists', 'DPP.ModelList', 'Model blacklist', '', '', BuildModelsList)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Friends', 'Friends', '', '', BuildFriendsPanel)
 	
@@ -1591,7 +1594,7 @@ local function PopulateToolMenu()
 	end
 
 	for k, v in pairs(DPP.RestrictTypes) do
-		spawnmenu.AddToolMenuOption('Utilities', 'DPP Restricts', 'DPP.restrict' .. k, v .. ' restrict list', '', '', PanelsFunctions2[k])
+		spawnmenu.AddToolMenuOption('Utilities', 'DPP Restrictions', 'DPP.restrict' .. k, v .. ' Restrictions', '', '', PanelsFunctions2[k])
 	end
 end
 

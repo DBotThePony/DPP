@@ -62,7 +62,7 @@ DPP.Settings = {
 	['enable_lists'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Enable restrict lists',
+		desc = 'Enable restrictions',
 	},
 	
 	['enable_blocked'] = {
@@ -74,13 +74,13 @@ DPP.Settings = {
 	['apropkill_enable'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Main Anti-Propkill switch',
+		desc = 'Anti-Propkill Master Toggle',
 	},
 	
 	['apropkill_damage'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Prevent players from killing others using props',
+		desc = 'Anti-Propkill',
 	},
 	
 	['apropkill_clampspeed'] = {
@@ -104,25 +104,25 @@ DPP.Settings = {
 	['apropkill_vehicle'] = {
 		type = 'bool',
 		value = '0',
-		desc = 'No Collide Vehicles',
+		desc = 'Disable vehicle collisions',
 	},
 	
 	['apropkill_nopush'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Prevent players from pushing others using physgun',
+		desc = 'Anti-Proppush',
 	},
 	
 	['clear_disconnected'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Clear disconnected players props',
+		desc = 'Clear disconnected player entities',
 	},
 	
 	['clear_disconnected_admin'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Clear disconnected admins props',
+		desc = 'Clear disconnected admin entities',
 	},
 	
 	['clear_timer'] = {
@@ -136,13 +136,13 @@ DPP.Settings = {
 	['grabs_disconnected'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Up for grabs enable for disconnected players props',
+		desc = 'Enable "Up for grabs" for disconnected player entities',
 	},
 	
 	['grabs_disconnected_admin'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Up for grabs enable for disconnected admins props',
+		desc = 'Enable "Up for grabs" for disconnected admin entities',
 	},
 	
 	['grabs_timer'] = {
@@ -162,7 +162,7 @@ DPP.Settings = {
 	['can_touch_world'] = {
 		type = 'bool',
 		value = '0',
-		desc = 'Can player touch world entities',
+		desc = 'Players can touch world entites',
 	},
 	
 	['log_spawns'] = {
@@ -174,7 +174,7 @@ DPP.Settings = {
 	['can_admin_touch_world'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Can admins touch world props',
+		desc = 'Admins can touch world entities',
 	},
 	
 	['can_admin_physblocked'] = {
@@ -186,7 +186,7 @@ DPP.Settings = {
 	['admin_can_everything'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Admin can touch everything',
+		desc = 'Admins can touch everything',
 	},
 	
 	--Protection Modules
@@ -235,26 +235,26 @@ DPP.Settings = {
 	['enable_pickup'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Enable "Pickup" protection',
+		desc = 'Enable "Pickups" protection',
 	},
 	
 	--Misc
 	['player_cant_punt'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Prevent players from punting props',
+		desc = 'Disable Gravgun punting',
 	},
 	
 	['prevent_player_stuck'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Prevent players from propblocking others by placing props into them',
+		desc = 'Prevent prop-trapping',
 	},
 	
 	['prevent_explosions_crash'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Prevent server crashing by saying no to many explosions on one game frame (experemental! Can work or not. Some addons may mess up)',
+		desc = '[Experimental!] Prevent the server from crashing from too many explosions in one instance (May not work, some addons may break.)',
 	},
 	
 	['prevent_explosions_crash_num'] = {
@@ -272,43 +272,43 @@ DPP.Settings = {
 	['toolgun_player'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Prevent players from toolgun other players',
+		desc = 'Prevent toolgun usage on players',
 	},
 	
 	['toolgun_player_admin'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Prevent admins from toolgun other players',
+		desc = 'Prevent admin toolgun usage on players',
 	},
 	
 	['no_rope_world'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Prevent players from placing ropes on map',
+		desc = 'Prevent players from placing ropes on the map',
 	},
 	
 	['experemental_spawn_checks'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Experemental spawn checks (DISABLE THIS IF IF YOU THINK THIS IS CAUSING PROBLEMS; Replaces GetPlayer and SetPlayer functions for entities)',
+		desc = 'Experimental spawn checks (May cause problems; Replaces GetPlayer and SetPlayer functions for entities)',
 	},
 	
 	['allow_damage_vehicles'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Allow players to damage any vehicles even if damage protection is enabled',
+		desc = 'Allow damage of vehicles even if damage protection is enabled',
 	},
 	
 	['allow_damage_sent'] = {
 		type = 'bool',
 		value = '0',
-		desc = 'Allow players to damage other player\'s SENTs even if damage protection is enabled',
+		desc = 'Allow damage of other player\'s SENTs even if damage protection is enabled',
 	},
 	
 	['allow_damage_npc'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Allow players to damage NPCs even if damage protection is enabled',
+		desc = 'Allow damage NPCs even if damage protection is enabled',
 	},
 	
 	['advanced_spawn_checks'] = {
@@ -320,14 +320,14 @@ DPP.Settings = {
 	['verbose_logging'] = {
 		type = 'bool',
 		value = '0',
-		desc = 'Log entirely all things (in the main when spawn detected through advanced spawn check)',
+		desc = 'Log everything (Any spawn detected through the advanced check)',
 	},
 	
 	--Antispam
 	['check_sizes'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Check sizes of entities',
+		desc = 'Check the sizes of entities',
 	},
 	
 	['max_size'] = {
@@ -377,7 +377,7 @@ DPP.Settings = {
 	['check_stuck'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Prevent spawning prop in prop',
+		desc = ' Prevent props from getting stuck in each other',
 	},
 	
 	['stuck_ignore_frozen'] = {
@@ -408,7 +408,7 @@ DPP.Settings = {
 	['sbox_limits_enable'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Enable SBox limits list'
+		desc = 'Sandbox limits toggle'
 	},
 }
 
@@ -646,19 +646,19 @@ for k, v in pairs(DPP.RestrictTypes) do
 	DPP.RestrictedTypes[k] = DPP.RestrictedTypes[k] or {}
 	
 	DPP.AddConVar('restrict_' .. k .. '_white_bypass', {
-		desc = 'Admins can bypass ' .. v .. ' whitelist (spawn unlisted things)',
+		desc = 'Admins can bypass ' .. v .. ' whitelist (spawn/use unlisted things)',
 		value = '0',
 		type = 'bool',
 	})
 	
 	DPP.AddConVar('restrict_' .. k .. '_white', {
-		desc = v .. ' restrict list is a white list.',
+		desc = v .. ' restrictions acts as a whitelist',
 		value = '0',
 		type = 'bool',
 	})
 	
 	DPP.AddConVar('restrict_' .. k, {
-		desc = 'Enable ' .. v .. ' restrict list',
+		desc = 'Enable ' .. v .. ' restrictions',
 		value = '1',
 		type = 'bool',
 	})
