@@ -540,6 +540,8 @@ local function BuildAntispamPanel(Panel)
 	SettingsClass.ConVarSlider(Panel, 'antispam_ghost')
 	SettingsClass.ConVarSlider(Panel, 'antispam_max')
 	SettingsClass.ConVarSlider(Panel, 'antispam_cooldown_divider')
+	SettingsClass.ConVarCheckbox(Panel, 'antispam_toolgun_enable')
+	SettingsClass.ConVarSlider(Panel, 'antispam_toolgun')
 end
 
 local function BuildPlayerList(Panel)

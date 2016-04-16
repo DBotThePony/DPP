@@ -70,6 +70,18 @@ function DPP.PhysgunReloadTouch(phys, ply)
 end
 
 function DPP.ToolgunTouch(ply, tr, mode)
+	if DPP.GetConVar('antispam_toolgun_enable') then
+		local val = DPP.GetConVar('antispam_toolgun')
+		ply._DPP_LastToolgunUse = ply._DPP_LastToolgunUse or 0
+		
+		local CTime = CurTime()
+		
+		if CTime + val ~= ply._DPP_LastToolgunUse or SERVER then --For some reason it can be called twice on client
+			if ply._DPP_LastToolgunUse > CTime then return false end
+			ply._DPP_LastToolgunUse = CTime + val
+		end
+	end
+	
 	if SERVER then DPP.CheckUpForGrabs(tr.Entity, ply) end
 	
 	if DPP.CanTool(ply, tr.Entity, mode) == false then 

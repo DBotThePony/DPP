@@ -388,6 +388,20 @@ DPP.Settings = {
 		max = 100,
 	},
 	
+	['antispam_toolgun_enable'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Enable toolgun antispam',
+	},
+	
+	['antispam_toolgun'] = {
+		type = 'float',
+		value = '1',
+		desc = 'Delay in seconds between toolgun use',
+		min = 0,
+		max = 6,
+	},
+	
 	['check_stuck'] = {
 		type = 'bool',
 		value = '1',
