@@ -921,34 +921,36 @@ function DPP.CanTouch(ply, ent, mode)
 			continue
 		end
 		
-		if not IsValid(owner) and not DPP.CanTouchWorld(ply, ent) then
-			can = false 
-			reason = 'Belong/Constrained to world'
-			break
-		end
-		
-		if not isShared or realOwner ~= owner then
-			local friend = DPP.IsFriend(ply, owner, mode)
-			
-			if admin then
-				if adminEverything then
-					continue
-				elseif not friend then
-					can = false
-					reason = 'Not a friend of owner/constrained'
-					break
-				end
-			end
-			
-			if owner:IsPlayer() then
-				if not friend then 
-					can = false 
-					reason = 'Not a friend of owner/constrained'
-					break
-				end
+		if not IsValid(owner) then
+			if not DPP.CanTouchWorld(ply, ent) then
+				can = false 
+				reason = 'Belong/Constrained to world'
+				break
 			end
 		else
-			reason = 'Shared ' .. (mode and string.gsub(mode, '^.', string.upper) or '')
+			if not isShared or realOwner ~= owner then
+				local friend = DPP.IsFriend(ply, owner, mode)
+				
+				if admin then
+					if adminEverything then
+						continue
+					elseif not friend then
+						can = false
+						reason = 'Not a friend of owner/constrained'
+						break
+					end
+				end
+				
+				if owner:IsPlayer() then
+					if not friend then 
+						can = false 
+						reason = 'Not a friend of owner/constrained'
+						break
+					end
+				end
+			else
+				reason = 'Shared ' .. (mode and string.gsub(mode, '^.', string.upper) or '')
+			end
 		end
 	end
 	
