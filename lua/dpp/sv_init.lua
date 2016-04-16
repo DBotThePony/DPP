@@ -249,7 +249,7 @@ function DPP.PlayerDisconnected(ply)
 				local ply = player.GetByUniqueID(uid)
 				if ply then return end
 				
-				for k, v in pairs(DPP.GetPropsByUID(tonumber(uid))) do
+				for k, v in pairs(DPP.GetPropsByUID(uid)) do
 					if not IsValid(v) then continue end
 					if IsValid(DPP.GetOwner(v)) then continue end
 					SafeRemoveEntity(v)
@@ -270,7 +270,7 @@ function DPP.PlayerDisconnected(ply)
 				local ply = player.GetByUniqueID(uid)
 				if ply then return end
 				
-				for k, v in pairs(DPP.GetPropsByUID(tonumber(uid))) do
+				for k, v in pairs(DPP.GetPropsByUID(uid)) do
 					if not IsValid(v) then continue end
 					if IsValid(DPP.GetOwner(v)) then continue end
 					DPP.SetUpForGrabs(v, true)
