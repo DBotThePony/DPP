@@ -243,9 +243,13 @@ local function cleanup_Add(ply, type, ent)
 		PENDING_PLY = nil
 	end
 	
-	CheckBefore(ply, ent)
-	
 	if IsValid(ent) then
+		if not DPP.IsOwned(ent) then
+			CheckBefore(ply, ent)
+			PENDING = nil
+			PENDING_PLY = nil
+		end
+		
 		DPP.SetOwner(ent, ply)
 	end
 	
@@ -315,7 +319,10 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog)
 	Spawned(ply, ent)
 	DPP.CheckSizes(ent, ply)
 	if not shouldHideLog then LogSpawn(ply, ent, 'Ragdoll') end
-	DPP.CheckAntispamDelay(ply, ent)
+	
+	PENDING = ent
+	PENDING_PLY = ply
+	
 	CheckBlocked(ply, ent)
 end
 
@@ -346,7 +353,10 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog)
 	Spawned(ply, ent)
 	DPP.CheckSizes(ent, ply)
 	if not shouldHideLog then LogSpawn(ply, ent, 'SENT') end
-	DPP.CheckAntispamDelay(ply, ent)
+	
+	PENDING = ent
+	PENDING_PLY = ply
+	
 	CheckBlocked(ply, ent)
 end
 
@@ -376,7 +386,10 @@ function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog)
 	
 	Spawned(ply, ent)
 	if not shouldHideLog then LogSpawn(ply, ent, 'SWEP') end
-	DPP.CheckAntispamDelay(ply, ent)
+	
+	PENDING = ent
+	PENDING_PLY = ply
+	
 	CheckBlocked(ply, ent)
 end
 
@@ -406,7 +419,10 @@ function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog)
 	
 	Spawned(ply, ent)
 	if not shouldHideLog then LogSpawn(ply, ent, 'Vehicle') end
-	DPP.CheckAntispamDelay(ply, ent)
+	
+	PENDING = ent
+	PENDING_PLY = ply
+	
 	CheckBlocked(ply, ent)
 end
 

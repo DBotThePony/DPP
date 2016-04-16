@@ -639,7 +639,7 @@ function DPP.CheckAntispam_NoEnt(ply, updatecount, updatetime)
 			I.Count = I.Count + 1
 		end
 	else
-		dec = math.floor(delta / 1)
+		dec = delta / (DPP.GetConVar('antispam_cooldown_divider') * 1.5) --Sorry about that
 	end
 	
 	I.Count = math.Clamp(I.Count + dec, 0, DPP.GetConVar('antispam_max'))
@@ -667,6 +667,7 @@ end
 
 function DPP.CheckAntispam(ply, ent)
 	if not DPP.GetConVar('antispam') then return end
+	if not IsValid(ent) then return end
 	
 	if ent:GetSolid() == SOLID_NONE then return end
 	if ent:GetMoveType() == MOVETYPE_NONE then return end

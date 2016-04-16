@@ -350,7 +350,7 @@ DPP.Settings = {
 	
 	['antispam_delay'] = {
 		type = 'float',
-		value = '0.6',
+		value = '1',
 		desc = 'Minimum delay between entity spawning',
 		min = 0.1,
 		max = 3,
