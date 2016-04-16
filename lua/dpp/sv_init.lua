@@ -4,16 +4,19 @@
 include('sv_functions.lua')
 
 DPP.PropListing = DPP.PropListing or {}
+DPP.ConstraintsListing = DPP.ConstraintsListing or {}
 
 util.AddNetworkString('DPP.Log')
 util.AddNetworkString('DPP.Lists')
 util.AddNetworkString('DPP.RLists')
 util.AddNetworkString('DPP.LLists')
 util.AddNetworkString('DPP.SLists')
+util.AddNetworkString('DPP.CLists')
 util.AddNetworkString('DPP.ListsInsert')
 util.AddNetworkString('DPP.RListsInsert')
 util.AddNetworkString('DPP.LListsInsert')
 util.AddNetworkString('DPP.SListsInsert')
+util.AddNetworkString('DPP.CListsInsert')
 util.AddNetworkString('DPP.ModelsInsert')
 util.AddNetworkString('DPP.ModelLists')
 util.AddNetworkString('DPP.Notify')
@@ -97,10 +100,43 @@ function DPP.RefreshPropList()
 	end
 end
 
+local Constraints = {
+	gmod_winch_controller = true,
+	phys_torque = true,
+	keyframe_rope = true, --ugh
+}
+
+function DPP.IsConstraint(ent)
+	return ent:IsConstraint() or Constraints[ent:GetClass()]
+end
+
+local ConstraintTypes = {
+	phys_constraint = 'weld',
+	phys_slideconstraint = 'slider',
+	phys_spring = 'elastic',
+	phys_lengthconstraint = 'rope',
+	keyframe_rope = 'vrope', --ugh
+	phys_hinge = 'axis',
+	phys_torque = 'motor',
+	phys_ballsocket = 'ballsocket',
+}
+
+function DPP.GetContstrainType(ent)
+	local class = ent:GetClass()
+	
+	if class == 'gmod_winch_controller' then
+		return ent.type == TYPE_NORMAL and 'winch' or 'muscule'
+	end
+	
+	return ConstraintTypes[class] or '<unknown>'
+end
+
 function DPP.SetOwner(ent, ply)
-	if ent:IsConstraint() then return end --Constraint can't have an owner
+	--if ent:IsConstraint() then return end --Constraint can't have an owner
 	local old = DPP.GetOwner(ent)
 	ent:SetNWEntity('DPP.Owner', ply)
+	
+	local isConst = DPP.IsConstraint(ent)
 	
 	if IsValid(ply) then
 		ply.DPP_Ents = ply.DPP_Ents or {}
@@ -111,13 +147,18 @@ function DPP.SetOwner(ent, ply)
 		ent:SetNWString('DPP.OwnerString', ply:Nick())
 		ent:SetNWInt('DPP.OwnerUID', ply:UniqueID())
 		ent:SetNWString('DPP.OwnerSteamID', ply:SteamID())
-		DPP.PropListing[ent] = true
+		if isConst then
+			DPP.ConstraintsListing[ent] = true
+		else
+			DPP.PropListing[ent] = true
+		end
 	else
 		ent:SetNWBool('DPP.IsOwned', false)
 		ent:SetNWString('DPP.OwnerString', 'World')
 		ent:SetNWInt('DPP.OwnerUID', 0)
 		ent:SetNWString('DPP.OwnerSteamID', '')
 		DPP.PropListing[ent] = nil
+		DPP.ConstraintsListing[ent] = nil
 	end
 	
 	if IsValid(old) then

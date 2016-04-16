@@ -74,14 +74,24 @@ function DPP.ToolgunTouch(ply, tr, mode)
 	
 	if DPP.CanTool(ply, tr.Entity, mode) == false then 
 		if SERVER then
-			DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', RED, ' tried ', GRAY, string.format('to use tool %s on %s', mode, tr.Entity))
+			ply._DPP_LastToolgunLog = ply._DPP_LastToolgunLog or 0
+			if not DPP.GetConVar('no_tool_log') and not DPP.GetConVar('no_tool_fail_log') and ply._DPP_LastToolgunLog < CurTime() then
+				ply._DPP_LastToolgunLog = CurTime() + 0.2
+				DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', RED, ' tried ', GRAY, string.format('to use tool %s on %s', mode, tr.Entity))
+			end
 		end
+		
 		return false 
 	end
 	
 	if SERVER then
 		if DPP.GetGhosted(tr.Entity) then DPP.SetGhosted(tr.Entity, false) end
-		DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', GRAY, ' used/tried to use tool ', color_white, mode, GRAY, ' on ', tr.Entity)
+		ply._DPP_LastToolgunLog = ply._DPP_LastToolgunLog or 0
+		
+		if not DPP.GetConVar('no_tool_log') and ply._DPP_LastToolgunLog < CurTime() then 
+			ply._DPP_LastToolgunLog = CurTime() + 0.2
+			DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', GRAY, ' used/tried to use tool ', color_white, mode, GRAY, ' on ', tr.Entity) 
+		end
 	end
 end
 

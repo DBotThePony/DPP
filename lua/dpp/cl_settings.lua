@@ -382,15 +382,61 @@ local MiscConVars = {
 	'check_stuck',
 	'no_rope_world',
 	'log_spawns',
+	'log_constraints',
+	'verbose_logging',
+	'no_tool_log',
+	'no_tool_fail_log',
 	'player_cant_punt',
 	'prevent_explosions_crash',
 	'advanced_spawn_checks',
 	'experemental_spawn_checks',
-	'verbose_logging',
 	'allow_damage_vehicles',
 	'allow_damage_sent',
 	'allow_damage_npc',
 }
+
+function SettingsClass.ConVarSlider(Panel, var)
+	local v = DPP.Settings[var]
+	
+	local Slider = Panel:NumSlider(v.desc, nil, v.min or 0, v.max or 100, 1)
+	SettingsClass.ApplySliderStyle(Slider)
+	Slider:SetTooltip(v.desc)
+	Slider:SetValue(DPP.GetConVar(var))
+	Slider.OnValueChanged = function()
+		local val = tonumber(Slider:GetValue())
+		
+		if v.int then
+			val = math.floor(val)
+		else
+			val = math.floor(val * 1000) / 1000
+		end
+		
+		timer.Create('DPP.Change' .. var, 1, 1, function()
+			RunConsoleCommand('dpp_setvar', var, tostring(val))
+			if IsValid(Slider) then
+				Slider:SetValue(val)
+			end
+		end)
+	end
+	
+	return Slider
+end
+
+function SettingsClass.ConVarCheckbox(Panel, idx)
+	local val = tobool(DPP.GetConVar(idx))
+	local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
+	checkbox:SetChecked(val)
+	checkbox.Button.LastVal = val
+	checkbox.Button.val = idx
+	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
+	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
+	checkbox:SetTooltip(DPP.Settings[idx].desc)
+	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
+	SettingsClass.MakeCheckboxBetter(checkbox)
+end
+
+local ConVarSlider = SettingsClass.ConVarSlider
+local ConVarCheckbox = SettingsClass.ConVarCheckbox
 
 local APropKillVars = {
 	'apropkill_enable',
@@ -418,44 +464,12 @@ local function BuildSVarPanel(Panel)
 	Lab:SizeToContents()
 	Lab:SetTooltip(TopText)
 	
-	
 	for a, b in pairs(SortedConVars) do
-		local v = DPP.Settings[b]
-		local k = b
-		PlacedCVars[k] = true
-		
-		local val = tobool(DPP.GetConVar(k))
-		
-		local checkbox = Panel:CheckBox(v.desc)
-		checkbox:SetChecked(val)
-		checkbox.Button.LastVal = val
-		checkbox.Button.val = k
-		checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-		checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-		checkbox:SetTooltip(v.desc)
-		SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-		SettingsClass.MakeCheckboxBetter(checkbox)
+		ConVarCheckbox(Panel, b)
 	end
 	
-	local Slider = Panel:NumSlider('Clear timer in seconds', nil, 1, 600, 1)
-	SettingsClass.ApplySliderStyle(Slider)
-	Slider:SetValue(DPP.GetConVar('clear_timer'))
-	Slider.OnValueChanged = function()
-		local v = tostring(math.floor(tonumber(Slider:GetValue())))
-		timer.Create('DPP.ChangeTimer', 1, 1, function()
-			RunConsoleCommand('dpp_setvar', 'clear_timer', v)
-		end)
-	end
-	
-	local Slider = Panel:NumSlider('Grab timer in seconds', nil, 1, 600, 1)
-	SettingsClass.ApplySliderStyle(Slider)
-	Slider:SetValue(DPP.GetConVar('grabs_timer'))
-	Slider.OnValueChanged = function()
-		local v = tostring(math.floor(tonumber(Slider:GetValue())))
-		timer.Create('DPP.ChangeGrabTimer', 1, 1, function()
-			RunConsoleCommand('dpp_setvar', 'grabs_timer', v)
-		end)
-	end
+	ConVarSlider(Panel, 'clear_timer')
+	ConVarSlider(Panel, 'grabs_timer')
 end
 
 local function BuildCVarPanel(Panel)
@@ -495,21 +509,7 @@ local function BuildMiscVarsPanel(Panel)
 	SettingsClass.SetupBackColor(Panel)
 	
 	for a, b in pairs(MiscConVars) do
-		local v = DPP.Settings[b]
-		local k = b
-		PlacedCVars[k] = true
-		
-		local val = tobool(DPP.GetConVar(k))
-		
-		local checkbox = Panel:CheckBox(v.desc)
-		checkbox:SetChecked(val)
-		checkbox.Button.LastVal = val
-		checkbox.Button.val = k
-		checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-		checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-		checkbox:SetTooltip(v.desc)
-		SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-		SettingsClass.MakeCheckboxBetter(checkbox)
+		ConVarCheckbox(Panel, b)
 	end
 end
 
@@ -519,21 +519,10 @@ local function BuildAPropKillVarsPanel(Panel)
 	SettingsClass.SetupBackColor(Panel)
 	
 	for a, b in pairs(APropKillVars) do
-		local v = DPP.Settings[b]
-		local k = b
-		
-		local val = tobool(DPP.GetConVar(k))
-		
-		local checkbox = Panel:CheckBox(v.desc)
-		checkbox:SetChecked(val)
-		checkbox.Button.LastVal = val
-		checkbox.Button.val = k
-		checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-		checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-		checkbox:SetTooltip(v.desc)
-		SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-		SettingsClass.MakeCheckboxBetter(checkbox)
+		ConVarCheckbox(Panel, b)
 	end
+	
+	ConVarSlider(Panel, 'apropkill_clampspeed_val')
 end
 
 local function BuildAntispamPanel(Panel)
@@ -541,104 +530,16 @@ local function BuildAntispamPanel(Panel)
 	Panel:Clear()
 	SettingsClass.SetupBackColor(Panel)
 	
-	local checkbox = Panel:CheckBox('Check sizes of entities')
-	checkbox.Button.val = 'check_sizes'
-	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-	SettingsClass.MakeCheckboxBetter(checkbox)
-	
-	local idx = 'stuck_ignore_frozen'
-	local val = tobool(DPP.GetConVar(idx))
-	local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
-	checkbox:SetChecked(val)
-	checkbox.Button.LastVal = val
-	checkbox.Button.val = idx
-	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-	checkbox:SetTooltip(DPP.Settings[idx].desc)
-	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-	SettingsClass.MakeCheckboxBetter(checkbox)
-	
-	local checkbox = Panel:CheckBox('Prevent props from getting stuck in each other')
-	checkbox.Button.val = 'check_stuck'
-	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-	SettingsClass.MakeCheckboxBetter(checkbox)
-	
-	local Slider = Panel:NumSlider('Maximum size of props before ghosting', nil, 200, 4000, 1)
-	SettingsClass.ApplySliderStyle(Slider)
-	Slider:SetTooltip('Maximum size of props before ghosting')
-	Slider:SetValue(DPP.GetConVar('max_size'))
-	Slider.OnValueChanged = function()
-		local v = tostring(math.floor(tonumber(Slider:GetValue())))
-		timer.Create('DPP.ChangeMaxSizeTimer', 1, 1, function()
-			RunConsoleCommand('dpp_setvar', 'max_size', v)
-		end)
-	end
-	
-	local checkbox = Panel:CheckBox('Enable Antispam')
-	checkbox.Button.val = 'antispam'
-	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-	SettingsClass.MakeCheckboxBetter(checkbox)
-	
-	local Slider = Panel:NumSlider('Antispam delay: Higher is stricter', nil, 0, 4, 1)
-	SettingsClass.ApplySliderStyle(Slider)
-	Slider:SetValue(DPP.GetConVar('antispam_delay'))
-	Slider:SetTooltip('Antispam delay: Higher is stricter')
-	Slider.OnValueChanged = function()
-		local v = tonumber(Slider:GetValue())
-		timer.Create('DPP.AntispamDelay', 1, 1, function()
-			RunConsoleCommand('dpp_setvar', 'antispam_delay', v)
-		end)
-	end
-	
-	local Slider = Panel:NumSlider('Antispam remove multiplier: Lower removes earlier', nil, 4, 20, 1)
-	SettingsClass.ApplySliderStyle(Slider)
-	Slider:SetValue(DPP.GetConVar('antispam_remove'))
-	Slider:SetTooltip('Antispam remove multiplier: Lower removes earlier')
-	Slider.OnValueChanged = function()
-		local v = math.floor(tonumber(Slider:GetValue()))
-		timer.Create('DPP.AntispamRemove', 1, 1, function()
-			RunConsoleCommand('dpp_setvar', 'antispam_remove', v)
-		end)
-	end
-	
-	local Slider = Panel:NumSlider('Antispam ghost multiplier: Lower ghosts earlier', nil, 1, 10, 1)
-	SettingsClass.ApplySliderStyle(Slider)
-	Slider:SetTooltip('Antispam ghost multiplier: Lower ghosts earlier')
-	Slider:SetValue(DPP.GetConVar('antispam_ghost'))
-	Slider.OnValueChanged = function()
-		local v = math.floor(tonumber(Slider:GetValue()))
-		timer.Create('DPP.AntispamGhost', 1, 1, function()
-			RunConsoleCommand('dpp_setvar', 'antispam_ghost', v)
-		end)
-	end
-	
-	local Slider = Panel:NumSlider('Antispam max cooldown multiplier: Removes entities earlier', nil, 1, 10, 1)
-	SettingsClass.ApplySliderStyle(Slider)
-	Slider:SetValue(DPP.GetConVar('antispam_max'))
-	Slider:SetTooltip('Antispam max cooldown multiplier: Removes entities earlier')
-	Slider.OnValueChanged = function()
-		local v = math.floor(tonumber(Slider:GetValue()))
-		timer.Create('DPP.AntispamGhost', 1, 1, function()
-			RunConsoleCommand('dpp_setvar', 'antispam_max', v)
-		end)
-	end
-	
-	local Slider = Panel:NumSlider('Antispam cooldown divider: Lower is faster', nil, 0, 4, 1)
-	SettingsClass.ApplySliderStyle(Slider)
-	Slider:SetValue(DPP.GetConVar('antispam_cooldown_divider'))
-	Slider:SetTooltip('Antispam cooldown divider: Lower is faster')
-	Slider.OnValueChanged = function()
-		local v = tonumber(Slider:GetValue())
-		timer.Create('DPP.AntispamCooldown', 1, 1, function()
-			RunConsoleCommand('dpp_setvar', 'antispam_cooldown_divider', v)
-		end)
-	end
+	SettingsClass.ConVarCheckbox(Panel, 'check_sizes')
+	SettingsClass.ConVarCheckbox(Panel, 'stuck_ignore_frozen')
+	SettingsClass.ConVarCheckbox(Panel, 'check_stuck')
+	SettingsClass.ConVarSlider(Panel, 'max_size')
+	SettingsClass.ConVarCheckbox(Panel, 'antispam')
+	SettingsClass.ConVarSlider(Panel, 'antispam_delay')
+	SettingsClass.ConVarSlider(Panel, 'antispam_remove')
+	SettingsClass.ConVarSlider(Panel, 'antispam_ghost')
+	SettingsClass.ConVarSlider(Panel, 'antispam_max')
+	SettingsClass.ConVarSlider(Panel, 'antispam_cooldown_divider')
 end
 
 local function BuildPlayerList(Panel)
@@ -723,17 +624,7 @@ local function BuildModelsList(Panel)
 	end
 	SettingsClass.ApplyButtonStyle(Apply)
 	
-	local idx = 'model_blacklist'
-	local val = tobool(DPP.GetConVar(idx))
-	local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
-	checkbox:SetChecked(val)
-	checkbox.Button.LastVal = val
-	checkbox.Button.val = idx
-	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-	checkbox:SetTooltip(DPP.Settings[idx].desc)
-	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-	SettingsClass.MakeCheckboxBetter(checkbox)
+	ConVarCheckbox(Panel, 'model_blacklist')
 end
 
 local function OpenLimitEditPanel(class)
@@ -879,23 +770,18 @@ local function BuildLimitsList(Panel)
 	end
 	SettingsClass.ApplyButtonStyle(Apply)
 	
-	local idx = 'ent_limits_enable'
-	PlacedCVars[idx] = true
-	local val = tobool(DPP.GetConVar(idx))
-	local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
-	checkbox:SetChecked(val)
-	checkbox.Button.LastVal = val
-	checkbox.Button.val = idx
-	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-	checkbox:SetTooltip(DPP.Settings[idx].desc)
-	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-	SettingsClass.MakeCheckboxBetter(checkbox)
+	ConVarCheckbox(Panel, 'ent_limits_enable')
 end
 
 local function RemoveAllSLimits(class)
 	for k, v in pairs(DPP.GetGroups()) do
 		RunConsoleCommand('dpp_removesboxlimit', class, v)
+	end
+end
+
+local function RemoveAllCLimits(class)
+	for k, v in pairs(DPP.GetGroups()) do
+		RunConsoleCommand('dpp_removeconstlimit', class, v)
 	end
 end
 
@@ -948,6 +834,76 @@ local function OpenSLimitEditPanel(class)
 				RunConsoleCommand('dpp_addsboxlimit', class, v.Group, n)
 			else
 				RunConsoleCommand('dpp_removesboxlimit', class, v.Group)
+			end
+		end
+		
+		frame:Close()
+	end
+	
+	local discard = frame:Add('DButton')
+	discard:Dock(BOTTOM)
+	discard:SetText('Discard')
+	SettingsClass.ApplyButtonStyle(discard)
+	
+	function discard.DoClick()
+		frame:Close()
+	end
+	
+	frame:SetHeight(height)
+	frame:SetWidth(300)
+	frame:Center()
+	frame:MakePopup()
+end
+
+local function OpenCLimitEditPanel(class)
+	local t = DPP.ConstrainsLimits[class] or {}
+	
+	local height = 90
+	
+	local frame = vgui.Create('DFrame')
+	frame:SetTitle('Modifying ' .. class)
+	SettingsClass.ApplyFrameStyle(frame)
+	
+	local lab = frame:Add('DLabel')
+	lab:SetTextColor(SettingsClass.TextColor)
+	lab:SetText('Unlimited: -1\n0 - removes limit from db\nAny values higher than 0 is a limit')
+	lab:Dock(TOP)
+	lab:SizeToContents()
+	
+	local groups = DPP.GetGroups()
+	local Panels = {}
+	
+	for k, v in pairs(groups) do
+		height = height + 50
+		local l = frame:Add('DLabel')
+		local p = frame:Add('DTextEntry')
+		table.insert(Panels, p)
+		p.Group = v
+		l:Dock(TOP)
+		l:SetText(v)
+		l:SetTextColor(SettingsClass.TextColor)
+		p:Dock(TOP)
+		p:SetText(t[v] or '0')
+		p.OriginalValue = (t[v] or '0')
+	end
+	
+	local apply = frame:Add('DButton')
+	apply:Dock(BOTTOM)
+	apply:SetText('Apply')
+	SettingsClass.ApplyButtonStyle(apply)
+	
+	function apply.DoClick()
+		t = {}
+		
+		for k, v in pairs(Panels) do
+			local n = tonumber(v:GetText())
+			if not n then continue end
+			if tonumber(v.OriginalValue) == n then continue end
+			
+			if n ~= 0 then
+				RunConsoleCommand('dpp_addconstlimit', class, v.Group, n)
+			else
+				RunConsoleCommand('dpp_removeconstlimit', class, v.Group)
 			end
 		end
 		
@@ -1032,18 +988,73 @@ local function BuildSLimitsList(Panel)
 	end
 	SettingsClass.ApplyButtonStyle(Apply)
 	
-	local idx = 'sbox_limits_enable'
-	PlacedCVars[idx] = true
-	local val = tobool(DPP.GetConVar(idx))
-	local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
-	checkbox:SetChecked(val)
-	checkbox.Button.LastVal = val
-	checkbox.Button.val = idx
-	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-	checkbox:SetTooltip(DPP.Settings[idx].desc)
-	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-	SettingsClass.MakeCheckboxBetter(checkbox)
+	ConVarCheckbox(Panel, 'sbox_limits_enable')
+end
+
+local function BuildCLimitsList(Panel)
+	if not IsValid(Panel) then return end
+	Panel:Clear()
+	SettingsClass.SetupBackColor(Panel)
+	DPP.SettingsClass.CLimitsPanel = Panel
+	
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	local t = 'You can see type of constraints in DPP logs\nATTENTION: Because of nature of rope constraints\nDPP thinks that keyframe_rope is a "vrope"\nconstraint because rope (and related) constraints\n creating keyframe_rope too to show visual rope.'
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SetText(t)
+	Lab:SizeToContents()
+	Lab:SetTooltip(t)
+	
+	local list = vgui.Create('DListView', Panel)
+	Panel:AddItem(list)
+	
+	list:SetHeight(600)
+	list:AddColumn('Class')
+	list:AddColumn('Group')
+	list:AddColumn('Limit')
+
+	local L = DPP.ConstrainsLimits
+	
+	for k, v in pairs(L) do
+		for group, limit in pairs(v) do
+			list:AddLine(k, group, limit)
+		end
+	end
+	
+	list.OnRowRightClick = function(self, line)
+		local val = self:GetLine(line):GetValue(1)
+		local group = self:GetLine(line):GetValue(2)
+		local limit = self:GetLine(line):GetValue(3)
+		
+		local menu = vgui.Create('DMenu')
+		menu:AddOption('Copy class to clipboard', function()
+			SetClipboardText(val)
+		end)
+		
+		menu:AddOption('Edit limit...', function()
+			OpenCLimitEditPanel(val)
+		end)
+		
+		menu:AddOption('Remove this limit', function()
+			RunConsoleCommand('dpp_removeconstlimit', val, group)
+		end)
+		
+		menu:AddOption('Remove this limit for all groups', function()
+			RemoveAllCLimits(val)
+		end)
+		
+		menu:Open()
+	end
+	
+	local entry = vgui.Create('DTextEntry', Panel)
+	Panel:AddItem(entry)
+	local Apply = Panel:Button('Add/Edit/Remove limit')
+	Apply.DoClick = function()
+		OpenCLimitEditPanel(entry:GetText())
+	end
+	SettingsClass.ApplyButtonStyle(Apply)
+	
+	ConVarCheckbox(Panel, 'const_limits_enable')
 end
 
 local PanelsFunctions = {}
@@ -1125,58 +1136,10 @@ function CustomBlockMenus.toolworld(Panel)
 	end
 	SettingsClass.ApplyButtonStyle(Apply)
 	
-	local idx = 'blacklist_' .. k
-	PlacedCVars[idx] = true
-	local val = tobool(DPP.GetConVar(idx))
-	local checkbox = Panel:CheckBox('Enable this blacklist')
-	checkbox:SetChecked(val)
-	checkbox.Button.LastVal = val
-	checkbox.Button.val = idx
-	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-	checkbox:SetTooltip('Enable this blacklist')
-	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-	SettingsClass.MakeCheckboxBetter(checkbox)
-	
-	local idx = 'blacklist_' .. k .. '_white'
-	PlacedCVars[idx] = true
-	local val = tobool(DPP.GetConVar(idx))
-	local checkbox = Panel:CheckBox('This is a whitelist')
-	checkbox:SetChecked(val)
-	checkbox.Button.LastVal = val
-	checkbox.Button.val = idx
-	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-	checkbox:SetTooltip('This is a whitelist')
-	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-	SettingsClass.MakeCheckboxBetter(checkbox)
-	
-	
-	local idx = 'blacklist_' .. k .. '_player_can'
-	PlacedCVars[idx] = true
-	local val = tobool(DPP.GetConVar(idx))
-	local checkbox = Panel:CheckBox('Disable for players')
-	checkbox:SetChecked(val)
-	checkbox.Button.LastVal = val
-	checkbox.Button.val = idx
-	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-	checkbox:SetTooltip('Disable for players')
-	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-	SettingsClass.MakeCheckboxBetter(checkbox)
-	
-	local idx = 'blacklist_' .. k .. '_admin_can'
-	PlacedCVars[idx] = true
-	local val = tobool(DPP.GetConVar(idx))
-	local checkbox = Panel:CheckBox('Disable for admins')
-	checkbox:SetChecked(val)
-	checkbox.Button.LastVal = val
-	checkbox.Button.val = idx
-	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-	checkbox:SetTooltip('Disable for admins')
-	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-	SettingsClass.MakeCheckboxBetter(checkbox)
+	ConVarCheckbox(Panel, 'blacklist_' .. k)
+	ConVarCheckbox(Panel, 'blacklist_' .. k .. '_white')
+	ConVarCheckbox(Panel, 'blacklist_' .. k .. '_player_can')
+	ConVarCheckbox(Panel, 'blacklist_' .. k .. '_admin_can')
 end
 
 for k, v in pairs(DPP.BlockTypes) do
@@ -1288,59 +1251,10 @@ for k, v in pairs(DPP.BlockTypes) do
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 		
-		
-		local idx = 'blacklist_' .. k
-		PlacedCVars[idx] = true
-		local val = tobool(DPP.GetConVar(idx))
-		local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
-		checkbox:SetChecked(val)
-		checkbox.Button.LastVal = val
-		checkbox.Button.val = idx
-		checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-		checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-		checkbox:SetTooltip(DPP.Settings[idx].desc)
-		SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-		SettingsClass.MakeCheckboxBetter(checkbox)
-		
-		local idx = 'blacklist_' .. k .. '_white'
-		PlacedCVars[idx] = true
-		local val = tobool(DPP.GetConVar(idx))
-		local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
-		checkbox:SetChecked(val)
-		checkbox.Button.LastVal = val
-		checkbox.Button.val = idx
-		checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-		checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-		checkbox:SetTooltip(DPP.Settings[idx].desc)
-		SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-		SettingsClass.MakeCheckboxBetter(checkbox)
-		
-		
-		local idx = 'blacklist_' .. k .. '_player_can'
-		PlacedCVars[idx] = true
-		local val = tobool(DPP.GetConVar(idx))
-		local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
-		checkbox:SetChecked(val)
-		checkbox.Button.LastVal = val
-		checkbox.Button.val = idx
-		checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-		checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-		checkbox:SetTooltip(DPP.Settings[idx].desc)
-		SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-		SettingsClass.MakeCheckboxBetter(checkbox)
-		
-		local idx = 'blacklist_' .. k .. '_admin_can'
-		PlacedCVars[idx] = true
-		local val = tobool(DPP.GetConVar(idx))
-		local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
-		checkbox:SetChecked(val)
-		checkbox.Button.LastVal = val
-		checkbox.Button.val = idx
-		checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-		checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-		checkbox:SetTooltip(DPP.Settings[idx].desc)
-		SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-		SettingsClass.MakeCheckboxBetter(checkbox)
+		ConVarCheckbox(Panel, 'blacklist_' .. k)
+		ConVarCheckbox(Panel, 'blacklist_' .. k .. '_white')
+		ConVarCheckbox(Panel, 'blacklist_' .. k .. '_player_can')
+		ConVarCheckbox(Panel, 'blacklist_' .. k .. '_admin_can')
 	end
 end
 
@@ -1472,44 +1386,9 @@ for k, v in pairs(DPP.RestrictTypes) do
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 		
-		local idx = 'restrict_' .. k
-		PlacedCVars[idx] = true
-		local val = tobool(DPP.GetConVar(idx))
-		local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
-		checkbox:SetChecked(val)
-		checkbox.Button.LastVal = val
-		checkbox.Button.val = idx
-		checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-		checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-		checkbox:SetTooltip(DPP.Settings[idx].desc)
-		SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-		SettingsClass.MakeCheckboxBetter(checkbox)
-		
-		local idx = 'restrict_' .. k .. '_white'
-		PlacedCVars[idx] = true
-		local val = tobool(DPP.GetConVar(idx))
-		local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
-		checkbox:SetChecked(val)
-		checkbox.Button.LastVal = val
-		checkbox.Button.val = idx
-		checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-		checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-		checkbox:SetTooltip(DPP.Settings[idx].desc)
-		SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-		SettingsClass.MakeCheckboxBetter(checkbox)
-		
-		local idx = 'restrict_' .. k .. '_white_bypass'
-		PlacedCVars[idx] = true
-		local val = tobool(DPP.GetConVar(idx))
-		local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
-		checkbox:SetChecked(val)
-		checkbox.Button.LastVal = val
-		checkbox.Button.val = idx
-		checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
-		checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-		checkbox:SetTooltip(DPP.Settings[idx].desc)
-		SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-		SettingsClass.MakeCheckboxBetter(checkbox)
+		ConVarCheckbox(Panel, 'restrict_' .. k)
+		ConVarCheckbox(Panel, 'restrict_' .. k .. '_white')
+		ConVarCheckbox(Panel, 'restrict_' .. k .. '_white_bypass')
 	end
 end
 
@@ -1586,6 +1465,7 @@ local function PopulateToolMenu()
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.APanel', 'Antispam Settings', '', '', BuildAntispamPanel)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Limits', 'Entity Limits', '', '', BuildLimitsList)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.SLimits', 'Sandbox Limits', '', '', BuildSLimitsList)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.CLimits', 'Constraints Limits', '', '', BuildCLimitsList)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP Blacklists', 'DPP.ModelList', 'Model blacklist', '', '', BuildModelsList)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Friends', 'Friends', '', '', BuildFriendsPanel)
 	
@@ -1616,7 +1496,19 @@ hook.Add('DPP.SBoxLimitsUpdated', 'DPP.Menu', function()
 	BuildSLimitsList(DPP.SettingsClass.SLimitsPanel)
 end)
 
+hook.Add('DPP.ConstrainsLimitsUpdated', 'DPP.Menu', function()
+	BuildCLimitsList(DPP.SettingsClass.CLimitsPanel)
+end)
+
+hook.Add('DPP.ConstrainsLimitsReloaded', 'DPP.Menu', function()
+	BuildCLimitsList(DPP.SettingsClass.CLimitsPanel)
+end)
+
 hook.Add('DPP.SBoxLimitsReloaded', 'DPP.Menu', function()
+	BuildSLimitsList(DPP.SettingsClass.SLimitsPanel)
+end)
+
+hook.Add('DPP.ConstLimitsReloaded', 'DPP.Menu', function()
 	BuildSLimitsList(DPP.SettingsClass.SLimitsPanel)
 end)
 

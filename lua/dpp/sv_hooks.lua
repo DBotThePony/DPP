@@ -38,6 +38,40 @@ local function LogTryPost(ply, type, ent)
 	DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', RED, ' tried ', GRAY, string.format('to spawn %s <%s | %s> (%s)', ent:GetClass(), tostring(ent), ent:GetModel(), type or 'N/A'))
 end
 
+local function LogConstraint(ply, ent)
+	if not DPP.GetConVar('log_spawns') then return end
+	if not DPP.GetConVar('log_constraints') then return end
+	if IgnoreSpawn[ent:GetClass()] then return end
+	local ent1, ent2 = '<unknown>', '<unknown>'
+	if ent.GetConstrainedEntities and ent:GetConstrainedEntities() then
+		ent1, ent2 = ent:GetConstrainedEntities()
+		if not IsValid(ent1) then
+			ent1 = '<unknown>'
+		end
+		if not IsValid(ent2) then
+			ent1 = '<unknown>'
+		end
+	end
+	DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', GRAY, ' created constraint ', color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
+end
+
+local function LogConstraintTry(ply, ent)
+	if not DPP.GetConVar('log_spawns') then return end
+	if not DPP.GetConVar('log_constraints') then return end
+	if IgnoreSpawn[ent:GetClass()] then return end
+	local ent1, ent2 = '<unknown>', '<unknown>'
+	if ent.GetConstrainedEntities and ent:GetConstrainedEntities() then
+		ent1, ent2 = ent:GetConstrainedEntities()
+		if not IsValid(ent1) then
+			ent1 = '<unknown>'
+		end
+		if not IsValid(ent2) then
+			ent1 = '<unknown>'
+		end
+	end
+	DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', RED, ' tried ', GRAY, 'to create constraint ', color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
+end
+
 local function CheckEntityLimit(ply, class)
 	if not DPP.IsEnabled() then return end
 	local limit = DPP.GetEntityLimit(class, ply:GetUserGroup())
@@ -53,7 +87,9 @@ local function CheckEntityLimit(ply, class)
 end
 
 local function CheckBlocked(ply, ent)
-	local model = string.lower(ent:GetModel())
+	local Mod = ent:GetModel()
+	if not Mod then return end
+	local model = string.lower(Mod)
 	
 	if DPP.IsRestrictedModel(model, ply) then 
 		SafeRemoveEntity(ent)
@@ -158,7 +194,10 @@ local function CheckBefore(ply, ent, forceVerbose)
 			SpawnFunctions.PlayerSpawnedVehicle(ply, ent, hide)
 		elseif ent:IsWeapon() then
 			SpawnFunctions.PlayerSpawnedSWEP(ply, ent, hide)
-		elseif not ent:IsConstraint() then
+		--elseif not ent:IsConstraint() then
+		elseif DPP.IsConstraint(ent) then
+			SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide)
+		else
 			SpawnFunctions.PlayerSpawnedSENT(ply, ent, hide)
 		end
 	end
@@ -242,6 +281,18 @@ function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog)
 	
 	DPP.CheckDroppedEntity(ply, ent)
 	CheckBlocked(ply, ent)
+end
+
+function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide)
+	Spawned(ply, ent)
+	
+	local type = DPP.GetContstrainType(ent)
+	if not DPP.IsConstraintLimitReached(ply, type) then
+		LogConstraint(ply, ent)
+	else
+		LogConstraintTry(ply, ent)
+		SafeRemoveEntity(ent)
+	end
 end
 
 function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog)
@@ -595,6 +646,10 @@ function PostEntityCreated(ent, Timestamp)
 			
 			if o1 ~= o2 or not DPP.IsSingleOwner(ent1, o2) or not DPP.IsSingleOwner(ent2, o1) then
 				DPP.RecalcConstraints(ent1) --Recalculating only for one entity, because second is constrained with first
+			end
+			
+			if o1 == o2 and not DPP.IsOwned(ent) then
+				SpawnFunctions.PlayerSpawnedConstraint(o1, ent)
 			end
 		end
 		

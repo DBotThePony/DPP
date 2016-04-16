@@ -33,6 +33,15 @@ function DPP.CreateTables()
 		)
 	]])
 	
+	sql.Query([[
+		CREATE TABLE IF NOT EXISTS dpp_constlimits (
+			CLASS VARCHAR(64) NOT NULL,
+			UGROUP VARCHAR(64) NOT NULL,
+			ULIMIT INT NOT NULL,
+			PRIMARY KEY (CLASS, UGROUP)
+		)
+	]])
+	
 	for k, v in pairs(DPP.BlockTypes) do
 		sql.Query([[
 			CREATE TABLE IF NOT EXISTS dpp_blockedentities]] .. k .. [[ (
@@ -347,6 +356,24 @@ function DPP.AddSBoxLimit(class, group, val)
 	timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 end
 
+function DPP.AddConstLimit(class, group, val)
+	if not val then return end
+	
+	class = string.lower(class)
+	
+	DPP.ConstrainsLimits[class] = DPP.ConstrainsLimits[class] or {}
+	DPP.ConstrainsLimits[class][group] = val
+	
+	net.Start('DPP.CListsInsert')
+	net.WriteString(class)
+	net.WriteTable(DPP.ConstrainsLimits[class])
+	net.Broadcast()
+	
+	sql.Query(string.format('REPLACE INTO dpp_constlimits (CLASS, UGROUP, ULIMIT) VALUES (%q, %q, %q)', class, group, val))
+	
+	timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
+end
+
 function DPP.RemoveSBoxLimit(class, group)
 	class = string.lower(class)
 	
@@ -362,7 +389,28 @@ function DPP.RemoveSBoxLimit(class, group)
 	
 	net.Start('DPP.SListsInsert')
 	net.WriteString(class)
-	net.WriteTable(DPP.SBoxLimits[class])
+	net.WriteTable(DPP.SBoxLimits[class] or {})
+	net.Broadcast()
+	
+	timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
+end
+
+function DPP.RemoveConstLimit(class, group)
+	class = string.lower(class)
+	
+	if group then
+		DPP.ConstrainsLimits[class] = DPP.ConstrainsLimits[class] or {}
+		DPP.ConstrainsLimits[class][group] = nil
+		
+		sql.Query(string.format('DELETE FROM dpp_sboxlimits WHERE CLASS = %q AND UGROUP = %q', class, group))
+	else
+		DPP.ConstrainsLimits[class] = nil
+		sql.Query(string.format('DELETE FROM dpp_sboxlimits WHERE CLASS = %q', class))
+	end
+	
+	net.Start('DPP.CListsInsert')
+	net.WriteString(class)
+	net.WriteTable(DPP.ConstrainsLimits[class] or {})
 	net.Broadcast()
 	
 	timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
@@ -387,6 +435,17 @@ function DPP.LoadSLimits()
 	for index, row in pairs(data) do
 		DPP.SBoxLimits[row.CLASS] = DPP.SBoxLimits[row.CLASS] or {}
 		DPP.SBoxLimits[row.CLASS][row.UGROUP] = row.ULIMIT
+	end
+end
+
+function DPP.LoadCLimits()
+	DPP.ConstrainsLimits = {}
+	local data = sql.Query('SELECT * FROM dpp_constlimits')
+	if not data then return end
+	
+	for index, row in pairs(data) do
+		DPP.ConstrainsLimits[row.CLASS] = DPP.ConstrainsLimits[row.CLASS] or {}
+		DPP.ConstrainsLimits[row.CLASS][row.UGROUP] = row.ULIMIT
 	end
 end
 
@@ -454,6 +513,26 @@ concommand.Add('dpp_addsboxlimit', function(ply, cmd, args)
 	Last = CurTime() + 0.5
 end)
 
+concommand.Add('dpp_addconstlimit', function(ply, cmd, args)
+	if IsValid(ply) and not ply:IsSuperAdmin() then return end
+	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+	if not args[3] or args[3] == '' or args[3] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+	
+	local class = args[1]
+	local group = args[2]
+	local num = tonumber(args[3])
+	
+	if not num then DPP.Notify(ply, 'Invalid argument') return end
+	
+	DPP.AddConstLimit(class, group, num)
+	
+	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' added/updated ' .. class .. ' constaints limit list for ' .. group}
+	DPP.Notify(player.GetAll(), f)
+	DPP.Message(f)
+	Last = CurTime() + 0.5
+end)
+
 concommand.Add('dpp_removesboxlimit', function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsSuperAdmin() then return end
 	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
@@ -467,6 +546,24 @@ concommand.Add('dpp_removesboxlimit', function(ply, cmd, args)
 	DPP.RemoveSBoxLimit(class, group)
 	
 	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' removed ' .. class .. ' from sbox limits list for ' .. group}
+	DPP.Notify(player.GetAll(), f)
+	DPP.Message(f)
+	Last = CurTime() + 0.5
+end)
+
+concommand.Add('dpp_removeconstlimit', function(ply, cmd, args)
+	if IsValid(ply) and not ply:IsSuperAdmin() then return end
+	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+	
+	local class = args[1]
+	local group = args[2]
+	if not DPP.ConstrainsLimits[class] then return end
+	if not DPP.ConstrainsLimits[class][group] then return end
+	
+	DPP.RemoveConstLimit(class, group)
+	
+	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' removed ' .. class .. ' from constaints limit list for ' .. group}
 	DPP.Notify(player.GetAll(), f)
 	DPP.Message(f)
 	Last = CurTime() + 0.5
@@ -504,6 +601,7 @@ local function Load()
 	DPP.LoadBlockedModels()
 	DPP.LoadLimits()
 	DPP.LoadSLimits()
+	DPP.LoadCLimits()
 	DPP.LoadCVars()
 	
 	for k, v in pairs(DPP.BlockTypes) do

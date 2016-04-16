@@ -93,6 +93,8 @@ DPP.Settings = {
 		type = 'int',
 		value = '15',
 		desc = 'Clamp value. Change with caution!',
+		min = 1,
+		max = 50,
 	},
 	
 	['apropkill_damage_vehicle'] = {
@@ -129,8 +131,8 @@ DPP.Settings = {
 		type = 'int',
 		value = '120',
 		desc = 'Clear time in seconds',
-		min = '1',
-		max = '600',
+		min = 1,
+		max = 600,
 	},
 	
 	['grabs_disconnected'] = {
@@ -149,8 +151,8 @@ DPP.Settings = {
 		type = 'int',
 		value = '60',
 		desc = 'Up for grabs enable timer in seconds',
-		min = '1',
-		max = '600',
+		min = 1,
+		max = 600,
 	},
 	
 	['disconnect_freeze'] = {
@@ -261,6 +263,8 @@ DPP.Settings = {
 		type = 'int',
 		value = '50',
 		desc = 'Max explosion count on one frame. Change with care!!',
+		min = 1,
+		max = 300,
 	},
 	
 	['prevent_prop_throw'] = {
@@ -334,8 +338,8 @@ DPP.Settings = {
 		type = 'float',
 		value = '1000',
 		desc = 'Sizes of big prop',
-		min = '200',
-		max = '4000',
+		min = 50,
+		max = 8000,
 	},
 	
 	['antispam'] = {
@@ -348,30 +352,40 @@ DPP.Settings = {
 		type = 'float',
 		value = '0.6',
 		desc = 'Minimum delay between entity spawning',
+		min = 0.1,
+		max = 3,
 	},
 	
 	['antispam_remove'] = {
 		type = 'int',
 		value = '10',
 		desc = 'Remove thresold',
+		min = 2,
+		max = 30,
 	},
 	
 	['antispam_ghost'] = {
 		type = 'int',
 		value = '2',
 		desc = 'Ghost thresold',
+		min = 2,
+		max = 30,
 	},
 	
 	['antispam_cooldown_divider'] = {
 		type = 'float',
 		value = '1',
 		desc = 'Lower means faster cooldown',
+		min = 0.1,
+		max = 6,
 	},
 	
 	['antispam_max'] = {
 		type = 'int',
 		value = '30',
 		desc = 'Max amount of counted entities (max cooldown in spawned count)',
+		min = 3,
+		max = 100,
 	},
 	
 	['check_stuck'] = {
@@ -410,11 +424,36 @@ DPP.Settings = {
 		value = '1',
 		desc = 'Sandbox limits toggle'
 	},
+	
+	['const_limits_enable'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Constrains limits toggle'
+	},
+	
+	['log_constraints'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Should constraints spawn be logged'
+	},
+	
+	['no_tool_log'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Disable toolgun log'
+	},
+	
+	['no_tool_fail_log'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Disable toolgun "tries" log'
+	},
 }
 
 DPP.BlockedEntities = DPP.BlockedEntities or {}
 DPP.EntsLimits = DPP.EntsLimits or {}
 DPP.SBoxLimits = DPP.SBoxLimits or {}
+DPP.ConstrainsLimits = DPP.ConstrainsLimits or {}
 DPP.RestrictedTypes = DPP.RestrictedTypes or {}
 DPP.BlockedModels = DPP.BlockedModels or {}
 
@@ -751,6 +790,21 @@ end
 function DPP.GetSBoxLimit(class, group)
 	if not DPP.GetConVar('sbox_limits_enable') then return DPP_NO_LIMIT end
 	local T = DPP.SBoxLimits[class]
+	
+	if T then
+		if not T[group] then
+			return DPP_NO_LIMIT
+		else
+			return tonumber(T[group])
+		end
+	else
+		return DPP_NO_LIMIT
+	end
+end
+
+function DPP.GetConstLimit(class, group)
+	if not DPP.GetConVar('const_limits_enable') then return DPP_NO_LIMIT end
+	local T = DPP.ConstrainsLimits[class]
 	
 	if T then
 		if not T[group] then

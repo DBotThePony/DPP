@@ -740,6 +740,13 @@ net.Receive('DPP.SLists', function()
 	DPP.Message('SBox limit list received from server, reloading')
 end)
 
+net.Receive('DPP.CLists', function()
+	DPP.ConstrainsLimits = net.ReadTable()
+	
+	hook.Run('DPP.ConstrainsLimitsReloaded', DPP.ConstrainsLimits)
+	DPP.Message('Constrains limit list received from server, reloading')
+end)
+
 net.Receive('DPP.PlayerList', function()
 	DPP.PlayerList = net.ReadTable()
 	
@@ -803,6 +810,13 @@ net.Receive('DPP.SListsInsert', function()
 	DPP.SBoxLimits[s1] = net.ReadTable()
 	
 	hook.Run('DPP.SBoxLimitsUpdated', s1)
+end)
+
+net.Receive('DPP.CListsInsert', function()
+	local s1 = net.ReadString()
+	DPP.ConstrainsLimits[s1] = net.ReadTable()
+	
+	hook.Run('DPP.ConstrainsLimitsUpdated', s1)
 end)
 
 net.Receive('DPP.ModelsInsert', function()

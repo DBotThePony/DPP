@@ -679,6 +679,14 @@ function DPP.BroadcastLists()
 	end)
 	
 	count = count + 1
+	
+	timer.Create('DPP.SendCLimitList', count * 2, 1, function()
+		net.Start('DPP.CLists')
+		net.WriteTable(DPP.ConstrainsLimits)
+		net.Broadcast()
+	end)
+	
+	count = count + 1
 end
 
 --[[timer.Remove('DPP.BroadcastCVars', 30, 0, function()
@@ -798,4 +806,45 @@ do
 		
 		return DPP.__oldBlastDamage(...)
 	end
+end
+
+function DPP.RefreshConstrainsList()
+	for ent, v in pairs(DPP.ConstraintsListing) do
+		if not IsValid(ent) then
+			DPP.ConstraintsListing[ent] = nil
+		end
+	end
+end
+
+function DPP.ConstraintCount(ply, type)
+	DPP.RefreshConstrainsList()
+	local c = 0
+	
+	for ent, v in pairs(DPP.ConstraintsListing) do
+		if DPP.GetOwner(ent) == ply and DPP.GetContstrainType(ent) == type then
+			c = c + 1
+		end
+	end
+	
+	return c
+end
+
+function DPP.IsConstraintLimitReached(ply, type)
+	local count = DPP.GetConstLimit(type, ply:GetUserGroup())
+	if count <= 0 then return false end
+	local total = DPP.ConstraintCount(ply, type)
+	return total >= count
+end
+
+function DPP.PlayerConstraints(ply)
+	DPP.RefreshConstrainsList()
+	local t = {}
+	
+	for ent, v in pairs(DPP.ConstraintsListing) do
+		if DPP.GetOwner(ent) == ply then
+			table.insert(t, ent)
+		end
+	end
+	
+	return t
 end
