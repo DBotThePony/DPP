@@ -289,12 +289,19 @@ function DPP.FindPlayerProps(ply)
 	
 	DPP.RefreshPropList()
 	
+	local t = {}
+	
 	for k, v in pairs(DPP.PropListing) do
 		if IsValid(DPP.GetOwner(k)) then continue end
 		local name, uid2 = DPP.GetOwnerDetails(k)
 		if uid2 == uid then
 			DPP.SetOwner(k, ply)
+			table.insert(t, k)
 		end
+	end
+	
+	for k, ent in pairs(t) do
+		DPP.RecalcConstraints(ent)
 	end
 end
 
@@ -812,9 +819,13 @@ do
 			if not IsValid(k) then continue end
 			if k:GetClass() == 'gmod_anchor' then continue end
 			local o = DPP.GetOwner(k)
+			local isOwned = DPP.IsOwned(k)
 			table.insert(touched, k)
+			
 			if IsValid(o) then
 				owners[o] = true
+			elseif not IsValid(o) and isOwned then
+				owners.disconnected = true
 			else
 				owners[worldspawn] = true
 			end

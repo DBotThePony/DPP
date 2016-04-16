@@ -884,6 +884,18 @@ function DPP.CanTouch(ply, ent, mode)
 	end
 	
 	for k, owner in pairs(constrained) do
+		if owner == 'disconnected' then
+			if admin then
+				if adminEverything then
+					continue
+				else
+					can = false
+					reason = 'Not a friend of owner/constrained'
+					break
+				end
+			end
+		end
+		
 		if IsValid(owner) and owner:GetClass() == 'gmod_anchor' then continue end
 		
 		if owner == ply then
@@ -892,7 +904,6 @@ function DPP.CanTouch(ply, ent, mode)
 				reason = 'dpp_no_touch is TRUE!'
 				break 
 			end
-			
 			continue
 		end
 		
