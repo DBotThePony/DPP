@@ -378,6 +378,10 @@ concommand.Add('dpp_clearmap', function(ply, cmd, args)
 	for k, v in pairs(DPP.GetAllProps()) do
 		SafeRemoveEntity(v)
 	end
+	
+	DPP.RecalculatePlayerList()
+	DPP.SendPlayerList()
+	
 	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' cleaned up map'}
 	DPP.Notify(player.GetAll(), f)
 	DPP.Message(f)
