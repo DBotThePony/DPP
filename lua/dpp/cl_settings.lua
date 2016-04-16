@@ -559,10 +559,12 @@ local function BuildPlayerList(Panel)
 	for k, v in pairs(DPP.GetPlayerList()) do
 		local pnl = vgui.Create('EditablePanel')
 		Panel:AddItem(pnl)
+		
 		local lab = Label(v.Name)
 		lab:SetParent(pnl)
 		lab:Dock(LEFT)
 		lab:SetTextColor(SettingsClass.TextColor)
+		lab:SizeToContents()
 		
 		local Button = vgui.Create('DButton', pnl)
 		Button:Dock(RIGHT)

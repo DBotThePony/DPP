@@ -243,15 +243,13 @@ function DPP.PlayerDisconnected(ply)
 	local uid = ply:UniqueID()
 	local name = ply:Nick()
 	
-	local Ents = table.Copy(DPP.GetPlayerEntities(ply))
-	
 	if clear then
 		if isAdmin and clearAdmin or not isAdmin then
 			timer.Create('DPP.ClearPlayer.' .. uid, DPP.GetConVar('clear_timer'), 1, function()
 				local ply = player.GetByUniqueID(uid)
 				if ply then return end
 				
-				for k, v in pairs(Ents) do
+				for k, v in pairs(DPP.GetPropsByUID(uid)) do
 					if not IsValid(v) then continue end
 					if IsValid(DPP.GetOwner(v)) then continue end
 					SafeRemoveEntity(v)
@@ -272,7 +270,7 @@ function DPP.PlayerDisconnected(ply)
 				local ply = player.GetByUniqueID(uid)
 				if ply then return end
 				
-				for k, v in pairs(Ents) do
+				for k, v in pairs(DPP.GetPropsByUID(uid)) do
 					if not IsValid(v) then continue end
 					if IsValid(DPP.GetOwner(v)) then continue end
 					DPP.SetUpForGrabs(v, true)
