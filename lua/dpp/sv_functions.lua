@@ -222,35 +222,6 @@ function DPP.DeleteEntityUndo(ent)
 	end
 end
 
-function DPP.DeleteConstraintUndo(ent)
-	local tab = undo.GetTable()
-	
-	local hit = false
-	
-	for uid, data in pairs(tab) do
-		for index, udata in pairs(data) do
-			udata.Entities = udata.Entities or {}
-			
-			for k, v in pairs(udata.Entities) do
-				if v == ent then
-					hit = true
-					udata.Entities[k] = NULL
-					break
-				end
-			end
-			
-			if hit then
-				for k, v in pairs(udata.Entities) do
-					if not IsValid(v) then continue end
-					if DPP.IsConstraint(v) then
-						udata.Entities[k] = NULL
-					end
-				end
-			end
-		end
-	end
-end
-
 function DPP.ClearPlayerEntities(ply)
 	local Ents = DPP.GetPlayerEntities(ply)
 	
@@ -782,7 +753,7 @@ do
 			end
 			
 			if o1 == o2 and o1 ~= o3 then
-				DPP.DeleteConstraintUndo(const)
+				DPP.DeleteEntityUndo(const)
 				DPP.SetOwner(const, o1)
 			end
 		end
