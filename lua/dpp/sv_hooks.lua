@@ -624,9 +624,6 @@ function PostEntityCreated(ent, Timestamp)
 		if IsValid(ent1) and IsValid(ent2) then
 			local o1, o2 = DPP.GetOwner(ent1), DPP.GetOwner(ent2)
 			
-			--ent1.DPP_CreationTimestamp = ent1.DPP_CreationTimestamp or Timestamp --FUCK the police
-			--ent2.DPP_CreationTimestamp = ent2.DPP_CreationTimestamp or Timestamp --FUCK the police
-			
 			if DPP.GetConVar('advanced_spawn_checks') then
 				local t1 = Timestamps[ent1]
 				local t2 = Timestamps[ent2]
@@ -634,13 +631,11 @@ function PostEntityCreated(ent, Timestamp)
 				if t1 == Timestamp and not IsValid(o1) and IsValid(o2) then --Because we are running on next frame
 					o1 = o2
 					CheckBefore(o2, ent1)
-					--DPP.SetOwner(ent1, o2)
 				end
 				
 				if t2 == Timestamp and not IsValid(o2) and IsValid(o1) then
 					o2 = o1
 					CheckBefore(o1, ent2)
-					--DPP.SetOwner(ent2, o1)
 				end
 			end
 			

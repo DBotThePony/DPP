@@ -549,17 +549,39 @@ local function BuildPlayerList(Panel)
 	
 	DPP.SettingsClass.PlayerPanel = Panel
 	
+	SettingsClass.ApplyButtonStyle(Panel:Button('Clear decals', 'dpp_cleardecals'))
 	SettingsClass.ApplyButtonStyle(Panel:Button('Delete all player entities', 'dpp_clearmap'))
 	SettingsClass.ApplyButtonStyle(Panel:Button('Freeze all player entities', 'dpp_freezeall'))
 	SettingsClass.ApplyButtonStyle(Panel:Button('Delete disconnected player entities', 'dpp_cleardisconnected'))
 	
 	for k, v in pairs(DPP.GetPlayerList()) do
+		local pnl = vgui.Create('EditablePanel')
+		Panel:AddItem(pnl)
 		local lab = Label(v.Name)
-		Panel:AddItem(lab)
+		lab:SetParent(pnl)
+		lab:Dock(LEFT)
 		lab:SetTextColor(SettingsClass.TextColor)
-		SettingsClass.ApplyButtonStyle(Panel:Button('Delete ' .. v.Name .. '\'s entities', 'dpp_clearbyuid', v.UID))
-		SettingsClass.ApplyButtonStyle(Panel:Button('Freeze ' .. v.Name .. '\'s entities', 'dpp_freezebyuid', v.UID))
-		SettingsClass.ApplyButtonStyle(Panel:Button('Unfreeze ' .. v.Name .. '\'s entities', 'dpp_unfreezebyuid', v.UID))
+		
+		local Button = vgui.Create('DButton', pnl)
+		Button:Dock(RIGHT)
+		Button:SetWidth(48)
+		Button:SetText('UF')
+		Button:SetConsoleCommand('dpp_unfreezebyuid', v.UID)
+		SettingsClass.ApplyButtonStyle(Button)
+		
+		local Button = vgui.Create('DButton', pnl)
+		Button:Dock(RIGHT)
+		Button:SetWidth(48)
+		Button:SetText('F')
+		Button:SetConsoleCommand('dpp_freezebyuid', v.UID)
+		SettingsClass.ApplyButtonStyle(Button)
+		
+		local Button = vgui.Create('DButton', pnl)
+		Button:Dock(RIGHT)
+		Button:SetWidth(48)
+		Button:SetText('D')
+		Button:SetConsoleCommand('dpp_clearbyuid', v.UID)
+		SettingsClass.ApplyButtonStyle(Button)
 	end
 end
 

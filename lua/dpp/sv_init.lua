@@ -149,9 +149,8 @@ function DPP.SetOwner(ent, ply)
 		ent:SetNWString('DPP.OwnerSteamID', ply:SteamID())
 		if isConst then
 			DPP.ConstraintsListing[ent] = true
-		else
-			DPP.PropListing[ent] = true
 		end
+		DPP.PropListing[ent] = true
 	else
 		ent:SetNWBool('DPP.IsOwned', false)
 		ent:SetNWString('DPP.OwnerString', 'World')

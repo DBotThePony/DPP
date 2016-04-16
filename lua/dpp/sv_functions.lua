@@ -203,6 +203,7 @@ function DPP.CheckUpForGrabs(ent, ply)
 	undo.AddEntity(ent)
 	undo.SetPlayer(ply)
 	undo.Finish()
+	DPP.RecalcConstraints(ent)
 end
 
 function DPP.DeleteEntityUndo(ent)
@@ -215,6 +216,35 @@ function DPP.DeleteEntityUndo(ent)
 			for k, v in pairs(udata.Entities) do
 				if v == ent then
 					udata.Entities[k] = NULL
+				end
+			end
+		end
+	end
+end
+
+function DPP.DeleteConstraintUndo(ent)
+	local tab = undo.GetTable()
+	
+	local hit = false
+	
+	for uid, data in pairs(tab) do
+		for index, udata in pairs(data) do
+			udata.Entities = udata.Entities or {}
+			
+			for k, v in pairs(udata.Entities) do
+				if v == ent then
+					hit = true
+					udata.Entities[k] = NULL
+					break
+				end
+			end
+			
+			if hit then
+				for k, v in pairs(udata.Entities) do
+					if not IsValid(v) then continue end
+					if DPP.IsConstraint(v) then
+						udata.Entities[k] = NULL
+					end
 				end
 			end
 		end
@@ -346,6 +376,17 @@ function DPP.UnFreezeByUID(uid)
 	end
 end
 
+concommand.Add('dpp_cleardecals', function(ply, cmd, args)
+	if IsValid(ply) and not ply:IsAdmin() then return end
+	for k, v in pairs(player.GetAll()) do
+		v:ConCommand('r_cleardecals')
+		v:SendLua('game.RemoveRagdolls()')
+	end
+	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' cleared decals'}
+	DPP.Notify(player.GetAll(), f)
+	DPP.Message(f)
+end)
+
 concommand.Add('dpp_cleardisconnected', function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsAdmin() then return end
 	DPP.ClearDisconnectedProps()
@@ -434,6 +475,7 @@ concommand.Add('dpp_transfertoworld', function(ply, cmd, args)
 	
 	DPP.SetOwner(ent, NULL)
 	DPP.DeleteEntityUndo(ent)
+	DPP.RecalcConstraints(ent)
 end)
 
 concommand.Add('dpp_freezeplayer', function(ply, cmd, args)
@@ -714,13 +756,26 @@ do
 		
 		for k = 1, #all do
 			local ent1, ent2 = all[k].Ent1, all[k].Ent2
+			local const = all[k].Constraint
+			
+			local o1, o2, o3
+			if isentity(const) then
+				o3 = DPP.GetOwner(const)
+			end
 			
 			if isentity(ent1) then
+				o1 = DPP.GetOwner(ent1)
 				DoSearch(ent1)
 			end
 			
 			if isentity(ent2) then
+				o2 = DPP.GetOwner(ent2)
 				DoSearch(ent2)
+			end
+			
+			if o1 == o2 and o1 ~= o3 then
+				DPP.DeleteConstraintUndo(const)
+				DPP.SetOwner(const, o1)
 			end
 		end
 	end

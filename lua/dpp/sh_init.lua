@@ -837,8 +837,7 @@ function DPP.CanTouchWorld(ply, ent)
 	if not ply:IsAdmin() then
 		return can
 	else
-		if can then return true end
-		return canAdmin
+		return can or canAdmin
 	end
 end
 
@@ -879,7 +878,6 @@ function DPP.CanTouch(ply, ent, mode)
 	
 	local admin, adminEverything = ply:IsAdmin(), DPP.GetConVar('admin_can_everything')
 	
-	local isOwned = DPP.IsOwned(ent)
 	local isShared = DPP.IsShared(ent)
 	if mode and DPP.ShareTypes[mode] then
 		isShared = DPP.IsSharedType(ent, mode)
@@ -894,22 +892,14 @@ function DPP.CanTouch(ply, ent, mode)
 				reason = 'dpp_no_touch is TRUE!'
 				break 
 			end
+			
 			continue
 		end
 		
-		if not IsValid(owner) then
-			if not isOwned and not DPP.CanTouchWorld(ply, ent) then 
-				can = false 
-				reason = 'Belong/Constrained to world'
-				break
-			elseif isOwned then
-				if admin and adminEverything then
-					continue
-				else
-					can = false
-					break
-				end
-			end
+		if not IsValid(owner) and not DPP.CanTouchWorld(ply, ent) then
+			can = false 
+			reason = 'Belong/Constrained to world'
+			break
 		end
 		
 		if not isShared or realOwner ~= owner then
