@@ -18,6 +18,13 @@ function DPP.GetActiveFriends()
 	return DPP.ActiveFriends
 end
 
+function DPP.ClientConVarChanged(var, old, new)
+	var = string.sub(var, 5)
+	net.Start('DPP.ConVarChanged')
+	net.WriteString(var)
+	net.SendToServer()
+end
+
 function DPP.RefreshFriends()
 	if not IsValid(LocalPlayer()) then return end
 	DPP.ActiveFriends = {}

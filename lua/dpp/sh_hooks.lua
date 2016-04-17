@@ -193,7 +193,7 @@ function DPP.OnPhysgunReload(phys, ply, ignoreConnected, ent)
 	if not DPP.GetConVar('enable_physgun') then return end
 	ent = ent or ply:GetEyeTrace().Entity
 	
-	local can, reason = DPP.CanTouch(ply, ent)
+	local can, reason = DPP.CanTouch(ply, ent, 'physgun')
 	if not can then return can, reason end
 	
 	if SERVER then

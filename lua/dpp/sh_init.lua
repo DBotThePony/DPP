@@ -581,6 +581,23 @@ DPP.CSettings = {
 	},
 }
 
+DPP.ProtectionModes = {
+	['toolgun'] = true, 
+	['vehicle'] = true, 
+	['use'] = true, 
+	['physgun'] = true, 
+	['damage'] = true, 
+	['gravgun'] = true
+}
+
+for k, v in pairs(DPP.ProtectionModes) do
+	DPP.CSettings['disable_' .. k .. '_protection'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Disable "' .. k .. '" protection for my entities',
+	}
+end
+
 for k, v in pairs(DPP.Settings) do
 	v.bool = v.type == 'bool'
 	v.int = v.type == 'int'
@@ -938,6 +955,7 @@ end
 if CLIENT then
 	for k, v in pairs(DPP.CSettings) do
 		DPP.CVars[k] = CreateClientConVar('dpp_' .. k, v.value, true, true, v.desc)
+		cvars.AddChangeCallback('dpp_' .. k, DPP.ClientConVarChanged, 'DPP')
 	end
 end
 
@@ -1031,6 +1049,12 @@ function DPP.CanTouch(ply, ent, mode)
 				break
 			end
 		else
+			if mode and DPP.ProtectionModes[mode] and owner:IsPlayer() then
+				if DPP.IsProtectionDisabledFor(owner, mode) then
+					reason = 'Owner disabled ' .. mode .. ' protection'
+				end
+			end
+			
 			if not isShared or realOwner ~= owner then
 				local friend = DPP.IsFriend(ply, owner, mode)
 				

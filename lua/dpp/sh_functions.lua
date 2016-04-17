@@ -226,3 +226,6 @@ function DPP.IsModelEvenBlocked(model)
 	return DPP.BlockedModels[model] ~= nil
 end
 
+function DPP.IsProtectionDisabledFor(ply, mode)
+	return DPP.PlayerConVar(ply, 'disable_' .. mode .. '_protection')
+end

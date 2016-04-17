@@ -31,6 +31,8 @@ util.AddNetworkString('DPP.ReceiveFriendList')
 util.AddNetworkString('DPP.SendConstrainedWith')
 util.AddNetworkString('DPP.PlayerList')
 
+util.AddNetworkString('DPP.ConVarChanged')
+
 resource.AddWorkshop('659044893')
 
 function DPP.Notify(ply, message, type)
@@ -311,6 +313,12 @@ end)
 
 hook.Add('PlayerInitialSpawn', 'DPP.Hooks', PlayerInitialSpawn)
 hook.Add('PlayerDisconnected', 'DPP.Hooks', DPP.PlayerDisconnected)
+
+net.Receive('DPP.ConVarChanged', function(len, ply)
+	local var = net.ReadString()
+	if not DPP.CSettings[var] then return end
+	DPP.PlayerConVar(ply, var) --Enough to rebroadcast cvar
+end)
 
 include('sv_hooks.lua')
 include('sv_misc.lua')

@@ -396,6 +396,26 @@ local MiscConVars = {
 	'allow_damage_npc',
 }
 
+local ClientVars = {
+	'hide_hud',
+	'no_hud_in_vehicle',
+	'no_scrambling_text',
+	'no_touch',
+	'no_player_touch',
+	'no_touch_world',
+	'no_touch_other',
+	
+	'no_restrict_options',
+	'no_block_options',
+	
+	'disable_physgun_protection',
+	'disable_damage_protection',
+	'disable_gravgun_protection',
+	'disable_toolgun_protection',
+	'disable_use_protection',
+	'disable_vehicle_protection',
+}
+
 function SettingsClass.ConVarSlider(Panel, var)
 	local v = DPP.Settings[var]
 	
@@ -478,7 +498,9 @@ local function BuildCVarPanel(Panel)
 	Panel:Clear()
 	SettingsClass.SetupBackColor(Panel)
 	
-	for k, v in pairs(DPP.CSettings) do
+	for a, b in pairs(ClientVars) do
+		local k = b
+		local v = DPP.CSettings[b]
 		if not v.bool then continue end
 		local val = DPP.PlayerConVar(LocalPlayer(), k)
 		
