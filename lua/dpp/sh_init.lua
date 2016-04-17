@@ -528,15 +528,27 @@ DPP.CSettings = {
 	},
 	
 	['no_scrambling_text'] = {
-		type = 'int',
+		type = 'bool',
 		value = '0',
 		desc = 'Disables scrambling text',
 	},
 	
 	['hide_hud'] = {
-		type = 'int',
+		type = 'bool',
 		value = '0',
 		desc = 'Hide owner display',
+	},
+	
+	['no_touch_world'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'I don\'t want to touch world entities',
+	},
+	
+	['no_touch_other'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'I don\'t want to touch other player\'s entities',
 	},
 }
 
@@ -933,9 +945,21 @@ function DPP.CanTouch(ply, ent, mode)
 				reason = 'Belong/Constrained to world'
 				break
 			end
+			
+			if DPP.PlayerConVar(ply, 'no_touch_world', false) then
+				can = false 
+				reason = 'dpp_no_touch_world 1'
+				break
+			end
 		else
 			if not isShared or realOwner ~= owner then
 				local friend = DPP.IsFriend(ply, owner, mode)
+				
+				if DPP.PlayerConVar(ply, 'no_touch_other', false) then
+					can = false
+					reason = 'dpp_no_touch_other 1'
+					break
+				end
 				
 				if admin then
 					if adminEverything then
