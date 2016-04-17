@@ -492,7 +492,7 @@ local function BuildCVarPanel(Panel)
 		SettingsClass.MakeCheckboxBetter(checkbox)
 	end
 	
-	local FontBox = Panel:ComboBox('Font')
+	local FontBox, Lab = Panel:ComboBox('Font')
 	for k, v in pairs(DPP.Fonts) do
 		FontBox:AddChoice(v.name)
 	end
@@ -501,6 +501,8 @@ local function BuildCVarPanel(Panel)
 	FontBox.OnSelect = function(self, i, num)
 		RunConsoleCommand('dpp_font', i)
 	end
+	
+	Lab:SetTextColor(SettingsClass.TextColor)
 end
 
 local function BuildMiscVarsPanel(Panel)

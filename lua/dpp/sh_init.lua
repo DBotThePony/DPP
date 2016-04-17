@@ -530,7 +530,7 @@ DPP.CSettings = {
 	['no_scrambling_text'] = {
 		type = 'bool',
 		value = '0',
-		desc = 'Disables scrambling text',
+		desc = 'Disable scrambling text',
 	},
 	
 	['hide_hud'] = {
