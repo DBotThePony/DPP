@@ -11,4 +11,4 @@ https://tldrlegal.com/license/apache-license-2.0-(apache-2.0)
 
 More info at workshop: http://steamcommunity.com/sharedfiles/filedetails/?id=659044893
 
-If you want to use MySQL, go to root Lua folder and locate dpp_config_example.lua, rename it to dpp_config.lua and edit it
+If you want to use MySQL, locate dpp_config_example.lua in the addon lua root folder, rename it to dpp_config.lua and then open and edit it
