@@ -1,13 +1,15 @@
 
+include('sv_mysql.lua')
+
 function DPP.CreateTables()
-	sql.Query([[
+	DPP.Query([[
 		CREATE TABLE IF NOT EXISTS dpp_blockedmodels (
 			MODEL VARCHAR(64) NOT NULL,
 			PRIMARY KEY (MODEL)
 		)
 	]])
 	
-	sql.Query([[
+	DPP.Query([[
 		CREATE TABLE IF NOT EXISTS dpp_cvars (
 			CVAR VARCHAR(64) NOT NULL,
 			VALUE VARCHAR(64) NOT NULL,
@@ -15,7 +17,7 @@ function DPP.CreateTables()
 		)
 	]])
 	
-	sql.Query([[
+	DPP.Query([[
 		CREATE TABLE IF NOT EXISTS dpp_entitylimits (
 			CLASS VARCHAR(64) NOT NULL,
 			UGROUP VARCHAR(64) NOT NULL,
@@ -24,7 +26,7 @@ function DPP.CreateTables()
 		)
 	]])
 	
-	sql.Query([[
+	DPP.Query([[
 		CREATE TABLE IF NOT EXISTS dpp_sboxlimits (
 			CLASS VARCHAR(64) NOT NULL,
 			UGROUP VARCHAR(64) NOT NULL,
@@ -33,7 +35,7 @@ function DPP.CreateTables()
 		)
 	]])
 	
-	sql.Query([[
+	DPP.Query([[
 		CREATE TABLE IF NOT EXISTS dpp_constlimits (
 			CLASS VARCHAR(64) NOT NULL,
 			UGROUP VARCHAR(64) NOT NULL,
@@ -43,7 +45,7 @@ function DPP.CreateTables()
 	]])
 	
 	for k, v in pairs(DPP.BlockTypes) do
-		sql.Query([[
+		DPP.Query([[
 			CREATE TABLE IF NOT EXISTS dpp_blockedentities]] .. k .. [[ (
 				ENTITY VARCHAR(64) NOT NULL,
 				PRIMARY KEY (ENTITY)
@@ -52,7 +54,7 @@ function DPP.CreateTables()
 	end
 	
 	for k, v in pairs(DPP.RestrictTypes) do
-		sql.Query([[
+		DPP.Query([[
 			CREATE TABLE IF NOT EXISTS dpp_restricted]] .. k .. [[ (
 				CLASS VARCHAR(64) NOT NULL,
 				GROUPS VARCHAR(255) NOT NULL,
@@ -119,7 +121,7 @@ end
 
 function DPP.AddBlockedModel(model)
 	DPP.BlockedModels[model] = true
-	sql.Query('REPLACE INTO dpp_blockedmodels (MODEL) VALUES ("' .. model .. '")')
+	DPP.Query('REPLACE INTO dpp_blockedmodels (MODEL) VALUES ("' .. model .. '")')
 	
 	net.Start('DPP.ModelsInsert')
 	net.WriteString(model)
@@ -129,7 +131,7 @@ end
 
 function DPP.RemoveBlockedModel(model)
 	DPP.BlockedModels[model] = nil
-	sql.Query('DELETE FROM dpp_blockedmodels WHERE MODEL = "' .. model .. '"')
+	DPP.Query('DELETE FROM dpp_blockedmodels WHERE MODEL = "' .. model .. '"')
 	
 	net.Start('DPP.ModelsInsert')
 	net.WriteString(model)
@@ -156,23 +158,26 @@ concommand.Add('dpp_removeblockedmodel', function(ply, cmd, args)
 end)
 
 function DPP.SaveAllBlockedModels()
-	sql.Begin()
-	sql.Query('REMOVE FROM dpp_blockedmodels')
-	for k, v in pairs(DPP.BlockedModels) do
-		sql.Query('INSERT INTO dpp_blockedmodels (MODEL) VALUES ("' .. k .. '")')
-	end
-	sql.Commit()
+	DPP.Query('REMOVE FROM dpp_blockedmodels', function()
+		local t = {}
+		
+		for k, v in pairs(DPP.BlockedModels) do
+			table.insert(t, 'INSERT INTO dpp_blockedmodels (MODEL) VALUES ("' .. k .. '")')
+		end
+		
+		DPP.QueryStack(t)
+	end)
 end
 
 function DPP.LoadBlockedModels()
 	DPP.BlockedModels = {}
-	local data = sql.Query('SELECT * FROM dpp_blockedmodels')
-	
-	if not data then return end
-	
-	for k, v in pairs(data) do
-		DPP.BlockedModels[v.MODEL] = true
-	end
+	DPP.Query('SELECT * FROM dpp_blockedmodels', function(data)
+		if not data then return end
+		
+		for k, v in pairs(data) do
+			DPP.BlockedModels[v.MODEL] = true
+		end
+	end)
 end
 
 for k, v in pairs(DPP.BlockTypes) do
@@ -187,7 +192,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		net.Broadcast()
 		
 		DPP.BlockedEntities[k][ent] = true
-		sql.Query('REPLACE INTO dpp_blockedentities' .. k .. ' (ENTITY) VALUES ("' .. ent .. '")')
+		DPP.Query('REPLACE INTO dpp_blockedentities' .. k .. ' (ENTITY) VALUES ("' .. ent .. '")')
 	end
 	
 	DPP['RemoveBlockedEntity' .. v] = function(ent)
@@ -202,7 +207,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		net.Broadcast()
 		
 		DPP.BlockedEntities[k][ent] = nil
-		sql.Query('DELETE FROM dpp_blockedentities' .. k .. ' WHERE ENTITY = "' .. ent .. '"')
+		DPP.Query('DELETE FROM dpp_blockedentities' .. k .. ' WHERE ENTITY = "' .. ent .. '"')
 	end
 	
 	concommand.Add('dpp_addblockedentity' .. k, function(ply, cmd, args)
@@ -243,7 +248,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 			groups = groups,
 			iswhite = isWhite
 		}
-		sql.Query(string.format('REPLACE INTO dpp_restricted' .. k .. ' (CLASS, GROUPS, IS_WHITE) VALUES (%q, \'%s\', %q)', class, util.TableToJSON(groups), isWhite and '1' or '0'))
+		DPP.Query(string.format('REPLACE INTO dpp_restricted' .. k .. ' (CLASS, GROUPS, IS_WHITE) VALUES (%q, \'%s\', %q)', class, util.TableToJSON(groups), isWhite and '1' or '0'))
 	end
 	
 	DPP['UnRestrict' .. v] = function(class, groups, isWhite)
@@ -257,7 +262,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		net.Broadcast()
 		
 		DPP.RestrictedTypes[k][class] = nil
-		sql.Query('DELETE FROM dpp_restricted' .. k .. ' WHERE CLASS = "' .. class .. '"')
+		DPP.Query('DELETE FROM dpp_restricted' .. k .. ' WHERE CLASS = "' .. class .. '"')
 	end
 	
 	concommand.Add('dpp_restrict' .. k, function(ply, cmd, args)
@@ -312,7 +317,7 @@ function DPP.AddEntityLimit(class, group, val)
 	net.WriteTable(DPP.EntsLimits[class])
 	net.Broadcast()
 	
-	sql.Query(string.format('REPLACE INTO dpp_entitylimits (CLASS, UGROUP, ULIMIT) VALUES (%q, %q, %q)', class, group, val))
+	DPP.Query(string.format('REPLACE INTO dpp_entitylimits (CLASS, UGROUP, ULIMIT) VALUES (%q, %q, %q)', class, group, val))
 	
 	timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 end
@@ -324,10 +329,10 @@ function DPP.RemoveEntityLimit(class, group)
 		DPP.EntsLimits[class] = DPP.EntsLimits[class] or {}
 		DPP.EntsLimits[class][group] = nil
 		
-		sql.Query(string.format('DELETE FROM dpp_entitylimits WHERE CLASS = %q AND UGROUP = %q', class, group))
+		DPP.Query(string.format('DELETE FROM dpp_entitylimits WHERE CLASS = %q AND UGROUP = %q', class, group))
 	else
 		DPP.EntsLimits[class] = nil
-		sql.Query(string.format('DELETE FROM dpp_entitylimits WHERE CLASS = %q', class))
+		DPP.Query(string.format('DELETE FROM dpp_entitylimits WHERE CLASS = %q', class))
 	end
 	
 	net.Start('DPP.LListsInsert')
@@ -351,7 +356,7 @@ function DPP.AddSBoxLimit(class, group, val)
 	net.WriteTable(DPP.SBoxLimits[class])
 	net.Broadcast()
 	
-	sql.Query(string.format('REPLACE INTO dpp_sboxlimits (CLASS, UGROUP, ULIMIT) VALUES (%q, %q, %q)', class, group, val))
+	DPP.Query(string.format('REPLACE INTO dpp_sboxlimits (CLASS, UGROUP, ULIMIT) VALUES (%q, %q, %q)', class, group, val))
 	
 	timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 end
@@ -369,7 +374,7 @@ function DPP.AddConstLimit(class, group, val)
 	net.WriteTable(DPP.ConstrainsLimits[class])
 	net.Broadcast()
 	
-	sql.Query(string.format('REPLACE INTO dpp_constlimits (CLASS, UGROUP, ULIMIT) VALUES (%q, %q, %q)', class, group, val))
+	DPP.Query(string.format('REPLACE INTO dpp_constlimits (CLASS, UGROUP, ULIMIT) VALUES (%q, %q, %q)', class, group, val))
 	
 	timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 end
@@ -381,10 +386,10 @@ function DPP.RemoveSBoxLimit(class, group)
 		DPP.SBoxLimits[class] = DPP.SBoxLimits[class] or {}
 		DPP.SBoxLimits[class][group] = nil
 		
-		sql.Query(string.format('DELETE FROM dpp_sboxlimits WHERE CLASS = %q AND UGROUP = %q', class, group))
+		DPP.Query(string.format('DELETE FROM dpp_sboxlimits WHERE CLASS = %q AND UGROUP = %q', class, group))
 	else
 		DPP.SBoxLimits[class] = nil
-		sql.Query(string.format('DELETE FROM dpp_sboxlimits WHERE CLASS = %q', class))
+		DPP.Query(string.format('DELETE FROM dpp_sboxlimits WHERE CLASS = %q', class))
 	end
 	
 	net.Start('DPP.SListsInsert')
@@ -402,10 +407,10 @@ function DPP.RemoveConstLimit(class, group)
 		DPP.ConstrainsLimits[class] = DPP.ConstrainsLimits[class] or {}
 		DPP.ConstrainsLimits[class][group] = nil
 		
-		sql.Query(string.format('DELETE FROM dpp_sboxlimits WHERE CLASS = %q AND UGROUP = %q', class, group))
+		DPP.Query(string.format('DELETE FROM dpp_sboxlimits WHERE CLASS = %q AND UGROUP = %q', class, group))
 	else
 		DPP.ConstrainsLimits[class] = nil
-		sql.Query(string.format('DELETE FROM dpp_sboxlimits WHERE CLASS = %q', class))
+		DPP.Query(string.format('DELETE FROM dpp_sboxlimits WHERE CLASS = %q', class))
 	end
 	
 	net.Start('DPP.CListsInsert')
@@ -418,35 +423,38 @@ end
 
 function DPP.LoadLimits()
 	DPP.EntsLimits = {}
-	local data = sql.Query('SELECT * FROM dpp_entitylimits')
-	if not data then return end
-	
-	for index, row in pairs(data) do
-		DPP.EntsLimits[row.CLASS] = DPP.EntsLimits[row.CLASS] or {}
-		DPP.EntsLimits[row.CLASS][row.UGROUP] = row.ULIMIT
-	end
+	DPP.Query('SELECT * FROM dpp_entitylimits', function(data)
+		if not data then return end
+		
+		for index, row in pairs(data) do
+			DPP.EntsLimits[row.CLASS] = DPP.EntsLimits[row.CLASS] or {}
+			DPP.EntsLimits[row.CLASS][row.UGROUP] = row.ULIMIT
+		end
+	end)
 end
 
 function DPP.LoadSLimits()
 	DPP.SBoxLimits = {}
-	local data = sql.Query('SELECT * FROM dpp_sboxlimits')
-	if not data then return end
-	
-	for index, row in pairs(data) do
-		DPP.SBoxLimits[row.CLASS] = DPP.SBoxLimits[row.CLASS] or {}
-		DPP.SBoxLimits[row.CLASS][row.UGROUP] = row.ULIMIT
-	end
+	DPP.Query('SELECT * FROM dpp_sboxlimits', function(data)
+		if not data then return end
+		
+		for index, row in pairs(data) do
+			DPP.SBoxLimits[row.CLASS] = DPP.SBoxLimits[row.CLASS] or {}
+			DPP.SBoxLimits[row.CLASS][row.UGROUP] = row.ULIMIT
+		end
+	end)
 end
 
 function DPP.LoadCLimits()
 	DPP.ConstrainsLimits = {}
-	local data = sql.Query('SELECT * FROM dpp_constlimits')
-	if not data then return end
-	
-	for index, row in pairs(data) do
-		DPP.ConstrainsLimits[row.CLASS] = DPP.ConstrainsLimits[row.CLASS] or {}
-		DPP.ConstrainsLimits[row.CLASS][row.UGROUP] = row.ULIMIT
-	end
+	DPP.Query('SELECT * FROM dpp_constlimits', function(data)
+		if not data then return end
+		
+		for index, row in pairs(data) do
+			DPP.ConstrainsLimits[row.CLASS] = DPP.ConstrainsLimits[row.CLASS] or {}
+			DPP.ConstrainsLimits[row.CLASS][row.UGROUP] = row.ULIMIT
+		end
+	end)
 end
 
 local Last = 0
@@ -570,21 +578,24 @@ concommand.Add('dpp_removeconstlimit', function(ply, cmd, args)
 end)
 
 function DPP.SaveCVars()
-	sql.Begin()
+	local t = {}
+	
 	for k, v in pairs(DPP.Settings) do
 		local val = DPP.SVars[k]
-		sql.Query(string.format('REPLACE INTO dpp_cvars (CVAR, VALUE) VALUES (%q, %q)', k, val:GetString()))
+		table.insert(t, string.format('REPLACE INTO dpp_cvars (CVAR, VALUE) VALUES (%q, %q)', k, val:GetString()))
 	end
-	sql.Commit()
+	
+	DPP.QueryStack(t)
 end
 
 function DPP.LoadCVars()
-	local data = sql.Query('SELECT * FROM dpp_cvars')
-	if not data then return end
-	
-	for k, v in pairs(data) do
-		RunConsoleCommand('dpp_' .. v.CVAR, v.VALUE)
-	end
+	DPP.Query('SELECT * FROM dpp_cvars', function(data)
+		if not data then return end
+		
+		for k, v in pairs(data) do
+			RunConsoleCommand('dpp_' .. v.CVAR, v.VALUE)
+		end
+	end)
 end
 
 function DPP.InitializeDefaultBlock()
@@ -594,7 +605,6 @@ function DPP.InitializeDefaultBlock()
 		end
 	end
 end
-
 
 local function Load()
 	DPP.CreateTables()
@@ -606,34 +616,37 @@ local function Load()
 	
 	for k, v in pairs(DPP.BlockTypes) do
 		DPP.BlockedEntities[k] = {}
-		local data = sql.Query('SELECT * FROM dpp_blockedentities' .. k)
-		local data2 = sql.Query('SELECT * FROM dpp_blockedentites' .. k)
-		if data then
-			for a, b in pairs(data) do
-				DPP.BlockedEntities[k][b.ENTITY] = true
+		local data = DPP.Query('SELECT * FROM dpp_blockedentities' .. k, function(data)
+			if data then
+				for a, b in pairs(data) do
+					DPP.BlockedEntities[k][b.ENTITY] = true
+				end
 			end
-		end
+		end)
 		
-		if data2 then
-			for a, b in pairs(data2) do
-				DPP['AddBlockedEntity' .. v](b.ENTITY)
+		DPP.Query('SELECT * FROM dpp_blockedentites' .. k, function(data)
+			if data then
+				for a, b in pairs(data) do
+					DPP['AddBlockedEntity' .. v](b.ENTITY)
+				end
 			end
-		end
-		
-		sql.Query('DROP TABLE dpp_blockedentites')
+			
+			DPP.Query('DROP TABLE dpp_blockedentites')
+		end)
 	end
 	
 	for k, v in pairs(DPP.RestrictTypes) do
 		DPP.RestrictedTypes[k] = {}
-		local data = sql.Query('SELECT * FROM dpp_restricted' .. k)
-		if not data then continue end
-		
-		for a, b in pairs(data) do
-			DPP.RestrictedTypes[k][b.CLASS] = {
-				groups = util.JSONToTable(b.GROUPS),
-				iswhite = tobool(b.IS_WHITE)
-			}
-		end
+		local data = DPP.Query('SELECT * FROM dpp_restricted' .. k, function(data)
+			if not data then return end
+			
+			for a, b in pairs(data) do
+				DPP.RestrictedTypes[k][b.CLASS] = {
+					groups = util.JSONToTable(b.GROUPS),
+					iswhite = tobool(b.IS_WHITE)
+				}
+			end
+		end)
 	end
 	
 	DPP.BroadcastLists()

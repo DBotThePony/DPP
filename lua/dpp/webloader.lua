@@ -29,6 +29,7 @@ local Files = {
 	'sv_savedata.lua',
 	'sv_misc.lua',
 	'sv_apropkill.lua',
+	'sv_mysql.lua',
 }
 
 for k, v in pairs(Files) do
