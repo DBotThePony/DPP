@@ -532,6 +532,12 @@ DPP.CSettings = {
 		value = '0',
 		desc = 'Disables scrambling text',
 	},
+	
+	['hide_hud'] = {
+		type = 'int',
+		value = '0',
+		desc = 'Hide owner display',
+	},
 }
 
 for k, v in pairs(DPP.Settings) do

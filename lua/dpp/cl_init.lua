@@ -664,6 +664,7 @@ local function HUDPaintSimple()
 end
 
 local function HUDPaint()
+	if DPP.PlayerConVar(_, 'hide_hud') then return end
 	if not DPP.PlayerConVar(_, 'simple_hud') then
 		PostDrawHUDDefault()
 	else
