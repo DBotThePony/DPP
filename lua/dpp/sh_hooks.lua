@@ -75,8 +75,20 @@ function DPP.ToolgunTouch(ply, tr, mode)
 		ply._DPP_LastToolgunUse = ply._DPP_LastToolgunUse or 0
 		
 		local CTime = CurTime()
+		local Should = false
 		
-		if CTime + val ~= ply._DPP_LastToolgunUse or SERVER then --For some reason it can be called twice on client
+		--Some addons (such as wiremod) calls CanTool after player toolgun wiremod entity (for example, Expression 2)
+		for i = 3, 8 do
+			local Name, Value = debug.getlocal(i, 1)
+			if not Name then break end
+			if not isentity(Value) then continue end
+			if not IsValid(Value) then continue end
+			if not Value:IsWeapon() then continue end
+			Should = true
+			break
+		end
+		
+		if Should and CTime + val ~= ply._DPP_LastToolgunUse then
 			if ply._DPP_LastToolgunUse > CTime then return false end
 			ply._DPP_LastToolgunUse = CTime + val
 		end
