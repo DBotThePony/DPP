@@ -617,21 +617,20 @@ local function Load()
 	for k, v in pairs(DPP.BlockTypes) do
 		DPP.BlockedEntities[k] = {}
 		local data = DPP.Query('SELECT * FROM dpp_blockedentities' .. k, function(data)
-			if data then
-				for a, b in pairs(data) do
-					DPP.BlockedEntities[k][b.ENTITY] = true
-				end
+			if not data then return end
+			for a, b in pairs(data) do
+				DPP.BlockedEntities[k][b.ENTITY] = true
 			end
 		end)
 		
 		DPP.Query('SELECT * FROM dpp_blockedentites' .. k, function(data)
-			if data then
-				for a, b in pairs(data) do
-					DPP['AddBlockedEntity' .. v](b.ENTITY)
-				end
-			end
+			DPP.Query('DROP TABLE dpp_blockedentites' .. k)
 			
-			DPP.Query('DROP TABLE dpp_blockedentites')
+			if not data then return end
+			
+			for a, b in pairs(data) do
+				DPP['AddBlockedEntity' .. v](b.ENTITY)
+			end
 		end)
 	end
 	

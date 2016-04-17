@@ -32,8 +32,8 @@ DPP_MySQLConfig.Password = ''
 --Database? 
 DPP_MySQLConfig.Database = 'dpp'
 
---In the main, server host is "localhost", but i use an IP address because GMod server is not on same computer where MySQL server runs
-DPP_MySQLConfig.Host = '192.168.2.2'
+--Usually it is localhost
+DPP_MySQLConfig.Host = 'localhost'
 
 --MySQL port. Usually it is 3306
 DPP_MySQLConfig.Port = 3306

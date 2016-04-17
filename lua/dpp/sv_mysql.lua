@@ -17,7 +17,7 @@ else
 	DPP.Username = 'dpp'
 	DPP.Password = ''
 	DPP.Database = 'dpp'
-	DPP.Host = '192.168.2.2'
+	DPP.Host = 'localhost'
 	DPP.Port = 3306
 end
 
@@ -79,8 +79,6 @@ Connect()
 
 local EMPTY_FUNC = function() end
 
-local CurrentQueries = 0
-
 function DPP.Query(query, callback)
 	callback = callback or EMPTY_FUNC
 	if DPP.IsMySQL then
@@ -99,21 +97,15 @@ function DPP.Query(query, callback)
 		else
 			local obj = DPP.LINK:query(query)
 			
-			CurrentQueries = CurrentQueries + 1
 			function obj.onSuccess(q, data)
-				CurrentQueries = CurrentQueries - 1
 				callback(data)
 			end
 			
 			function obj.onError()
-				CurrentQueries = CurrentQueries - 1
-				
-				if CurrentQueries <= 0 then
-					if DPP.LINK:status() == mysqloo.DATABASE_NOT_CONNECTED then
-						Connect()
-						timer.Simple(3, function() DPP.Query(query, callback) end)
-						return
-					end
+				if DPP.LINK:status() == mysqloo.DATABASE_NOT_CONNECTED then
+					Connect()
+					timer.Simple(3, function() DPP.Query(query, callback) end)
+					return
 				end
 				
 				callback()
