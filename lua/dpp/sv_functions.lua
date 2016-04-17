@@ -900,3 +900,8 @@ function DPP.PlayerConstraints(ply)
 	
 	return t
 end
+
+function DPP.SetProtectionDisabled(ply, mode, status)
+	ply:SetNWBool('dpp.DisablePP.' .. mode, status)
+end
+

@@ -956,6 +956,9 @@ if CLIENT then
 	for k, v in pairs(DPP.CSettings) do
 		DPP.CVars[k] = CreateClientConVar('dpp_' .. k, v.value, true, true, v.desc)
 		cvars.AddChangeCallback('dpp_' .. k, DPP.ClientConVarChanged, 'DPP')
+		timer.Simple(0, function()
+			DPP.ClientConVarChanged('dpp_' .. k)
+		end)
 	end
 end
 
