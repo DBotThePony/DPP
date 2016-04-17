@@ -1089,8 +1089,12 @@ local PanelsFunctions = {}
 local PanelsFunctions2 = {}
 DPP.SettingsClass.ValidPanels = DPP.SettingsClass.ValidPanels or {}
 DPP.SettingsClass.ValidPanels2 = DPP.SettingsClass.ValidPanels2 or {}
+DPP.SettingsClass.ValidPanels3 = DPP.SettingsClass.ValidPanels3 or {}
 local ValidPanels = DPP.SettingsClass.ValidPanels
 local ValidPanels2 = DPP.SettingsClass.ValidPanels2
+local ValidPanels3 = DPP.SettingsClass.ValidPanels3
+SettingsClass.WhitelistFunctions = SettingsClass.WhitelistFunctions or {}
+local WhitelistFunctions = SettingsClass.WhitelistFunctions
 
 local function REMOVE_ALL(class)
 	for k, v in pairs(DPP.BlockTypes) do
@@ -1098,9 +1102,21 @@ local function REMOVE_ALL(class)
 	end
 end
 
+local function REMOVE_ALL_W(class)
+	for k, v in pairs(DPP.WhitelistTypes) do
+		RunConsoleCommand('dpp_removewhitelistedentity' .. k, class)
+	end
+end
+
 local function ADD_ALL(class)
 	for k, v in pairs(DPP.BlockTypes) do
 		RunConsoleCommand('dpp_addblockedentity' .. k, class)
+	end
+end
+
+local function ADD_ALL_W(class)
+	for k, v in pairs(DPP.WhitelistTypes) do
+		RunConsoleCommand('dpp_addwhitelistedentity' .. k, class)
 	end
 end
 
@@ -1283,6 +1299,121 @@ for k, v in pairs(DPP.BlockTypes) do
 		ConVarCheckbox(Panel, 'blacklist_' .. k .. '_white')
 		ConVarCheckbox(Panel, 'blacklist_' .. k .. '_player_can')
 		ConVarCheckbox(Panel, 'blacklist_' .. k .. '_admin_can')
+	end
+end
+
+for k, v in pairs(DPP.WhitelistTypes) do
+	WhitelistFunctions[k] = function(Panel)
+		if not IsValid(Panel) then return end
+		Panel:Clear()
+		SettingsClass.SetupBackColor(Panel)
+		ValidPanels3[k] = Panel
+		
+		local toptext = 'Entities what listed there will have\n"' .. v .. '" protection disabled. It means that\nANYONE able to touch\nthat entitiy despite of it\'s owner'
+		local Lab = Label(toptext)
+		Lab:SizeToContents()
+		Panel:AddItem(Lab)
+		Lab:SetTextColor(SettingsClass.TextColor)
+		Lab:SetTooltip(toptext)
+		
+		local list = vgui.Create('DListView', Panel)
+		Panel:AddItem(list)
+		
+		list:SetHeight(600)
+		list:AddColumn('Entity')
+		
+		local L = DPP.WhitelistedEntities[k]
+		local New = {}
+		for k, v in pairs(L) do
+			table.insert(New, k)
+		end
+		
+		table.sort(New, SORTER)
+		
+		for k, v in pairs(New) do
+			list:AddLine(v)
+		end
+		
+		list.OnRowRightClick = function(self, line)
+			local val = self:GetLine(line):GetValue(1)
+			local menu = vgui.Create('DMenu')
+			menu:AddOption('Copy class to clipboard', function()
+				SetClipboardText(val)
+			end)
+			
+			menu:AddOption('Remove from whitelist', function()
+				RunConsoleCommand('dpp_removewhitelistedentity' .. k, val)
+			end)
+			
+			menu:AddOption('Add that entity to ALL whitelists', function()
+				ADD_ALL_W(val)
+			end)
+			
+			menu:AddOption('Remove that entity to ALL whitelists', function()
+				REMOVE_ALL_W(val)
+			end)
+			menu:Open()
+		end
+		
+		local entry = vgui.Create('DTextEntry', Panel)
+		Panel:AddItem(entry)
+		local Apply = Panel:Button('Add entity')
+		Apply.DoClick = function()
+			RunConsoleCommand('dpp_addwhitelistedentity' .. k, entry:GetText())
+		end
+		SettingsClass.ApplyButtonStyle(Apply)
+		
+		local Apply = Panel:Button('Remove entity')
+		Apply.DoClick = function()
+			RunConsoleCommand('dpp_removewhitelistedentity' .. k, entry:GetText())
+		end
+		SettingsClass.ApplyButtonStyle(Apply)
+		
+		local Apply = Panel:Button('Add this entity to ALL whitelists')
+		Apply.DoClick = function()
+			ADD_ALL_W(entry:GetText())
+		end
+		SettingsClass.ApplyButtonStyle(Apply)
+		
+		local Apply = Panel:Button('Remove this entity from ALL whitelists')
+		Apply.DoClick = function()
+			REMOVE_ALL_W(entry:GetText())
+		end
+		SettingsClass.ApplyButtonStyle(Apply)
+		
+		local Apply = Panel:Button('Add the entity you\'re looking at to the whitelist')
+		Apply.DoClick = function()
+			local ent = LocalPlayer():GetEyeTrace().Entity
+			if not IsValid(ent) then return end
+			RunConsoleCommand('dpp_addwhitelistedentity' .. k, ent:GetClass())
+		end
+		SettingsClass.ApplyButtonStyle(Apply)
+		
+		local Apply = Panel:Button('Remove the entity you\'re looking at to the whitelist')
+		Apply.DoClick = function()
+			local ent = LocalPlayer():GetEyeTrace().Entity
+			if not IsValid(ent) then return end
+			RunConsoleCommand('dpp_removewhitelistedentity' .. k, ent:GetClass())
+		end
+		SettingsClass.ApplyButtonStyle(Apply)
+		
+		local Apply = Panel:Button('Add the entity you\'re looking at to ALL whitelists')
+		Apply.DoClick = function()
+			local ent = LocalPlayer():GetEyeTrace().Entity
+			if not IsValid(ent) then return end
+			ADD_ALL_W(ent:GetClass())
+		end
+		SettingsClass.ApplyButtonStyle(Apply)
+		
+		local Apply = Panel:Button('Remove the entity you\'re looking at to ALL whitelists')
+		Apply.DoClick = function()
+			local ent = LocalPlayer():GetEyeTrace().Entity
+			if not IsValid(ent) then return end
+			REMOVE_ALL_W(ent:GetClass())
+		end
+		SettingsClass.ApplyButtonStyle(Apply)
+		
+		ConVarCheckbox(Panel, 'whitelist_' .. k)
 	end
 end
 
@@ -1501,6 +1632,10 @@ local function PopulateToolMenu()
 		spawnmenu.AddToolMenuOption('Utilities', 'DPP Blacklists', 'DPP.' .. k, v .. ' blacklist', '', '', PanelsFunctions[k])
 	end
 
+	for k, v in pairs(DPP.WhitelistTypes) do
+		spawnmenu.AddToolMenuOption('Utilities', 'DPP Whitelists', 'DPP.' .. k .. '_whitelist', v .. ' whitelist', '', '', WhitelistFunctions[k])
+	end
+
 	for k, v in pairs(DPP.RestrictTypes) do
 		spawnmenu.AddToolMenuOption('Utilities', 'DPP Restrictions', 'DPP.restrict' .. k, v .. ' Restrictions', '', '', PanelsFunctions2[k])
 	end
@@ -1509,6 +1644,12 @@ end
 hook.Add('DPP.BlockedEntitiesChanged', 'DPP.Menu', function(s1, s2, b)
 	if PanelsFunctions[s1] then
 		PanelsFunctions[s1](DPP.SettingsClass.ValidPanels[s1])
+	end
+end)
+
+hook.Add('DPP.WhitelistedEntitiesChanged', 'DPP.Menu', function(s1, s2, b)
+	if WhitelistFunctions[s1] then
+		WhitelistFunctions[s1](DPP.SettingsClass.ValidPanels3[s1])
 	end
 end)
 
@@ -1550,6 +1691,12 @@ hook.Add('DPP.BlockedEntitiesReloaded', 'DPP.Menu', function(s1)
 	end
 end)
 
+hook.Add('DPP.WhitelistedEntitiesReloaded', 'DPP.Menu', function(s1)
+	if WhitelistFunctions[s1] then
+		WhitelistFunctions[s1](DPP.SettingsClass.ValidPanels3[s1])
+	end
+end)
+
 hook.Add('DPP.RestrictedTypesUpdated', 'DPP.Menu', function(s1)
 	if PanelsFunctions2[s1] then
 		PanelsFunctions2[s1](DPP.SettingsClass.ValidPanels2[s1])
@@ -1587,6 +1734,7 @@ local AddToBlocked = {
 	MenuIcon = "icon16/cross.png",
 
 	Filter = function(self, ent, ply)
+		if DPP.PlayerConVar(_, 'no_block_options') then return end
 		if not IsValid(ent) then return false end
 		if not ply:IsSuperAdmin() then return false end
 		if DPP.IsModelEvenBlocked(ent:GetModel()) then return false end
@@ -1604,6 +1752,7 @@ local RemoveFromlocked = {
 	MenuIcon = "icon16/accept.png",
 
 	Filter = function(self, ent, ply)
+		if DPP.PlayerConVar(_, 'no_block_options') then return end
 		if not IsValid(ent) then return false end
 		if not ply:IsSuperAdmin() then return false end
 		if not DPP.IsModelEvenBlocked(ent:GetModel()) then return false end
@@ -1677,6 +1826,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		MenuIcon = 'icon16/cross.png',
 
 		Filter = function(self, ent, ply)
+			if DPP.PlayerConVar(_, 'no_block_options') then return end
 			if not IsValid(ent) then return false end
 			if not ply:IsSuperAdmin() then return false end
 			if DPP['IsEvenBlocked' .. v](ent:GetClass(), ply) then return false end
@@ -1694,6 +1844,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		MenuIcon = 'icon16/accept.png',
 
 		Filter = function(self, ent, ply)
+			if DPP.PlayerConVar(_, 'no_block_options') then return end
 			if not IsValid(ent) then return false end
 			if not ply:IsSuperAdmin() then return false end
 			if not DPP['IsEvenBlocked' .. v](ent:GetClass(), ply) then return false end
@@ -1780,6 +1931,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		MenuIcon = 'icon16/cross.png',
 
 		Filter = function(self, ent, ply)
+			if DPP.PlayerConVar(_, 'no_restrict_options') then return end
 			if not IsValid(ent) then return false end
 			if not ply:IsSuperAdmin() then return false end
 			local type = DPP.GetEntityType(ent)
@@ -1799,6 +1951,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		MenuIcon = 'icon16/accept.png',
 
 		Filter = function(self, ent, ply)
+			if DPP.PlayerConVar(_, 'no_restrict_options') then return end
 			if not IsValid(ent) then return false end
 			if not ply:IsSuperAdmin() then return false end
 			local type = DPP.GetEntityType(ent)
@@ -1818,6 +1971,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		MenuIcon = 'icon16/pencil.png',
 
 		Filter = function(self, ent, ply)
+			if DPP.PlayerConVar(_, 'no_restrict_options') then return end
 			if not IsValid(ent) then return false end
 			if not ply:IsSuperAdmin() then return false end
 			local type = DPP.GetEntityType(ent)
@@ -1906,11 +2060,12 @@ do
 	end
 	
 	local Add = {
-		MenuLabel = "Add to DPP " .. v .. ' restrict black/white list',
+		MenuLabel = "Add to DPP " .. v .. ' restrict black/whitelist',
 		Order = 2520,
 		MenuIcon = 'icon16/cross.png',
 
 		Filter = function(self, ent, ply)
+			if DPP.PlayerConVar(_, 'no_restrict_options') then return end
 			if not IsValid(ent) then return false end
 			if not ply:IsSuperAdmin() then return false end
 			if DPP['IsEvenRestricted' .. v](ent:GetModel()) then return false end
@@ -1923,11 +2078,12 @@ do
 	}
 	
 	local Remove = {
-		MenuLabel = "Remove from DPP " .. v .. ' restrict black/white list',
+		MenuLabel = "Remove from DPP " .. v .. ' restrict black/whitelist',
 		Order = 2520,
 		MenuIcon = 'icon16/accept.png',
 
 		Filter = function(self, ent, ply)
+			if DPP.PlayerConVar(_, 'no_restrict_options') then return end
 			if not IsValid(ent) then return false end
 			if not ply:IsSuperAdmin() then return false end
 			if not DPP['IsEvenRestricted' .. v](ent:GetModel()) then return false end
@@ -1945,6 +2101,7 @@ do
 		MenuIcon = 'icon16/pencil.png',
 
 		Filter = function(self, ent, ply)
+			if DPP.PlayerConVar(_, 'no_restrict_options') then return end
 			if not IsValid(ent) then return false end
 			if not ply:IsSuperAdmin() then return false end
 			if not DPP['IsEvenRestricted' .. v](ent:GetModel()) then return false end

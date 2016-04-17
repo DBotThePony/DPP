@@ -53,6 +53,15 @@ function DPP.CreateTables()
 		]])
 	end
 	
+	for k, v in pairs(DPP.WhitelistTypes) do
+		DPP.Query([[
+			CREATE TABLE IF NOT EXISTS dpp_whitelistentities]] .. k .. [[ (
+				ENTITY VARCHAR(64) NOT NULL,
+				PRIMARY KEY (ENTITY)
+			)
+		]])
+	end
+	
 	for k, v in pairs(DPP.RestrictTypes) do
 		DPP.Query([[
 			CREATE TABLE IF NOT EXISTS dpp_restricted]] .. k .. [[ (
@@ -226,6 +235,55 @@ for k, v in pairs(DPP.BlockTypes) do
 		if blockedEnts[args[1]] then DPP.Notify(ply, 'You can not remove that entity from blacklist') return end
 		DPP['RemoveBlockedEntity' .. v](args[1])
 		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' removed ' .. args[1] .. ' from ' .. v .. ' blacklist/whitelist'}
+		DPP.Notify(player.GetAll(), f)
+		DPP.Message(f)
+	end)
+end
+
+for k, v in pairs(DPP.WhitelistTypes) do
+	DPP['AddWhitelistedEntity' .. v] = function(ent)
+		ent = string.lower(ent)
+		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
+		
+		net.Start('DPP.WListsInsert')
+		net.WriteString(k)
+		net.WriteString(ent)
+		net.WriteBool(true)
+		net.Broadcast()
+		
+		DPP.WhitelistedEntities[k][ent] = true
+		DPP.Query('REPLACE INTO dpp_whitelistentities' .. k .. ' (ENTITY) VALUES ("' .. ent .. '")')
+	end
+	
+	DPP['RemoveWhitelistedEntity' .. v] = function(ent)
+		ent = string.lower(ent)
+		if blockedEnts[ent] then return end
+		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
+		
+		net.Start('DPP.WListsInsert')
+		net.WriteString(k)
+		net.WriteString(ent)
+		net.WriteBool(false)
+		net.Broadcast()
+		
+		DPP.WhitelistedEntities[k][ent] = nil
+		DPP.Query('DELETE FROM dpp_whitelistentities' .. k .. ' WHERE ENTITY = "' .. ent .. '"')
+	end
+	
+	concommand.Add('dpp_addwhitelistedentity' .. k, function(ply, cmd, args)
+		if IsValid(ply) and not ply:IsSuperAdmin() then return end
+		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+		DPP['AddWhitelistedEntity' .. v](args[1])
+		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' added ' .. args[1] .. ' to ' .. v .. ' whitelisted entities'}
+		DPP.Notify(player.GetAll(), f)
+		DPP.Message(f)
+	end)
+	
+	concommand.Add('dpp_removewhitelistedentity' .. k, function(ply, cmd, args)
+		if IsValid(ply) and not ply:IsSuperAdmin() then return end
+		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+		DPP['RemoveWhitelistedEntity' .. v](args[1])
+		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' removed ' .. args[1] .. ' from ' .. v .. ' whitelisted entities'}
 		DPP.Notify(player.GetAll(), f)
 		DPP.Message(f)
 	end)
@@ -630,6 +688,16 @@ local function Load()
 			
 			for a, b in pairs(data) do
 				DPP['AddBlockedEntity' .. v](b.ENTITY)
+			end
+		end)
+	end
+	
+	for k, v in pairs(DPP.WhitelistTypes) do
+		DPP.WhitelistedEntities[k] = {}
+		local data = DPP.Query('SELECT * FROM dpp_whitelistentities' .. k, function(data)
+			if not data then return end
+			for a, b in pairs(data) do
+				DPP.WhitelistedEntities[k][b.ENTITY] = true
 			end
 		end)
 	end

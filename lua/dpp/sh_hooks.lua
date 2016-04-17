@@ -6,6 +6,10 @@ function DPP.CanDamage(ply, ent, ignoreEnt)
 	if not DPP.GetConVar('enable_damage') then return true end
 	if DPP.IsEntityBlockedDamage(ent:GetClass()) then return false, 'Damage blocked' end
 	
+	if DPP.IsEntityWhitelistedDamage(ent:GetClass()) then
+		return true, 'Damage allowed (Whitelisted)'
+	end
+	
 	local type = DPP.GetEntityType(ent)
 	DPP.UpdateConstrainedWith(ent)
 	local with = DPP.GetConstrainedWith(ent)
@@ -77,7 +81,7 @@ function DPP.ToolgunTouch(ply, tr, mode)
 		local CTime = CurTime()
 		local Should = false
 		
-		--Some addons (such as wiremod) calls CanTool after player toolgun wiremod entity (for example, Expression 2)
+		--Some addons (such as wiremod) calls CanTool after player toolgun it's entity (for example, Expression 2)
 		for i = 3, 8 do
 			local Name, Value = debug.getlocal(i, 1)
 			if not Name then break end
@@ -137,7 +141,12 @@ end
 
 function DPP.CanPhysgun(ply, ent)
 	if not DPP.GetConVar('enable_physgun') then return end
-	if DPP.IsEntityBlockedPhysgun(ent:GetClass(), ply) then return false end
+	
+	if DPP.IsEntityBlockedPhysgun(ent:GetClass(), ply) then return false, 'Entity is blacklisted' end
+	
+	if DPP.IsEntityWhitelistedPhysgun(ent:GetClass()) then
+		return true, 'Entity is whitelisted'
+	end
 	
 	return DPP.CanTouch(ply, ent, 'physgun')
 end
@@ -148,9 +157,7 @@ function DPP.PhysgunPickup(ply, ent)
 		return
 	end
 	
-	local can, reason = DPP.CanPhysgun(ply, ent)
-	if not can then return can, reason end
-	if SERVER and DPP.GetGhosted(ent) then DPP.SetGhosted(ent, false) end
+	return DPP.CanPhysgun(ply, ent)
 end
 
 function DPP.CanGravgun(ply, ent)
@@ -158,6 +165,10 @@ function DPP.CanGravgun(ply, ent)
 	
 	if DPP.IsEntityBlockedGravgun(ent:GetClass(), ply) then
 		return false
+	end
+	
+	if DPP.IsEntityWhitelistedGravgun(ent:GetClass()) then
+		return true, 'Entity is whitelisted'
 	end
 	
 	return DPP.CanTouch(ply, ent, 'gravgun')
@@ -169,6 +180,10 @@ function DPP.CanGravgunPunt(ply, ent)
 	
 	if DPP.IsEntityBlockedGravgun(ent:GetClass(), ply) then
 		return false
+	end
+	
+	if DPP.IsEntityWhitelistedGravgun(ent:GetClass()) then
+		return true, 'Entity is whitelisted'
 	end
 
 	return DPP.CanTouch(ply, ent, 'gravgun')
@@ -227,6 +242,10 @@ function DPP.CanTool(ply, ent, mode)
 		return false, 'Toolgun blocked'
 	end
 	
+	if DPP.IsEntityWhitelistedTool(ent:GetClass()) then
+		return true, 'Entity is whitelisted'
+	end
+	
 	if ent:IsPlayer() then
 		local can1 = DPP.GetConVar('toolgun_player')
 		local can2 = DPP.GetConVar('toolgun_player_admin')
@@ -245,6 +264,7 @@ function DPP.CanPlayerEnterVehicle(ply, ent)
 	if not DPP.GetConVar('enable_veh') then return end
 	if ent.IgnoreVehicleProtection then return end
 	if not DPP.IsOwned(ent) then return end
+	
 	local reply = DPP.CanTouch(ply, ent, 'vehicle')
 	if not reply then return false end
 end
@@ -259,6 +279,11 @@ function DPP.CanProperty(ply, str, ent)
 	if string.sub(str, 4) == 'dpp.' then return end
 	if not DPP.GetConVar('enable_tool') then return end
 	if DPP.IsRestrictedProperty(str, ply) then return false end
+	
+	if DPP.IsEntityWhitelistedProperty(ent:GetClass()) then
+		return true, 'Entity is whitelisted'
+	end
+	
 	local reply = DPP.CanTool(ply, ent, '')
 	if not reply then return false end
 end
@@ -266,12 +291,22 @@ end
 function DPP.PlayerUse(ply, ent)
 	if not DPP.GetConVar('enable_use') then return end
 	if not DPP.IsOwned(ent) then return end
+	
+	if DPP.IsEntityWhitelistedUse(ent:GetClass()) then
+		return true, 'Entity is whitelisted'
+	end
+	
 	local reply = DPP.CanTouch(ply, ent, 'use')
 	if not reply then return false end
 end
 
 function DPP.CanDrive(ply, ent)
 	if not DPP.GetConVar('enable_drive') then return end
+	
+	if DPP.IsEntityWhitelistedPhysgun(ent:GetClass()) then
+		return true, 'Entity is whitelisted'
+	end
+	
 	local reply = DPP.CanTouch(ply, ent, 'physgun') --I will mean Drive as Physgun
 	if not reply then return false end
 end

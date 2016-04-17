@@ -71,6 +71,12 @@ DPP.Settings = {
 		desc = 'Enable blacklists',
 	},
 	
+	['enable_whitelisted'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Enable whitelists',
+	},
+	
 	['apropkill_enable'] = {
 		type = 'bool',
 		value = '1',
@@ -465,6 +471,7 @@ DPP.Settings = {
 }
 
 DPP.BlockedEntities = DPP.BlockedEntities or {}
+DPP.WhitelistedEntities = DPP.WhitelistedEntities or {}
 DPP.EntsLimits = DPP.EntsLimits or {}
 DPP.SBoxLimits = DPP.SBoxLimits or {}
 DPP.ConstrainsLimits = DPP.ConstrainsLimits or {}
@@ -480,6 +487,10 @@ DPP.BlockTypes = {
 	pickup = 'Pickup',
 	toolworld = 'ToolgunWorld',
 }
+
+DPP.WhitelistTypes = table.Copy(DPP.BlockTypes) --Heh
+DPP.WhitelistTypes.toolworld = nil
+DPP.WhitelistTypes.property = 'Property'
 
 DPP.ShareTypes = {
 	use = 'Use',
@@ -555,6 +566,18 @@ DPP.CSettings = {
 		type = 'bool',
 		value = '1',
 		desc = 'Disable HUD while in vehicle',
+	},
+	
+	['no_restrict_options'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Disable "fast restrict" options in property menus',
+	},
+	
+	['no_block_options'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Disable "fast block" options in property menus',
 	},
 }
 
@@ -711,6 +734,36 @@ for k, v in pairs(DPP.BlockTypes) do
 		end
 		
 		return DPP.BlockedEntities[k][ent] ~= nil
+	end
+end
+
+for k, v in pairs(DPP.WhitelistTypes) do
+	DPP.WhitelistedEntities[k] = DPP.WhitelistedEntities[k] or {}
+	
+	DPP.AddConVar('whitelist_' .. k, {
+		desc = 'Enable ' .. v .. ' whitelist',
+		value = '1',
+		type = 'bool',
+	})
+	
+	DPP['IsEntityWhitelisted' .. v] = function(ent)
+		if not DPP.GetConVar('enable') then return false end
+		if not DPP.GetConVar('enable_whitelisted') then return false end
+		if not DPP.GetConVar('whitelist_' .. k) then return false end
+		
+		if isentity(ent) then
+			ent = ent:GetClass()
+		end
+		
+		return DPP.WhitelistedEntities[k][ent] ~= nil
+	end
+	
+	DPP['IsEvenWhitelisted' .. v] = function(ent)
+		if isentity(ent) then
+			ent = ent:GetClass()
+		end
+		
+		return DPP.WhitelistedEntities[k][ent] ~= nil
 	end
 end
 

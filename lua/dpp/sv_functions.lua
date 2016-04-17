@@ -671,6 +671,16 @@ function DPP.BroadcastLists()
 		count = count + 1
 	end
 	
+	for k, v in pairs(DPP.WhitelistedEntities) do
+		timer.Create('DPP.SendWhitelistedEntities' .. k, count * 2, 1, function() --Prevent Spam
+			net.Start('DPP.WLists')
+			net.WriteString(k)
+			net.WriteTable(v)
+			net.Broadcast()
+		end)
+		count = count + 1
+	end
+	
 	for k, v in pairs(DPP.RestrictedTypes) do
 		timer.Create('DPP.SendRestricted' .. k, count * 2, 1, function() --Prevent Spam
 			net.Start('DPP.RLists')

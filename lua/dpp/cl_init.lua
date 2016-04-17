@@ -720,6 +720,14 @@ net.Receive('DPP.Lists', function()
 	DPP.Message('Blacklist "' .. str .. '" received from server, reloading')
 end)
 
+net.Receive('DPP.WLists', function()
+	local str = net.ReadString()
+	DPP.WhitelistedEntities[str] = net.ReadTable()
+	
+	hook.Run('DPP.WhitelistedEntitiesReloaded', str, DPP.WhitelistedEntities[str])
+	DPP.Message('Whitelist "' .. str .. '" received from server, reloading')
+end)
+
 net.Receive('DPP.RLists', function()
 	local str = net.ReadString()
 	DPP.RestrictedTypes[str] = net.ReadTable()
@@ -783,6 +791,18 @@ net.Receive('DPP.ListsInsert', function()
 	end
 	
 	hook.Run('DPP.BlockedEntitiesChanged', s1, s2, b)
+end)
+
+net.Receive('DPP.WListsInsert', function()
+	local s1, s2, b = net.ReadString(), net.ReadString(), net.ReadBool()
+	
+	if b then
+		DPP.WhitelistedEntities[s1][s2] = b
+	else
+		DPP.WhitelistedEntities[s1][s2] = nil
+	end
+	
+	hook.Run('DPP.WhitelistedEntitiesChanged', s1, s2, b)
 end)
 
 net.Receive('DPP.RListsInsert', function()
