@@ -601,19 +601,15 @@ function DPP.PlayerConVar(ply, var, ifUndefined)
 	if not t then return ifUndefined end
 	local type = t.type
 	
-	if CLIENT then 
-		local val = DPP.CVars[var]
+	if CLIENT then
+		local val
 		
-		if type == 'bool' then
-			return val:GetBool()
-		elseif type == 'int' then
-			return val:GetInt()
-		elseif type == 'float' then
-			return val:GetFloat()
+		if not ply or ply == LocalPlayer() then
+			val = DPP.CVars[var]:GetString()
+		else
+			val = ply:GetNWString('dpp.cvar_' .. var, '')
+			if not val or (val == '' and not t.blank) then return ifUndefined end
 		end
-	else
-		local val = ply:GetInfo('dpp_' .. var)
-		if not val and val ~= false then return ifUndefined end
 		
 		if type == 'bool' then
 			return tobool(val)
@@ -621,6 +617,30 @@ function DPP.PlayerConVar(ply, var, ifUndefined)
 			return math.floor(tonumber(val))
 		elseif type == 'float' then
 			return tonumber(val)
+		else
+			return val
+		end
+	else
+		local val = ply:GetInfo('dpp_' .. var)
+		if not val and val ~= false then return ifUndefined end
+		
+		if ply:GetNWString('dpp.cvar_' .. var, '') ~= val then
+			ply:SetNWString('dpp.cvar_' .. var, val)
+		end
+		
+		--Player can exploit the server by setting cvar to non it's specified type
+		local toNum = tonumber(val)
+		
+		if type == 'bool' then
+			return tobool(val)
+		elseif type == 'int' then
+			if not toNum then return ifUndefined end
+			return math.floor(toNum)
+		elseif type == 'float' then
+			if not toNum then return ifUndefined end
+			return toNum
+		else
+			return val
 		end
 	end
 end

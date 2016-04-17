@@ -357,6 +357,7 @@ local SortedConVars = {
 	'enable',
 	'enable_lists',
 	'enable_blocked',
+	'enable_whitelisted',
 	'enable_tool',
 	'enable_physgun',
 	'enable_gravgun',
