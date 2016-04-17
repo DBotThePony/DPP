@@ -665,6 +665,7 @@ end
 
 local function HUDPaint()
 	if DPP.PlayerConVar(_, 'hide_hud') then return end
+	if LocalPlayer():InVehicle() and DPP.PlayerConVar(_, 'no_hud_in_vehicle') then return end
 	if not DPP.PlayerConVar(_, 'simple_hud') then
 		PostDrawHUDDefault()
 	else

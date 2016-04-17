@@ -550,6 +550,12 @@ DPP.CSettings = {
 		value = '0',
 		desc = 'I don\'t want to touch other player\'s entities',
 	},
+	
+	['no_hud_in_vehicle'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Disable HUD while in vehicle',
+	},
 }
 
 for k, v in pairs(DPP.Settings) do
