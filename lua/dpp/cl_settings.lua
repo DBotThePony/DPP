@@ -56,6 +56,7 @@ function DPP.OpenFriendEditMenu(steamid)
 		p.Type = k
 		
 		SettingsClass.MakeCheckboxBetter(p)
+		SettingsClass.AddScramblingChars(p.Label, p, p.Button)
 	end
 	
 	height = height + 30
@@ -115,6 +116,7 @@ function DPP.OpenShareMenu(ent)
 		p.Type = k
 		
 		SettingsClass.MakeCheckboxBetter(p)
+		SettingsClass.AddScramblingChars(p.Label, p, p.Button)
 	end
 	
 	height = height + 50
@@ -1693,6 +1695,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 			p.Group = v
 			
 			SettingsClass.MakeCheckboxBetter(p)
+			SettingsClass.AddScramblingChars(p.Label, p, p.Button)
 		end
 		
 		height = height + 30
@@ -1702,6 +1705,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		iswhite:SetChecked(t.iswhite)
 		
 		SettingsClass.MakeCheckboxBetter(iswhite)
+		SettingsClass.AddScramblingChars(iswhite.Label, iswhite, iswhite.Button)
 		
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
@@ -2135,6 +2139,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 			p.Group = v
 			
 			SettingsClass.MakeCheckboxBetter(p)
+			SettingsClass.AddScramblingChars(p.Label, p, p.Button)
 		end
 		
 		height = height + 30
@@ -2144,6 +2149,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		iswhite:SetChecked(t.iswhite)
 		
 		SettingsClass.MakeCheckboxBetter(iswhite)
+		SettingsClass.AddScramblingChars(iswhite.Label, iswhite, iswhite.Button)
 		
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
@@ -2273,6 +2279,7 @@ do
 			p.Group = v
 			
 			SettingsClass.MakeCheckboxBetter(p)
+			SettingsClass.AddScramblingChars(p.Label, p, p.Button)
 		end
 		
 		height = height + 30
@@ -2282,6 +2289,7 @@ do
 		iswhite:SetChecked(t.iswhite)
 		
 		SettingsClass.MakeCheckboxBetter(iswhite)
+		SettingsClass.AddScramblingChars(iswhite.Label, iswhite, iswhite.Button)
 		
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
