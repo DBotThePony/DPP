@@ -626,12 +626,11 @@ end
 DPP.CVars = {}
 DPP.SVars = {}
 
-function DPP.PlayerConVar(ply, var, ifUndefined)
-	local t = DPP.CSettings[var]
-	if not t then return ifUndefined end
-	local type = t.type
-	
-	if CLIENT then
+if CLIENT then
+	function DPP.PlayerConVar(ply, var, ifUndefined)
+		local t = DPP.CSettings[var]
+		if not t then return ifUndefined end
+		local type = t.type
 		local val
 		
 		if not ply or ply == LocalPlayer() then
@@ -650,7 +649,13 @@ function DPP.PlayerConVar(ply, var, ifUndefined)
 		else
 			return val
 		end
-	else
+	end
+else
+	function DPP.PlayerConVar(ply, var, ifUndefined)
+		local t = DPP.CSettings[var]
+		if not t then return ifUndefined end
+		local type = t.type
+		
 		local val = ply:GetInfo('dpp_' .. var)
 		if not val and val ~= false then return ifUndefined end
 		
@@ -675,21 +680,27 @@ function DPP.PlayerConVar(ply, var, ifUndefined)
 	end
 end
 
-function DPP.GetConVar(cvar)
-	if not DPP.Settings[cvar] then return end
-	local t = DPP.Settings[cvar]
-	
-	if SERVER then
-		local var = DPP.SVars[cvar]
-		if t.bool then return  var:GetBool() end
-		return t.int and var:GetInt() or t.float and var:GetFloat() or var:GetString()
-	else
+if CLIENT then
+	function DPP.GetConVar(cvar)
+		if not DPP.Settings[cvar] then return end
+		local t = DPP.Settings[cvar]
+		
 		local var = GetGlobalString('DPP.' .. cvar) or t.value --Default value
 		if var == '' and not t.blank then var  = t.value end
 		if t.bool then return tobool(var) end
 		return t.int and math.floor(tonumber(var) or tonumber(t.value)) or t.float and (tonumber(var) or tonumber(t.value)) or var
 	end
+else
+	function DPP.GetConVar(cvar)
+		if not DPP.Settings[cvar] then return end
+		local t = DPP.Settings[cvar]
+		
+		local var = DPP.SVars[cvar]
+		if t.bool then return  var:GetBool() end
+		return t.int and var:GetInt() or t.float and var:GetFloat() or var:GetString()
+	end
 end
+
 
 function DPP.Message(first, ...)
 	if istable(first) and not first.a then
