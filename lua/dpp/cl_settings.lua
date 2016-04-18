@@ -54,6 +54,8 @@ function DPP.OpenFriendEditMenu(steamid)
 		p:SetText(string.gsub(k, '^.', string.upper) .. ' buddy')
 		p:SetChecked(v)
 		p.Type = k
+		
+		SettingsClass.MakeCheckboxBetter(p)
 	end
 	
 	height = height + 30
@@ -111,6 +113,8 @@ function DPP.OpenShareMenu(ent)
 		p:SetText(v .. ' share')
 		p:SetChecked(t[k])
 		p.Type = k
+		
+		SettingsClass.MakeCheckboxBetter(p)
 	end
 	
 	height = height + 50
@@ -1261,6 +1265,79 @@ function CustomBlockMenus.toolworld(Panel)
 	ConVarCheckbox(Panel, 'blacklist_' .. k .. '_admin_can')
 end
 
+do
+	local function Apply(Panels)
+		for k, v in pairs(Panels) do
+			local status, old = v:GetChecked(), v.Val
+			local var = v.Var
+			
+			if status == old then continue end
+			
+			if status then
+				RunConsoleCommand('dpp_addwhitelistedentitypropertyt', var)
+			else
+				RunConsoleCommand('dpp_removewhitelistedentitypropertyt', var)
+			end
+		end
+	end
+
+	function DPP.BuildPropertiesMenu()
+		local frame = vgui.Create('DFrame')
+		frame:SetSize(600, 600)
+		frame:Center()
+		frame:MakePopup()
+		frame:SetTitle('DPP Property Types Edit')
+		SettingsClass.ApplyFrameStyle(frame)
+		
+		local ScrollPanel = frame:Add('DScrollPanel')
+		ScrollPanel:Dock(FILL)
+		
+		local Panels = {}
+		
+		for k, v in pairs(properties.List) do
+			if string.sub(k, 1, 4) == 'dpp.' then continue end
+			local checkbox = ScrollPanel:Add('DCheckBoxLabel')
+			
+			ScrollPanel:AddItem(checkbox)
+			checkbox:SetText(k)
+			local Lab2 = checkbox:Add('DLabel')
+			Lab2:Dock(RIGHT)
+			Lab2:SetTextColor(SettingsClass.TextColor)
+			Lab2:SetText(tostring(v.MenuLabel))
+			Lab2:SizeToContents()
+			
+			SettingsClass.MakeCheckboxBetter(checkbox)
+			checkbox:Dock(TOP)
+			table.insert(Panels, checkbox)
+			
+			checkbox.Var = k
+			
+			local current = DPP.IsEvenWhitelistedPropertyType(k)
+			checkbox:SetChecked(current)
+			checkbox.Val = current
+		end
+		
+		local apply = frame:Add('DButton')
+		apply:Dock(BOTTOM)
+		apply:SetText('Apply')
+		SettingsClass.ApplyButtonStyle(apply)
+		
+		function apply.DoClick()
+			Apply(Panels)
+			frame:Close()
+		end
+		
+		local discard = frame:Add('DButton')
+		discard:Dock(BOTTOM)
+		discard:SetText('Discard')
+		SettingsClass.ApplyButtonStyle(discard)
+		
+		function discard.DoClick()
+			frame:Close()
+		end
+	end
+end
+
 function CustomWhiteMenus.propertyt(Panel)
 	local k = 'propertyt'
 	local v = 'PropertyType'
@@ -1277,6 +1354,7 @@ there,  anyone can remove any entity using property menus.
 To see all property  classes, type 
 dpp_show_propery_classes 1 into your client console and 
 then open property menu of any entity.
+(Or use button below :P)
 ]]
 	
 	local Lab = Label(toptext)
@@ -1284,6 +1362,10 @@ then open property menu of any entity.
 	Panel:AddItem(Lab)
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SetTooltip(toptext)
+	
+	local Button = Panel:Button('Open properties list...')
+	Button.DoClick = DPP.BuildPropertiesMenu
+	SettingsClass.ApplyButtonStyle(Button)
 	
 	local list = vgui.Create('DListView', Panel)
 	Panel:AddItem(list)
@@ -1609,6 +1691,8 @@ for k, v in pairs(DPP.RestrictTypes) do
 			p:SetText(v)
 			p:SetChecked(table.HasValue(t.groups, v))
 			p.Group = v
+			
+			SettingsClass.MakeCheckboxBetter(p)
 		end
 		
 		height = height + 30
@@ -1616,6 +1700,8 @@ for k, v in pairs(DPP.RestrictTypes) do
 		iswhite:Dock(TOP)
 		iswhite:SetText('Is White List')
 		iswhite:SetChecked(t.iswhite)
+		
+		SettingsClass.MakeCheckboxBetter(iswhite)
 		
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
@@ -2047,6 +2133,8 @@ for k, v in pairs(DPP.RestrictTypes) do
 			p:SetText(v)
 			p:SetChecked(table.HasValue(t.groups, v))
 			p.Group = v
+			
+			SettingsClass.MakeCheckboxBetter(p)
 		end
 		
 		height = height + 30
@@ -2054,6 +2142,8 @@ for k, v in pairs(DPP.RestrictTypes) do
 		iswhite:Dock(TOP)
 		iswhite:SetText('Is White List')
 		iswhite:SetChecked(t.iswhite)
+		
+		SettingsClass.MakeCheckboxBetter(iswhite)
 		
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
@@ -2181,6 +2271,8 @@ do
 			p:SetText(v)
 			p:SetChecked(table.HasValue(t.groups, v))
 			p.Group = v
+			
+			SettingsClass.MakeCheckboxBetter(p)
 		end
 		
 		height = height + 30
@@ -2188,6 +2280,8 @@ do
 		iswhite:Dock(TOP)
 		iswhite:SetText('Is White List')
 		iswhite:SetChecked(t.iswhite)
+		
+		SettingsClass.MakeCheckboxBetter(iswhite)
 		
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
