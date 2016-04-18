@@ -274,8 +274,6 @@ function DPP.PlayerDisconnected(ply)
 				if ply then return end
 				
 				for k, v in pairs(DPP.GetPropsByUID(uid)) do
-					if not IsValid(v) then continue end
-					if IsValid(DPP.GetOwner(v)) then continue end
 					DPP.SetUpForGrabs(v, true)
 				end
 				
