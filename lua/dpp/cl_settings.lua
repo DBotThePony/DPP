@@ -398,6 +398,7 @@ local MiscConVars = {
 
 local ClientVars = {
 	'hide_hud',
+	'simple_hud',
 	'no_hud_in_vehicle',
 	'no_scrambling_text',
 	'no_touch',
