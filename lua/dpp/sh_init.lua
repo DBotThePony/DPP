@@ -945,14 +945,12 @@ function DPP.GetConstLimit(class, group)
 	end
 end
 
-for k, v in pairs(DPP.Settings) do
-	if SERVER then
+if SERVER then
+	for k, v in pairs(DPP.Settings) do
 		DPP.SVars[k] = CreateConVar('dpp_' .. k, v.value, {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE})
 		cvars.AddChangeCallback('dpp_' .. k, DPP.ConVarChanged, 'DPP')
 	end
-end
-
-if CLIENT then
+else
 	for k, v in pairs(DPP.CSettings) do
 		DPP.CVars[k] = CreateClientConVar('dpp_' .. k, v.value, true, true, v.desc)
 		cvars.AddChangeCallback('dpp_' .. k, DPP.ClientConVarChanged, 'DPP')
