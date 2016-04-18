@@ -2072,26 +2072,27 @@ local BlockProperties = {
 	Filter = function(self, ent, ply)
 		if not IsValid(ent) then return false end
 		if not ply:IsSuperAdmin() then return false end
-		
-		for k, v in pairs(BlockedPropetries) do
-			if not v:Filter(ent, ply) then continue end
-			return true
-		end
-		
-		return false
+		return true
 	end,
 	
 	MenuOpen = function(self, menu, ent, tr)
 		local SubMenu = menu:AddSubMenu()
 		local ply = LocalPlayer()
 		
+		local hit = false
+		
 		for k, v in SortedPairs(BlockedPropetries) do
 			if not v:Filter(ent, ply) then continue end
+			hit = true
 			
 			local Pnl = SubMenu:AddOption(v.MenuLabel, function()
 				v:Action(ent)
 			end)
 			Pnl:SetIcon(v.MenuIcon)
+		end
+		
+		if not hit then
+			menu:Remove()
 		end
 	end,
 	
