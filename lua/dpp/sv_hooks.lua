@@ -859,9 +859,14 @@ local function ReceiveProperty_DPP(len, ply)
 	
 	local oldReadEntity = net.ReadEntity
 	
-	--If some cunt is writing multiple entities, DPP will fuck it up
 	function net.ReadEntity()
 		net.ReadEntity = oldReadEntity
+		local oldEnt = oldReadEntity() --Call the old function to proceed message correctly
+		
+		if oldEnt ~= ent then
+			DPP.DoEcho('I don\'t really know, is that hacks or not, but player opened property menu on ' .. tostring(ent) .. ', but server received that target entity is ' .. tostring(oldEnt))
+		end
+
 		return ent
 	end
 	
