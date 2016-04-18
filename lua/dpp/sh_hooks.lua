@@ -280,7 +280,8 @@ function DPP.CanEditVariable(ent, ply, key, val, editor)
 end
 
 function DPP.CanProperty(ply, str, ent)
-	if string.sub(str, 4) == 'dpp.' then return end
+	if string.sub(str, 1, 4) == 'dpp.' then return end
+	
 	if not DPP.GetConVar('enable_tool') then return end
 	
 	if DPP.IsRestrictedProperty(str, ply) then 
@@ -398,31 +399,33 @@ function DPP.OverrideCounts()
 end
 
 local function AddToggleOption( data, menu, ent, ply, tr )
-	if ( !menu.ToggleSpacer ) then
+	if not menu.ToggleSpacer then
 		menu.ToggleSpacer = menu:AddSpacer()
 		menu.ToggleSpacer:SetZPos( 500 )
 	end
+	
 	local option = menu:AddOption( data.MenuLabel, function() data:Action( ent, tr ) end )
-	option:SetChecked( data:Checked( ent, ply ) )
-	option:SetZPos( 501 )
+	option:SetChecked(data:Checked(ent, ply))
+	option:SetZPos(501)
+	
 	return option
 end
 
 local function AddOption( data, menu, ent, ply, tr )
-	if ( data.Type == "toggle" ) then return AddToggleOption( data, menu, ent, ply, tr ) end
+	if data.Type == "toggle" then return AddToggleOption(data, menu, ent, ply, tr) end
 
-	if ( data.PrependSpacer ) then 
+	if data.PrependSpacer then 
 		menu:AddSpacer()
 	end
 
-	local option = menu:AddOption( data.MenuLabel, function() data:Action( ent, tr ) end )
+	local option = menu:AddOption(data.MenuLabel, function() data:Action(ent, tr) end)
 
-	if ( data.MenuIcon ) then
-		option:SetImage( data.MenuIcon )
+	if data.MenuIcon then
+		option:SetImage(data.MenuIcon)
 	end
 
-	if ( data.MenuOpen ) then
-		data.MenuOpen( data, option, ent, tr )
+	if data.MenuOpen then
+		data.MenuOpen(data, option, ent, tr)
 	end
 
 	return option
