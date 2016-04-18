@@ -840,6 +840,9 @@ local function NetMessageErr(err)
 	MsgC('[DPP Error]: Property is broken! ' .. err .. '\n')
 end
 
+local RED = Color(255, 0, 0)
+local GRAY = Color(200, 200, 200)
+
 local function ReceiveProperty_DPP(len, ply)
 	if not IsValid(ply) then return end
 	
@@ -864,7 +867,7 @@ local function ReceiveProperty_DPP(len, ply)
 		local oldEnt = oldReadEntity() --Call the old function to proceed message correctly
 		
 		if oldEnt ~= ent then
-			DPP.DoEcho('I don\'t really know, is that hacks or not, but player opened property menu on ' .. tostring(ent) .. ', but server received that target entity is ' .. tostring(oldEnt))
+			DPP.DoEcho{RED, 'ATTENTION ', GRAY, string.format('I don\'t really know, is that hacks or not, but player opened property menu on %s, but server received that target entity is %s. ', tostring(ent), tostring(oldEnt)), 'Player ', team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>'}
 		end
 
 		return ent
