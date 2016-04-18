@@ -246,7 +246,7 @@ function DPP.CanTool(ply, ent, mode)
 		return false, 'Toolgun blocked'
 	end
 	
-	if DPP.IsEntityWhitelistedTool(ent:GetClass()) then
+	if mode ~= 'remover' and DPP.IsEntityWhitelistedTool(ent:GetClass()) then
 		return true, 'Entity is whitelisted'
 	end
 	

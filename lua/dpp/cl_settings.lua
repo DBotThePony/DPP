@@ -1623,14 +1623,21 @@ for k, v in pairs(DPP.WhitelistTypes) do
 		SettingsClass.SetupBackColor(Panel)
 		ValidPanels3[k] = Panel
 		
-		local toptext = 'Entities what listed there will have\n"' .. v .. '" protection disabled. It means that\nANYONE able to touch\nthat entitiy despite of it\'s owner'
+		local toptext = [[
+Entities what listed there will have
+"]] .. v .. [[" protection disabled. It means that
+ANYONE able to touch\nthat entitiy despite of it's owner
+REMEMBER: Blacklists are ALWAYS have higher priority
+than other lists! That means blacklist will override
+any whitelist!
+]]
 		
 		if k == 'property' then
 			toptext = toptext .. '\nNOTE FOR PROPERTY: "remover" propery still\ncan\'t be used on whitelisted entities.'
 		end
 		
-		if k == 'propertyt' then
-			toptext = toptext .. '\nNOTE FOR PROPERTY TYPES: this list defines\nwhitelisted propertys itself\nThis means, that ANYONE can use listed\nproperty on ANY entity!\nFor example, if you add "remover",\nanyone can delete any entity using propery menus.\nTo see all classes, type dpp_show_propery_classes 1 into\nyour client console.'
+		if k == 'tool' then
+			toptext = toptext .. '\nNOTE FOR TOOLGUN: "remover" stillcan\'t be used\non whitelisted entities.'
 		end
 		
 		local Lab = Label(toptext)
