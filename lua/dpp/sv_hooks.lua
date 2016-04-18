@@ -824,6 +824,52 @@ function DPP.OverrideGMODEntity()
 	end
 end
 
+--Just make it better
+local function ReceiveProperty(len, ply)
+	if DPP.GetConVar('strict_property') then return end
+	local name = net.ReadString()
+	if not name or name == '' then return end
+	if not IsValid(ply) then return end
+	
+	local obj = properties.List[name]
+	if not obj then return end
+	if isfunction(obj.Receive) then obj:Receive(len, ply) end
+end
+
+local function NetMessageErr(err)
+	MsgC('[DPP Error]: Property is broken! ' .. err .. '\n')
+end
+
+local function ReceiveProperty_DPP(len, ply)
+	if not IsValid(ply) then return end
+	
+	local name = net.ReadString()
+	if not name or name == '' then return end
+	
+	local ent = net.ReadEntity()
+	if not IsValid(ent) then return end
+	
+	local obj = properties.List[name]
+	if not obj then return end
+	if not isfunction(obj.Filter) then return end
+	if not isfunction(obj.Receive) then return end
+	
+	if DPP.CanProperty(ply, name, ent) == false then return end
+	if not obj:Filter(ent, ply) then return end
+	
+	local oldReadEntity = net.ReadEntity
+	
+	--If some cunt is writing multiple entities, DPP will fuck it up
+	function net.ReadEntity()
+		net.ReadEntity = oldReadEntity
+		return ent
+	end
+	
+	xpcall(obj.Receive, NetMessageErr, obj, len, ply)
+	
+	net.ReadEntity = oldReadEntity
+end
+
 function DPP.ReplaceFunctions()
 	DPP.Message('Overriding server functions.')
 	
@@ -832,6 +878,9 @@ function DPP.ReplaceFunctions()
 	
 	cleanup.Add = cleanup_Add
 	undo.Finish = undo_Finish
+	
+	net.Receive("properties", ReceiveProperty)
+	net.Receive("properties_dpp", ReceiveProperty_DPP)
 end
 
 timer.Simple(0, DPP.ReplaceFunctions)

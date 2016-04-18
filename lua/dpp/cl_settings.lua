@@ -492,6 +492,14 @@ local function BuildSVarPanel(Panel)
 	
 	ConVarSlider(Panel, 'clear_timer')
 	ConVarSlider(Panel, 'grabs_timer')
+	
+	ConVarCheckbox(Panel, 'strict_property')
+	local Text = 'ATTENTION: THIS REPLACES PROCESSING OF PROPERTY NET MESSAGE\nAND ENABLES STRICT CHECKS FOR ENTITIES\nSOME NON-DEFAULT PROPERTIES MAY BREAK\nIT WILL DISALLOW TO USE PROPERTIES\nEVEN IF THEY TALK THAT THEY ARE ALLOWED\nTO USE ON THAT ENTITY.\n(this covers possible exploits)'
+	local lab = Label(Text)
+	Panel:AddItem(lab)
+	lab:SetTextColor(SettingsClass.TextColor)
+	lab:SizeToContents()
+	lab:SetTooltip(Text)
 end
 
 local function BuildCVarPanel(Panel)

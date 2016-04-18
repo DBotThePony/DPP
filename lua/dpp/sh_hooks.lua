@@ -397,10 +397,90 @@ function DPP.OverrideCounts()
 	end
 end
 
+local function AddToggleOption( data, menu, ent, ply, tr )
+	if ( !menu.ToggleSpacer ) then
+		menu.ToggleSpacer = menu:AddSpacer()
+		menu.ToggleSpacer:SetZPos( 500 )
+	end
+	local option = menu:AddOption( data.MenuLabel, function() data:Action( ent, tr ) end )
+	option:SetChecked( data:Checked( ent, ply ) )
+	option:SetZPos( 501 )
+	return option
+end
+
+local function AddOption( data, menu, ent, ply, tr )
+	if ( data.Type == "toggle" ) then return AddToggleOption( data, menu, ent, ply, tr ) end
+
+	if ( data.PrependSpacer ) then 
+		menu:AddSpacer()
+	end
+
+	local option = menu:AddOption( data.MenuLabel, function() data:Action( ent, tr ) end )
+
+	if ( data.MenuIcon ) then
+		option:SetImage( data.MenuIcon )
+	end
+
+	if ( data.MenuOpen ) then
+		data.MenuOpen( data, option, ent, tr )
+	end
+
+	return option
+end
+
+local SelectedEntity
+
+local function PropMenu(ent, tr)
+	local menu = DermaMenu()
+	
+	local ply = LocalPlayer()
+	
+	for k, v in SortedPairsByMemberValue(properties.List, "Order") do
+		if not isfunction(v.Filter) then continue end
+		if not v:Filter(ent, ply) then continue end
+		
+		if DPP.GetConVar('strict_property') then
+			if DPP.CanProperty(ply, k, ent) == false then continue end
+		end
+		
+		local option = AddOption(v, menu, ent, ply, tr)
+		SelectedEntity = ent
+		if isfunction(v.OnCreate) then v:OnCreate(menu, option) end
+	end
+	
+	menu:Open()
+end
+
+function DPP.ReplacePropertyFuncs()
+	if not properties then return end
+	DPP.Message('Overriding property functions')
+	
+	properties.OpenEntityMenu = PropMenu
+	
+	local Name, Value = debug.getupvalue(properties.Add, 1)
+	if Name == 'meta' and istable(Value) then
+		DPP.__oldPropertyMsgStart = DPP.__oldPropertyMsgStart or Value.MsgStart
+		Value.MsgStart = function(self)
+			if DPP.GetConVar('strict_property') then
+				local ent = SelectedEntity
+				if not IsValid(ent) then return end
+				
+				net.Start("properties_dpp")
+				net.WriteString(self.InternalName)
+				net.WriteEntity(ent)
+			else
+				DPP.__oldPropertyMsgStart(self)
+			end
+		end
+	end
+end
+
 function DPP.ReplaceSharedFunctions()
 	DPP.Message('Overriding shared functions')
 	DPP.OverrideE2Adv()
 	DPP.OverrideCounts()
+	
+	DPP.ReplacePropertyFuncs()
 end
 
 timer.Simple(0, DPP.ReplaceSharedFunctions)

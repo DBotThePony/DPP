@@ -32,6 +32,7 @@ util.AddNetworkString('DPP.SendConstrainedWith')
 util.AddNetworkString('DPP.PlayerList')
 
 util.AddNetworkString('DPP.ConVarChanged')
+util.AddNetworkString('properties_dpp')
 
 resource.AddWorkshop('659044893')
 

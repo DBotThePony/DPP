@@ -197,6 +197,12 @@ DPP.Settings = {
 		desc = 'Admins can touch everything',
 	},
 	
+	['strict_property'] = {
+		type = 'bool',
+		value = '0',
+		desc = '[Experimental!] Enable strict property protection',
+	},
+	
 	--Protection Modules
 	['enable_tool'] = {
 		type = 'bool',
