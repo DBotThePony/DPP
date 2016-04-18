@@ -920,6 +920,6 @@ concommand.Add('dpp_toggleplayerprotect', function(ply, cmd, args)
 	if not DPP.ProtectionModes[mode] then DPP.Notify(ply, 'Invalid argument') return end
 	
 	DPP.SetProtectionDisabled(target, mode, status)
-	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), (status and ' enabled ' or ' disabled '), 'protection mode ' .. mode .. ' for ', team.GetColor(target:Team()), target:Nick()}
+	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), (status and ' disabled ' or ' enabled '), 'protection mode ' .. mode .. ' for ', team.GetColor(target:Team()), target:Nick()}
 	DPP.DoEcho(f)
 end)
