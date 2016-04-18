@@ -287,7 +287,7 @@ function DPP.CanProperty(ply, str, ent)
 		return false 
 	end
 	
-	if DPP.IsEntityWhitelistedProperty(ent:GetClass()) then
+	if str ~= 'remover' and DPP.IsEntityWhitelistedProperty(ent:GetClass()) then
 		return true
 	end
 	

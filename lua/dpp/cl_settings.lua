@@ -1376,6 +1376,9 @@ for k, v in pairs(DPP.WhitelistTypes) do
 		ValidPanels3[k] = Panel
 		
 		local toptext = 'Entities what listed there will have\n"' .. v .. '" protection disabled. It means that\nANYONE able to touch\nthat entitiy despite of it\'s owner'
+		if k == 'property' then
+			toptext = toptext .. '\nNOTE FOR PROPERTY: "remover" propery still\ncan\'t be used on whitelisted entities.'
+		end
 		local Lab = Label(toptext)
 		Lab:SizeToContents()
 		Panel:AddItem(Lab)
