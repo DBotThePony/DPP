@@ -614,6 +614,48 @@ local function BuildPlayerList(Panel)
 	end
 end
 
+SettingsClass.PlayerProtectionCheckboxThink = function(self)
+	if not IsValid(self.Ply) then return end
+	local status = DPP.GetIsProtectionDisabledByServer(self.Ply, self.Mode)
+	self:SetChecked(status)
+	self.val = status
+end
+
+SettingsClass.PlayerProtectionCheckboxDoClick = function(self)
+	if not IsValid(self.Ply) then return end
+	RunConsoleCommand('dpp_toggleplayerprotect', self.Ply:UserID(), self.Mode, self.val and '0' or '1')
+end
+
+local function BuildPlayerProtectionPanel(Panel)
+	if not IsValid(Panel) then return end
+	Panel:Clear()
+	SettingsClass.SetupBackColor(Panel)
+	
+	DPP.SettingsClass.PPPanel = Panel
+
+	for k, v in pairs(player.GetAll()) do
+		local lab = Label(v:Nick())
+		Panel:AddItem(lab)
+		lab:SetTextColor(SettingsClass.TextColor)
+		lab:SizeToContents()
+		
+		for mode, b in pairs(DPP.ProtectionModes) do
+			local ID = 'disable_' .. mode .. '_protection'
+			local desc = 'Disable "' .. mode .. '" protection for ' .. v:Nick()
+			local checkbox = Panel:CheckBox(desc)
+			checkbox.Button.val = ID
+			checkbox.Button.Ply = v
+			checkbox.Button.Mode = mode
+			checkbox.Button.DoClick = SettingsClass.PlayerProtectionCheckboxDoClick
+			checkbox.Button.Think = SettingsClass.PlayerProtectionCheckboxThink
+			checkbox:SetTooltip(desc)
+			
+			SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
+			SettingsClass.MakeCheckboxBetter(checkbox)
+		end
+	end
+end
+
 local function BuildModelsList(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
@@ -1650,6 +1692,7 @@ local function PopulateToolMenu()
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.CLimits', 'Constraints Limits', '', '', BuildCLimitsList)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP Blacklists', 'DPP.ModelList', 'Model blacklist', '', '', BuildModelsList)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Friends', 'Friends', '', '', BuildFriendsPanel)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.PPPanel', 'Player Protection Controls', '', '', BuildPlayerProtectionPanel)
 	
 	for k, v in pairs(DPP.BlockTypes) do
 		spawnmenu.AddToolMenuOption('Utilities', 'DPP Blacklists', 'DPP.' .. k, v .. ' blacklist', '', '', PanelsFunctions[k])

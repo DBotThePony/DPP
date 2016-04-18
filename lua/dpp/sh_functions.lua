@@ -235,5 +235,5 @@ function DPP.GetIsProtectionDisabledByPlayer(ply, mode)
 end
 
 function DPP.IsProtectionDisabledFor(ply, mode)
-	return DPP.GetIsProtectionDisabled(ply, mode) or DPP.GetIsProtectionDisabledByServer(ply, mode)
+	return DPP.GetIsProtectionDisabledByPlayer(ply, mode) or DPP.GetIsProtectionDisabledByServer(ply, mode)
 end
