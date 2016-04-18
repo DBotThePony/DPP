@@ -1357,6 +1357,10 @@ To see all property  classes, type
 dpp_show_propery_classes 1 into your client console and 
 then open property menu of any entity.
 (Or use button below :P)
+REMEMBER: Blacklists are ALWAYS have higher priority
+than other lists! That means whitelisted property
+modes can NOT be used on blacklisted toolgun
+entities.
 ]]
 	
 	local Lab = Label(toptext)
@@ -1410,6 +1414,79 @@ then open property menu of any entity.
 	SettingsClass.ApplyButtonStyle(Apply)
 	
 	local Apply = Panel:Button('Remove Property')
+	Apply.DoClick = function()
+		RunConsoleCommand('dpp_removewhitelistedentity' .. k, entry:GetText())
+	end
+	SettingsClass.ApplyButtonStyle(Apply)
+	
+	ConVarCheckbox(Panel, 'whitelist_' .. k)
+end
+
+function CustomWhiteMenus.toolmode(Panel)
+	local k = 'toolmode'
+	local v = 'ToolMode'
+	
+	if not IsValid(Panel) then return end
+	Panel:Clear()
+	SettingsClass.SetupBackColor(Panel)
+	ValidPanels3[k] = Panel
+	
+	local toptext = [[
+This list defines toolgun modes that is allowed to be 
+used on ANY entity. For example, if you add "remover" 
+there, anyone can remove any entity using remover toolgun.
+REMEMBER: Blacklists are ALWAYS have higher priority
+than other lists! That means whitelisted tool modes
+can NOT be used on blacklisted from toolgun entities.
+]]
+	
+	local Lab = Label(toptext)
+	Lab:SizeToContents()
+	Panel:AddItem(Lab)
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SetTooltip(toptext)
+	
+	local list = vgui.Create('DListView', Panel)
+	Panel:AddItem(list)
+	
+	list:SetHeight(600)
+	list:AddColumn('Tool mode')
+	
+	local L = DPP.WhitelistedEntities[k]
+	local New = {}
+	for k, v in pairs(L) do
+		table.insert(New, k)
+	end
+	
+	table.sort(New, SORTER)
+	
+	for k, v in pairs(New) do
+		list:AddLine(v)
+	end
+	
+	list.OnRowRightClick = function(self, line)
+		local val = self:GetLine(line):GetValue(1)
+		local menu = vgui.Create('DMenu')
+		menu:AddOption('Copy tool mode to clipboard', function()
+			SetClipboardText(val)
+		end)
+		
+		menu:AddOption('Remove from whitelist', function()
+			RunConsoleCommand('dpp_removewhitelistedentity' .. k, val)
+		end)
+		
+		menu:Open()
+	end
+	
+	local entry = vgui.Create('DTextEntry', Panel)
+	Panel:AddItem(entry)
+	local Apply = Panel:Button('Add tool mode')
+	Apply.DoClick = function()
+		RunConsoleCommand('dpp_addwhitelistedentity' .. k, entry:GetText())
+	end
+	SettingsClass.ApplyButtonStyle(Apply)
+	
+	local Apply = Panel:Button('Remove tool mode')
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_removewhitelistedentity' .. k, entry:GetText())
 	end

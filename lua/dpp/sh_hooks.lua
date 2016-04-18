@@ -250,6 +250,10 @@ function DPP.CanTool(ply, ent, mode)
 		return true, 'Entity is whitelisted'
 	end
 	
+	if mode and DPP.IsEntityWhitelistedToolMode(mode) then
+		return true, 'Tool mode is whitelisted'
+	end
+	
 	if ent:IsPlayer() then
 		local can1 = DPP.GetConVar('toolgun_player')
 		local can2 = DPP.GetConVar('toolgun_player_admin')
@@ -282,6 +286,11 @@ end
 function DPP.CanProperty(ply, str, ent)
 	if string.sub(str, 1, 4) == 'dpp.' then return true end
 	if not DPP.GetConVar('enable_tool') then return true end
+	
+	--Make check before
+	if DPP.IsEntityBlockedTool(ent:GetClass(), ply) then
+		return false
+	end
 	
 	if DPP.IsRestrictedProperty(str, ply) then 
 		return false 

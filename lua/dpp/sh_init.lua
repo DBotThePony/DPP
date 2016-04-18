@@ -498,6 +498,7 @@ DPP.WhitelistTypes = table.Copy(DPP.BlockTypes) --Heh
 DPP.WhitelistTypes.toolworld = nil
 DPP.WhitelistTypes.property = 'Property'
 DPP.WhitelistTypes.propertyt = 'PropertyType'
+DPP.WhitelistTypes.toolmode = 'ToolMode'
 
 DPP.ShareTypes = {
 	use = 'Use',
