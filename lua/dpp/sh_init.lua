@@ -587,12 +587,6 @@ DPP.CSettings = {
 		value = '0',
 		desc = 'Disable "fast block" options in property menus',
 	},
-	
-	['show_propery_classes'] = {
-		type = 'bool',
-		value = '0',
-		desc = 'Show property classes (for whitelist edit)',
-	},
 }
 
 DPP.ProtectionModes = {

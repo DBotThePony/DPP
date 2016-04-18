@@ -896,10 +896,6 @@ local function PropMenu(ent, tr)
 	for k, v in SortedPairsByMemberValue(properties.List, "Order") do
 		if not isfunction(v.Filter) then continue end
 		
-		if DPP.PlayerConVar(ply, 'show_propery_classes', false) then
-			print('[DPP] Class: ' .. k .. ', Name: ' .. tostring(v.MenuLabel))
-		end
-		
 		if not v:Filter(ent, ply) then continue end
 		
 		if DPP.CanProperty(ply, k, ent) == false then continue end

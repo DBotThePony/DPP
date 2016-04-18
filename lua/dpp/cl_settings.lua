@@ -500,7 +500,7 @@ local function BuildSVarPanel(Panel)
 	ConVarSlider(Panel, 'grabs_timer')
 	
 	ConVarCheckbox(Panel, 'strict_property')
-	local Text = 'ATTENTION: THIS REPLACES PROCESSING OF PROPERTY NET MESSAGE\nAND ENABLES STRICT CHECKS FOR ENTITIES\nSOME NON-DEFAULT PROPERTIES MAY BREAK\nIT WILL DISALLOW TO USE PROPERTIES\nEVEN IF THEY "TALK" THAT THEY ARE ALLOWED\nTO BE USE ON THAT ENTITY.\nUSE WITH CAUTION\n(this covers possible exploits)'
+	local Text = 'ATTENTION: THIS REPLACES PROCESSING OF PROPERTY NET MESSAGE\nAND ENABLES STRICT CHECKS FOR ENTITIES\nSOME NON-DEFAULT PROPERTIES MAY BREAK\nIT WILL DISALLOW TO USE PROPERTIES\nEVEN IF THEY "TALK" THAT THEY ARE ALLOWED\nTO BE USE ON THAT ENTITY.\nUSE WITH CAUTION\n(this may cover possible exploits with non-default properties)'
 	local lab = Label(Text)
 	Panel:AddItem(lab)
 	lab:SetTextColor(SettingsClass.TextColor)
@@ -1296,7 +1296,7 @@ do
 		
 		local Panels = {}
 		
-		for k, v in pairs(properties.List) do
+		for k, v in SortedPairs(properties.List) do
 			if string.sub(k, 1, 4) == 'dpp.' then continue end
 			local checkbox = ScrollPanel:Add('DCheckBoxLabel')
 			
@@ -1353,10 +1353,7 @@ function CustomWhiteMenus.propertyt(Panel)
 This list defines property types that is allowed to be 
 used on ANY entity. For example, if you add "remover" 
 there,  anyone can remove any entity using property menus. 
-To see all property  classes, type 
-dpp_show_propery_classes 1 into your client console and 
-then open property menu of any entity.
-(Or use button below :P)
+To see all property classes, type use button below.
 REMEMBER: Blacklists are ALWAYS have higher priority
 than other lists! That means whitelisted property
 modes can NOT be used on blacklisted toolgun
@@ -2065,44 +2062,43 @@ hook.Add('DPP.PlayerListChanged', 'DPP.Menu', function()
 	BuildPlayerList(DPP.SettingsClass.PlayerPanel)
 end)
 
-local AddToBlocked = {
-	MenuLabel = "Add to DPP Blocked Models",
-	Order = 2500,
+local BlockedPropetries = {}
+
+local BlockProperties = {
+	MenuLabel = "DPP Restrict options",
+	Order = 2700,
 	MenuIcon = "icon16/cross.png",
 
 	Filter = function(self, ent, ply)
-		if DPP.PlayerConVar(_, 'no_block_options') then return end
 		if not IsValid(ent) then return false end
 		if not ply:IsSuperAdmin() then return false end
-		if DPP.IsModelEvenBlocked(ent:GetModel()) then return false end
-		return true
+		
+		for k, v in pairs(BlockedPropetries) do
+			if not v:Filter(ent, ply) then continue end
+			return true
+		end
+		
+		return false
+	end,
+	
+	MenuOpen = function(self, menu, ent, tr)
+		local SubMenu = menu:AddSubMenu()
+		local ply = LocalPlayer()
+		
+		for k, v in SortedPairs(BlockedPropetries) do
+			if not v:Filter(ent, ply) then continue end
+			
+			local Pnl = SubMenu:AddOption(v.MenuLabel, function()
+				v:Action(ent)
+			end)
+			Pnl:SetIcon(v.MenuIcon)
+		end
 	end,
 	
 	Action = function(self, ent)
-		RunConsoleCommand('dpp_addblockedmodel', ent:GetModel())
+		--Do Nothing
 	end,
 }
-
-local RemoveFromlocked = {
-	MenuLabel = "Remove from DPP Blocked Models",
-	Order = 2501,
-	MenuIcon = "icon16/accept.png",
-
-	Filter = function(self, ent, ply)
-		if DPP.PlayerConVar(_, 'no_block_options') then return end
-		if not IsValid(ent) then return false end
-		if not ply:IsSuperAdmin() then return false end
-		if not DPP.IsModelEvenBlocked(ent:GetModel()) then return false end
-		return true
-	end,
-	
-	Action = function(self, ent)
-		RunConsoleCommand('dpp_removeblockedmodel', ent:GetModel())
-	end,
-}
-
-properties.Add("dpp.addblockedmodel", AddToBlocked)
-properties.Add("dpp.delblockedmodel", RemoveFromlocked)
 
 local CleanupPlayer = {
 	MenuLabel = "Cleanup props of owner",
@@ -2121,7 +2117,6 @@ local CleanupPlayer = {
 		RunConsoleCommand('dpp_clearbyuid', UID)
 	end,
 }
-properties.Add("dpp.clearbyuid", CleanupPlayer)
 
 local ShareMenu = {
 	MenuLabel = "Share this prop",
@@ -2138,8 +2133,6 @@ local ShareMenu = {
 	end,
 }
 
-properties.Add("dpp.share", ShareMenu)
-
 local transfertoworld = {
 	MenuLabel = "Transfer ownership to world",
 	Order = 2700,
@@ -2155,17 +2148,51 @@ local transfertoworld = {
 }
 
 properties.Add("dpp.transfertoworld", transfertoworld)
+properties.Add("dpp.share", ShareMenu)
+properties.Add("dpp.clearbyuid", CleanupPlayer)
+properties.Add('dpp.blockingmenu', BlockProperties)
+
+table.insert(BlockedPropetries, {
+	MenuLabel = "Add to DPP Blocked Models",
+	MenuIcon = "icon16/cross.png",
+
+	Filter = function(self, ent, ply)
+		if DPP.PlayerConVar(_, 'no_block_options') then return end
+		if not IsValid(ent) then return false end
+		if not ply:IsSuperAdmin() then return false end
+		if DPP.IsModelEvenBlocked(ent:GetModel()) then return false end
+		return true
+	end,
+	
+	Action = function(self, ent)
+		RunConsoleCommand('dpp_addblockedmodel', ent:GetModel())
+	end,
+})
+
+table.insert(BlockedPropetries, {
+	MenuLabel = "Remove from DPP Blocked Models",
+	MenuIcon = "icon16/accept.png",
+
+	Filter = function(self, ent, ply)
+		if DPP.PlayerConVar(_, 'no_block_options') then return false end
+		if not IsValid(ent) then return false end
+		if not ply:IsSuperAdmin() then return false end
+		if not DPP.IsModelEvenBlocked(ent:GetModel()) then return false end
+		return true
+	end,
+	
+	Action = function(self, ent)
+		RunConsoleCommand('dpp_removeblockedmodel', ent:GetModel())
+	end,
+})
 
 for k, v in pairs(DPP.BlockTypes) do
-	local Add = {
+	table.insert(BlockedPropetries, {
 		MenuLabel = "Add to DPP " .. v .. ' blacklist',
-		Order = 2503,
 		MenuIcon = 'icon16/cross.png',
 
 		Filter = function(self, ent, ply)
-			if DPP.PlayerConVar(_, 'no_block_options') then return end
-			if not IsValid(ent) then return false end
-			if not ply:IsSuperAdmin() then return false end
+			if DPP.PlayerConVar(_, 'no_block_options') then return false end
 			if DPP['IsEvenBlocked' .. v](ent:GetClass(), ply) then return false end
 			return true
 		end,
@@ -2173,17 +2200,14 @@ for k, v in pairs(DPP.BlockTypes) do
 		Action = function(self, ent)
 			RunConsoleCommand('dpp_addblockedentity' .. k, ent:GetClass())
 		end,
-	}
+	})
 	
-	local Remove = {
+	table.insert(BlockedPropetries, {
 		MenuLabel = "Remove from DPP " .. v .. ' blacklist',
-		Order = 2503,
 		MenuIcon = 'icon16/accept.png',
 
 		Filter = function(self, ent, ply)
-			if DPP.PlayerConVar(_, 'no_block_options') then return end
-			if not IsValid(ent) then return false end
-			if not ply:IsSuperAdmin() then return false end
+			if DPP.PlayerConVar(_, 'no_block_options') then return false end
 			if not DPP['IsEvenBlocked' .. v](ent:GetClass(), ply) then return false end
 			return true
 		end,
@@ -2191,10 +2215,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		Action = function(self, ent)
 			RunConsoleCommand('dpp_removeblockedentity' .. k, ent:GetClass())
 		end,
-	}
-
-	properties.Add("dpp.addblocked" .. k, Add)
-	properties.Add("dpp.removeblocked" .. k, Remove)
+	})
 end
 
 for k, v in pairs(DPP.RestrictTypes) do
@@ -2268,15 +2289,12 @@ for k, v in pairs(DPP.RestrictTypes) do
 		frame:MakePopup()
 	end
 	
-	local Add = {
+	table.insert(BlockedPropetries, {
 		MenuLabel = "Add to DPP " .. v .. ' restrict black/white list',
-		Order = 2520,
 		MenuIcon = 'icon16/cross.png',
 
 		Filter = function(self, ent, ply)
-			if DPP.PlayerConVar(_, 'no_restrict_options') then return end
-			if not IsValid(ent) then return false end
-			if not ply:IsSuperAdmin() then return false end
+			if DPP.PlayerConVar(_, 'no_restrict_options') then return false end
 			local type = DPP.GetEntityType(ent)
 			if type ~= k then return false end
 			if DPP['IsEvenRestricted' .. v](ent:GetClass()) then return false end
@@ -2286,17 +2304,14 @@ for k, v in pairs(DPP.RestrictTypes) do
 		Action = function(self, ent)
 			OpenModifyPanel(ent:GetClass(), true)
 		end,
-	}
+	})
 	
-	local Remove = {
+	table.insert(BlockedPropetries, {
 		MenuLabel = "Remove from DPP " .. v .. ' restrict black/white list',
-		Order = 2520,
 		MenuIcon = 'icon16/accept.png',
 
 		Filter = function(self, ent, ply)
-			if DPP.PlayerConVar(_, 'no_restrict_options') then return end
-			if not IsValid(ent) then return false end
-			if not ply:IsSuperAdmin() then return false end
+			if DPP.PlayerConVar(_, 'no_restrict_options') then return false end
 			local type = DPP.GetEntityType(ent)
 			if type ~= k then return false end
 			if not DPP['IsEvenRestricted' .. v](ent:GetClass()) then return false end
@@ -2306,17 +2321,14 @@ for k, v in pairs(DPP.RestrictTypes) do
 		Action = function(self, ent)
 			RunConsoleCommand('dpp_unrestrict' .. k, ent:GetClass())
 		end,
-	}
+	})
 
-	local Modify = {
+	table.insert(BlockedPropetries, {
 		MenuLabel = "Modify DPP " .. v .. ' restriction...',
-		Order = 2520,
 		MenuIcon = 'icon16/pencil.png',
 
 		Filter = function(self, ent, ply)
-			if DPP.PlayerConVar(_, 'no_restrict_options') then return end
-			if not IsValid(ent) then return false end
-			if not ply:IsSuperAdmin() then return false end
+			if DPP.PlayerConVar(_, 'no_restrict_options') then return false end
 			local type = DPP.GetEntityType(ent)
 			if type ~= k then return false end
 			if not DPP['IsEvenRestricted' .. v](ent:GetClass()) then return false end
@@ -2326,11 +2338,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		Action = function(self, ent)
 			OpenModifyPanel(ent:GetClass(), false)
 		end,
-	}
-
-	properties.Add("dpp.addrestricted" .. k, Add)
-	properties.Add("dpp.removerestricted" .. k, Remove)
-	properties.Add("dpp.modifyrestricted" .. k, Modify)
+	})
 end
 
 --Copy paste
@@ -2408,7 +2416,7 @@ do
 		frame:MakePopup()
 	end
 	
-	local Add = {
+	table.insert(BlockedPropetries, {
 		MenuLabel = "Add to DPP " .. v .. ' restrict black/whitelist',
 		Order = 2520,
 		MenuIcon = 'icon16/cross.png',
@@ -2424,9 +2432,9 @@ do
 		Action = function(self, ent)
 			OpenModifyPanel(ent:GetModel(), true)
 		end,
-	}
+	})
 	
-	local Remove = {
+	table.insert(BlockedPropetries, {
 		MenuLabel = "Remove from DPP " .. v .. ' restrict black/whitelist',
 		Order = 2520,
 		MenuIcon = 'icon16/accept.png',
@@ -2442,9 +2450,9 @@ do
 		Action = function(self, ent)
 			RunConsoleCommand('dpp_unrestrict' .. k, ent:GetModel())
 		end,
-	}
+	})
 
-	local Modify = {
+	table.insert(BlockedPropetries, {
 		MenuLabel = "Modify DPP " .. v .. ' restriction...',
 		Order = 2520,
 		MenuIcon = 'icon16/pencil.png',
@@ -2460,11 +2468,7 @@ do
 		Action = function(self, ent)
 			OpenModifyPanel(ent:GetModel(), false)
 		end,
-	}
-
-	properties.Add("dpp.addrestricted" .. k, Add)
-	properties.Add("dpp.removerestricted" .. k, Remove)
-	properties.Add("dpp.modifyrestricted" .. k, Modify)
+	})
 end
 
 DPP.OldContentTypes = DPP.OldContentTypes or {}
