@@ -1199,6 +1199,7 @@ local function SORTER(a, b)
 end
 
 local CustomBlockMenus = {}
+local CustomWhiteMenus = {}
 
 --Too lazy for adding new panel
 function CustomBlockMenus.toolworld(Panel)
@@ -1258,6 +1259,79 @@ function CustomBlockMenus.toolworld(Panel)
 	ConVarCheckbox(Panel, 'blacklist_' .. k .. '_white')
 	ConVarCheckbox(Panel, 'blacklist_' .. k .. '_player_can')
 	ConVarCheckbox(Panel, 'blacklist_' .. k .. '_admin_can')
+end
+
+function CustomWhiteMenus.propertyt(Panel)
+	local k = 'propertyt'
+	local v = 'PropertyType'
+	
+	if not IsValid(Panel) then return end
+	Panel:Clear()
+	SettingsClass.SetupBackColor(Panel)
+	ValidPanels3[k] = Panel
+	
+	local toptext = [[
+This list defines property types that is allowed to be 
+used on ANY entity. For example, if you add "remover" 
+there,  anyone can remove any entity using property menus. 
+To see all property  classes, type 
+dpp_show_propery_classes 1 into your client console and 
+then open property menu of any entity.
+]]
+	
+	local Lab = Label(toptext)
+	Lab:SizeToContents()
+	Panel:AddItem(Lab)
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SetTooltip(toptext)
+	
+	local list = vgui.Create('DListView', Panel)
+	Panel:AddItem(list)
+	
+	list:SetHeight(600)
+	list:AddColumn('Property Class')
+	
+	local L = DPP.WhitelistedEntities[k]
+	local New = {}
+	for k, v in pairs(L) do
+		table.insert(New, k)
+	end
+	
+	table.sort(New, SORTER)
+	
+	for k, v in pairs(New) do
+		list:AddLine(v)
+	end
+	
+	list.OnRowRightClick = function(self, line)
+		local val = self:GetLine(line):GetValue(1)
+		local menu = vgui.Create('DMenu')
+		menu:AddOption('Copy property class to clipboard', function()
+			SetClipboardText(val)
+		end)
+		
+		menu:AddOption('Remove from whitelist', function()
+			RunConsoleCommand('dpp_removewhitelistedentity' .. k, val)
+		end)
+		
+		menu:Open()
+	end
+	
+	local entry = vgui.Create('DTextEntry', Panel)
+	Panel:AddItem(entry)
+	local Apply = Panel:Button('Add Property')
+	Apply.DoClick = function()
+		RunConsoleCommand('dpp_addwhitelistedentity' .. k, entry:GetText())
+	end
+	SettingsClass.ApplyButtonStyle(Apply)
+	
+	local Apply = Panel:Button('Remove Property')
+	Apply.DoClick = function()
+		RunConsoleCommand('dpp_removewhitelistedentity' .. k, entry:GetText())
+	end
+	SettingsClass.ApplyButtonStyle(Apply)
+	
+	ConVarCheckbox(Panel, 'whitelist_' .. k)
 end
 
 for k, v in pairs(DPP.BlockTypes) do
@@ -1377,6 +1451,11 @@ for k, v in pairs(DPP.BlockTypes) do
 end
 
 for k, v in pairs(DPP.WhitelistTypes) do
+	if CustomWhiteMenus[k] then
+		WhitelistFunctions[k] = CustomWhiteMenus[k]
+		continue
+	end
+	
 	WhitelistFunctions[k] = function(Panel)
 		if not IsValid(Panel) then return end
 		Panel:Clear()
@@ -1384,9 +1463,15 @@ for k, v in pairs(DPP.WhitelistTypes) do
 		ValidPanels3[k] = Panel
 		
 		local toptext = 'Entities what listed there will have\n"' .. v .. '" protection disabled. It means that\nANYONE able to touch\nthat entitiy despite of it\'s owner'
+		
 		if k == 'property' then
 			toptext = toptext .. '\nNOTE FOR PROPERTY: "remover" propery still\ncan\'t be used on whitelisted entities.'
 		end
+		
+		if k == 'propertyt' then
+			toptext = toptext .. '\nNOTE FOR PROPERTY TYPES: this list defines\nwhitelisted propertys itself\nThis means, that ANYONE can use listed\nproperty on ANY entity!\nFor example, if you add "remover",\nanyone can delete any entity using propery menus.\nTo see all classes, type dpp_show_propery_classes 1 into\nyour client console.'
+		end
+		
 		local Lab = Label(toptext)
 		Lab:SizeToContents()
 		Panel:AddItem(Lab)

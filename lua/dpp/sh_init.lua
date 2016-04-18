@@ -497,6 +497,7 @@ DPP.BlockTypes = {
 DPP.WhitelistTypes = table.Copy(DPP.BlockTypes) --Heh
 DPP.WhitelistTypes.toolworld = nil
 DPP.WhitelistTypes.property = 'Property'
+DPP.WhitelistTypes.propertyt = 'PropertyType'
 
 DPP.ShareTypes = {
 	use = 'Use',
@@ -584,6 +585,12 @@ DPP.CSettings = {
 		type = 'bool',
 		value = '0',
 		desc = 'Disable "fast block" options in property menus',
+	},
+	
+	['show_propery_classes'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Show property classes (for whitelist edit)',
 	},
 }
 
