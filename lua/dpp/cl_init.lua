@@ -902,9 +902,7 @@ local function PropMenu(ent, tr)
 		
 		if not v:Filter(ent, ply) then continue end
 		
-		if DPP.GetConVar('strict_property') then
-			if DPP.CanProperty(ply, k, ent) == false then continue end
-		end
+		if DPP.CanProperty(ply, k, ent) == false then continue end
 		
 		local option = DPP.PropertyMenuAddOption(v, menu, ent, ply, tr)
 		SelectedEntity = ent
@@ -925,7 +923,14 @@ function DPP.ReplacePropertyFuncs()
 	end
 	
 	if DPP.PropertyMenuAddOption then
-		properties.OpenEntityMenu = PropMenu
+		DPP._OldPropertiesOpenEntityMenu = DPP._OldPropertiesOpenEntityMenu or properties.OpenEntityMenu
+		properties.OpenEntityMenu = function(...)
+			if DPP.GetConVar('strict_property') then
+				PropMenu(...)
+			else
+				DPP._OldPropertiesOpenEntityMenu(...)
+			end
+		end
 		
 		local Name, Value = debug.getupvalue(properties.Add, 1)
 		if Name == 'meta' and istable(Value) then
