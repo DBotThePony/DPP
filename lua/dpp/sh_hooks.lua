@@ -4,7 +4,9 @@ local RED = Color(255, 0, 0)
 
 function DPP.CanDamage(ply, ent, ignoreEnt)
 	if not DPP.GetConVar('enable_damage') then return true end
-	if DPP.IsEntityBlockedDamage(ent:GetClass()) then return false, 'Damage blocked' end
+	if DPP.IsEntityBlockedDamage(ent:GetClass()) then 
+		return false, 'Damage blocked'
+	end
 	
 	if DPP.IsEntityWhitelistedDamage(ent:GetClass()) then
 		return true, 'Damage allowed (Whitelisted)'
@@ -142,7 +144,9 @@ end
 function DPP.CanPhysgun(ply, ent)
 	if not DPP.GetConVar('enable_physgun') then return end
 	
-	if DPP.IsEntityBlockedPhysgun(ent:GetClass(), ply) then return false, 'Entity is blacklisted' end
+	if DPP.IsEntityBlockedPhysgun(ent:GetClass(), ply) then 
+		return false, 'Entity is blacklisted'
+	end
 	
 	if DPP.IsEntityWhitelistedPhysgun(ent:GetClass()) then
 		return true, 'Entity is whitelisted'
@@ -278,10 +282,13 @@ end
 function DPP.CanProperty(ply, str, ent)
 	if string.sub(str, 4) == 'dpp.' then return end
 	if not DPP.GetConVar('enable_tool') then return end
-	if DPP.IsRestrictedProperty(str, ply) then return false end
+	
+	if DPP.IsRestrictedProperty(str, ply) then 
+		return false 
+	end
 	
 	if DPP.IsEntityWhitelistedProperty(ent:GetClass()) then
-		return true, 'Entity is whitelisted'
+		return true
 	end
 	
 	local reply = DPP.CanTool(ply, ent, '')
@@ -292,8 +299,12 @@ function DPP.PlayerUse(ply, ent)
 	if not DPP.GetConVar('enable_use') then return end
 	if not DPP.IsOwned(ent) then return end
 	
+	if DPP.IsEntityBlockedUse(ent:GetClass(), ply) then
+		return false
+	end
+	
 	if DPP.IsEntityWhitelistedUse(ent:GetClass()) then
-		return true, 'Entity is whitelisted'
+		return true
 	end
 	
 	local reply = DPP.CanTouch(ply, ent, 'use')
@@ -302,13 +313,8 @@ end
 
 function DPP.CanDrive(ply, ent)
 	if not DPP.GetConVar('enable_drive') then return end
-	
-	if DPP.IsEntityWhitelistedPhysgun(ent:GetClass()) then
-		return true, 'Entity is whitelisted'
-	end
-	
-	local reply = DPP.CanTouch(ply, ent, 'physgun') --I will mean Drive as Physgun
-	if not reply then return false end
+	local reply = DPP.CanPhysgun(ply, ent) --I will mean Drive as Physgun
+	if reply == false then return false end
 end
 
 DPP.CanDrive = DPP.Wrap(DPP.CanDrive)
