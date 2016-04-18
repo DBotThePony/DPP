@@ -161,7 +161,7 @@ concommand.Add('dpp_removeblockedmodel', function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsSuperAdmin() then return end
 	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	DPP.RemoveBlockedModel(args[1])
-	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' removed ' .. args[1] .. ' to model blacklist/whitelist'}
+	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' removed ' .. args[1] .. ' from model blacklist/whitelist'}
 	DPP.Notify(player.GetAll(), f)
 	DPP.Message(f)
 end)
