@@ -196,7 +196,7 @@ local function CheckBefore(ply, ent, forceVerbose)
 			SpawnFunctions.PlayerSpawnedSWEP(ply, ent, hide)
 		--elseif not ent:IsConstraint() then
 		elseif DPP.IsConstraint(ent) then
-			timer.Simple(0, function() SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide) end
+			timer.Simple(0, function() SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide) end)
 		else
 			SpawnFunctions.PlayerSpawnedSENT(ply, ent, hide)
 		end
@@ -301,11 +301,13 @@ function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide)
 		local ent1, ent2 = ent:GetConstrainedEntities()
 		
 		if IsValid(ent1) and IsValid(ent2) then
-			local can1 = DPP.CanTool(ply, ent1, '') ~= false
-			local can2 = DPP.CanTool(ply, ent2,  '') ~= false
-			
-			if not can1 or not can2 then
-				spawned = false
+			if ent1:GetClass() ~= 'gmod_anchor' and ent2:GetClass() ~= 'gmod_anchor' then
+				local can1 = DPP.CanTool(ply, ent1, '') ~= false
+				local can2 = DPP.CanTool(ply, ent2,  '') ~= false
+				
+				if not can1 or not can2 then
+					spawned = false
+				end
 			end
 		end
 	end
