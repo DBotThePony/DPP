@@ -2138,6 +2138,14 @@ local transfertoworld = {
 	MenuLabel = "Transfer ownership to world",
 	Order = 2700,
 	MenuIcon = "icon16/world.png",
+	
+	MenuOpen = function(self, menu, ent, tr)
+		local SubMenu = menu:AddSubMenu()
+		
+		SubMenu:AddOption('affect constrained entities too', function()
+			RunConsoleCommand('dpp_transfertoworld_constrained', ent:EntIndex())
+		end)
+	end,
 
 	Filter = function(self, ent, ply)
 		return IsValid(ent) and ply:IsAdmin() and DPP.IsOwned(ent)

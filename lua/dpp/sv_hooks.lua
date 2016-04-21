@@ -196,7 +196,7 @@ local function CheckBefore(ply, ent, forceVerbose)
 			SpawnFunctions.PlayerSpawnedSWEP(ply, ent, hide)
 		--elseif not ent:IsConstraint() then
 		elseif DPP.IsConstraint(ent) then
-			SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide)
+			timer.Simple(0, function() SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide) end
 		else
 			SpawnFunctions.PlayerSpawnedSENT(ply, ent, hide)
 		end
@@ -288,10 +288,29 @@ function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog)
 end
 
 function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide)
+	if not IsValid(ply) then return end
+	if not IsValid(ent) then return end
 	Spawned(ply, ent)
 	
 	local type = DPP.GetContstrainType(ent)
-	if not DPP.IsConstraintLimitReached(ply, type) then
+	
+	local spawned = true
+	if DPP.IsConstraintLimitReached(ply, type) then spawned = false end
+	
+	if ent.GetConstrainedEntities then
+		local ent1, ent2 = ent:GetConstrainedEntities()
+		
+		if IsValid(ent1) and IsValid(ent2) then
+			local can1 = DPP.CanTool(ply, ent1, '') ~= false
+			local can2 = DPP.CanTool(ply, ent2,  '') ~= false
+			
+			if not can1 or not can2 then
+				spawned = false
+			end
+		end
+	end
+	
+	if spawned then
 		LogConstraint(ply, ent)
 	else
 		LogConstraintTry(ply, ent)

@@ -460,6 +460,26 @@ concommand.Add('dpp_transfertoworld', function(ply, cmd, args)
 	DPP.RecalcConstraints(ent)
 end)
 
+concommand.Add('dpp_transfertoworld_constrained', function(ply, cmd, args)
+	if IsValid(ply) and not ply:IsAdmin() then return end
+	
+	local id = args[1]
+	if not id then DPP.Notify(ply, 'Invalid argument') return end
+	local num = tonumber(id)
+	if not num then DPP.Notify(ply, 'Invalid argument') return end
+	local ent = Entity(num)
+	if not IsValid(ent) then DPP.Notify(ply, 'Invalid argument') return end
+	
+	local Entities = DPP.GetAllConnectedEntities(ent)
+	
+	for k, v in pairs(Entities) do
+		DPP.SetOwner(v, NULL)
+		DPP.DeleteEntityUndo(v)
+	end
+	
+	DPP.RecalcConstraints(ent)
+end)
+
 concommand.Add('dpp_freezeplayer', function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsAdmin() then return end
 	if not args[1] then DPP.Notify(ply, 'Invalid argument') return end
