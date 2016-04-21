@@ -256,22 +256,15 @@ function DPP.UnFreezePlayerEntities(ply)
 end
 
 function DPP.FindPlayerProps(ply)
-	local uid = tonumber(ply:UniqueID())
+	local uid = ply:UniqueID()
 	
-	DPP.RefreshPropList()
+	local find = DPP.GetPropsByUID(uid)
 	
-	local t = {}
-	
-	for k, v in pairs(DPP.PropListing) do
-		if IsValid(DPP.GetOwner(k)) then continue end
-		local name, uid2 = DPP.GetOwnerDetails(k)
-		if uid2 == uid then
-			DPP.SetOwner(k, ply)
-			table.insert(t, k)
-		end
+	for k, ent in pairs(find) do
+		DPP.SetOwner(ent, ply)
 	end
 	
-	for k, ent in pairs(t) do
+	for k, ent in pairs(find) do
 		DPP.RecalcConstraints(ent)
 	end
 end
@@ -310,6 +303,7 @@ function DPP.ClearDisconnectedProps()
 end
 
 function DPP.GetPropsByUID(uid)
+	uid = tostring(uid)
 	DPP.RefreshPropList()
 	local t = {}
 	

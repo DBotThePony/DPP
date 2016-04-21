@@ -803,7 +803,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 	DPP.WhitelistedEntities[k] = DPP.WhitelistedEntities[k] or {}
 	
 	DPP.AddConVar('whitelist_' .. k, {
-		desc = 'Enable ' .. v .. ' whitelist',
+		desc = 'Enable ' .. v .. ' exclude list',
 		value = '1',
 		type = 'bool',
 	})
