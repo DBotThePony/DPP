@@ -590,7 +590,7 @@ DPP.CSettings = {
 	
 	['no_load_messages'] = {
 		type = 'bool',
-		value = '0',
+		value = '1',
 		desc = 'I con\'t want to see "list reloaded" in my console',
 	},
 }
