@@ -1055,6 +1055,8 @@ function DPP.CanTouch(ply, ent, mode)
 			end
 		end
 		
+		if not isentity(owner) then continue end --???
+		
 		if IsValid(owner) and owner:GetClass() == 'gmod_anchor' then continue end
 		
 		if owner == ply then
