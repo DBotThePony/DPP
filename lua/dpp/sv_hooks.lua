@@ -308,6 +308,8 @@ function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide)
 				if not can1 or not can2 then
 					spawned = false
 				end
+			elseif DPP.GetConVar('no_rope_world') then
+				spawned = false
 			end
 		end
 	end
