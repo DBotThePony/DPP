@@ -1056,7 +1056,7 @@ function DPP.CanTouch(ply, ent, mode)
 			continue
 		end
 		
-		if not IsValid(owner) then
+		if not IsValid(owner) and not DPP.IsOwned(ent) then
 			if not DPP.CanTouchWorld(ply, ent) then
 				can = false 
 				reason = 'Belong/Constrained to world'

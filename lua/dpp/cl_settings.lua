@@ -1355,7 +1355,7 @@ used on ANY entity. For example, if you add "remover"
 there,  anyone can remove any entity using property menus. 
 To see all property classes, type use button below.
 REMEMBER: Blacklists are ALWAYS have higher priority
-than other lists! That means whitelisted property
+than other lists! That means excluded property
 modes can NOT be used on blacklisted toolgun
 entities.
 ]]
@@ -1433,7 +1433,7 @@ This list defines toolgun modes that is allowed to be
 used on ANY entity. For example, if you add "remover" 
 there, anyone can remove any entity using remover toolgun.
 REMEMBER: Blacklists are ALWAYS have higher priority
-than other lists! That means whitelisted tool modes
+than other lists! That means excluded tool modes
 can NOT be used on blacklisted from toolgun entities.
 ]]
 	
