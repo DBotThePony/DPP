@@ -1044,14 +1044,12 @@ function DPP.CanTouch(ply, ent, mode)
 	
 	for k, owner in pairs(constrained) do
 		if owner == 'disconnected' then
-			if admin then
-				if adminEverything then
-					continue
-				else
-					can = false
-					reason = 'Not a friend of owner/constrained'
-					break
-				end
+			if admin and adminEverything then
+				continue
+			else
+				can = false
+				reason = 'Not a friend of owner/constrained'
+				break
 			end
 		end
 		
