@@ -1018,6 +1018,10 @@ function DPP.CanTouch(ply, ent, mode)
 	end
 	
 	local owner = DPP.GetOwner(ent)
+	local isOwned = DPP.IsOwned(ent)
+	
+	if not IsValid(owner) and isOwned then owner = 'disconnected' end
+	
 	local realOwner = owner
 	local constrained = DPP.GetConstrainedTable(ent)
 	local INDEX = table.insert(constrained, owner)
@@ -1056,7 +1060,7 @@ function DPP.CanTouch(ply, ent, mode)
 			continue
 		end
 		
-		if not IsValid(owner) and not DPP.IsOwned(ent) then
+		if not IsValid(owner) then
 			if not DPP.CanTouchWorld(ply, ent) then
 				can = false 
 				reason = 'Belong/Constrained to world'
