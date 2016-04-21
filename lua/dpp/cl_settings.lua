@@ -407,6 +407,7 @@ local ClientVars = {
 	'simple_hud',
 	'no_hud_in_vehicle',
 	'no_scrambling_text',
+	'no_load_messages',
 	'no_touch',
 	'no_player_touch',
 	'no_touch_world',

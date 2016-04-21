@@ -716,10 +716,10 @@ local function Load()
 		end)
 	end
 	
-	DPP.BroadcastLists()
-	
 	DPP.FindInfoEntities()
 	DPP.InitializeDefaultBlock()
+	
+	DPP.BroadcastLists()
 end
 
 timer.Simple(0, Load)

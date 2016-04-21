@@ -724,7 +724,7 @@ net.Receive('DPP.Lists', function()
 	DPP.BlockedEntities[str] = net.ReadTable()
 	
 	hook.Run('DPP.BlockedEntitiesReloaded', str, DPP.BlockedEntities[str])
-	DPP.Message('Blacklist "' .. str .. '" received from server, reloading')
+	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Blacklist "' .. str .. '" received from server, reloading') end
 end)
 
 net.Receive('DPP.WLists', function()
@@ -732,7 +732,7 @@ net.Receive('DPP.WLists', function()
 	DPP.WhitelistedEntities[str] = net.ReadTable()
 	
 	hook.Run('DPP.WhitelistedEntitiesReloaded', str, DPP.WhitelistedEntities[str])
-	DPP.Message('Whitelist "' .. str .. '" received from server, reloading')
+	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Whitelist "' .. str .. '" received from server, reloading') end
 end)
 
 net.Receive('DPP.RLists', function()
@@ -740,41 +740,41 @@ net.Receive('DPP.RLists', function()
 	DPP.RestrictedTypes[str] = net.ReadTable()
 	
 	hook.Run('DPP.RestrictedTypesReloaded', str, DPP.RestrictedTypes[str])
-	DPP.Message('Restricted list "' .. str .. '" received from server, reloading')
+	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Restricted list "' .. str .. '" received from server, reloading') end
 end)
 
 net.Receive('DPP.LLists', function()
 	DPP.EntsLimits = net.ReadTable()
 	
 	hook.Run('DPP.EntsLimitsReloaded', DPP.EntsLimits)
-	DPP.Message('Entity limit list received from server, reloading')
+	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Entity limit list received from server, reloading') end
 end)
 
 net.Receive('DPP.SLists', function()
 	DPP.SBoxLimits = net.ReadTable()
 	
 	hook.Run('DPP.EntsLimitsReloaded', DPP.SBoxLimits)
-	DPP.Message('SBox limit list received from server, reloading')
+	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('SBox limit list received from server, reloading') end
 end)
 
 net.Receive('DPP.CLists', function()
 	DPP.ConstrainsLimits = net.ReadTable()
 	
 	hook.Run('DPP.ConstrainsLimitsReloaded', DPP.ConstrainsLimits)
-	DPP.Message('Constrains limit list received from server, reloading')
+	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Constrains limit list received from server, reloading') end
 end)
 
 net.Receive('DPP.PlayerList', function()
 	DPP.PlayerList = net.ReadTable()
 	
 	hook.Run('DPP.PlayerListChanged', DPP.PlayerList)
-	DPP.Message('Player list changed, reloading')
+	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Player list changed, reloading') end
 end)
 
 net.Receive('DPP.ModelLists', function()
 	DPP.BlockedModels = net.ReadTable()
 	hook.Run('DPP.BlockedModelListReloaded', DPP.BlockedModels)
-	DPP.Message('Blacklisted models received from server, reloading')
+	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Blacklisted models received from server, reloading') end
 end)
 
 net.Receive('DPP.ConstrainedTable', function()

@@ -587,6 +587,12 @@ DPP.CSettings = {
 		value = '0',
 		desc = 'Disable "fast block" options in property menus',
 	},
+	
+	['no_load_messages'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'I con\'t want to see "list reloaded" in my console',
+	},
 }
 
 DPP.ProtectionModes = {
