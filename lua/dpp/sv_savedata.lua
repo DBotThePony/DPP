@@ -274,7 +274,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 		if IsValid(ply) and not ply:IsSuperAdmin() then return end
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		DPP['AddWhitelistedEntity' .. v](args[1])
-		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' added ' .. args[1] .. ' to ' .. v .. ' whitelisted entities'}
+		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' added ' .. args[1] .. ' to ' .. v .. ' excluded entities'}
 		DPP.Notify(player.GetAll(), f)
 		DPP.Message(f)
 	end)
@@ -283,7 +283,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 		if IsValid(ply) and not ply:IsSuperAdmin() then return end
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		DPP['RemoveWhitelistedEntity' .. v](args[1])
-		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' removed ' .. args[1] .. ' from ' .. v .. ' whitelisted entities'}
+		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' removed ' .. args[1] .. ' from ' .. v .. ' excluded entities'}
 		DPP.Notify(player.GetAll(), f)
 		DPP.Message(f)
 	end)

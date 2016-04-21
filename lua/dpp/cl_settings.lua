@@ -1623,14 +1623,14 @@ for k, v in pairs(DPP.WhitelistTypes) do
 		local toptext = [[
 Entities what listed there will have
 "]] .. v .. [[" protection disabled. It means that
-ANYONE able to touch\nthat entitiy despite of it's owner
+ANYONE able to touch that entitiy despite of it's owner
 REMEMBER: Blacklists are ALWAYS have higher priority
 than other lists! That means blacklist will override
 any whitelist!
 ]]
 		
 		if k == 'property' then
-			toptext = toptext .. '\nNOTE FOR PROPERTY: "remover" propery still\ncan\'t be used on whitelisted entities.'
+			toptext = toptext .. '\nNOTE FOR PROPERTY: "remover" property still\ncan\'t be used on whitelisted entities.'
 		end
 		
 		if k == 'tool' then
@@ -1672,11 +1672,11 @@ any whitelist!
 				RunConsoleCommand('dpp_removewhitelistedentity' .. k, val)
 			end)
 			
-			menu:AddOption('Add that entity to ALL whitelists', function()
+			menu:AddOption('Add that entity to ALL exclude lists', function()
 				ADD_ALL_W(val)
 			end)
 			
-			menu:AddOption('Remove that entity to ALL whitelists', function()
+			menu:AddOption('Remove that entity from ALL exclude lists', function()
 				REMOVE_ALL_W(val)
 			end)
 			menu:Open()
@@ -1696,19 +1696,19 @@ any whitelist!
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 		
-		local Apply = Panel:Button('Add this entity to ALL whitelists')
+		local Apply = Panel:Button('Add this entity to ALL exclude lists')
 		Apply.DoClick = function()
 			ADD_ALL_W(entry:GetText())
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 		
-		local Apply = Panel:Button('Remove this entity from ALL whitelists')
+		local Apply = Panel:Button('Remove this entity from ALL exclude lists')
 		Apply.DoClick = function()
 			REMOVE_ALL_W(entry:GetText())
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 		
-		local Apply = Panel:Button('Add the entity you\'re looking at to the whitelist')
+		local Apply = Panel:Button('Add the entity you\'re looking at to the exclude lists')
 		Apply.DoClick = function()
 			local ent = LocalPlayer():GetEyeTrace().Entity
 			if not IsValid(ent) then return end
@@ -1716,7 +1716,7 @@ any whitelist!
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 		
-		local Apply = Panel:Button('Remove the entity you\'re looking at to the whitelist')
+		local Apply = Panel:Button('Remove the entity you\'re looking at to the exclude lists')
 		Apply.DoClick = function()
 			local ent = LocalPlayer():GetEyeTrace().Entity
 			if not IsValid(ent) then return end
@@ -1724,7 +1724,7 @@ any whitelist!
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 		
-		local Apply = Panel:Button('Add the entity you\'re looking at to ALL whitelists')
+		local Apply = Panel:Button('Add the entity you\'re looking at to ALL exclude lists')
 		Apply.DoClick = function()
 			local ent = LocalPlayer():GetEyeTrace().Entity
 			if not IsValid(ent) then return end
@@ -1732,7 +1732,7 @@ any whitelist!
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 		
-		local Apply = Panel:Button('Remove the entity you\'re looking at to ALL whitelists')
+		local Apply = Panel:Button('Remove the entity you\'re looking at to ALL exclude lists')
 		Apply.DoClick = function()
 			local ent = LocalPlayer():GetEyeTrace().Entity
 			if not IsValid(ent) then return end
@@ -1967,7 +1967,7 @@ local function PopulateToolMenu()
 	end
 
 	for k, v in pairs(DPP.WhitelistTypes) do
-		spawnmenu.AddToolMenuOption('Utilities', 'DPP Whitelists', 'DPP.' .. k .. '_whitelist', v .. ' whitelist', '', '', WhitelistFunctions[k])
+		spawnmenu.AddToolMenuOption('Utilities', 'DPP Exclude lists', 'DPP.' .. k .. '_whitelist', v .. ' exclude list', '', '', WhitelistFunctions[k])
 	end
 
 	for k, v in pairs(DPP.RestrictTypes) do
