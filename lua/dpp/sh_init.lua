@@ -1094,22 +1094,12 @@ function DPP.CanTouch(ply, ent, mode)
 					break
 				end
 				
-				if admin then
-					if adminEverything then
-						continue
-					elseif not friend then
-						can = false
-						reason = 'Not a friend of owner/constrained'
-						break
-					end
-				end
-				
-				if owner:IsPlayer() then
-					if not friend then 
-						can = false 
-						reason = 'Not a friend of owner/constrained'
-						break
-					end
+				if admin and adminEverything then
+					continue
+				elseif not friend then
+					can = false
+					reason = 'Not a friend of owner/constrained'
+					break
 				end
 			else
 				reason = 'Shared ' .. (mode and string.gsub(mode, '^.', string.upper) or '')
