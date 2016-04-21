@@ -151,4 +151,39 @@ concommand.Add('dpp_importfpp', function(ply, cmd, args)
 			DPP.DoEcho({IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' Imported FPP blocked entities. Total items imported: ' .. count})
 		end
 	end)
+	
+	DPP.Query('SELECT * FROM fpp_tooladminonly', function(data)
+		if not data then return end
+		
+		local count = 0
+		
+		for k, row in pairs(data) do
+			local tool = row.toolname
+			local status = row.adminonly
+			
+			if tonumber(status) == 0 then continue end
+			
+			local admins
+			if tonumber(status) == 1 then
+				admins = {'admin', 'superadmin'}
+			elseif tonumber(status) == 2 then
+				admins = {'superadmin'}
+			end
+			
+			count = count + 1
+			
+			if isTest then
+				FakePrint(ply, string.format('[DPP] Restrict tool %s from %s', tool, table.concat(admins, ',')))
+			else
+				DPP.RestrictTool(tool, admins, true)
+			end
+		end
+		
+		if isTest then
+			FakePrint(ply, '[DPP] ----------------- End of tool list test Total: ' .. count)
+			FakePrint(ply, '[DPP] Note: This is a test, to commit changes type dpp_importfpp 1')
+		else
+			DPP.DoEcho({IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' Imported FPP restricted tools. Total tools imported: ' .. count})
+		end
+	end)
 end)

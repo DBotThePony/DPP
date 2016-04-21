@@ -309,7 +309,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		DPP.Query(string.format('REPLACE INTO dpp_restricted' .. k .. ' (CLASS, GROUPS, IS_WHITE) VALUES (%q, \'%s\', %q)', class, util.TableToJSON(groups), isWhite and '1' or '0'))
 	end
 	
-	DPP['UnRestrict' .. v] = function(class, groups, isWhite)
+	DPP['UnRestrict' .. v] = function(class, groups)
 		class = string.lower(class)
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 		

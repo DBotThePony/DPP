@@ -10,6 +10,7 @@ file.CreateDir('dpp_web')
 
 function DPP_DoInclude(File)
 	local Contents = file.Read('dpp_web/' .. File .. '.txt', 'DATA')
+	if not Contents then MsgC('[DPP Web Loader] No such file: ' .. File .. '\n') return end
 	Contents = Contents:gsub('include', 'DPP_DoInclude')
 	CompileString(Contents, '[DPP Web Loader: ' .. File .. ']')()
 end
