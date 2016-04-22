@@ -588,8 +588,13 @@ end
 
 local function CanPickup(ply, ent)
 	if not DPP.GetConVar('enable_pickup') then return end
-	if DPP.IsEntityBlockedPickup(ent:GetClass()) then return false end
-	if DPP.IsRestrictedPickup(ent:GetClass(), ply) then return false end
+	
+	local class = ent:GetClass()
+	
+	if DPP.IsEntityBlockedPickup(class) then return false end
+	if DPP.IsRestrictedPickup(class, ply) then return false end
+	if DPP.IsEntityWhitelistedPickup(eclass) then return false end
+	
 	if not DPP.IsOwned(ent) then return end
 	local can = DPP.CanTouch(ply, ent)
 	if not can then return can end
