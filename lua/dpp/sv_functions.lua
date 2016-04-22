@@ -298,8 +298,11 @@ function DPP.ClearDisconnectedProps()
 		SafeRemoveEntity(v)
 	end
 	
-	DPP.RecalculatePlayerList()
-	DPP.SendPlayerList()
+	--Recalculate after props is removed
+	timer.Simple(1, function()
+		DPP.RecalculatePlayerList()
+		DPP.SendPlayerList()
+	end)
 end
 
 function DPP.GetPropsByUID(uid)
