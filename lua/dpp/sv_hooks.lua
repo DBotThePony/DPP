@@ -42,16 +42,16 @@ local function LogConstraint(ply, ent)
 	if not DPP.GetConVar('log_spawns') then return end
 	if not DPP.GetConVar('log_constraints') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
-	local ent1, ent2 = '<unknown>', '<unknown>'
-	if ent.GetConstrainedEntities and ent:GetConstrainedEntities() then
-		ent1, ent2 = ent:GetConstrainedEntities()
-		if not IsValid(ent1) then
-			ent1 = '<unknown>'
-		end
-		if not IsValid(ent2) then
-			ent1 = '<unknown>'
-		end
+	local ent1, ent2 = DPP.GetConstrainedEntities(ent)
+	
+	if not IsValid(ent1) then
+		ent1 = '<unknown>'
 	end
+	
+	if not IsValid(ent2) then
+		ent2 = '<unknown>'
+	end
+	
 	DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', GRAY, ' created constraint ', color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
 end
 
@@ -59,16 +59,16 @@ local function LogConstraintTry(ply, ent)
 	if not DPP.GetConVar('log_spawns') then return end
 	if not DPP.GetConVar('log_constraints') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
-	local ent1, ent2 = '<unknown>', '<unknown>'
-	if ent.GetConstrainedEntities and ent:GetConstrainedEntities() then
-		ent1, ent2 = ent:GetConstrainedEntities()
-		if not IsValid(ent1) then
-			ent1 = '<unknown>'
-		end
-		if not IsValid(ent2) then
-			ent1 = '<unknown>'
-		end
+	local ent1, ent2 = DPP.GetConstrainedEntities(ent)
+	
+	if not IsValid(ent1) then
+		ent1 = '<unknown>'
 	end
+	
+	if not IsValid(ent2) then
+		ent2 = '<unknown>'
+	end
+	
 	DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', RED, ' tried ', GRAY, 'to create constraint ', color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
 end
 
@@ -307,22 +307,25 @@ function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide)
 	local spawned = true
 	if DPP.IsConstraintLimitReached(ply, type) then spawned = false end
 	
-	if ent.GetConstrainedEntities then
-		local ent1, ent2 = ent:GetConstrainedEntities()
-		
-		if IsValid(ent1) and IsValid(ent2) then
-			if ent1:GetClass() ~= 'gmod_anchor' and ent2:GetClass() ~= 'gmod_anchor' then
-				local can1 = DPP.CanTool(ply, ent1, '') ~= false
-				local can2 = DPP.CanTool(ply, ent2,  '') ~= false
-				
-				if not can1 or not can2 then
-					spawned = false
-				end
-			elseif DPP.GetConVar('no_rope_world') then
-				if ropesConstraints[type] and not (not DPP.GetConVar('no_rope_world_weld') and type == 'weld') then
-					spawned = false
-				end
+	local ent1, ent2 = DPP.GetConstrainedEntities(ent)
+	local V1, V2 = IsValid(ent1), IsValid(ent2)
+	
+	if V1 and V2 then
+		if ent1:GetClass() ~= 'gmod_anchor' and ent2:GetClass() ~= 'gmod_anchor' then
+			local can1 = DPP.CanTool(ply, ent1, '') ~= false
+			local can2 = DPP.CanTool(ply, ent2,  '') ~= false
+			
+			if not can1 or not can2 then
+				spawned = false
 			end
+		elseif DPP.GetConVar('no_rope_world') then
+			if ropesConstraints[type] and not (not DPP.GetConVar('no_rope_world_weld') and type == 'weld') then
+				spawned = false
+			end
+		end
+	elseif DPP.GetConVar('no_rope_world') and (V1 and not V2) or (not V1 and V2) then
+		if ropesConstraints[type] and not (not DPP.GetConVar('no_rope_world_weld') and type == 'weld') then
+			spawned = false
 		end
 	end
 	

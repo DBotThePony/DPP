@@ -108,11 +108,21 @@ end
 local Constraints = {
 	gmod_winch_controller = true,
 	phys_torque = true,
+	phys_spring = true,
 	keyframe_rope = true, --ugh
 }
 
 function DPP.IsConstraint(ent)
 	return ent:IsConstraint() or Constraints[ent:GetClass()]
+end
+
+function DPP.GetConstrainedEntities(ent)
+	if ent.GetConstrainedEntities then
+		local a, b = ent:GetConstrainedEntities()
+		if a or b then return a, b end
+	end
+	
+	return ent.Ent1 or NULL, ent.Ent2 or NULL
 end
 
 local ConstraintTypes = {
