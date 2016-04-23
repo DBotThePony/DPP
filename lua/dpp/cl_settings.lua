@@ -388,6 +388,7 @@ local SortedConVars = {
 local MiscConVars = {
 	'check_stuck',
 	'no_rope_world',
+	'no_rope_world_weld',
 	'log_spawns',
 	'log_constraints',
 	'verbose_logging',

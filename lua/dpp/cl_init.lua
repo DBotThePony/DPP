@@ -485,7 +485,7 @@ local function PostDrawHUDDefault()
 			local CanTouch1, reason = DPP.CanTool(LocalPlayer(), ent, curWeapon:GetMode())
 			CanTouch = CanTouch1 ~= false
 			
-			if reason and reason ~= 'Not a friend of owner/constrained' then
+			if reason then
 				name = name .. '\n' .. reason
 			end
 			
@@ -504,7 +504,7 @@ local function PostDrawHUDDefault()
 				CanTouch = true
 			end
 			
-			if reason and reason ~= 'Not a friend of owner/constrained' then
+			if reason then
 				name = name .. '\n' .. reason
 			end
 			
@@ -524,7 +524,7 @@ local function PostDrawHUDDefault()
 				CanTouch = true
 			end
 			
-			if reason and reason ~= 'Not a friend of owner/constrained' then
+			if reason then
 				name = name .. '\n' .. reason
 			end
 			

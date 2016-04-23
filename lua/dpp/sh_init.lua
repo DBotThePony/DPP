@@ -303,6 +303,12 @@ DPP.Settings = {
 		desc = 'Prevent players from placing ropes on the map',
 	},
 	
+	['no_rope_world_weld'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Mean weld as rope',
+	},
+	
 	['experemental_spawn_checks'] = {
 		type = 'bool',
 		value = '1',

@@ -287,6 +287,16 @@ function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog)
 	CheckBlocked(ply, ent)
 end
 
+local ropesConstraints = {
+	['rope'] = true,
+	['pulley'] = true,
+	['slider'] = true,
+	['weld'] = true,
+	['hydraulic'] = true,
+	['elastic'] = true,
+	['muscle'] = true,
+}
+
 function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide)
 	if not IsValid(ply) then return end
 	if not IsValid(ent) then return end
@@ -309,7 +319,9 @@ function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide)
 					spawned = false
 				end
 			elseif DPP.GetConVar('no_rope_world') then
-				spawned = false
+				if ropesConstraints[type] and not (not DPP.GetConVar('no_rope_world_weld') and type == 'weld') then
+					spawned = false
+				end
 			end
 		end
 	end

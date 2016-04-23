@@ -142,7 +142,7 @@ function DPP.PropertyTouch(ply, str, ent)
 end
 
 function DPP.CanPhysgun(ply, ent)
-	if not DPP.GetConVar('enable_physgun') then return end
+	if not DPP.GetConVar('enable_physgun') then return true end
 	
 	if DPP.IsEntityBlockedPhysgun(ent:GetClass(), ply) then 
 		return false, 'Entity is blacklisted'
@@ -230,7 +230,7 @@ function DPP.CanTool(ply, ent, mode)
 	
 	if not IsValid(ent) then 
 		if DPP.GetConVar('no_rope_world') then
-			if mode and ropeModes[mode] then
+			if (mode and ropeModes[mode]) and not (not DPP.GetConVar('no_rope_world_weld') and mode == 'weld') then
 				return false, 'No rope world'
 			end
 		end
