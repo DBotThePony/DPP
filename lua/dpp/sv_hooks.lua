@@ -323,7 +323,7 @@ function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide)
 				spawned = false
 			end
 		end
-	elseif DPP.GetConVar('no_rope_world') and (V1 and not V2) or (not V1 and V2) then
+	elseif DPP.GetConVar('no_rope_world') and ((V1 and not V2) or (not V1 and V2)) then
 		if ropesConstraints[type] and not (not DPP.GetConVar('no_rope_world_weld') and type == 'weld') then
 			spawned = false
 		end
