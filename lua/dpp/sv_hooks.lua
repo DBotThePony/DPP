@@ -620,7 +620,7 @@ hook.Add('PlayerCanPickupWeapon', 'DPP.ProtectionHooks', CanPickup)
 
 local function EntityRemoved(ent)
 	if ent.IsConstraint and ent:IsConstraint() then
-		local ent1, ent2 = ent:GetConstrainedEntities()
+		local ent1, ent2 = DPP.GetConstrainedEntities(ent)
 		
 		timer.Simple(0, function()
 			if IsValid(ent1) and IsValid(ent2) then
@@ -678,7 +678,7 @@ function PostEntityCreated(ent, Timestamp)
 	local Timestamp2 = CurTime()
 	
 	if ent.IsConstraint and ent:IsConstraint() then
-		local ent1, ent2 = ent:GetConstrainedEntities()
+		local ent1, ent2 = DPP.GetConstrainedEntities(ent)
 		
 		if IsValid(ent1) and IsValid(ent2) then
 			local o1, o2 = DPP.GetOwner(ent1), DPP.GetOwner(ent2)
