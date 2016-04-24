@@ -828,7 +828,9 @@ do
 			if IsValid(o) then
 				owners[o] = true
 			elseif not IsValid(o) and isOwned then
-				owners.disconnected = true
+				local Name, UID, SteamID = DPP.GetOwnerDetails(k)
+				
+				owners['disconnected_' .. UID] = true
 			else
 				owners[worldspawn] = true
 			end

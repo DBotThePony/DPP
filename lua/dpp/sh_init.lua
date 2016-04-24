@@ -1031,8 +1031,10 @@ function DPP.CanTouch(ply, ent, mode)
 	
 	local owner = DPP.GetOwner(ent)
 	local isOwned = DPP.IsOwned(ent)
+	local OwnerName, OwnerUID, OwnerSteamID = DPP.GetOwnerDetails(ent)
+	local dString = 'disconnected_' .. OwnerUID
 	
-	if not IsValid(owner) and isOwned then owner = 'disconnected' end
+	if not IsValid(owner) and isOwned then owner = dString end
 	
 	local realOwner = owner
 	local constrained = DPP.GetConstrainedTable(ent)
@@ -1049,13 +1051,35 @@ function DPP.CanTouch(ply, ent, mode)
 	end
 	
 	for k, owner in pairs(constrained) do
-		if owner == 'disconnected' then
-			if admin and adminEverything then
-				continue
-			else
-				can = false
-				reason = 'Not a friend of owner/constrained'
-				break
+		if isstring(owner) then
+			if owner == dString then
+				if isShared then
+					if mode then
+						reason = 'Shared ' .. (mode and string.gsub(mode, '^.', string.upper) or '')
+					else
+						reason = 'Shared'
+					end
+					
+					continue
+				elseif admin and adminEverything then
+					continue
+				else
+					can = false
+					reason = 'Not a friend of owner/constrained'
+					break
+				end
+			end
+			
+			if string.gsub(owner, 1, 12) == 'disconnected' then
+				local UID = string.gsub(owner, 13)
+				
+				if admin and adminEverything then
+					continue
+				else
+					can = false
+					reason = 'Not a friend of owner/constrained'
+					break
+				end
 			end
 		end
 		
@@ -1108,7 +1132,11 @@ function DPP.CanTouch(ply, ent, mode)
 					break
 				end
 			else
-				reason = 'Shared ' .. (mode and string.gsub(mode, '^.', string.upper) or '')
+				if mode then
+					reason = 'Shared ' .. (mode and string.gsub(mode, '^.', string.upper) or '')
+				else
+					reason = 'Shared'
+				end
 			end
 		end
 	end

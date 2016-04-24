@@ -47,30 +47,6 @@ function DPP.Notify(ply, message, type)
 	end
 end
 
---[[
---They are useless because we replicate
-function DPP.BroadcastCVars()
-	for var in pairs(DPP.Settings) do
-		DPP.BroadcastCVar(var)
-	end
-end
-
---They are useless because we replicate
-function DPP.BroadcastCVar(var)
-	local v = DPP.Settings[var]
-	local Var = DPP.SVars[var]
-	if not v then return end
-	
-	if v.type == 'bool' then
-		SetGlobalBool('DPP.Vars.' .. var, Var:GetBool())
-	elseif v.type == 'int' then
-		SetGlobalInt('DPP.Vars.' .. var, Var:GetInt())
-	elseif v.type == 'float' then
-		SetGlobalFloat('DPP.Vars.' .. var, Var:GetFloat())
-	end
-end
-]]
-
 function DPP.ReBroadcastCVars()
 	for k, v in pairs(DPP.SVars) do
 		SetGlobalString('DPP.' .. k, v:GetString())
