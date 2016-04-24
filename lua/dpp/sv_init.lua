@@ -234,6 +234,12 @@ function DPP.PlayerDisconnected(ply)
 	local uid = ply:UniqueID()
 	local name = ply:Nick()
 	
+	timer.Simple(2, function()
+		for k, v in pairs(DPP.GetPropsByUID(uid)) do
+			DPP.RecalcConstraints(v)
+		end
+	end)
+	
 	if clear then
 		if isAdmin and clearAdmin or not isAdmin then
 			timer.Create('DPP.ClearPlayer.' .. uid, DPP.GetConVar('clear_timer'), 1, function()
