@@ -310,12 +310,14 @@ surface.CreateFont(DEFAULT_FONT, {
 	font = 'Roboto',
 	size = 18,
 	weight = 500,
+	extended = true,
 })
 
 surface.CreateFont('DPP.Arial', {
 	font = 'Arial',
 	size = 16,
 	weight = 1000,
+	extended = true,
 })
 
 surface.CreateFont('DPP.Terminal', {
@@ -340,42 +342,49 @@ surface.CreateFont('DPP.OpenSans', {
 	font = 'Open Sans',
 	size = 18,
 	weight = 400,
+	extended = true,
 })
 
 surface.CreateFont('DPP.MSSans', {
 	font = 'Microsoft Sans',
 	size = 16,
 	weight = 1000,
+	extended = true,
 })
 
 surface.CreateFont('DPP.LBiolinumG', {
 	font = 'Linux Biolinum G',
 	size = 16,
 	weight = 600,
+	extended = true,
 })
 
 surface.CreateFont('DPP.ComicSans', {
 	font = 'Comic Sans MS',
 	size = 20,
 	weight = 1000,
+	extended = true,
 })
 
 surface.CreateFont('DPP.Impact', {
 	font = 'Impact',
 	size = 20,
 	weight = 500,
+	extended = true,
 })
 
 surface.CreateFont('DPP.TNR', {
 	font = 'Times New Roman',
 	size = 20,
 	weight = 500,
+	extended = true,
 })
 
 surface.CreateFont('DPP.UbuntuLight', {
 	font = 'Ubuntu Light',
 	size = 20,
 	weight = 500,
+	extended = true,
 })
 
 local Roboto = {
@@ -426,6 +435,7 @@ for k, v in pairs(Roboto) do
 		font = v,
 		size = 18,
 		weight = 500,
+		extended = true,
 	})
 	
 	table.insert(DPP.Fonts, {id = 'DPP.' .. k, name = v})
