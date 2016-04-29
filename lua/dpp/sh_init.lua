@@ -708,7 +708,6 @@ else
 	end
 end
 
-
 function DPP.Message(first, ...)
 	if istable(first) and not first.a then
 		MsgC(Color(0, 200, 0), '[DPP] ', Color(200, 200, 200), unpack(first))
@@ -736,7 +735,11 @@ function DPP.AddConVar(k, tab)
 	tab.bool = tab.type == 'bool'
 	tab.int = tab.type == 'int'
 	tab.float = tab.type == 'float'
-	DPP.SVars[k] = CreateConVar('dpp_' .. k, tab.value, {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE, FCVAR_REPLICATED})
+	
+	if SERVER then
+		DPP.SVars[k] = CreateConVar('dpp_' .. k, tab.value, {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE})
+		cvars.AddChangeCallback('dpp_' .. k, DPP.ConVarChanged, 'DPP')
+	end
 end
 
 for k, v in pairs(DPP.BlockTypes) do
