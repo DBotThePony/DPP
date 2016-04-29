@@ -760,9 +760,20 @@ do
 
 	local function DoSearch(ent)
 		if EntMem[ent] then return end
+		
 		local all = constraint.GetTable(ent)
 		
 		EntMem[ent] = true
+		
+		if ent.GetChildren then
+			local Ents = ent:GetChildren()
+			
+			for k, v in pairs(Ents) do
+				if IsValid(v) then
+					DoSearch(v)
+				end
+			end
+		end
 		
 		for k = 1, #all do
 			local ent1, ent2 = all[k].Ent1, all[k].Ent2
