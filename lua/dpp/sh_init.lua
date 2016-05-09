@@ -1032,6 +1032,12 @@ function DPP.CanTouch(ply, ent, mode)
 		end
 	end
 	
+	local can, reason = hook.Run('DPP.CanTouch', ply, ent, mode)
+	
+	if can == false then return false, reason end
+	if can == true then return true, reason end
+	--Otherwise, proceed default checks
+	
 	local owner = DPP.GetOwner(ent)
 	local isOwned = DPP.IsOwned(ent)
 	local OwnerName, OwnerUID, OwnerSteamID = DPP.GetOwnerDetails(ent)

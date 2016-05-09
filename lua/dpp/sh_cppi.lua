@@ -86,3 +86,7 @@ end
 function entMeta:CPPIIsOwned()
 	return DPP.IsOwned(self)
 end
+
+hook.Add('DPP.CanTouch', 'DPP.CPPI', function(ply, ent)
+	return hook.Run('CPPICanTouch', ply, ent)
+end)
