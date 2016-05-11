@@ -1,4 +1,20 @@
 
+--[[
+Copyright (C) 2016 DBot
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+]]
+
 --Client
 
 DPP.ClientFriends = {}
@@ -301,7 +317,6 @@ concommand.Add('dpp_remfriend', function(ply, cmd, args)
 	DPP.RemoveFriend(found)
 end)
 
-local X, Y = 0, ScrH() / 2
 local DEFAULT_FONT = 'DPP.FONT'
 local Green = Color(40, 255, 51)
 local Red = Color(255, 51, 0)
@@ -453,10 +468,14 @@ function DPP.GetFont(name)
 	end
 end
 
-local function PostDrawHUDDefault()
+local X, Y = 0, ScrH() / 2
+
+local function PostDrawHUDDefault(x, y)
+	x = x or X
+	y = y or Y
+	
 	local ent = LocalPlayer():GetEyeTrace().Entity
 	if not IsValid(ent) then return end
-	--if ent:IsPlayer() then return end
 	
 	local curWeapon = LocalPlayer():GetActiveWeapon()
 	
@@ -574,22 +593,17 @@ local function PostDrawHUDDefault()
 	surface.SetFont(get)
 	local W, H = surface.GetTextSize(name)
 	surface.SetDrawColor(0, 0, 0, 200)
-	surface.DrawRect(X, Y, W + 8, H + 4)
+	surface.DrawRect(x, y, W + 8, H + 4)
 
-	--surface.SetTextPos(X + 2, Y + 3)
-	--surface.SetTextColor(CanTouch and Green or Red)
-	--surface.DrawText(name)
-	if CanTouch then
-		draw.DrawText(name, get, X + 4, Y + 3, Green)
-	else
-		draw.DrawText(name, get, X + 4, Y + 3, Red)
-	end
+	draw.DrawText(name, get, x + 4, y + 3, CanTouch and Green or Red)
 end
 
-local function HUDPaintSimple()
+local function HUDPaintSimple(x, y)
+	x = x or X
+	y = y or Y
+	
 	local ent = LocalPlayer():GetEyeTrace().Entity
 	if not IsValid(ent) then return end
-	--if ent:IsPlayer() then return end
 	
 	local curWeapon = LocalPlayer():GetActiveWeapon()
 	
@@ -670,27 +684,143 @@ local function HUDPaintSimple()
 	surface.SetFont(get)
 	local W, H = surface.GetTextSize(name)
 	surface.SetDrawColor(0, 0, 0, 200)
-	surface.DrawRect(X, Y, W + 8, H + 4)
+	surface.DrawRect(x, y, W + 8, H + 4)
 
+	draw.DrawText(name, get, x + 4, y + 3, CanTouch and Green or Red)
+end
+
+local function DrawNearWeapon(ShiftX)
+	ShiftX = ShiftX or -40
+	local model = LocalPlayer():GetViewModel(0)
 	
-	if CanTouch then
-		draw.DrawText(name, get, X + 4, Y + 3, Green)
-	else
-		draw.DrawText(name, get, X + 4, Y + 3, Red)
+	local attach = model:LookupAttachment('muzzle')
+	
+	if not attach or attach == 0 then return end
+	
+	local Data = model:GetAttachment(attach)
+	local Ang = Data.Ang
+	local Pos = Data.Pos
+	
+	Ang:RotateAroundAxis(Ang:Up(), 90)
+	Ang:RotateAroundAxis(Ang:Forward(), -90)
+	Ang:RotateAroundAxis(Ang:Up(), -180)
+	
+	local Add = Vector(ShiftX, 10, 0)
+	Add:Rotate(Ang)
+	
+	local ent = LocalPlayer():GetEyeTrace().Entity
+	local can = DPP.CanPhysgun(LocalPlayer(), ent)
+	
+	local owner = ''
+	
+	if IsValid(ent) then
+		if not ent:IsPlayer() then
+			local Owned = DPP.IsOwned(ent)
+			local Owner = DPP.GetOwner(ent)
+			
+			if Owned and not IsValid(Owner) then
+				local Nick, UID, SteamID = DPP.GetOwnerDetails(ent)
+				owner = Nick
+			elseif IsValid(Owner) then
+				owner = Owner:Nick()
+			else
+				owner = 'World'
+			end
+		else
+			owner = ent:Nick()
+		end
 	end
+	
+	cam.Start3D()
+	cam.Start3D2D(Pos + Add, Ang, 0.1)
+	
+	if not DPP.PlayerConVar(nil, 'simple_hud') then
+		PostDrawHUDDefault(0, 0)
+	else
+		HUDPaintSimple(0, 0)
+	end
+	
+	cam.End3D2D()
+	cam.End3D()
+end
+
+local function DrawNearToolgun()
+	local model = LocalPlayer():GetViewModel(0)
+	
+	local attach = model:LookupAttachment('muzzle')
+	
+	if not attach or attach == 0 then return end
+	
+	local Data = model:GetAttachment(attach)
+	local Ang = Data.Ang
+	local Pos = Data.Pos
+	
+	Ang:RotateAroundAxis(Ang:Up(), 90)
+	Ang:RotateAroundAxis(Ang:Forward(), -90)
+	
+	local Add = Vector(-20, 0, -30)
+	Add:Rotate(Ang)
+	
+	local ent = LocalPlayer():GetEyeTrace().Entity
+	local can = DPP.CanPhysgun(LocalPlayer(), ent)
+	
+	local owner = ''
+	
+	if IsValid(ent) then
+		if not ent:IsPlayer() then
+			local Owned = DPP.IsOwned(ent)
+			local Owner = DPP.GetOwner(ent)
+			
+			if Owned and not IsValid(Owner) then
+				local Nick, UID, SteamID = DPP.GetOwnerDetails(ent)
+				owner = Nick
+			elseif IsValid(Owner) then
+				owner = Owner:Nick()
+			else
+				owner = 'World'
+			end
+		else
+			owner = ent:Nick()
+		end
+	end
+	
+	cam.Start3D()
+	cam.Start3D2D(Pos + Add, Ang, 0.1)
+	
+	if not DPP.PlayerConVar(nil, 'simple_hud') then
+		PostDrawHUDDefault(0, 0)
+	else
+		HUDPaintSimple(0, 0)
+	end
+	
+	cam.End3D2D()
+	cam.End3D()
 end
 
 local function HUDPaint()
-	if DPP.PlayerConVar(_, 'hide_hud') then return end
-	if LocalPlayer():InVehicle() and DPP.PlayerConVar(_, 'no_hud_in_vehicle') then return end
-	if not DPP.PlayerConVar(_, 'simple_hud') then
+	if DPP.PlayerConVar(nil, 'hide_hud') then return end
+	
+	local AWeapon = LocalPlayer():GetActiveWeapon()
+	
+	if IsValid(AWeapon) then
+		if not DPP.PlayerConVar(nil, 'no_physgun_display') and (AWeapon:GetClass() == 'weapon_physgun' or AWeapon:GetClass() == 'weapon_physcannon') then
+			DrawNearWeapon()
+			return
+		end
+		
+		if not DPP.PlayerConVar(nil, 'no_toolgun_display') and AWeapon:GetClass() == 'gmod_tool' then
+			DrawNearToolgun()
+			return
+		end
+	end
+	
+	if LocalPlayer():InVehicle() and DPP.PlayerConVar(nil, 'no_hud_in_vehicle') then return end
+	if not DPP.PlayerConVar(nil, 'simple_hud') then
 		PostDrawHUDDefault()
 	else
 		HUDPaintSimple()
 	end
 end
-
-hook.Add('HUDPaint', 'DPP.Hooks', HUDPaint)
 
 local LastSound = 0
 
@@ -960,3 +1090,5 @@ function DPP.ReplacePropertyFuncs()
 		DPP.Message('Failed to override property menu')
 	end
 end
+
+hook.Add('HUDPaint', 'DPP.Hooks', HUDPaint)

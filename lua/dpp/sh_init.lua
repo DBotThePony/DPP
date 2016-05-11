@@ -599,6 +599,18 @@ DPP.CSettings = {
 		value = '1',
 		desc = 'I con\'t want to see "list reloaded" in my console',
 	},
+	
+	['no_physgun_display'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Disable physgun fancy owner display',
+	},
+	
+	['no_toolgun_display'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Disable toolgun fancy owner display',
+	},
 }
 
 DPP.ProtectionModes = {
