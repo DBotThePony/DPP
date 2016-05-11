@@ -799,6 +799,7 @@ end
 
 local function HUDPaint()
 	if DPP.PlayerConVar(nil, 'hide_hud') then return end
+	if LocalPlayer():InVehicle() and DPP.PlayerConVar(nil, 'no_hud_in_vehicle') then return end
 	
 	local AWeapon = LocalPlayer():GetActiveWeapon()
 	
@@ -814,7 +815,6 @@ local function HUDPaint()
 		end
 	end
 	
-	if LocalPlayer():InVehicle() and DPP.PlayerConVar(nil, 'no_hud_in_vehicle') then return end
 	if not DPP.PlayerConVar(nil, 'simple_hud') then
 		PostDrawHUDDefault()
 	else
