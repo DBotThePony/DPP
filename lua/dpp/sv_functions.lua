@@ -142,11 +142,25 @@ function DPP.CheckStuck(ply, ent1, ent2)
 	
 	if parent1 == ent2 or parent2 == ent1 then return end
 	
+	local phys1, phys2 = ent1:GetPhysicsObject(), ent2:GetPhysicsObject()
+	
 	if DPP.GetConVar('stuck_ignore_frozen') then
-		local phys1, phys2 = ent1:GetPhysicsObject(), ent2:GetPhysicsObject()
-		
 		if IsValid(phys1) and not phys1:IsMotionEnabled() then return end
 		if IsValid(phys2) and not phys2:IsMotionEnabled() then return end
+	end
+	
+	if IsValid(phys1) and not phys1:IsCollisionEnabled() then return end
+	if IsValid(phys2) and not phys2:IsCollisionEnabled() then return end
+	
+	local const1 = constraint.FindConstraint(ent1, 'NoCollide')
+	local const2 = constraint.FindConstraint(ent2, 'NoCollide')
+	
+	if const1 then
+		if const1.Ent1 == ent2 or const1.Ent2 == ent2 then return end
+	end
+	
+	if const2 then
+		if const2.Ent1 == ent2 or const2.Ent2 == ent2 then return end
 	end
 	
 	local pos1, pos2 = ent1:GetPos(), ent2:GetPos()
@@ -161,7 +175,7 @@ function DPP.CheckStuck(ply, ent1, ent2)
 		DPP.SetGhosted(ent1, true)
 		DPP.SetGhosted(ent2, true)
 		if IsValid(ply) then
-			DPP.Notify(ply, 'It seems that prop is stucked in each other.')
+			DPP.Notify(ply, 'It seems that prop is stuck in each other.')
 		end
 		
 		return true
