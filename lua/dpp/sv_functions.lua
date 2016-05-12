@@ -160,7 +160,7 @@ function DPP.CheckStuck(ply, ent1, ent2)
 	end
 	
 	if const2 then
-		if const2.Ent1 == ent2 or const2.Ent2 == ent2 then return end
+		if const2.Ent1 == ent1 or const2.Ent2 == ent1 then return end
 	end
 	
 	local pos1, pos2 = ent1:GetPos(), ent2:GetPos()
