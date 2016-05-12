@@ -708,29 +708,6 @@ local function DrawNearWeapon(ShiftX)
 	local Add = Vector(ShiftX, 10, 0)
 	Add:Rotate(Ang)
 	
-	local ent = LocalPlayer():GetEyeTrace().Entity
-	local can = DPP.CanPhysgun(LocalPlayer(), ent)
-	
-	local owner = ''
-	
-	if IsValid(ent) then
-		if not ent:IsPlayer() then
-			local Owned = DPP.IsOwned(ent)
-			local Owner = DPP.GetOwner(ent)
-			
-			if Owned and not IsValid(Owner) then
-				local Nick, UID, SteamID = DPP.GetOwnerDetails(ent)
-				owner = Nick
-			elseif IsValid(Owner) then
-				owner = Owner:Nick()
-			else
-				owner = 'World'
-			end
-		else
-			owner = ent:Nick()
-		end
-	end
-	
 	cam.Start3D()
 	cam.Start3D2D(Pos + Add, Ang, 0.1)
 	
@@ -760,29 +737,6 @@ local function DrawNearToolgun()
 	
 	local Add = Vector(-20, 0, -30)
 	Add:Rotate(Ang)
-	
-	local ent = LocalPlayer():GetEyeTrace().Entity
-	local can = DPP.CanPhysgun(LocalPlayer(), ent)
-	
-	local owner = ''
-	
-	if IsValid(ent) then
-		if not ent:IsPlayer() then
-			local Owned = DPP.IsOwned(ent)
-			local Owner = DPP.GetOwner(ent)
-			
-			if Owned and not IsValid(Owner) then
-				local Nick, UID, SteamID = DPP.GetOwnerDetails(ent)
-				owner = Nick
-			elseif IsValid(Owner) then
-				owner = Owner:Nick()
-			else
-				owner = 'World'
-			end
-		else
-			owner = ent:Nick()
-		end
-	end
 	
 	cam.Start3D()
 	cam.Start3D2D(Pos + Add, Ang, 0.1)
