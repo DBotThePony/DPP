@@ -239,6 +239,7 @@ local ropeModes = {
 
 function DPP.CanTool(ply, ent, mode)
 	if not DPP.GetConVar('enable_tool') then return end
+	DPP.AssertPlayer(ply)
 	
 	if DPP.IsRestrictedTool(mode, ply) then 
 		return false, 'Restricted Tool' 
@@ -286,6 +287,7 @@ end
 
 function DPP.CanPlayerEnterVehicle(ply, ent)
 	if not DPP.GetConVar('enable_veh') then return end
+	DPP.AssertPlayer(ply)
 	if ent.IgnoreVehicleProtection then return end
 	if not DPP.IsOwned(ent) then return end
 	
@@ -295,6 +297,7 @@ end
 
 function DPP.CanEditVariable(ent, ply, key, val, editor)
 	if not DPP.GetConVar('enable_tool') then return end
+	DPP.AssertPlayer(ply)
 	local reply = DPP.CanTool(ply, ent, '')
 	if not reply then return false end
 end
@@ -302,6 +305,7 @@ end
 function DPP.CanProperty(ply, str, ent)
 	if string.sub(str, 1, 4) == 'dpp.' then return true end
 	if not DPP.GetConVar('enable_tool') then return true end
+	DPP.AssertPlayer(ply)
 	
 	--Make check before
 	if DPP.IsEntityBlockedTool(ent:GetClass(), ply) then
@@ -327,6 +331,7 @@ end
 function DPP.PlayerUse(ply, ent)
 	if not DPP.GetConVar('enable_use') then return true end
 	if not DPP.IsOwned(ent) then return true end
+	DPP.AssertPlayer(ply)
 	
 	if DPP.IsEntityBlockedUse(ent:GetClass(), ply) then
 		return false
@@ -341,6 +346,7 @@ end
 
 function DPP.CanDrive(ply, ent)
 	if not DPP.GetConVar('enable_drive') then return end
+	DPP.AssertPlayer(ply)
 	local reply = DPP.CanPhysgun(ply, ent) --I will mean Drive as Physgun
 	if reply == false then return false end
 end

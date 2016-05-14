@@ -1167,6 +1167,23 @@ function DPP.CanTouch(ply, ent, mode)
 	return can, reason
 end
 
+function DPP.AssertPlayer(obj)
+	DPP.Assert(DPP.IsPlayer(obj), 'Argument is not a player!', 4)
+end
+
+local RED = Color(255, 0, 0)
+
+function DPP.Assert(check, str, level)
+	if check then return end
+	local info = debug.getinfo(4)
+	if SERVER then DPP.DoEcho(RED, 'ERROR: ' .. str .. '\nTO USERS: THIS IS A BUG IN ' .. info.short_src .. ':' .. info.currentline) end
+	error(str, level or 3)
+end
+
+function DPP.IsPlayer(obj)
+	return isentity(obj) and IsValid(obj) and obj:IsPlayer()
+end
+
 include('sh_hooks.lua')
 if SERVER then
 	include('sv_savedata.lua')

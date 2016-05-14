@@ -238,6 +238,7 @@ local function undo_Finish(name)
 end
 
 local function cleanup_Add(ply, type, ent)
+	DPP.AssertPlayer(ply)
 	if PENDING ~= ent then
 		if IsValid(PENDING_PLY) then DPP.CheckAntispam(PENDING_PLY, PENDING) end
 		PENDING = nil
