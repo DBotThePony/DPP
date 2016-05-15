@@ -181,7 +181,7 @@ function DPP.PhysgunPickup(ply, ent)
 end
 
 function DPP.CanGravgun(ply, ent)
-	if not DPP.GetConVar('enable_gravgun') then return end
+	if not DPP.GetConVar('enable_gravgun') then return true end
 	
 	if DPP.IsEntityBlockedGravgun(ent:GetClass(), ply) then
 		return false
@@ -200,17 +200,7 @@ end
 
 function DPP.CanGravgunPunt(ply, ent)
 	if DPP.GetConVar('player_cant_punt') then return false end
-	if not DPP.GetConVar('enable_gravgun') then return end
-	
-	if DPP.IsEntityBlockedGravgun(ent:GetClass(), ply) then
-		return false
-	end
-	
-	if DPP.IsEntityWhitelistedGravgun(ent:GetClass()) then
-		return true, 'Entity is whitelisted'
-	end
-
-	return DPP.CanTouch(ply, ent, 'gravgun')
+	return DPP.CanGravgun(ply, ent)
 end
 
 function DPP.OnPhysgunReload(phys, ply, ignoreConnected, ent)
