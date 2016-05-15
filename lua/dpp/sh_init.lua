@@ -222,6 +222,12 @@ DPP.Settings = {
 		desc = 'Enable "Gravgun" protection',
 	},
 	
+	['disable_gravgun_world'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Disable "Gravgun" protection for world entities',
+	},
+	
 	['enable_veh'] = {
 		type = 'bool',
 		value = '1',

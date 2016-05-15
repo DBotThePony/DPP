@@ -383,6 +383,7 @@ local SortedConVars = {
 	'enable_tool',
 	'enable_physgun',
 	'enable_gravgun',
+	'disable_gravgun_world',
 	'enable_veh',
 	'enable_use',
 	'enable_pickup',

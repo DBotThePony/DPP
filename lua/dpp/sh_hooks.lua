@@ -191,6 +191,10 @@ function DPP.CanGravgun(ply, ent)
 		return true, 'Entity is whitelisted'
 	end
 	
+	if DPP.GetConVar('disable_gravgun_world') and not DPP.IsOwned(ent) then
+		return true
+	end
+	
 	return DPP.CanTouch(ply, ent, 'gravgun')
 end
 
