@@ -328,4 +328,5 @@ net.Receive('DPP.ConVarChanged', function(len, ply)
 end)
 
 include('sv_hooks.lua')
+include('sv_commands.lua')
 include('sv_misc.lua')

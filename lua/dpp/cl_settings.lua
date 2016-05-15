@@ -534,6 +534,8 @@ local function BuildCVarPanel(Panel)
 	Panel:Clear()
 	SettingsClass.SetupBackColor(Panel)
 	
+	SettingsClass.ApplyButtonStyle(Panel:Button('Remove my entities', 'dpp_clearself'))
+	
 	for a, b in pairs(ClientVars) do
 		local k = b
 		local v = DPP.CSettings[b]
