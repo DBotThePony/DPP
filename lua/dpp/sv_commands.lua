@@ -48,6 +48,8 @@ concommand.Add('dpp_clearmap', function(ply, cmd, args)
 	DPP.Message(f)
 end)
 
+local DisconnectedPlayer = Color(134, 255, 154)
+
 concommand.Add('dpp_clearbyuid', function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsAdmin() then return end
 	local uid = args[1]
@@ -56,7 +58,7 @@ concommand.Add('dpp_clearbyuid', function(ply, cmd, args)
 	local Target = player.GetByUniqueID(uid)
 	DPP.ClearByUID(uid)
 	
-	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' cleared all ' .. (Target and Target:Nick() or DPP.DisconnectedPlayerNick(uid)) .. '\' props'}
+	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' cleared all ', Target and team.GetColor(Target:Team()) or DisconnectedPlayer, Target and Target:Nick() or DPP.DisconnectedPlayerNick(uid), Color(200, 200, 200), '\' props'}
 	DPP.Notify(player.GetAll(), f)
 	DPP.Message(f)
 end)
@@ -85,7 +87,7 @@ concommand.Add('dpp_clearplayer', function(ply, cmd, args)
 		if not found then DPP.Notify(ply, 'Invalid argument') return end
 		DPP.ClearPlayerEntities(found)
 		
-		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' cleared all ' .. found:Nick() .. '\'s entities'}
+		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' cleared all ', team.GetColor(found:Team()), found:Nick(), Color(200, 200, 200), '\'s entities'}
 		DPP.Notify(player.GetAll(), f)
 		DPP.Message(f)
 		return
@@ -101,7 +103,7 @@ concommand.Add('dpp_clearplayer', function(ply, cmd, args)
 	if not found then DPP.Notify(ply, 'Invalid argument') return end
 	DPP.ClearPlayerEntities(found)
 	
-	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' cleared all ' .. found:Nick() .. '\'s entities'}
+	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' cleared all ', team.GetColor(found:Team()), found:Nick(), Color(200, 200, 200), '\'s entities'}
 	DPP.Notify(player.GetAll(), f)
 	DPP.Message(f)
 end)
@@ -160,7 +162,7 @@ concommand.Add('dpp_freezeplayer', function(ply, cmd, args)
 		if not found then DPP.Notify(ply, 'Invalid argument') return end
 		DPP.FreezePlayerEntities(found)
 		
-		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' freeze all ' .. found:Nick() .. '\'s entities'}
+		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' freeze all ', team.GetColor(found:Team()), found:Nick(), Color(200, 200, 200), '\'s entities'}
 		DPP.Notify(player.GetAll(), f)
 		DPP.Message(f)
 		return
@@ -176,7 +178,7 @@ concommand.Add('dpp_freezeplayer', function(ply, cmd, args)
 	if not found then DPP.Notify(ply, 'Invalid argument') return end
 	DPP.FreezePlayerEntities(found)
 	
-	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' freeze all ' .. found:Nick() .. '\'s entities'}
+	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' freeze all ', team.GetColor(found:Team()), found:Nick(), Color(200, 200, 200), '\'s entities'}
 	DPP.Notify(player.GetAll(), f)
 	DPP.Message(f)
 end)
@@ -191,7 +193,7 @@ concommand.Add('dpp_freezebyuid', function(ply, cmd, args)
 	local Target = player.GetByUniqueID(uid)
 	DPP.FreezeByUID(uid)
 		
-	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' freeze all ' .. (Target and Target:Nick() or DPP.DisconnectedPlayerNick(uid)) .. '\'s entities'}
+	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' freeze all ', Target and team.GetColor(Target:Team()) or DisconnectedPlayer, Target and Target:Nick() or DPP.DisconnectedPlayerNick(uid), Color(200, 200, 200), '\'s entities'}
 	DPP.Notify(player.GetAll(), f)
 	DPP.Message(f)
 end)
@@ -206,7 +208,7 @@ concommand.Add('dpp_unfreezebyuid', function(ply, cmd, args)
 	local Target = player.GetByUniqueID(uid)
 	DPP.UnFreezeByUID(uid)
 		
-	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' unfreeze all ' .. (Target and Target:Nick() or DPP.DisconnectedPlayerNick(uid)) .. '\'s entities'}
+	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' unfreeze all ', Target and team.GetColor(Target:Team()) or DisconnectedPlayer, Target and Target:Nick() or DPP.DisconnectedPlayerNick(uid), Color(200, 200, 200), '\'s entities'}
 	DPP.Notify(player.GetAll(), f)
 	DPP.Message(f)
 end)
@@ -220,7 +222,7 @@ concommand.Add('dpp_unfreezeplayer', function(ply, cmd, args)
 		if not found then DPP.Notify(ply, 'Invalid argument') return end
 		DPP.UnFreezePlayerEntities(found)
 		
-		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' unfreeze all ' .. found:Nick() .. '\'s entities'}
+		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' unfreeze all ', team.GetColor(found:Team()), found:Nick(), Color(200, 200, 200), '\'s entities'}
 		DPP.Notify(player.GetAll(), f)
 		DPP.Message(f)
 		return
@@ -236,7 +238,7 @@ concommand.Add('dpp_unfreezeplayer', function(ply, cmd, args)
 	if not found then DPP.Notify(ply, 'Invalid argument') return end
 	DPP.UnFreezePlayerEntities(found)
 	
-	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' unfreeze all ' .. found:Nick() .. '\'s entities'}
+	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' unfreeze all ', team.GetColor(found:Team()), found:Nick(), Color(200, 200, 200), '\'s entities'}
 	DPP.Notify(player.GetAll(), f)
 	DPP.Message(f)
 end)
