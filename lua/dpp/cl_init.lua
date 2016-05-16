@@ -475,7 +475,7 @@ local function PostDrawHUDDefault(x, y)
 	y = y or Y
 	
 	local ent = LocalPlayer():GetEyeTrace().Entity
-	if not IsValid(ent) then return 0, 0 end
+	if not IsValid(ent) then return end
 	
 	local curWeapon = LocalPlayer():GetActiveWeapon()
 	
@@ -605,7 +605,7 @@ local function HUDPaintSimple(x, y)
 	y = y or Y
 	
 	local ent = LocalPlayer():GetEyeTrace().Entity
-	if not IsValid(ent) then return 0, 0 end
+	if not IsValid(ent) then return end
 	
 	local curWeapon = LocalPlayer():GetActiveWeapon()
 	
@@ -719,9 +719,9 @@ local function DrawNearWeapon(ShiftX)
 	cam.Start3D2D(Pos + Add, Ang, 0.1)
 	
 	if not DPP.PlayerConVar(nil, 'simple_hud') then
-		NearWeaponLastW = PostDrawHUDDefault(0, 0)
+		NearWeaponLastW = PostDrawHUDDefault(0, 0) or NearWeaponLastW
 	else
-		NearWeaponLastW = HUDPaintSimple(0, 0)
+		NearWeaponLastW = HUDPaintSimple(0, 0) or NearWeaponLastW
 	end
 	
 	cam.End3D2D()
@@ -749,9 +749,9 @@ local function DrawNearToolgun()
 	cam.Start3D2D(Pos + Add, Ang, 0.1)
 	
 	if not DPP.PlayerConVar(nil, 'simple_hud') then
-		NearToolgunLastW = PostDrawHUDDefault(0, 0)
+		NearToolgunLastW = PostDrawHUDDefault(0, 0) or NearToolgunLastW
 	else
-		NearToolgunLastW = HUDPaintSimple(0, 0)
+		NearToolgunLastW = HUDPaintSimple(0, 0) or NearToolgunLastW
 	end
 	
 	cam.End3D2D()
