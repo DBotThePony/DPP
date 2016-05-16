@@ -475,7 +475,7 @@ local function PostDrawHUDDefault(x, y)
 	y = y or Y
 	
 	local ent = LocalPlayer():GetEyeTrace().Entity
-	if not IsValid(ent) then return end
+	if not IsValid(ent) then return 0, 0 end
 	
 	local curWeapon = LocalPlayer():GetActiveWeapon()
 	
@@ -596,6 +596,8 @@ local function PostDrawHUDDefault(x, y)
 	surface.DrawRect(x, y, W + 8, H + 4)
 
 	draw.DrawText(name, get, x + 4, y + 3, CanTouch and Green or Red)
+	
+	return W, H
 end
 
 local function HUDPaintSimple(x, y)
@@ -603,7 +605,7 @@ local function HUDPaintSimple(x, y)
 	y = y or Y
 	
 	local ent = LocalPlayer():GetEyeTrace().Entity
-	if not IsValid(ent) then return end
+	if not IsValid(ent) then return 0, 0 end
 	
 	local curWeapon = LocalPlayer():GetActiveWeapon()
 	
@@ -687,10 +689,15 @@ local function HUDPaintSimple(x, y)
 	surface.DrawRect(x, y, W + 8, H + 4)
 
 	draw.DrawText(name, get, x + 4, y + 3, CanTouch and Green or Red)
+	
+	return W, H
 end
 
+local NearWeaponLastW = 0
+local NearToolgunLastW = 0
+
 local function DrawNearWeapon(ShiftX)
-	ShiftX = ShiftX or -40
+	ShiftX = ShiftX or (-NearWeaponLastW * 0.1 - 10)
 	local model = LocalPlayer():GetViewModel(0)
 	
 	local attach = model:LookupAttachment('muzzle')
@@ -712,9 +719,9 @@ local function DrawNearWeapon(ShiftX)
 	cam.Start3D2D(Pos + Add, Ang, 0.1)
 	
 	if not DPP.PlayerConVar(nil, 'simple_hud') then
-		PostDrawHUDDefault(0, 0)
+		NearWeaponLastW = PostDrawHUDDefault(0, 0)
 	else
-		HUDPaintSimple(0, 0)
+		NearWeaponLastW = HUDPaintSimple(0, 0)
 	end
 	
 	cam.End3D2D()
@@ -735,16 +742,16 @@ local function DrawNearToolgun()
 	Ang:RotateAroundAxis(Ang:Up(), 90)
 	Ang:RotateAroundAxis(Ang:Forward(), -90)
 	
-	local Add = Vector(-20, 0, -30)
+	local Add = Vector(-NearToolgunLastW * 0.1 + 5, 0, -30)
 	Add:Rotate(Ang)
 	
 	cam.Start3D()
 	cam.Start3D2D(Pos + Add, Ang, 0.1)
 	
 	if not DPP.PlayerConVar(nil, 'simple_hud') then
-		PostDrawHUDDefault(0, 0)
+		NearToolgunLastW = PostDrawHUDDefault(0, 0)
 	else
-		HUDPaintSimple(0, 0)
+		NearToolgunLastW = HUDPaintSimple(0, 0)
 	end
 	
 	cam.End3D2D()
