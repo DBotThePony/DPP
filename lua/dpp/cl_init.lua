@@ -94,6 +94,7 @@ function DPP.CheckFriendArgs(t)
 	if t.use == nil then t.use = true end
 	if t.vehicle == nil then t.vehicle = true end
 	if t.damage == nil then t.damage = true end
+	if t.pickup == nil then t.pickup = true end
 end
 
 function DPP.LoadFriends()
@@ -139,7 +140,7 @@ function DPP.SendFriends()
 	net.SendToServer()
 end
 
-function DPP.AddFriend(ply, physgun, gravgun, toolgun, use, vehicle, damage)
+function DPP.AddFriend(ply, physgun, gravgun, toolgun, use, vehicle, damage, pickup)
 	if ply == LocalPlayer() then return end
 	
 	local steamid = ply:SteamID()
@@ -152,6 +153,7 @@ function DPP.AddFriend(ply, physgun, gravgun, toolgun, use, vehicle, damage)
 			use = use,
 			vehicle = vehicle,
 			damage = damage,
+			pickup = pickup,
 			nick = ply:Nick(),
 		}
 	else
@@ -174,7 +176,7 @@ function DPP.AddFriend(ply, physgun, gravgun, toolgun, use, vehicle, damage)
 	hook.Run('DPP.FriendsChanged')
 end
 
-function DPP.AddFriendBySteamID(steamid, physgun, gravgun, toolgun, use, vehicle, damage)
+function DPP.AddFriendBySteamID(steamid, physgun, gravgun, toolgun, use, vehicle, damage, pickup)
 	steamid = string.upper(steamid)
 	
 	local ply = player.GetBySteamID(steamid)
@@ -188,6 +190,7 @@ function DPP.AddFriendBySteamID(steamid, physgun, gravgun, toolgun, use, vehicle
 			use = use,
 			vehicle = vehicle,
 			damage = damage,
+			pickup = pickup,
 			nick = ply and ply:Nick() or oldNick,
 		}
 	else
@@ -267,7 +270,7 @@ concommand.Add('dpp_addfriend', function(ply, cmd, args)
 	
 	if string.sub(ply, 1, 5) == 'steam' then
 		ply = string.upper(args[1])
-		DPP.AddFriendBySteamID(ply, ArgBool(args[2]), ArgBool(args[3]), ArgBool(args[4]), ArgBool(args[5]), ArgBool(args[6]), ArgBool(args[7]))
+		DPP.AddFriendBySteamID(ply, ArgBool(args[2]), ArgBool(args[3]), ArgBool(args[4]), ArgBool(args[5]), ArgBool(args[6]), ArgBool(args[7]), ArgBool(args[8]))
 		return
 	end
 	
@@ -284,7 +287,7 @@ concommand.Add('dpp_addfriend', function(ply, cmd, args)
 		return
 	end
 	
-	DPP.AddFriend(found, ArgBool(args[2]), ArgBool(args[3]), ArgBool(args[4]), ArgBool(args[5]), ArgBool(args[6]), ArgBool(args[7]))
+	DPP.AddFriend(found, ArgBool(args[2]), ArgBool(args[3]), ArgBool(args[4]), ArgBool(args[5]), ArgBool(args[6]), ArgBool(args[7]), ArgBool(args[8]))
 end)
 
 concommand.Add('dpp_remfriend', function(ply, cmd, args)

@@ -373,6 +373,7 @@ hook.Add('CanPlayerEnterVehicle', '!DPP.Hooks', DPP.CanPlayerEnterVehicle, -1)
 function DPP.OverrideE2Adv()
 	if not EXPADV then return end
 	local Compiler = EXPADV.Compiler
+	if not Compiler then return end
 	
 	DPP.Message('Detected E2 Advanced, overriding.')
 	--Hello E2 Advanced
