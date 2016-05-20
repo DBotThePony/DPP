@@ -1971,6 +1971,59 @@ local function BuildFriendsPanel(Panel)
 	SettingsClass.ApplyButtonStyle(Apply)
 end
 
+local function About(Panel)
+	if not IsValid(Panel) then return end
+	Panel:Clear()
+	
+	SettingsClass.SetupBackColor(Panel)
+	
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	Lab:SetText('DPP was created by DBot\nI tried to make it situable for all kinds of servers\nthat needs protect from minges')
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SizeToContents()
+	Lab:SetTooltip(TopText)
+	
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	Lab:SetText('Can we have a free like please?\nPlease?! or i will cry ;n;')
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SizeToContents()
+	Lab:SetTooltip(TopText)
+	
+	local Button = Panel:Button('Steam Workshop')
+	Button.DoClick = function()
+		gui.OpenURL('http://steamcommunity.com/sharedfiles/filedetails/?id=659044893')
+	end
+	SettingsClass.ApplyButtonStyle(Button)
+	
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	Lab:SetText('Can we have a free star please?\nPlease?! or i will cry ;n;')
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SizeToContents()
+	Lab:SetTooltip(TopText)
+	
+	local Button = Panel:Button('Github')
+	Button.DoClick = function()
+		gui.OpenURL('https://github.com/00875/dpp')
+	end
+	SettingsClass.ApplyButtonStyle(Button)
+	
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	Lab:SetText('Can we have a free bug report please?\nPlease?!')
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SizeToContents()
+	Lab:SetTooltip(TopText)
+	
+	local Button = Panel:Button('DPP issues page')
+	Button.DoClick = function()
+		gui.OpenURL('https://github.com/00875/dpp/issues')
+	end
+	SettingsClass.ApplyButtonStyle(Button)
+end
+
 local function PopulateToolMenu()
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.SVars', 'Server Variables', '', '', BuildSVarPanel)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Players', 'Player Controls', '', '', BuildPlayerList)
@@ -1984,6 +2037,7 @@ local function PopulateToolMenu()
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP Blacklists', 'DPP.ModelList', 'Model blacklist', '', '', BuildModelsList)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Friends', 'Friends', '', '', BuildFriendsPanel)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.PPPanel', 'Player Protection Controls', '', '', BuildPlayerProtectionPanel)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.About', 'About', '', '', About)
 	
 	for k, v in pairs(DPP.BlockTypes) do
 		spawnmenu.AddToolMenuOption('Utilities', 'DPP Blacklists', 'DPP.' .. k, v .. ' blacklist', '', '', PanelsFunctions[k])
