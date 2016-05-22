@@ -74,7 +74,7 @@ DPP.Settings = {
 	['enable_whitelisted'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Enable whitelists',
+		desc = 'Enable exclude lists',
 	},
 	
 	['apropkill_enable'] = {
