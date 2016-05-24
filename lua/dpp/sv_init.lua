@@ -199,18 +199,28 @@ function DPP.GetFriendTableCPPI(ply)
 end
 
 function DPP.DoEcho(...)
-	DPP.Message(...)
-	local admins = {}
-	
-	for k, v in pairs(player.GetAll()) do
-		if v:IsAdmin() then
-			table.insert(admins, v)
+	if not DLog then
+		DPP.Message(...)
+		local admins = {}
+		
+		for k, v in pairs(player.GetAll()) do
+			if v:IsAdmin() then
+				table.insert(admins, v)
+			end
 		end
+		
+		net.Start('DPP.Log')
+		net.WriteTable({...})
+		net.Send(admins)
+	else
+		DLog.Log('DPP', 1, {...})
 	end
-	
-	net.Start('DPP.Log')
-	net.WriteTable({...})
-	net.Send(admins)
+end
+
+function DPP.NotifyLog(t)
+	DPP.Notify(player.GetAll(), t)
+	if not DLog then DPP.Message(t) return end
+	DLog.Log('DPP', 1, t, {Private = false, PrintClient = false})
 end
 
 local function PlayerInitialSpawn(ply)

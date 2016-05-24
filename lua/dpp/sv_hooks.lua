@@ -799,12 +799,20 @@ function DPP.SetPlayerMeta(self, ply)
 		timer.Simple(0, function() --Wait before entity is initialized and owner is defined
 			if IsValid(Ent) then
 				local owner = DPP.GetOwner(Ent)
-				DPP.DoEcho(RED, 'That should never happen: Entity:SetPlayer() is called without player argument! Entity: ' .. tostring(self) .. '. I detected real owner: ' .. (IsValid(owner) and owner:Nick() or 'World') .. '\nTO USERS: Yes, this is a BUG in ' .. tostring(self) .. ' and you should report it to author!')
+				if not DLog then
+					DPP.DoEcho(RED, 'That should never happen: Entity:SetPlayer() is called without player argument! Entity: ' .. tostring(self) .. '. I detected real owner: ' .. (IsValid(owner) and owner:Nick() or 'World') .. '\nTO USERS: Yes, this is a BUG in ' .. tostring(self) .. ' and you should report it to author!')
+				else
+					DLog.Log('DPP', 3, 'That should never happen: Entity:SetPlayer() is called without player argument! Entity: ' .. tostring(self) .. '. I detected real owner: ', owner, '\nTO USERS: Yes, this is a BUG in ' .. tostring(self) .. ' and you should report it to author!')
+				end
 				
 				CheckBefore(owner, self)
 				--DPP.SetOwner(self, owner)
 			else
-				DPP.DoEcho(RED, 'That should never happen: Entity:SetPlayer() is called without player argument! Entity: ' .. tostring(self) .. '.\nTO USERS: Yes, this is a BUG in ' .. tostring(self) .. ' and you should report it to author!')
+				if not DLog then
+					DPP.DoEcho(RED, 'That should never happen: Entity:SetPlayer() is called without player argument! Entity: ' .. tostring(self) .. '.\nTO USERS: Yes, this is a BUG in ' .. tostring(self) .. ' and you should report it to author!')
+				else
+					DLog.Log('DPP', 3, 'That should never happen: Entity:SetPlayer() is called without player argument! Entity: ' .. tostring(self) .. '.\nTO USERS: Yes, this is a BUG in ' .. tostring(self) .. ' and you should report it to author!')
+				end
 			end
 		end)
 		
