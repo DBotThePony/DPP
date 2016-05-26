@@ -117,13 +117,8 @@ local function CheckBlocked(ply, ent)
 		return false
 	end
 	
-	if DPP.GetConVar('enable_lists') then
-		if DPP.BlockedModels[model] then
-			SafeRemoveEntity(ent)
-			if ply then
-				DPP.Notify(ply, 'Model of that entity is in the blacklist!', 1)
-			end
-		end
+	if DPP.IsModelBlocked(model, ply) then
+		SafeRemoveEntity(ent)
 	end
 end
 
@@ -138,14 +133,8 @@ local function CheckBlocked2(ply, model)
 		return false
 	end
 	
-	if DPP.GetConVar('enable_lists') then
-		if DPP.BlockedModels[model] then
-			if ply then
-				DPP.Notify(ply, 'Model of that entity is in the blacklist!', 1)
-			end
-			
-			return false
-		end
+	if DPP.IsModelBlocked(model, ply) then
+		return false
 	end
 	
 	return true
