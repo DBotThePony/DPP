@@ -101,6 +101,7 @@ local Constraints = {
 	gmod_winch_controller = true,
 	phys_torque = true,
 	phys_spring = true,
+	logic_collision_pair = true,
 	keyframe_rope = true, --ugh
 }
 
@@ -198,9 +199,12 @@ function DPP.GetFriendTableCPPI(ply)
 	return ply.DPP_FriendsCPPI or {}
 end
 
-function DPP.DoEcho(...)
-	if not DLog then
-		DPP.Message(...)
+--Don't overflow net channel when player pastes a big dupe
+local Queued = {}
+
+local function Think()
+	for k, v in pairs(Queued) do
+		DPP.Message(unpack(v))
 		local admins = {}
 		
 		for k, v in pairs(player.GetAll()) do
@@ -210,8 +214,20 @@ function DPP.DoEcho(...)
 		end
 		
 		net.Start('DPP.Log')
-		net.WriteTable({...})
+		net.WriteTable(v)
 		net.Send(admins)
+		
+		Queued[k] = nil
+		
+		break
+	end
+end
+
+hook.Add('Think', 'DPP.NetEchoThink', Think)
+
+function DPP.DoEcho(...)
+	if not DLog then
+		table.insert(Queued, {...})
 	else
 		DLog.Log('DPP', 1, {...})
 	end
