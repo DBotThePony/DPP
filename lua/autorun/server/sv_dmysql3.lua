@@ -13,51 +13,93 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+TMySQL4: https://facepunch.com/showthread.php?t=1442438
+mysqloo: https://facepunch.com/showthread.php?t=1515853
 ]]
 
-if file.Exists('dpp_config.lua', 'LUA') then
-	include('dpp_config.lua')
+file.CreateDir('dmysql3')
+
+local DefaultOptions = {
+	UseMySQL = false,
+	Host = 'localhost',
+	Database = 'test',
+	User = 'user',
+	Password = 'pass',
+	Port = 3306,
+}
+
+local DefaultConfigString = util.TableToJSON(DefaultOptions, true)
+
+if not file.Exists('dmysql3/default.txt', 'DATA') then
+	file.Write('dmysql3/default.txt', DefaultConfigString)
 end
 
-if file.Exists('dmysql3_config.lua', 'LUA') then
-	include('dmysql3_config.lua')
+DMySQL3 = DMySQL3 or {}
+
+DMySQL3.LINKS = DMySQL3.LINKS or {}
+
+DMySQL3.obj = DMySQL3.obj or {}
+local obj = DMySQL3.obj
+obj.__index = obj
+
+function DMySQL3.WriteConfig(config, data)
+	file.Write('dmysql3/' .. config .. '.txt', util.TableToJSON(data, true))
 end
 
-module('DMySQL3', package.seeall)
-
-UseMySQL = false
-IsMySQL = false
-UseTMySQL4 = false
-Host = 'localhost'
-Database = 'test'
-User = 'user'
-Password = 'pass'
-Port = 3306
-
-local ConfigObject = DPP_MySQLConfig or DMySQL3_Config
-
-if ConfigObject then
-	UseMySQL = ConfigObject.UseMySQL
-	Host = ConfigObject.Host
-	Database = ConfigObject.Database
-	User = ConfigObject.User
-	Password = ConfigObject.Password
-	Port = ConfigObject.Port
+function DMySQL3.Connect(config)
+	config = config or 'default'
+	
+	if DMySQL3.LINKS[config] then
+		DMySQL3.LINKS[config]:Disconnect()
+		DMySQL3.LINKS[config]:ReloadConfig()
+		DMySQL3.LINKS[config]:Connect()
+		return DMySQL3.LINKS[config]
+	end
+	
+	local self = setmetatable({}, obj)
+	self.config = config
+	
+	self:ReloadConfig()
+	
+	DMySQL3.LINKS[config] = self
+	
+	self:Connect()
+	
+	return self
 end
+
+local Prefix = '[DMySQL3] '
+local PrefixColor = Color(0, 200, 0)
+local TextColor = Color(200, 200, 200)
+
+function DMySQL3.Message(...)
+	MsgC(PrefixColor, Prefix, TextColor, ...)
+	MsgC('\n')
+end
+
+obj.UseMySQL = false
+obj.IsMySQL = false
+obj.UseTMySQL4 = false
+obj.Host = 'localhost'
+obj.Database = 'test'
+obj.User = 'user'
+obj.Password = 'pass'
+obj.Port = 3306
 
 local tmsql, moo = file.Exists("bin/gmsv_tmysql4_*", "LUA"), file.Exists("bin/gmsv_mysqloo_*", "LUA")
 
-function Connect()
-	if not UseMySQL then 
-		MsgC('DMySQL3: Using SQLite\n')
-		IsMySQL = false
+function obj:Connect()
+	if not self.UseMySQL then 
+		DMySQL3.Message(self.config, ': Using SQLite')
+		self.IsMySQL = false
 		return
 	end
 	
 	if not tmsql and not moo then
-		MsgC('DMySQL3: No TMySQL4 module installed!\nGet latest at https://facepunch.com/showthread.php?t=1442438\n')
-		MsgC('DMySQL3: Using SQLite\n')
-		IsMySQL = false
+		DMySQL3.Message(self.config, ': No TMySQL4 module installed!\nGet latest at https://facepunch.com/showthread.php?t=1442438')
+		DMySQL3.Message(self.config, ': Using SQLite')
+		self.IsMySQL = false
 		return
 	end
 
@@ -67,36 +109,36 @@ function Connect()
 		xpcall(function()
 			require("tmysql4")
 			
-			MsgC('DMySQL3: Trying to connect to ' .. Host .. ' using driver TMySQL4\n')
+			DMySQL3.Message(self.config, ': Trying to connect to ' .. self.Host .. ' using driver TMySQL4')
 			
-			local Link, Error = tmysql.initialize(Host, User, Password, Database, Port)
+			local Link, Error = tmysql.initialize(self.Host, self.User, self.Password, self.Database, self.Port)
 			
 			if not Link then
-				MsgC('DMySQL3 connection failed: \nInvalid username or password, wrong hostname or port, database does not exists, or given user can\'t access it.\n' .. Error .. '\n')
-				IsMySQL = false
+				DMySQL3.Message(self.config, ': connection failed: \nInvalid username or password, wrong hostname or port, database does not exists, or given user can\'t access it.\n' .. Error .. '')
+				self.IsMySQL = false
 			else
-				MsgC('DMySQL3: Success\n')
-				LINK = Link
-				IsMySQL = true
-				UseTMySQL4 = true
+				DMySQL3.Message(self.config, ': Success')
+				self.LINK = Link
+				self.IsMySQL = true
+				self.UseTMySQL4 = true
 				hit = true
 			end
 		end, function(err)
-			MsgC('DMySQL3 connection failed:\nCannot intialize a binary TMySQL4 module (internal error). Are you sure that your installed module for your OS? (linux/windows)\n' .. err .. '\n')
-			IsMySQL = false
+			DMySQL3.Message(self.config, ': connection failed:\nCannot intialize a binary TMySQL4 module (internal error). Are you sure that your installed module for your OS? (linux/windows)\n' .. err .. '')
+			self.IsMySQL = false
 		end)
 		
 		if hit then return end
 	end
 	
 	if moo then
-		MsgC('DMySQL3 recommends to use TMySQL4!\n')
+		DMySQL3.Message('DMySQL3 recommends to use TMySQL4!')
 		
 		xpcall(function()
 			require("mysqloo")
 			
-			MsgC('DMySQL3: Trying to connect to ' .. Host .. ' using driver MySQLoo\n')
-			local Link = mysqloo.connect(Host, User, Password, Database, Port)
+			DMySQL3.Message(self.config, ': Trying to connect to ' .. self.Host .. ' using driver MySQLoo')
+			local Link = mysqloo.connect(self.Host, self.User, self.Password, self.Database, self.Port)
 			
 			Link:connect()
 			Link:wait()
@@ -104,27 +146,68 @@ function Connect()
 			local Status = Link:status()
 			
 			if Status == mysqloo.DATABASE_CONNECTED then
-				MsgC('DMySQL3: Success\n')
-				IsMySQL = true
-				LINK = Link
+				DMySQL3.Message(self.config, ': Success')
+				self.IsMySQL = true
+				self.LINK = Link
 			else
-				MsgC('DMySQL3 connection failed: \nInvalid username or password, wrong hostname or port, database does not exists, or given user can\'t access it.\n')
-				print(Link:hostInfo())
+				DMySQL3.Message(self.config, ': connection failed: \nInvalid username or password, wrong hostname or port, database does not exists, or given user can\'t access it.')
+				DMySQL3.Message(Link:hostInfo())
 			end
 		end, function(err)
-			MsgC('DMySQL3 connection failed:\nCannot intialize a binary MySQLoo module (internal error). Are you sure that your installed module for your OS? (linux/windows)\n' .. err .. '\n')
-			IsMySQL = false
+			DMySQL3.Message(self.config, ': connection failed:\nCannot intialize a binary MySQLoo module (internal error). Are you sure that your installed module for your OS? (linux/windows)\n' .. err .. '')
+			self.IsMySQL = false
 		end)
 	end
 end
 
+function obj:Disconnect()
+	DMySQL3.Message(self.config .. ': disconnected from database')
+	if not self.IsMySQL then return end
+	if self.UseTMySQL4 then
+		self.LINK:Disconnect()
+		return
+	end
+	
+	--Put MySQLoo disconnect function here
+end
+
+function obj:ReloadConfig()
+	local config = self.config
+	
+	if not file.Exists('dmysql3/' .. config .. '.txt', 'DATA') then
+		file.Write('dmysql3/' .. config .. '.txt', DefaultConfigString)
+		DMySQL3.Message('Creating default config for "' .. config .. '"')
+	end
+	
+	local confStr = file.Read('dmysql3/' .. config .. '.txt', 'DATA')
+	
+	if not confStr or confStr == '' then
+		confStr = DefaultConfigString
+		DMySQL3.Message(config, ': ATTENTION: Config corrupted!')
+	end
+	
+	local config = util.JSONToTable(confStr)
+	
+	if not config then
+		config = table.Copy(DefaultOptions)
+		DMySQL3.Message(config, ': ATTENTION: Config corrupted!')
+	end
+	
+	self.UseMySQL = config.UseMySQL
+	self.Host = config.Host
+	self.Database = config.Database
+	self.User = config.User
+	self.Password = config.Password
+	self.Port = config.Port
+end
+
 local EMPTY = function() end
 
-function Query(str, success, failed)
+function obj:Query(str, success, failed)
 	success = success or EMPTY
 	failed = failed or EMPTY
 	
-	if not IsMySQL then
+	if not self.IsMySQL then
 		local data = sql.Query(str)
 		
 		if data == false then
@@ -136,17 +219,17 @@ function Query(str, success, failed)
 		return
 	end
 	
-	if UseTMySQL4 then
-		if not LINK then
+	if self.UseTMySQL4 then
+		if not self.LINK then
 			Connect()
 		end
 		
-		if not LINK then
-			MsgC('DMySQL3: Connection to database lost while executing query!\n')
+		if not self.LINK then
+			DMySQL3.Message(self.config, ': Connection to database lost while executing query!')
 			return
 		end
 		
-		LINK:Query(str, function(data)
+		self.LINK:Query(str, function(data)
 			local data = data[1]
 			
 			if not data.status then
@@ -159,16 +242,16 @@ function Query(str, success, failed)
 		return
 	end
 	
-	local obj = LINK:query(str)
+	local obj = self.LINK:query(str)
 	
 	function obj.onSuccess(q, data)
 		xpcall(success, debug.traceback, data or {})
 	end
 	
 	function obj.onError(q, err)
-		if LINK:status() == mysqloo.DATABASE_NOT_CONNECTED then
+		if self.LINK:status() == mysqloo.DATABASE_NOT_CONNECTED then
 			Connect()
-			MsgC('DMySQL3: Connection to database lost while executing query!\n')
+			DMySQL3.Message(self.config, ': Connection to database lost while executing query!')
 			return
 		end
 		
@@ -178,30 +261,27 @@ function Query(str, success, failed)
 	obj:start()
 end
 
-local TRX = {}
+obj.TRX = {}
 
-function Add(str, success, failed)
+function obj:Add(str, success, failed)
 	success = success or EMPTY
 	failed = failed or EMPTY
 	
-	table.insert(TRX, {str, success, failed})
+	table.insert(self.TRX, {str, success, failed})
 end
 
-function Begin()
-	TRX = {}
-	Add('BEGIN')
+function obj:Begin()
+	self.TRX = {}
+	self:Add('BEGIN')
 end
 
-function Commit(finish)
+function obj:Commit(finish)
 	finish = finish or EMPTY
 	
-	if #TRX == 0 then return end
+	self:Add('COMMIT')
 	
-	Add('COMMIT')
-	
-	local TRX2 = TRX
-	TRX = {}
-	local TRX = TRX2
+	local TRX = self.TRX2
+	self.TRX = {}
 	
 	local current = 1
 	local total = #TRX
@@ -212,17 +292,17 @@ function Commit(finish)
 		xpcall(TRX[current][2], debug.traceback, data)
 		current = current + 1
 		if current >= total then xpcall(finish, debug.traceback) return end
-		Query(TRX[current][1], success, err)
+		self:Query(TRX[current][1], success, err)
 	end
 	
 	function err(data)
 		xpcall(TRX[current][3], debug.traceback, data)
 		current = current + 1
 		if current >= total then xpcall(finish, debug.traceback) return end
-		Query(TRX[current][1], success, err)
+		self:Query(TRX[current][1], success, err)
 	end
 	
-	Query(TRX[current][1], success, err)
+	self:Query(TRX[current][1], success, err)
 end
 
-Connect()
+DMySQL3.Connect('default')
