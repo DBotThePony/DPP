@@ -762,6 +762,9 @@ local function DrawNearToolgun()
 end
 
 local function HUDPaint()
+	local can = hook.Run('CanDrawDPPHUD')
+	if can == false then return end
+	
 	if DPP.PlayerConVar(nil, 'hide_hud') then return end
 	if LocalPlayer():InVehicle() and DPP.PlayerConVar(nil, 'no_hud_in_vehicle') then return end
 	
