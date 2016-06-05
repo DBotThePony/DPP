@@ -280,7 +280,7 @@ function obj:Commit(finish)
 	
 	self:Add('COMMIT')
 	
-	local TRX = self.TRX2
+	local TRX = self.TRX
 	self.TRX = {}
 	
 	local current = 1
