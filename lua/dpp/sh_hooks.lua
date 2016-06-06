@@ -123,7 +123,7 @@ function DPP.ToolgunTouch(ply, tr, mode)
 			ply._DPP_LastToolgunLog = ply._DPP_LastToolgunLog or 0
 			if not DPP.GetConVar('no_tool_log') and not DPP.GetConVar('no_tool_fail_log') and ply._DPP_LastToolgunLog < CurTime() then
 				ply._DPP_LastToolgunLog = CurTime() + 0.2
-				DPP.SpawnFunctions.SimpleLog(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', RED, ' tried ', GRAY, string.format('to use tool %s on %s', mode, tostring(tr.Entity)))
+				DPP.SimpleLog(ply, DPP.SpawnFunctions.SPACE, RED, ' tried ', GRAY, 'to use tool ', DPP.SpawnFunctions.SPACE2, string.format('%s on %s', mode, tostring(tr.Entity)))
 			end
 		end
 		
@@ -136,7 +136,7 @@ function DPP.ToolgunTouch(ply, tr, mode)
 		
 		if not DPP.GetConVar('no_tool_log') and ply._DPP_LastToolgunLog < CurTime() then 
 			ply._DPP_LastToolgunLog = CurTime() + 0.2
-			DPP.SpawnFunctions.SimpleLog(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', GRAY, ' used/tried to use tool ', color_white, mode, GRAY, ' on ', tostring(tr.Entity)) 
+			DPP.SimpleLog(ply, DPP.SpawnFunctions.SPACE, GRAY, ' used/tried to use tool ', DPP.SpawnFunctions.SPACE2, color_white, mode, GRAY, ' on ', tostring(tr.Entity)) 
 		end
 	end
 end

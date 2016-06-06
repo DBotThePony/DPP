@@ -408,6 +408,7 @@ local MiscConVars = {
 	'no_rope_world_weld',
 	'log_spawns',
 	'log_constraints',
+	'log_file',
 	'verbose_logging',
 	'no_tool_log',
 	'no_tool_fail_log',

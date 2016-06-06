@@ -30,75 +30,36 @@ local IgnoreSpawn = {
 local GRAY = Color(200, 200, 200)
 local RED = Color(255, 0, 0)
 
-local File
-local CurrentPatch
+local LogIntoFile = DPP.LogIntoFile
+local SimpleLog = DPP.SimpleLog
 
-local function LogIntoFile(...)
-	if not DPP.GetConVar('log_spawns') then return end
-	if not DPP.GetConVar('log_spawns_file') then return end
-	
-	if not File then
-		File = file.Open('dpp/' .. os.date('%d_%m_%y') .. '.txt', 'ab', 'DATA')
-	end
-	
-	local str = ''
-	
-	for k, v in ipairs{...} do
-		if isstring(v) then str = str .. v end
-	end
-	
-	File:Write(str .. '\n')
-end
-
-local function SimpleLog(...)
-	DPP.DoEcho(...)
-	LogIntoFile(...)
-end
-
-SpawnFunctions.SimpleLog = SimpleLog
-
-local function RefreshLogFile()
-	local neededPath = 'dpp/log_' .. os.date('%d_%m_%y') .. '.txt'
-	
-	if neededPath ~= CurrentPatch then
-		if File then
-			File:Flush()
-			File:Close()
-		end
-		
-		CurrentPatch = neededPath
-		File = file.Open(neededPath, 'ab', 'DATA')
-	end
-	
-	if not File then return end
-	File:Flush()
-end
-
-timer.Create('DPP.WriteLog', 10, 0, RefreshLogFile)
-timer.Simple(0, RefreshLogFile)
+local SPACE = {type = 'Spacing', length = 50}
+local SPACE2 = {type = 'Spacing', length = 100}
+SpawnFunctions.SPACE = SPACE
+SpawnFunctions.SPACE2 = SPACE2
 
 local function LogSpawn(ply, ent, type)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
-	SimpleLog(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', GRAY, ' spawned ', color_white, ent:GetClass(), GRAY, string.format(' <%s | %s> (%s)', tostring(ent), ent:GetModel(), type or 'N/A'))
+	SimpleLog(ply, SPACE, GRAY, ' spawned ', color_white, SPACE2, ent:GetClass(), GRAY, string.format(' <%s | %s> (%s)', tostring(ent), ent:GetModel(), type or 'N/A'))
 end
 
 local function LogSpawnC(ply, class, type, model)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[class] then return end
-	SimpleLog(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', GRAY, ' spawned ', color_white, class, GRAY, string.format(' <%s | %s> (%s)', class, model or 'N/A', type or 'N/A'))
+	SimpleLog(ply, SPACE, GRAY, ' spawned ', color_white, SPACE2, class, GRAY, string.format(' <%s | %s> (%s)', class, model or 'N/A', type or 'N/A'))
 end
 
 local function LogTry(ply, type, model, class)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[class] then return end
-	SimpleLog(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', RED, ' tried ', GRAY, string.format('to spawn %s <%s | %s> (%s)', class or 'N/A', class or 'N/A', model or 'N/A', type or 'N/A'))
+	SimpleLog(ply, SPACE, RED, ' tried ', GRAY, SPACE2, string.format('to spawn %s <%s | %s> (%s)', class or 'N/A', class or 'N/A', model or 'N/A', type or 'N/A'))
 end
 
 local function LogTryPost(ply, type, ent)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
-	SimpleLog(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', RED, ' tried ', GRAY, string.format('to spawn %s <%s | %s> (%s)', ent:GetClass(), tostring(ent), ent:GetModel(), type or 'N/A'))
+	SimpleLog(ply, SPACE, RED, ' tried ', GRAY, SPACE2, string.format('to spawn %s <%s | %s> (%s)', ent:GetClass(), tostring(ent), ent:GetModel(), type or 'N/A'))
 end
 
 local function LogConstraint(ply, ent)
@@ -115,7 +76,7 @@ local function LogConstraint(ply, ent)
 		ent2 = '<unknown>'
 	end
 	
-	SimpleLog(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', GRAY, ' created constraint ', color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
+	SimpleLog(ply, SPACE, GRAY, ' created constraint ', SPACE2, color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
 end
 
 local function LogConstraintTry(ply, ent)
@@ -132,7 +93,7 @@ local function LogConstraintTry(ply, ent)
 		ent2 = '<unknown>'
 	end
 	
-	SimpleLog(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', RED, ' tried ', GRAY, 'to create constraint ', color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
+	SimpleLog(ply, SPACE, RED, ' tried ', GRAY, SPACE2, 'to create constraint ', color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
 end
 
 local function CheckEntityLimit(ply, class)
@@ -967,7 +928,7 @@ local function ReceiveProperty_DPP(len, ply)
 		local oldEnt = oldReadEntity() --Call the old function to proceed message correctly
 		
 		if oldEnt ~= ent then
-			SimpleLog(RED, 'ATTENTION ', GRAY, string.format('I don\'t really know, is that hacks or not, but player opened property menu on %s, but server received that target entity is %s. ', tostring(ent), tostring(oldEnt)), 'Player ', team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>')
+			SimpleLog(RED, 'ATTENTION ', GRAY, string.format('I don\'t really know, is that hacks or not, but player opened property menu on %s, but server received that target entity is %s. ', tostring(ent), tostring(oldEnt)), 'Player ', ply, color_white, '<' .. ply:SteamID() .. '>')
 		end
 
 		return ent

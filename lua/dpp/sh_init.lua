@@ -179,10 +179,10 @@ DPP.Settings = {
 		desc = 'Log spawns',
 	},
 	
-	['log_spawns_file'] = {
+	['log_file'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Log spawns into files',
+		desc = 'Log things into files',
 	},
 	
 	['can_admin_touch_world'] = {
@@ -1214,6 +1214,58 @@ end
 
 function DPP.IsPlayer(obj)
 	return isentity(obj) and IsValid(obj) and obj:IsPlayer()
+end
+
+local ConsoleColor = Color(196, 0, 255)
+
+function DPP.FormatPlayer(ply)
+	local t = {}
+	
+	table.insert(t, team.GetColor(ply:Team()))
+	table.insert(t, ply:Nick())
+	table.insert(t, color_white)
+	table.insert(t, '<' .. ply:SteamID() .. '>')
+	
+	return t
+end
+
+function DPP.Format(...)
+	local original = {...}
+	local repack = {}
+	
+	for k, v in ipairs(original) do
+		if type(v) == 'Player' then
+			for a, b in ipairs(DPP.FormatPlayer(v)) do
+				table.insert(repack, b)
+			end
+			
+			continue
+		end
+		
+		if type(v) == 'Entity' then
+			table.insert(repack, tostring(v))
+			continue
+		end
+		
+		if type(v) == 'table' then
+			if v.r and v.g and v.b and v.a then
+				table.insert(repack, v)
+				continue
+			end
+		end
+		
+		if type(v) == 'string' then
+			if v == 'Console' then
+				table.insert(repack, ConsoleColor)
+				table.insert(repack, v)
+			end
+			
+			table.insert(repack, v)
+			continue
+		end
+	end
+	
+	return repack
 end
 
 include('sh_hooks.lua')

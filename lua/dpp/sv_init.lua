@@ -226,16 +226,24 @@ end
 hook.Add('Think', 'DPP.NetEchoThink', Think)
 
 function DPP.DoEcho(...)
+	local repack = DPP.Format(...)
+	
 	if not DLog then
-		table.insert(Queued, {...})
+		table.insert(Queued, repack)
 	else
-		DLog.Log('DPP', 1, {...})
+		DLog.Log('DPP', 1, repack)
 	end
 end
 
 function DPP.NotifyLog(t)
+	t = DPP.Format(unpack(t))
 	DPP.Notify(player.GetAll(), t)
-	if not DLog then DPP.Message(t) return end
+	
+	if not DLog then
+		DPP.Message(t)
+		DPP.LogIntoFile(unpack(t))
+		return
+	end
 	DLog.Log('DPP', 1, t, {Private = false, PrintClient = false})
 end
 
@@ -259,6 +267,72 @@ local function PlayerInitialSpawn(ply)
 		DPP.ReBroadcastCVars()
 	end)
 end
+
+local File
+local CurrentPatch
+
+local function ConcatSafe(tab)
+	local str = ''
+	
+	for k, v in ipairs(tab) do
+		if type(v) == 'string' then str = str .. v end
+	end
+	
+	return str
+end
+
+function DPP.LogIntoFile(...)
+	if not DPP.GetConVar('log_file') then return end
+	
+	if not File then
+		File = file.Open('dpp/' .. os.date('%d_%m_%y') .. '.txt', 'ab', 'DATA')
+	end
+	
+	local str = ''
+	
+	for k, v in ipairs{...} do
+		if type(v) == 'Player' then
+			str = str .. ConcatSafe(DPP.FormatPlayer(v))
+		end
+		
+		if type(v) == 'string' then
+			str = str .. v
+		end
+		
+		if type(v) == 'table' then
+			if v.type == 'Spacing' then
+				str = str .. string.rep(' ', v.length - #str)
+			end
+		end
+	end
+	
+	File:Write(str .. '\n')
+end
+
+function DPP.SimpleLog(...)
+	DPP.DoEcho(...)
+	DPP.LogIntoFile(...)
+end
+
+function DPP.RefreshLogFile()
+	local neededPath = 'dpp/log_' .. os.date('%d_%m_%y') .. '.txt'
+	
+	if neededPath ~= CurrentPatch then
+		if File then
+			File:Flush()
+			File:Close()
+		end
+		
+		CurrentPatch = neededPath
+		File = file.Open(neededPath, 'ab', 'DATA')
+	end
+	
+	if not File then return end
+	File:Flush()
+end
+
+timer.Create('DPP.RefreshLogFile', 10, 0, DPP.RefreshLogFile)
+timer.Simple(0, DPP.RefreshLogFile)
 
 function DPP.PlayerDisconnected(ply)
 	if DPP.GetConVar('disconnected_freeze') then
