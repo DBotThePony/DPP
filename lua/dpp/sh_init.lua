@@ -179,6 +179,12 @@ DPP.Settings = {
 		desc = 'Log spawns',
 	},
 	
+	['log_spawns_file'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Log spawns into files',
+	},
+	
 	['can_admin_touch_world'] = {
 		type = 'bool',
 		value = '1',

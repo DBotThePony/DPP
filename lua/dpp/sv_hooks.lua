@@ -30,28 +30,75 @@ local IgnoreSpawn = {
 local GRAY = Color(200, 200, 200)
 local RED = Color(255, 0, 0)
 
+local File
+local CurrentPatch
+
+local function LogIntoFile(...)
+	if not DPP.GetConVar('log_spawns') then return end
+	if not DPP.GetConVar('log_spawns_file') then return end
+	
+	if not File then
+		File = file.Open('dpp/' .. os.date('%d_%m_%y') .. '.txt', 'ab', 'DATA')
+	end
+	
+	local str = ''
+	
+	for k, v in ipairs{...} do
+		if isstring(v) then str = str .. v end
+	end
+	
+	File:Write(str .. '\n')
+end
+
+local function SimpleLog(...)
+	DPP.DoEcho(...)
+	LogIntoFile(...)
+end
+
+SpawnFunctions.SimpleLog = SimpleLog
+
+local function RefreshLogFile()
+	local neededPath = 'dpp/log_' .. os.date('%d_%m_%y') .. '.txt'
+	
+	if neededPath ~= CurrentPatch then
+		if File then
+			File:Flush()
+			File:Close()
+		end
+		
+		CurrentPatch = neededPath
+		File = file.Open(neededPath, 'ab', 'DATA')
+	end
+	
+	if not File then return end
+	File:Flush()
+end
+
+timer.Create('DPP.WriteLog', 10, 0, RefreshLogFile)
+timer.Simple(0, RefreshLogFile)
+
 local function LogSpawn(ply, ent, type)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
-	DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', GRAY, ' spawned ', color_white, ent:GetClass(), GRAY, string.format(' <%s | %s> (%s)', tostring(ent), ent:GetModel(), type or 'N/A'))
+	SimpleLog(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', GRAY, ' spawned ', color_white, ent:GetClass(), GRAY, string.format(' <%s | %s> (%s)', tostring(ent), ent:GetModel(), type or 'N/A'))
 end
 
 local function LogSpawnC(ply, class, type, model)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[class] then return end
-	DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', GRAY, ' spawned ', color_white, class, GRAY, string.format(' <%s | %s> (%s)', class, model or 'N/A', type or 'N/A'))
+	SimpleLog(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', GRAY, ' spawned ', color_white, class, GRAY, string.format(' <%s | %s> (%s)', class, model or 'N/A', type or 'N/A'))
 end
 
 local function LogTry(ply, type, model, class)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[class] then return end
-	DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', RED, ' tried ', GRAY, string.format('to spawn %s <%s | %s> (%s)', class or 'N/A', class or 'N/A', model or 'N/A', type or 'N/A'))
+	SimpleLog(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', RED, ' tried ', GRAY, string.format('to spawn %s <%s | %s> (%s)', class or 'N/A', class or 'N/A', model or 'N/A', type or 'N/A'))
 end
 
 local function LogTryPost(ply, type, ent)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
-	DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', RED, ' tried ', GRAY, string.format('to spawn %s <%s | %s> (%s)', ent:GetClass(), tostring(ent), ent:GetModel(), type or 'N/A'))
+	SimpleLog(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', RED, ' tried ', GRAY, string.format('to spawn %s <%s | %s> (%s)', ent:GetClass(), tostring(ent), ent:GetModel(), type or 'N/A'))
 end
 
 local function LogConstraint(ply, ent)
@@ -68,7 +115,7 @@ local function LogConstraint(ply, ent)
 		ent2 = '<unknown>'
 	end
 	
-	DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', GRAY, ' created constraint ', color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
+	SimpleLog(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', GRAY, ' created constraint ', color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
 end
 
 local function LogConstraintTry(ply, ent)
@@ -85,7 +132,7 @@ local function LogConstraintTry(ply, ent)
 		ent2 = '<unknown>'
 	end
 	
-	DPP.DoEcho(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', RED, ' tried ', GRAY, 'to create constraint ', color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
+	SimpleLog(team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>', RED, ' tried ', GRAY, 'to create constraint ', color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
 end
 
 local function CheckEntityLimit(ply, class)
@@ -789,7 +836,7 @@ function DPP.SetPlayerMeta(self, ply)
 			if IsValid(Ent) then
 				local owner = DPP.GetOwner(Ent)
 				if not DLog then
-					DPP.DoEcho(RED, 'That should never happen: Entity:SetPlayer() is called without player argument! Entity: ' .. tostring(self) .. '. I detected real owner: ' .. (IsValid(owner) and owner:Nick() or 'World') .. '\nTO USERS: Yes, this is a BUG in ' .. tostring(self) .. ' and you should report it to author!')
+					SimpleLog(RED, 'That should never happen: Entity:SetPlayer() is called without player argument! Entity: ' .. tostring(self) .. '. I detected real owner: ' .. (IsValid(owner) and owner:Nick() or 'World') .. '\nTO USERS: Yes, this is a BUG in ' .. tostring(self) .. ' and you should report it to author!')
 				else
 					DLog.Log('DPP', 3, 'That should never happen: Entity:SetPlayer() is called without player argument! Entity: ' .. tostring(self) .. '. I detected real owner: ', owner, '\nTO USERS: Yes, this is a BUG in ' .. tostring(self) .. ' and you should report it to author!')
 				end
@@ -798,7 +845,7 @@ function DPP.SetPlayerMeta(self, ply)
 				--DPP.SetOwner(self, owner)
 			else
 				if not DLog then
-					DPP.DoEcho(RED, 'That should never happen: Entity:SetPlayer() is called without player argument! Entity: ' .. tostring(self) .. '.\nTO USERS: Yes, this is a BUG in ' .. tostring(self) .. ' and you should report it to author!')
+					SimpleLog(RED, 'That should never happen: Entity:SetPlayer() is called without player argument! Entity: ' .. tostring(self) .. '.\nTO USERS: Yes, this is a BUG in ' .. tostring(self) .. ' and you should report it to author!')
 				else
 					DLog.Log('DPP', 3, 'That should never happen: Entity:SetPlayer() is called without player argument! Entity: ' .. tostring(self) .. '.\nTO USERS: Yes, this is a BUG in ' .. tostring(self) .. ' and you should report it to author!')
 				end
@@ -834,7 +881,7 @@ function DPP.OverrideE2()
 	function Compiler:GetFunction(instr, Name, Args)
 		if self.DPly then
 			if DPP.IsRestrictedE2Function(Name, self.DPly) then
-				DPP.DoEcho(team.GetColor(self.DPly:Team()), self.DPly:Nick(), color_white, '<' .. self.DPly:SteamID() .. '>', RED, ' tried ', GRAY, string.format('to use E2 function %s', Name))
+				SimpleLog(team.GetColor(self.DPly:Team()), self.DPly:Nick(), color_white, '<' .. self.DPly:SteamID() .. '>', RED, ' tried ', GRAY, string.format('to use E2 function %s', Name))
 				self:Error('DPP: Restricted Function: ' .. Name, instr)
 				return
 			end
@@ -920,7 +967,7 @@ local function ReceiveProperty_DPP(len, ply)
 		local oldEnt = oldReadEntity() --Call the old function to proceed message correctly
 		
 		if oldEnt ~= ent then
-			DPP.DoEcho{RED, 'ATTENTION ', GRAY, string.format('I don\'t really know, is that hacks or not, but player opened property menu on %s, but server received that target entity is %s. ', tostring(ent), tostring(oldEnt)), 'Player ', team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>'}
+			SimpleLog(RED, 'ATTENTION ', GRAY, string.format('I don\'t really know, is that hacks or not, but player opened property menu on %s, but server received that target entity is %s. ', tostring(ent), tostring(oldEnt)), 'Player ', team.GetColor(ply:Team()), ply:Nick(), color_white, '<' .. ply:SteamID() .. '>')
 		end
 
 		return ent
