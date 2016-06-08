@@ -419,6 +419,7 @@ local MiscConVars = {
 	'allow_damage_vehicles',
 	'allow_damage_sent',
 	'allow_damage_npc',
+	'no_clear_messages',
 }
 
 local ClientVars = {

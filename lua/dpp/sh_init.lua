@@ -492,6 +492,12 @@ DPP.Settings = {
 		value = '0',
 		desc = 'Disable toolgun "tries" log'
 	},
+	
+	['no_clear_messages'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Disable cleanup messages for disconnected players'
+	},
 }
 
 DPP.BlockedEntities = DPP.BlockedEntities or {}

@@ -350,6 +350,9 @@ function DPP.PlayerDisconnected(ply)
 	local uid = ply:UniqueID()
 	local name = ply:Nick()
 	
+	local props = DPP.GetPropsByUID(uid)
+	if #props == 0 then return end
+	
 	timer.Simple(2, function()
 		for k, v in pairs(DPP.GetPropsByUID(uid)) do
 			DPP.RecalcConstraints(v)
@@ -366,7 +369,10 @@ function DPP.PlayerDisconnected(ply)
 					SafeRemoveEntity(v)
 				end
 				
-				DPP.Notify(player.GetAll(), name .. '\'s props has been cleaned up', 2)
+				if not DPP.GetConVar('no_clear_messages') then
+					DPP.Notify(player.GetAll(), name .. '\'s props has been cleaned up', 2)
+				end
+				
 				DPP.Message(name .. '\'s props has been cleaned up')
 				
 				DPP.RecalculatePlayerList()
@@ -385,7 +391,10 @@ function DPP.PlayerDisconnected(ply)
 					DPP.SetUpForGrabs(v, true)
 				end
 				
-				DPP.Notify(player.GetAll(), name .. '\'s props is now up for grabs!')
+				if not DPP.GetConVar('no_clear_messages') then
+					DPP.Notify(player.GetAll(), name .. '\'s props is now up for grabs!')
+				end
+				
 				DPP.Message(name .. '\'s props is now up for grabs!')
 				
 				DPP.RecalculatePlayerList()

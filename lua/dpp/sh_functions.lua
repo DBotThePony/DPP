@@ -253,3 +253,18 @@ end
 function DPP.IsProtectionDisabledFor(ply, mode)
 	return DPP.GetIsProtectionDisabledByPlayer(ply, mode) or DPP.GetIsProtectionDisabledByServer(ply, mode)
 end
+
+function DPP.GetPropsByUID(uid)
+	uid = tostring(uid)
+	DPP.RefreshPropList()
+	local t = {}
+	
+	for k, v in pairs(DPP.PropListing) do
+		local Name, UID, SteamID = DPP.GetOwnerDetails(k)
+		if UID == uid then
+			table.insert(t, k)
+		end
+	end
+	
+	return t
+end
