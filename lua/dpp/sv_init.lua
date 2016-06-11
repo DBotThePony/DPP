@@ -79,7 +79,10 @@ function DPP.ConVarChanged(var, old, new)
 	--local var = string.sub(var, 5)
 	--DPP.BroadcastCVar(var)
 	
-	DPP.SaveCVars()
+	if not DPP.IGNORE_CVAR_SAVE then
+		DPP.SaveCVars()
+	end
+	
 	DPP.ReBroadcastCVars()
 end
 

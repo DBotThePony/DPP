@@ -663,12 +663,15 @@ function DPP.SaveCVars()
 end
 
 function DPP.LoadCVars()
+	DPP.IGNORE_CVAR_SAVE = true
 	DPP.Query('SELECT * FROM dpp_cvars', function(data)
 		if not data then return end
 		
 		for k, v in pairs(data) do
 			RunConsoleCommand('dpp_' .. v.CVAR, v.VALUE)
 		end
+		
+		DPP.IGNORE_CVAR_SAVE = false
 	end)
 end
 
