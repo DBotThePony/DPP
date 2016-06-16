@@ -699,25 +699,416 @@ function DPP.PlayerConstraints(ply)
 	return t
 end
 
+function DPP.GetPropsByUID(uid)
+	uid = tostring(uid)
+	DPP.RefreshPropList()
+	local t = {}
+	
+	for k, v in pairs(DPP.PropListing) do
+		local Name, UID, SteamID = DPP.GetOwnerDetails(k)
+		if UID == uid then
+			table.insert(t, k)
+		end
+	end
+	
+	return t
+end
+
 function DPP.SetProtectionDisabled(ply, mode, status)
 	ply:SetNWBool('dpp.DisablePP.' .. mode, status)
 end
 
-concommand.Add('dpp_toggleplayerprotect', function(ply, cmd, args)
-	if IsValid(ply) and not ply:IsAdmin() then return end
+function DPP.FreezeAllPhysObjects()
+	local i = 0
 	
-	if not args[1] then DPP.Notify(ply, 'Invalid argument') return end
-	if not args[2] then DPP.Notify(ply, 'Invalid argument') return end
-	if not args[3] then DPP.Notify(ply, 'Invalid argument') return end
+	for k, ent in ipairs(ents.GetAll()) do
+		local phys = ent:GetPhysicsObject()
+		if not IsValid(phys) then continue end
+		phys:Sleep()
+		phys:EnableMotion(false)
+		i = i + 1
+	end
 	
-	local target = Player(args[1])
-	local mode = args[2]
-	local status = tobool(args[3])
+	return i
+end
+
+local function PositionsSorter(a, b)
+	return a[2] > b[2]
+end
+
+local BlacklistEntities = {
+	'func_',
+	'filter_',
+	'bodyque',
+	'env_shake',
+}
+
+local Ignore = {
+	'player',
+	'hint',
+	'info_',
+	'trigger_',
+	'gamerules',
+	'soundent',
+	'player_manager',
+	'scene_manager',
+	'network',
+	'predicted_viewmodel',
+	'phys_constraint',
+}
+
+--Looooooong spagetti code
+function DPP.ReportEntities()
+	local Ents = ents.GetAll()
 	
-	if not IsValid(target) then DPP.Notify(ply, 'Invalid argument') return end
-	if not DPP.ProtectionModes[mode] then DPP.Notify(ply, 'Invalid argument') return end
+	local skipped = 0
+	local sbymap = 0
+	local useless = 0
+	local iowned = 0
+	local iphys = 0
+	local active = 0
+	local vactive = 0
+	local owners = {}
+	local positions = {}
+	local positions_solid = {}
+	local classes = {}
+	local classes_solid = {}
 	
-	DPP.SetProtectionDisabled(target, mode, status)
-	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), (status and ' disabled ' or ' enabled '), 'protection mode ' .. mode .. ' for ', team.GetColor(target:Team()), target:Nick()}
-	DPP.DoEcho(f)
-end)
+	local spositions = {}
+	local spositions_solid = {}
+	local sclasses = {}
+	local sclasses_solid = {}
+	
+	for k, ent in ipairs(Ents) do
+		local class = ent:GetClass()
+		if not class then continue end
+		
+		local hit = false
+		
+		for i, str in ipairs(Ignore) do
+			if class:find(str) then
+				hit = true
+				break
+			end
+		end
+		
+		if hit then
+			skipped = skipped + 1
+			continue
+		end
+		
+		local owner = DPP.GetOwner(ent)
+		
+		if IsValid(owner) then
+			owners[owner] = owners[owner] or {}
+			table.insert(owners[owner], ent)
+			iowned = iowned + 1
+		end
+		
+		local solid = ent:GetSolid()
+		local bymap = ent:CreatedByMap() 
+		
+		if not bymap then
+			for i, str in ipairs(BlacklistEntities) do
+				if class:find(str) then
+					bymap = true
+					break
+				end
+			end
+		end
+		
+		if bymap then
+			sbymap = sbymap + 1
+		end
+		
+		if solid == SOLID_NONE then
+			useless = useless + 1
+		end
+		
+		local phys = ent:GetPhysicsObject()
+		
+		if IsValid(phys) then
+			iphys = iphys + 1
+			
+			if phys:IsMotionEnabled() then
+				active = active + 1
+				
+				local vel = phys:GetVelocity()
+				local sum = vel.x + vel.y + vel.z
+				
+				if sum ~= 0 then
+					vactive = vactive + 1
+				end
+			end
+		end
+		
+		local pos = ent:GetPos()
+		
+		--Non-Solid entites can have no valid position!
+		if pos then
+			local concat = math.floor(pos.x / 100) .. ' ' .. math.floor(pos.y / 100) .. ' ' .. math.floor(pos.z / 100)
+			positions[concat] = (positions[concat] or 0) + 1
+			
+			if solid ~= SOLID_NONE then
+				positions_solid[concat] = (positions_solid[concat] or 0) + 1
+			end
+			
+			if not bymap then
+				spositions[concat] = (spositions[concat] or 0) + 1
+				
+				if solid ~= SOLID_NONE then
+					spositions_solid[concat] = (spositions_solid[concat] or 0) + 1
+				end
+			end
+		end
+		
+		classes[class] = (classes[class] or 0) + 1
+		if solid ~= SOLID_NONE then
+			classes_solid[class] = (classes_solid[class] or 0) + 1
+		end
+		
+		if not bymap then
+			sclasses[class] = (sclasses[class] or 0) + 1
+			if solid ~= SOLID_NONE then
+				sclasses_solid[class] = (sclasses_solid[class] or 0) + 1
+			end
+		end
+	end
+	
+	local positions2 = {}
+	local positions_solid2 = {}
+	local classes2 = {}
+	local classes_solid2 = {}
+	
+	local spositions2 = {}
+	local spositions_solid2 = {}
+	local sclasses2 = {}
+	local sclasses_solid2 = {}
+	
+	for k, v in pairs(positions) do
+		table.insert(positions2, {k, v})
+	end
+	
+	for k, v in pairs(classes) do
+		table.insert(classes2, {k, v})
+	end
+	
+	for k, v in pairs(positions_solid) do
+		table.insert(positions_solid2, {k, v})
+	end
+	
+	for k, v in pairs(classes_solid) do
+		table.insert(classes_solid2, {k, v})
+	end
+	
+	for k, v in pairs(spositions) do
+		table.insert(spositions2, {k, v})
+	end
+	
+	for k, v in pairs(sclasses) do
+		table.insert(sclasses2, {k, v})
+	end
+	
+	for k, v in pairs(spositions_solid) do
+		table.insert(spositions_solid2, {k, v})
+	end
+	
+	for k, v in pairs(sclasses_solid) do
+		table.insert(sclasses_solid2, {k, v})
+	end
+	
+	table.sort(positions2, PositionsSorter)
+	table.sort(classes2, PositionsSorter)
+	table.sort(positions_solid2, PositionsSorter)
+	table.sort(classes_solid2, PositionsSorter)
+	
+	table.sort(spositions2, PositionsSorter)
+	table.sort(sclasses2, PositionsSorter)
+	table.sort(spositions_solid2, PositionsSorter)
+	table.sort(sclasses_solid2, PositionsSorter)
+	
+	local data = {
+		sbymap = sbymap,
+		skipped = skipped,
+		count = #Ents,
+		iowned = iowned,
+		unowned = #Ents - iowned,
+		nosolid = useless,
+		iphys = iphys,
+		active = active,
+		owners = owners,
+		vactive = vactive,
+		
+		positions = positions,
+		positions2 = positions2,
+		classes2 = classes2,
+		classes = classes,
+		positions_solid2 = positions_solid2,
+		positions_solid = positions_solid,
+		classes_solid2 = classes_solid2,
+		classes_solid = classes_solid,
+		
+		spositions = spositions,
+		spositions2 = spositions2,
+		sclasses2 = sclasses2,
+		sclasses = sclasses,
+		spositions_solid2 = spositions_solid2,
+		spositions_solid = spositions_solid,
+		sclasses_solid2 = sclasses_solid2,
+		sclasses_solid = sclasses_solid,
+	}
+	
+	return data
+end
+
+local Gray = Color(200, 200, 200)
+local ClassColor = Color(200, 230, 200)
+local NumColor = Color(200, 230, 230)
+
+local ColStatus = false
+local Col1 = Color(200, 170, 200)
+local Col2 = Color(200, 200, 170)
+
+local function StringColorWrap(...)
+	ColStatus = not ColStatus
+	
+	if ColStatus then
+		DPP.SimpleLog(Col1, ...)
+	else
+		DPP.SimpleLog(Col2, ...)
+	end
+end
+
+local function CurColor()
+	if not ColStatus then
+		return Col1
+	else
+		return Col2
+	end
+end
+
+function DPP.ReportEntitiesPrint()
+	local t = SysTime()
+	local data = DPP.ReportEntities()
+	local nt = (SysTime() - t) * 1000
+	
+	DPP.SimpleLog(color_white, '--------------------------------')
+	
+	DPP.SimpleLog(color_white, '------------ SUMMARY')
+	StringColorWrap('Total Entities on server: ' .. data.count)
+	StringColorWrap('Total owned entities: ' .. data.iowned)
+	StringColorWrap('Total unowned entities: ' .. data.unowned)
+	StringColorWrap('Total non-solid entities: ' .. data.nosolid)
+	StringColorWrap('Total entities spawned by map: ' .. data.sbymap)
+	StringColorWrap('Total entities with physics: ' .. data.iphys)
+	StringColorWrap('Total entities that can move: ' .. data.active)
+	StringColorWrap('Total entities that is moving: ' .. data.vactive)
+	StringColorWrap('Entities skipped: ' .. data.skipped)
+	
+	DPP.SimpleLog(color_white, '------------ OWNERS')
+	local hit = false
+	
+	for k, v in pairs(data.owners) do
+		hit = true
+		StringColorWrap(k, CurColor(), ' have ' .. #v .. ' entities spawned!')
+	end
+	
+	if not hit then
+		StringColorWrap('<no data>')
+	end
+	
+	DPP.SimpleLog(color_white, '------------ ALL ENTITIES ------------')
+	DPP.SimpleLog(color_white, '------------ ALL POSITIONS')
+	for i = 1, 4 do
+		local row = data.positions2[i]
+		if not row then StringColorWrap('<no data>') break end
+		
+		local spos = string.Explode(' ', row[1])
+		local rpos = tonumber(spos[1]) * 100 .. ' ' .. tonumber(spos[2]) * 100 .. ' ' .. tonumber(spos[3]) * 100
+		
+		StringColorWrap('Near ' .. rpos .. ', there are ', NumColor, row[2], CurColor(), ' entities!')
+	end
+	
+	DPP.SimpleLog(color_white, '------------ SOLID POSITIONS')
+	for i = 1, 4 do
+		local row = data.positions_solid2[i]
+		if not row then StringColorWrap('<no data>') break end
+		
+		local spos = string.Explode(' ', row[1])
+		local rpos = tonumber(spos[1]) * 100 .. ' ' .. tonumber(spos[2]) * 100 .. ' ' .. tonumber(spos[3]) * 100
+		
+		StringColorWrap('Near ' .. rpos .. ', there are ', NumColor, row[2], CurColor(), ' entities!')
+	end
+	
+	DPP.SimpleLog(color_white, '------------ ALL CLASSES')
+	for i = 1, 4 do
+		local row = data.classes2[i]
+		if not row then StringColorWrap('<no data>') break end
+		
+		StringColorWrap('Class ', ClassColor, row[1], CurColor(), ' have ', NumColor, row[2], CurColor(), ' entities spawned!')
+	end
+	
+	DPP.SimpleLog(color_white, '------------ SOLID CLASSES')
+	for i = 1, 4 do
+		local row = data.classes_solid2[i]
+		if not row then StringColorWrap('<no data>') break end
+		
+		StringColorWrap('Class ', ClassColor, row[1], CurColor(), ' have ', NumColor, row[2], CurColor(), ' entities spawned!')
+	end
+	
+	DPP.SimpleLog(color_white, '------------ SPANWED ENTITIES ------------')
+	DPP.SimpleLog(color_white, '------------ ALL POSITIONS')
+	
+	for i = 1, 4 do
+		local row = data.spositions2[i]
+		if not row then StringColorWrap('<no data>') break end
+		
+		local spos = string.Explode(' ', row[1])
+		local rpos = tonumber(spos[1]) * 100 .. ' ' .. tonumber(spos[2]) * 100 .. ' ' .. tonumber(spos[3]) * 100
+		
+		StringColorWrap('Near ' .. rpos .. ', there are ', NumColor, row[2], CurColor(), ' entities!')
+	end
+	
+	DPP.SimpleLog(color_white, '------------ SOLID POSITIONS')
+	for i = 1, 4 do
+		local row = data.spositions_solid2[i]
+		if not row then StringColorWrap('<no data>') break end
+		
+		local spos = string.Explode(' ', row[1])
+		local rpos = tonumber(spos[1]) * 100 .. ' ' .. tonumber(spos[2]) * 100 .. ' ' .. tonumber(spos[3]) * 100
+		
+		StringColorWrap('Near ' .. rpos .. ', there are ', NumColor, row[2], CurColor(), ' entities!')
+	end
+	
+	DPP.SimpleLog(color_white, '------------ ALL CLASSES')
+	for i = 1, 4 do
+		local row = data.sclasses2[i]
+		if not row then StringColorWrap('<no data>') break end
+		
+		StringColorWrap('Class ', ClassColor, row[1], CurColor(), ' have ', NumColor, row[2], CurColor(), ' entities spawned!')
+	end
+	
+	DPP.SimpleLog(color_white, '------------ SOLID CLASSES')
+	for i = 1, 4 do
+		local row = data.sclasses_solid2[i]
+		if not row then StringColorWrap('<no data>') break end
+		
+		StringColorWrap('Class ', ClassColor, row[1], CurColor(), ' have ', NumColor, row[2], CurColor(), ' entities spawned!')
+	end
+	
+	DPP.SimpleLog(color_white, '------------ MISC')
+	
+	data.classes.env_shake = data.classes.env_shake or 0
+	data.classes.npc_barnacle_tongue_tip = data.classes.npc_barnacle_tongue_tip or 0
+	
+	if data.classes.env_shake > 100 then
+		StringColorWrap('ATTENTION! There are ' .. data.classes.env_shake .. ' env_shake entities! Did we have entity use leak?')
+	end
+	
+	if data.classes.npc_barnacle_tongue_tip > 0 then
+		StringColorWrap('There are ' .. data.classes.npc_barnacle_tongue_tip .. ' "barnacle tips" (tongue info entities).')
+	end
+	
+	DPP.SimpleLog(color_white, '------------ REPORT GENERATED IN ' .. math.floor(nt * 100) / 100 .. 'ms')
+	DPP.SimpleLog(color_white, '--------------------------------')
+end

@@ -1240,7 +1240,9 @@ function DPP.Format(...)
 	local repack = {}
 	
 	for k, v in ipairs(original) do
-		if type(v) == 'Player' then
+		local Type = type(v)
+		
+		if Type == 'Player' then
 			for a, b in ipairs(DPP.FormatPlayer(v)) do
 				table.insert(repack, b)
 			end
@@ -1248,26 +1250,30 @@ function DPP.Format(...)
 			continue
 		end
 		
-		if type(v) == 'Entity' then
+		if Type == 'Entity' then
 			table.insert(repack, tostring(v))
 			continue
 		end
 		
-		if type(v) == 'table' then
+		if Type == 'table' then
 			if v.r and v.g and v.b and v.a then
 				table.insert(repack, v)
 				continue
 			end
 		end
 		
-		if type(v) == 'string' then
+		if Type == 'number' then
+			table.insert(repack, tostring(v))
+			continue
+		end
+		
+		if Type == 'string' then
 			if v == 'Console' then
 				table.insert(repack, ConsoleColor)
 				table.insert(repack, v)
+			else
+				table.insert(repack, v)
 			end
-			
-			table.insert(repack, v)
-			continue
 		end
 	end
 	

@@ -617,8 +617,12 @@ local function BuildPlayerList(Panel)
 	DPP.SettingsClass.PlayerPanel = Panel
 	
 	SettingsClass.ApplyButtonStyle(Panel:Button('Clear decals', 'dpp_cleardecals'))
+	SettingsClass.ApplyButtonStyle(Panel:Button('Report all entities', 'dpp_entcheck'))
+	local lab = Label('')
+	Panel:AddItem(lab)
 	SettingsClass.ApplyButtonStyle(Panel:Button('Delete all player entities', 'dpp_clearmap'))
 	SettingsClass.ApplyButtonStyle(Panel:Button('Freeze all player entities', 'dpp_freezeall'))
+	SettingsClass.ApplyButtonStyle(Panel:Button('Freeze all physics objects', 'dpp_freezephys'))
 	SettingsClass.ApplyButtonStyle(Panel:Button('Delete disconnected player entities', 'dpp_cleardisconnected'))
 	
 	for k, v in pairs(DPP.GetPlayerList()) do

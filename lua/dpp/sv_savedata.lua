@@ -93,53 +93,59 @@ end
 --FPP is blocking that entities because they are logical
 --And should be NEVER touched by player entity in any way
 local blockedEnts = {
-	["ai_network"] = true,
-	["ambient_generic"] = true,
-	["beam"] = true,
-	["bodyque"] = true,
-	["env_soundscape"] = true,
-	["env_sprite"] = true,
-	["env_sun"] = true,
-	["env_tonemap_controller"] = true,
-	["func_useableladder"] = true,
-	["info_ladder_dismount"] = true,
-	["info_player_start"] = true,
-	["info_player_terrorist"] = true,
-	["light_environment"] = true,
-	["light_spot"] = true,
-	["physgun_beam"] = true,
-	["player_manager"] = true,
-	["point_spotlight"] = true,
-	["predicted_viewmodel"] = true,
-	["scene_manager"] = true,
-	["shadow_control"] = true,
-	["soundent"] = true,
-	["spotlight_end"] = true,
-	["water_lod_control"] = true,
-	["gmod_gamerules"] = true,
-	["bodyqueue"] = true,
-	["phys_bone_follower"] = true,
+	'ai_network',
+	'ambient_generic',
+	'beam',
+	'bodyque',
+	'env_soundscape',
+	'env_sprite',
+	'env_sun',
+	'env_tonemap_controller',
+	'func_useableladder',
+	'info_ladder_dismount',
+	'info_player_start',
+	'info_player_terrorist',
+	'light_environment',
+	'light_spot',
+	'physgun_beam',
+	'player_manager',
+	'point_spotlight',
+	'predicted_viewmodel',
+	'scene_manager',
+	'shadow_control',
+	'soundent',
+	'spotlight_end',
+	'water_lod_control',
+	'gmod_gamerules',
+	'bodyqueue',
+	'phys_bone_follower',
 	
 	--Some DPP additions. This list is trying to predict entities like above
-	["info_spawn"] = true,
-	["info_spawnpoint"] = true,
-	["info_light"] = true,
-	["trigger_changelevel"] = true,
-	["trigger_push"] = true,
-	["trigger_secret"] = true,
-	["trigger_hurt"] = true,
-	["point_hurt"] = true,
-	["trigger_impact"] = true,
-	["trigger_gravity"] = true,
-	["gmod_anchor"] = true,
+	'info_spawn',
+	'info_spawnpoint',
+	'info_light',
+	'trigger_changelevel',
+	'trigger_push',
+	'trigger_secret',
+	'trigger_hurt',
+	'point_hurt',
+	'trigger_impact',
+	'trigger_gravity',
+	'gmod_anchor',
+	'bodyque',
+	'soundent',
+	'player_manager',
+	'scene_manager',
+	'env_shake',
 }
 
 function DPP.FindInfoEntities() --Add custom entities
 	local list = scripted_ents.GetList()
+	
 	for k, v in pairs(list) do
 		if string.find(k, 'info_') then
 			if v.type ~= 'point' then continue end
-			blockedEnts[k] = true
+			table.insert(blockedEnts, k)
 		end
 	end
 end
@@ -678,8 +684,8 @@ end
 
 function DPP.InitializeDefaultBlock()
 	for k, v in pairs(DPP.BlockTypes) do
-		for a in pairs(blockedEnts) do
-			DPP['AddBlockedEntity' .. v](a)
+		for i, name in pairs(blockedEnts) do
+			DPP['AddBlockedEntity' .. v](name)
 		end
 	end
 end
