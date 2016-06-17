@@ -62,6 +62,18 @@ local function LogTryPost(ply, type, ent)
 	SimpleLog(ply, SPACE, RED, ' tried ', GRAY, 'to spawn', SPACE2, string.format(' %s <%s | %s> (%s)', ent:GetClass(), tostring(ent), ent:GetModel(), type or 'N/A'))
 end
 
+local function StuckCheckDelay(ent)
+	if not IsValid(ent) then return end
+	
+	timer.Simple(0, function()
+		if not IsValid(ent) then return end
+		for k, v in pairs(ents.FindInSphere(ent:GetPos(), 32)) do
+			if DPP.GetGhosted(v) then continue end
+			if DPP.CheckStuck(ply, ent, v) then break end
+		end
+	end)
+end
+
 local function LogConstraint(ply, ent)
 	if not DPP.GetConVar('log_spawns') then return end
 	if not DPP.GetConVar('log_constraints') then return end
@@ -166,10 +178,7 @@ function SpawnFunctions.PlayerSpawnedNPC(ply, ent, shouldHideLog)
 	end
 	
 	if DPP.GetConVar('check_stuck') then
-		for k, v in pairs(ents.FindInSphere(ent:GetPos(), 32)) do
-			if DPP.GetGhosted(v) then continue end
-			if DPP.CheckStuck(ply, ent, v) then break end
-		end
+		StuckCheckDelay(ent)
 	end
 	
 	Spawned(ply, ent)
@@ -283,13 +292,7 @@ function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog)
 	Spawned(ply, ent)
 	DPP.CheckSizes(ent, ply)
 	if DPP.GetConVar('check_stuck') then
-		local c = CurTime()
-		for k, v in pairs(ents.FindInSphere(ent:GetPos(), 32)) do
-			--if v.__DPP_LastStuckCheck == c then continue end
-			--v.__DPP_LastStuckCheck = c
-			if DPP.GetGhosted(v) then continue end
-			if DPP.CheckStuck(ply, ent, v) then break end
-		end
+		StuckCheckDelay(ent)
 	end
 	
 	if not shouldHideLog then LogSpawn(ply, ent, 'Prop') end
@@ -362,10 +365,7 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog)
 	end
 	
 	if DPP.GetConVar('check_stuck') then
-		for k, v in pairs(ents.FindInSphere(ent:GetPos(), 32)) do
-			if DPP.GetGhosted(v) then continue end
-			if DPP.CheckStuck(ply, ent, v) then break end
-		end
+		StuckCheckDelay(ent)
 	end
 	
 	Spawned(ply, ent)
@@ -396,10 +396,7 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog)
 	end
 	
 	if DPP.GetConVar('check_stuck') then
-		for k, v in pairs(ents.FindInSphere(ent:GetPos(), 32)) do
-			if DPP.GetGhosted(v) then continue end
-			if DPP.CheckStuck(ply, ent, v) then break end
-		end
+		StuckCheckDelay(ent)
 	end
 	
 	Spawned(ply, ent)
@@ -430,10 +427,7 @@ function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog)
 	end
 	
 	if DPP.GetConVar('check_stuck') then
-		for k, v in pairs(ents.FindInSphere(ent:GetPos(), 32)) do
-			if DPP.GetGhosted(v) then continue end
-			if DPP.CheckStuck(ply, ent, v) then break end
-		end
+		StuckCheckDelay(ent)
 	end
 	
 	Spawned(ply, ent)
@@ -463,10 +457,7 @@ function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog)
 	end
 	
 	if DPP.GetConVar('check_stuck') then
-		for k, v in pairs(ents.FindInSphere(ent:GetPos(), 32)) do
-			if DPP.GetGhosted(v) then continue end
-			if DPP.CheckStuck(ply, ent, v) then break end
-		end
+		StuckCheckDelay(ent)
 	end
 	
 	Spawned(ply, ent)
@@ -993,9 +984,6 @@ function DPP.CheckDroppedStuck(ply, ent)
 	
 	for k, v in pairs(ents.FindInSphere(ent:GetPos(), 32)) do
 		if v:IsPlayer() then continue end
-		if v:IsWeapon() and IsValid(v:GetOwner()) then continue end
-		if v:GetSolid() == SOLID_NONE then return end
-		if v:GetMoveType() == MOVETYPE_NONE then return end
 		if DPP.GetGhosted(v) then continue end
 		if DPP.CheckStuck(ply, ent, v) then break end
 	end

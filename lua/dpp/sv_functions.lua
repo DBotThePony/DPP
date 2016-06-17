@@ -133,10 +133,16 @@ function DPP.CheckStuck(ply, ent1, ent2)
 	if ply:InVehicle() then return end
 	if ent1 == ent2 then return end
 	
+	if ent1:IsPlayer() then return end
+	if ent2:IsPlayer() then return end
+	
 	if ent1:GetSolid() == SOLID_NONE then return end
 	if ent1:GetMoveType() == MOVETYPE_NONE then return end
 	if ent2:GetSolid() == SOLID_NONE then return end
 	if ent2:GetMoveType() == MOVETYPE_NONE then return end
+	
+	if ent1:IsWeapon() and IsValid(ent1:GetOwner()) then return end
+	if ent2:IsWeapon() and IsValid(ent2:GetOwner()) then return end
 	
 	local parent1, parent2 = ent1:GetParent(), ent2:GetParent()
 	
