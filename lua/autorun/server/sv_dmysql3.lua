@@ -193,6 +193,11 @@ function obj:ReloadConfig()
 		DMySQL3.Message(config, ': ATTENTION: Config corrupted!')
 	end
 	
+	if config.Host == 'localhost' and not system.IsWindows() then
+		config.Host = '127.0.0.1'
+		DMySQL3.Message(config, ':Warning: Forcing to use 127.0.0.1 instead of localhost. https://github.com/roboderpy/dpp/issues/6')
+	end
+	
 	self.UseMySQL = config.UseMySQL
 	self.Host = config.Host
 	self.Database = config.Database
