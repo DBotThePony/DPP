@@ -62,7 +62,7 @@ local function LogTryPost(ply, type, ent)
 	SimpleLog(ply, SPACE, RED, ' tried ', GRAY, 'to spawn', SPACE2, string.format(' %s <%s | %s> (%s)', ent:GetClass(), tostring(ent), ent:GetModel(), type or 'N/A'))
 end
 
-local function StuckCheckDelay(ent)
+local function StuckCheckDelay(ply, ent)
 	if not IsValid(ent) then return end
 	
 	timer.Simple(0, function()
@@ -178,7 +178,7 @@ function SpawnFunctions.PlayerSpawnedNPC(ply, ent, shouldHideLog)
 	end
 	
 	if DPP.GetConVar('check_stuck') then
-		StuckCheckDelay(ent)
+		StuckCheckDelay(ply, ent)
 	end
 	
 	Spawned(ply, ent)
@@ -292,7 +292,7 @@ function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog)
 	Spawned(ply, ent)
 	DPP.CheckSizes(ent, ply)
 	if DPP.GetConVar('check_stuck') then
-		StuckCheckDelay(ent)
+		StuckCheckDelay(ply, ent)
 	end
 	
 	if not shouldHideLog then LogSpawn(ply, ent, 'Prop') end
@@ -365,7 +365,7 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog)
 	end
 	
 	if DPP.GetConVar('check_stuck') then
-		StuckCheckDelay(ent)
+		StuckCheckDelay(ply, ent)
 	end
 	
 	Spawned(ply, ent)
@@ -396,7 +396,7 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog)
 	end
 	
 	if DPP.GetConVar('check_stuck') then
-		StuckCheckDelay(ent)
+		StuckCheckDelay(ply, ent)
 	end
 	
 	Spawned(ply, ent)
@@ -427,7 +427,7 @@ function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog)
 	end
 	
 	if DPP.GetConVar('check_stuck') then
-		StuckCheckDelay(ent)
+		StuckCheckDelay(ply, ent)
 	end
 	
 	Spawned(ply, ent)
@@ -457,7 +457,7 @@ function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog)
 	end
 	
 	if DPP.GetConVar('check_stuck') then
-		StuckCheckDelay(ent)
+		StuckCheckDelay(ply, ent)
 	end
 	
 	Spawned(ply, ent)
