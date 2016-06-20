@@ -95,7 +95,7 @@ concommand.Add('dpp_importurs', function(ply, cmd, args)
 	end
 	
 	if not isTest then
-		DPP.DoEcho({IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' Imported Restrictions from URS. Total items imported: ' .. imported})
+		DPP.SimpleLog(IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' Imported Restrictions from URS. Total items imported: ' .. imported)
 	else
 		FakePrint(ply, 'Total items: ' .. imported)
 		FakePrint(ply, 'This was a test-print, changes does not applied')
@@ -138,7 +138,7 @@ concommand.Add('dpp_importfpp', function(ply, cmd, args)
 			FakePrint(ply, '[DPP] ----------------- End of model list test. Total: ' .. count)
 			FakePrint(ply, '[DPP] Note: This is a test, to commit changes type dpp_importfpp 1')
 		else
-			DPP.DoEcho({IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' Imported FPP blocked models. Total items imported: ' .. count})
+			DPP.SimpleLog(IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' Imported FPP blocked models. Total items imported: ' .. count)
 		end
 	end)
 	
@@ -164,7 +164,7 @@ concommand.Add('dpp_importfpp', function(ply, cmd, args)
 			FakePrint(ply, '[DPP] ----------------- End of entity list test Total: ' .. count)
 			FakePrint(ply, '[DPP] Note: This is a test, to commit changes type dpp_importfpp 1')
 		else
-			DPP.DoEcho({IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' Imported FPP blocked entities. Total items imported: ' .. count})
+			DPP.SimpleLog(IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' Imported FPP blocked entities. Total items imported: ' .. count)
 		end
 	end)
 	
@@ -199,7 +199,7 @@ concommand.Add('dpp_importfpp', function(ply, cmd, args)
 			FakePrint(ply, '[DPP] ----------------- End of tool list test Total: ' .. count)
 			FakePrint(ply, '[DPP] Note: This is a test, to commit changes type dpp_importfpp 1')
 		else
-			DPP.DoEcho({IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' Imported FPP restricted tools. Total tools imported: ' .. count})
+			DPP.SimpleLog(IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' Imported FPP restricted tools. Total tools imported: ' .. count)
 		end
 	end)
 end)

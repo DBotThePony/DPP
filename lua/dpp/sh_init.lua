@@ -440,7 +440,7 @@ DPP.Settings = {
 	
 	['stuck_ignore_frozen'] = {
 		type = 'bool',
-		value = '0',
+		value = '1',
 		desc = 'Ignore frozen entities when doing "stuck check"',
 	},
 	
