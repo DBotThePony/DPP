@@ -596,10 +596,9 @@ end
 
 function SpawnFunctions.PlayerGiveSWEP(ply, class, tab)
 	DPP.AssertPlayer(ply)
-	DPP.Assert(type(tab) == 'table', 'Argument is not a table!', DPP.FindBestLevel())
 	local can = SpawnFunctions.PlayerSpawnSWEP(ply, class)
 	if can == false then return false end
-	LogSpawnC(ply, class, 'SWEP', tab.Model)
+	LogSpawnC(ply, class, 'SWEP', tab and (tab.Model or tab.WorldModel) or 'N/A')
 end
 
 function SpawnFunctions.PlayerSpawnNPC(ply, ent)
