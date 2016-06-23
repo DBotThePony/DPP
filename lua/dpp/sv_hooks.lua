@@ -721,8 +721,8 @@ function PostEntityCreated(ent, Timestamp)
 				DPP.RecalcConstraints(ent1) --Recalculating only for one entity, because second is constrained with first
 			end
 			
-			if o1 == o2 and not DPP.IsOwned(ent) then
-				SpawnFunctions.PlayerSpawnedConstraint(o1, ent)
+			if o1 == o2 and not DPP.IsOwned(ent) and (IsValid(o1) or IsValid(o2)) then
+				SpawnFunctions.PlayerSpawnedConstraint(IsValid(o1) and o1 or o2, ent)
 			end
 		end
 		
