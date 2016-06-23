@@ -27,23 +27,30 @@ function DPP.SetGhosted(ent, status)
 		ent.__DPPColor = ent:GetColor()
 		ent.DPP_oldCollision = ent:GetCollisionGroup()
 		ent.DPP_OldRenderMode = ent:GetRenderMode()
-		ent.DPP_OldMoveType = ent:GetMoveType()
 		ent:SetRenderMode(RENDERMODE_TRANSALPHA)
 		ent:SetColor(GhostColor)
 		ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
-		ent:SetMoveType(MOVETYPE_NONE)
+		
 		local phys = ent:GetPhysicsObject()
-		if IsValid(phys) then phys:EnableMotion(false) phys:Sleep() end
+		if IsValid(phys) then
+			phys:EnableMotion(false)
+			ent.DPP_OldCollisions = phys:IsCollisionEnabled()
+			phys:Sleep()
+			phys:EnableCollisions(false)
+		end
 	else
 		ent:SetNWBool('DPP.IsGhosted', false)
 		
 		if ent.DPP_OldRenderMode then ent:SetRenderMode(ent.DPP_OldRenderMode) end
 		if ent.__DPPColor then ent:SetColor(ent.__DPPColor) end
 		if ent.DPP_oldCollision then ent:SetCollisionGroup(ent.DPP_oldCollision) end
-		if ent.DPP_OldMoveType then ent:SetMoveType(ent.DPP_OldMoveType) end
 		
 		local phys = ent:GetPhysicsObject()
-		if IsValid(phys) then phys:EnableMotion(true) phys:Wake() end
+		if IsValid(phys) then
+			phys:EnableMotion(true)
+			if ent.DPP_OldCollisions then phys:EnableCollisions(ent.DPP_OldCollisions) end
+			phys:Wake()
+		end
 	end
 end
 
@@ -121,9 +128,18 @@ function DPP.CheckSizes(ent, ply)
 	
 	timer.Simple(0, function() --Give entity time to initialize
 		DPP.SetGhosted(ent, true)
-		if IsValid(ply) then
+		if ply and IsValid(ply) then
 			DPP.Notify(ply, 'Prop is ghosted because it is too big.')
 		end
+	end)
+end
+
+function DPP.CheckSizesDelay(ent, ply)
+	if not IsValid(ent) then return end
+	
+	timer.Simple(0, function()
+		if not IsValid(ent) then return end
+		DPP.CheckSizes(ent, ply)
 	end)
 end
 

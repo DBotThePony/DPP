@@ -290,7 +290,7 @@ function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog)
 	end
 	
 	Spawned(ply, ent)
-	DPP.CheckSizes(ent, ply)
+	DPP.CheckSizesDelay(ent, ply)
 	if DPP.GetConVar('check_stuck') then
 		StuckCheckDelay(ply, ent)
 	end
@@ -369,7 +369,7 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog)
 	end
 	
 	Spawned(ply, ent)
-	DPP.CheckSizes(ent, ply)
+	DPP.CheckSizesDelay(ent, ply)
 	if not shouldHideLog then LogSpawn(ply, ent, 'Ragdoll') end
 	
 	PENDING = ent
@@ -400,7 +400,7 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog)
 	end
 	
 	Spawned(ply, ent)
-	DPP.CheckSizes(ent, ply)
+	DPP.CheckSizesDelay(ent, ply)
 	if not shouldHideLog then LogSpawn(ply, ent, 'SENT') end
 	
 	PENDING = ent
