@@ -315,6 +315,7 @@ local ropesConstraints = {
 }
 
 function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide)
+	DPP.AssertPlayer(ply)
 	if not IsValid(ply) then return end
 	if not IsValid(ent) then return end
 	Spawned(ply, ent)
@@ -355,6 +356,7 @@ function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide)
 end
 
 function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog)
+	DPP.AssertPlayer(ply)
 	if ent.DPP_SpawnTime  == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 	
@@ -379,6 +381,7 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog)
 end
 
 function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog)
+	DPP.AssertPlayer(ply)
 	if ent.DPP_SpawnTime  == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 	
@@ -410,6 +413,7 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog)
 end
 
 function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog)
+	DPP.AssertPlayer(ply)
 	if ent.DPP_SpawnTime  == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 	
@@ -440,6 +444,7 @@ function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog)
 end
 
 function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog)
+	DPP.AssertPlayer(ply)
 	if ent.DPP_SpawnTime  == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 	
@@ -470,6 +475,7 @@ function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog)
 end
 
 function SpawnFunctions.PlayerSpawnProp(ply, model)
+	DPP.AssertPlayer(ply)
 	if DPP.IsModelBlocked(model, ply) then 
 		LogTry(ply, 'Prop', model)
 		return false 
@@ -493,6 +499,7 @@ function SpawnFunctions.PlayerSpawnProp(ply, model)
 end
 
 function SpawnFunctions.PlayerSpawnObject(ply, model)
+	DPP.AssertPlayer(ply)
 	if DPP.IsModelBlocked(model, ply) then 
 		LogTry(ply, 'Object/Generic', model)
 		return false 
@@ -511,6 +518,7 @@ function SpawnFunctions.PlayerSpawnObject(ply, model)
 end
 
 function SpawnFunctions.PlayerSpawnRagdoll(ply, model)
+	DPP.AssertPlayer(ply)
 	if DPP.IsModelBlocked(model, ply) then 
 		LogTry(ply, 'Ragdoll', model)
 		return false 
@@ -529,6 +537,7 @@ function SpawnFunctions.PlayerSpawnRagdoll(ply, model)
 end
 
 function SpawnFunctions.PlayerSpawnVehicle(ply, model, class)
+	DPP.AssertPlayer(ply)
 	if DPP.IsModelBlocked(model, ply) then 
 		LogTry(ply, 'Vehicle', model)
 		return false 
@@ -558,6 +567,7 @@ function SpawnFunctions.PlayerSpawnVehicle(ply, model, class)
 end
 
 function SpawnFunctions.PlayerSpawnSENT(ply, ent)
+	DPP.AssertPlayer(ply)
 	if DPP.IsRestrictedSENT(ent, ply) then 
 		LogTry(ply, 'SENT', 'N/A', ent)
 		DPP.Notify(ply, 'That entity is restricted', 1)
@@ -571,6 +581,7 @@ function SpawnFunctions.PlayerSpawnSENT(ply, ent)
 end
 
 function SpawnFunctions.PlayerSpawnSWEP(ply, ent)
+	DPP.AssertPlayer(ply)
 	if DPP.IsRestrictedSWEP(ent, ply) then 
 		LogTry(ply, 'SWEP', 'N/A', ent)
 		DPP.Notify(ply, 'That swep is restricted', 1)
@@ -584,12 +595,15 @@ function SpawnFunctions.PlayerSpawnSWEP(ply, ent)
 end
 
 function SpawnFunctions.PlayerGiveSWEP(ply, class, tab)
+	DPP.AssertPlayer(ply)
+	DPP.Assert(type(tab) == 'table', 'Argument is not a table!', DPP.FindBestLevel())
 	local can = SpawnFunctions.PlayerSpawnSWEP(ply, class)
 	if can == false then return false end
 	LogSpawnC(ply, class, 'SWEP', tab.Model)
 end
 
 function SpawnFunctions.PlayerSpawnNPC(ply, ent)
+	DPP.AssertPlayer(ply)
 	if DPP.IsRestrictedNPC(ent, ply) then 
 		LogTry(ply, 'NPC', 'N/A', ent)
 		DPP.Notify(ply, 'That entity is restricted', 1)

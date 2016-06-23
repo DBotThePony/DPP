@@ -1185,7 +1185,7 @@ function DPP.CanTouch(ply, ent, mode)
 	return can, reason
 end
 
-local function FindBestLevel()
+function DPP.FindBestLevel()
 	local last
 	local current = 1
 	
@@ -1206,7 +1206,7 @@ local function FindBestLevel()
 end
 
 function DPP.AssertPlayer(obj)
-	DPP.Assert(DPP.IsPlayer(obj), 'Argument is not a player!', FindBestLevel())
+	DPP.Assert(DPP.IsPlayer(obj), 'Argument is not a player!', DPP.FindBestLevel())
 end
 
 local RED = Color(255, 0, 0)
