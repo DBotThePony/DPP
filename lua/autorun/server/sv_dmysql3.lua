@@ -275,15 +275,21 @@ function obj:Add(str, success, failed)
 	table.insert(self.TRX, {str, success, failed})
 end
 
-function obj:Begin()
+function obj:Begin(nobegin)
 	self.TRX = {}
-	self:Add('BEGIN')
+	self.TRXNoCommit = nobegin
+	
+	if not nobegin then
+		self:Add('BEGIN')
+	end
 end
 
 function obj:Commit(finish)
 	finish = finish or EMPTY
 	
-	self:Add('COMMIT')
+	if not self.TRXNoCommit then
+		self:Add('COMMIT')
+	end
 	
 	local TRX = self.TRX
 	self.TRX = {}
