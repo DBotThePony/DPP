@@ -33,6 +33,15 @@ local DefaultConfigString = util.TableToJSON(DefaultOptions, true)
 
 if not file.Exists('dmysql3/default.txt', 'DATA') then
 	file.Write('dmysql3/default.txt', DefaultConfigString)
+else
+	local read = file.Read('dmysql3/default.txt', 'DATA')
+	local parse = util.JSONToTable(read)
+	if not parse then
+		file.Write('dmysql3/default.txt', DefaultConfigString)
+	else
+		DefaultConfigString = read
+		DefaultOptions = parse
+	end
 end
 
 DMySQL3 = DMySQL3 or {}
@@ -68,6 +77,131 @@ function DMySQL3.Connect(config)
 	
 	return self
 end
+
+function DMySQL3.ToString(v)
+	local t = type(v)
+	if t == 'boolean' then
+		return v and '1' or '0'
+	elseif t == 'table' then
+		return util.TableToJSON(v)
+	else
+		return tostring(v)
+	end
+end
+
+local function concatNames(tab)
+	local str = ''
+	
+	for k, v in ipairs(tab) do
+		str = str .. ', `' .. v .. '`'
+	end
+	
+	return str:sub(3)
+end
+
+local function concatValues(tab)
+	local str = ''
+	
+	for k, v in ipairs(tab) do
+		local new = DMySQL3.ToString(v)
+		
+		str = str .. ', ' .. SQLStr(new)
+	end
+	
+	return str:sub(3)
+end
+
+local function GetValues(tab2)
+	local tab = {}
+	
+	for k, v in pairs(tab2) do
+		table.insert(tab, DMySQL3.ToString(v))
+	end
+	
+	return tab
+end
+
+function DMySQL3.InsertEasy(tab, data)
+	local keys = table.GetKeys(data)
+	return 'INSERT INTO `' .. tab .. '` (' .. concatNames(keys) .. ') VALUES (' .. concatValues(GetValues(data)) .. ');'
+end
+
+function DMySQL3.ReplaceEasy(tab, data)
+	local keys = table.GetKeys(data)
+	return 'REPLACE INTO `' .. tab .. '` (' .. concatNames(keys) .. ') VALUES (' .. concatValues(GetValues(data)) .. ');'
+end
+
+function DMySQL3.Insert(tab, keys, ...)
+	local add = ''
+	local args = {...}
+	
+	local f = true
+	
+	for k, v in ipairs(args) do
+		if f then
+			add = '(' .. concatValues(v) .. ')'
+			f = false
+		else
+			add = add .. ', (' .. concatValues(v) .. ')'
+		end
+	end
+	
+	return 'INSERT INTO `' .. tab .. '` (' .. concatNames(keys) .. ') VALUES ' .. add .. ';'
+end
+
+function DMySQL3.Replace(tab, keys, ...)
+	local add = ''
+	local args = {...}
+	
+	local f = true
+	
+	for k, v in ipairs(args) do
+		if f then
+			add = '(' .. concatValues(v) .. ')'
+			f = false
+		else
+			add = add .. ', (' .. concatValues(v) .. ')'
+		end
+	end
+	
+	return 'REPLACE INTO `' .. tab .. '` (' .. concatNames(keys) .. ') VALUES ' .. add .. ';'
+end
+
+function DMySQL3.Update(tab, what, where)
+	where = where or {}
+	local wstr = ''
+	local f = true
+	
+	for k, v in pairs(what) do
+		if f then
+			wstr = k .. ' = ' .. SQLStr(v)
+			f = false
+		else
+			wstr = wstr .. ', ' .. k .. ' = ' .. SQLStr(v)
+		end
+	end
+	
+	local whstr = ''
+	local f = true
+	
+	for k, v in pairs(where) do
+		if f then
+			whstr = ' WHERE ' .. k .. ' = ' .. SQLStr(v)
+			f = false
+		else
+			whstr = whstr .. ' AND ' .. k .. ' = ' .. SQLStr(v)
+		end
+	end
+	
+	return 'UPDATE `' .. tab .. '` SET ' .. wstr .. whstr
+end
+
+local FormatFuncs = {
+	'InsertEasy',
+	'ReplaceEasy',
+	'Insert',
+	'Replace',
+}
 
 local Prefix = '[DMySQL3] '
 local PrefixColor = Color(0, 200, 0)
