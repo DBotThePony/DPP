@@ -203,6 +203,12 @@ local FormatFuncs = {
 	'Replace',
 }
 
+for k, v in ipairs(FormatFuncs) do
+	obj[v] = function(self, ...)
+		self:Query(DMySQL3[v](...))
+	end
+end
+
 local Prefix = '[DMySQL3] '
 local PrefixColor = Color(0, 200, 0)
 local TextColor = Color(200, 200, 200)

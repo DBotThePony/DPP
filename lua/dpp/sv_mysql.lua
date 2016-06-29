@@ -30,25 +30,20 @@ end
 
 local LINK = DMySQL3.Connect('dpp')
 
+local function SQError(err)
+	print('DPP Query failed: ' .. err)
+end
+
 function DPP.Query(query, callback)
-	LINK:Query(query, callback, callback)
+	LINK:Query(query, callback, SQError)
 end
 
 function DPP.QueryStack(tab)
-	DPP.Query('BEGIN', function()
-		local c = 0
-		local d = 0
-		
-		local Done = function()
-			d = d + 1
-			if d >= c then
-				DPP.Query('COMMIT')
-			end
-		end
-		
-		for k, v in pairs(tab) do
-			c = c + 1
-			DPP.Query(v, Done)
-		end
-	end)
+	LINK:Begin()
+	
+	for k, v in ipairs(tab) do
+		LINK:Add(v)
+	end
+	
+	LINK:Commit()
 end

@@ -420,6 +420,11 @@ local MiscConVars = {
 	'allow_damage_sent',
 	'allow_damage_npc',
 	'no_clear_messages',
+	'unfreeze_antispam',
+	'unfreeze_antispam_delay',
+	'disable_unfreeze',
+	'unfreeze_restrict',
+	'unfreeze_restrict_num',
 }
 
 local ClientVars = {
@@ -574,7 +579,12 @@ local function BuildMiscVarsPanel(Panel)
 	SettingsClass.SetupBackColor(Panel)
 	
 	for a, b in pairs(MiscConVars) do
-		ConVarCheckbox(Panel, b)
+		local class = DPP.Settings[b]
+		if class.bool then
+			ConVarCheckbox(Panel, b)
+		elseif class.int or class.float then
+			ConVarSlider(Panel, b)
+		end
 	end
 end
 

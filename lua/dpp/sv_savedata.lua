@@ -662,10 +662,10 @@ function DPP.SaveCVars()
 	
 	for k, v in pairs(DPP.Settings) do
 		local val = DPP.SVars[k]
-		table.insert(t, string.format('REPLACE INTO dpp_cvars (CVAR, VALUE) VALUES (%q, %q)', k, val:GetString()))
+		table.insert(t, {k, val:GetString()})
 	end
 	
-	DPP.QueryStack(t)
+	DPP.Query(DMySQL3.Replace('dpp_cvars', {'CVAR', 'VALUE'}, unpack(t)))
 end
 
 function DPP.LoadCVars()
@@ -704,16 +704,6 @@ local function Load()
 			if not data then return end
 			for a, b in pairs(data) do
 				DPP.BlockedEntities[k][b.ENTITY] = true
-			end
-		end)
-		
-		DPP.Query('SELECT * FROM dpp_blockedentites' .. k, function(data)
-			DPP.Query('DROP TABLE dpp_blockedentites' .. k)
-			
-			if not data then return end
-			
-			for a, b in pairs(data) do
-				DPP['AddBlockedEntity' .. v](b.ENTITY)
 			end
 		end)
 	end

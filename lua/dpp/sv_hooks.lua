@@ -1003,3 +1003,45 @@ function DPP.CheckDroppedStuck(ply, ent)
 end
 
 hook.Add('PhysgunDrop', 'DPP.PreventPropStuck', DPP.CheckDroppedStuck)
+
+local function OnPhysgunReload(weapon, ply)
+	local ent = ply:GetEyeTrace().Entity
+	if not IsValid(ent) then return end
+	
+	if DPP.GetConVar('disable_unfreeze') then
+		DPP.Notify(ply, 'Physgun reload is disabled on this server', NOTIFY_ERROR)
+		return false
+	end
+	
+	ply.DPP_LastUnfreezeTry = ply.DPP_LastUnfreezeTry or 0
+	
+	if ply.DPP_LastUnfreezeTry > CurTime() then
+		DPP.Notify(ply, 'You must wait ' .. math.floor(ply.DPP_LastUnfreezeTry - CurTime()) .. ' seconds before trying to unfreeze again', NOTIFY_ERROR)
+		return false
+	end
+	
+	if DPP.GetConVar('unfreeze_antispam') then
+		ply.DPP_LastUnfreezeTry = CurTime() + DPP.GetConVar('unfreeze_antispam_delay')
+	end
+	
+	if not DPP.GetConVar('unfreeze_restrict') then return end
+	local num = DPP.GetConVar('unfreeze_restrict_num')
+	
+	local result = DPP.RecalcConstraints(ent)
+	if #result <= num then return end
+	
+	local i = 0
+	
+	for k, v in ipairs(result) do
+		if DPP.IsConstraint(v) then continue end
+		i = i + 1
+	end
+	
+	if i > num then
+		ply.DPP_LastUnfreezeTry = CurTime() + math.Clamp(i / 5, math.min(DPP.GetConVar('unfreeze_antispam_delay'), 5), 15)
+		DPP.Notify(ply, 'Unable to unfreeze: You are trying un freeze ' .. i .. ' entities (' .. num .. ' max)!', NOTIFY_ERROR)
+		return false
+	end
+end
+
+hook.Add('OnPhysgunReload', '!DPP.BlockReload', OnPhysgunReload)

@@ -621,6 +621,7 @@ do
 		
 		for k, v in pairs(EntMem) do
 			if not IsValid(k) then continue end
+			table.insert(result, k)
 			if k:GetClass() == 'gmod_anchor' then continue end
 			local o = DPP.GetOwner(k)
 			local isOwned = DPP.IsOwned(k)
@@ -655,6 +656,8 @@ do
 			net.WriteTable(owners2)
 			net.Broadcast()
 		end)
+		
+		return result
 	end
 end
 

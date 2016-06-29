@@ -498,6 +498,38 @@ DPP.Settings = {
 		value = '0',
 		desc = 'Disable cleanup messages for disconnected players'
 	},
+	
+	['unfreeze_antispam'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Prevent physgun unfreeze (Reload) spam'
+	},
+	
+	['unfreeze_antispam_delay'] = {
+		type = 'int',
+		value = '5',
+		desc = 'Delay between unfreezing in seconds'
+	},
+	
+	['disable_unfreeze'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Disable physgun unfreeze (Reload)'
+	},
+	
+	['unfreeze_restrict'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Restrict physgun unfreeze (Reload)'
+	},
+	
+	['unfreeze_restrict_num'] = {
+		type = 'int',
+		value = '50',
+		min = 1,
+		max = 300,
+		desc = 'Maximum entities that are allowed to be unfreezed at once'
+	},
 }
 
 DPP.BlockedEntities = DPP.BlockedEntities or {}
