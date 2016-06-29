@@ -665,7 +665,18 @@ function DPP.SaveCVars()
 		table.insert(t, {k, val:GetString()})
 	end
 	
-	DPP.Query(DMySQL3.Replace('dpp_cvars', {'CVAR', 'VALUE'}, unpack(t)))
+	if DPP.IsMySQL() then
+		DPP.Query(DMySQL3.Replace('dpp_cvars', {'CVAR', 'VALUE'}, unpack(t)))
+	else
+		local LINK = DPP.GetLink()
+		LINK:Begin()
+		
+		for CVAR, VALUE in ipairs(t) do
+			LINK:Add(DMySQL3.ReplaceEasy('dpp_cvars', {CVAR = CVAR, VALUE = VALUE}))
+		end
+		
+		LINK:Commit()
+	end
 end
 
 function DPP.LoadCVars()

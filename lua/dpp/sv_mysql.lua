@@ -38,6 +38,14 @@ function DPP.Query(query, callback)
 	LINK:Query(query, callback, SQError)
 end
 
+function DPP.IsMySQL()
+	return LINK.IsMySQL
+end
+
+function DPP.GetLink()
+	return LINK
+end
+
 function DPP.QueryStack(tab)
 	LINK:Begin()
 	
