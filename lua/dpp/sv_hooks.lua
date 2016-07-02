@@ -789,7 +789,6 @@ end
 hook.Add('OnEntityCreated', 'DPP.OnEntityCreated', OnEntityCreated)
 hook.Add('EntityRemoved', 'DPP.EntityRemoved', EntityRemoved)
 
-
 function DPP.SetPlayerMeta(self, ply)
 	--Compability
 	
@@ -1044,4 +1043,4 @@ local function OnPhysgunReload(weapon, ply)
 	end
 end
 
-hook.Add('OnPhysgunReload', '!DPP.BlockReload', OnPhysgunReload)
+hook.Add('OnPhysgunReload', 'DPP.BlockReload', OnPhysgunReload)

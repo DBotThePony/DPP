@@ -97,6 +97,16 @@ end
 
 local HoldingEntities = {}
 
+local Ignore = {
+	COLLISION_GROUP_WORLD,
+	COLLISION_GROUP_WEAPON,
+	COLLISION_GROUP_DEBRIS,
+	COLLISION_GROUP_DEBRIS_TRIGGER,
+	COLLISION_GROUP_DISSOLVING,
+	COLLISION_GROUP_IN_VEHICLE,
+	COLLISION_GROUP_VEHICLE_CLIP,
+}
+
 local function PhysgunPickup(ply, ent)
 	if not DPP.GetConVar('apropkill_enable') then return end
 	if ent:IsPlayer() or ent:IsNPC() then return end
@@ -104,7 +114,9 @@ local function PhysgunPickup(ply, ent)
 	HoldingEntities[ent] = HoldingEntities[ent] or ent:GetCollisionGroup()
 	
 	if DPP.GetConVar('apropkill_nopush') then
-		ent:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
+		if not table.HasValue(Ignore, HoldingEntities[ent]) then
+			ent:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
+		end
 	end
 end
 
@@ -114,7 +126,9 @@ local function PhysgunDrop(ply, ent)
 	if ent:IsPlayer() or ent:IsNPC() then return end
 	
 	if DPP.GetConVar('apropkill_nopush') then
-		if HoldingEntities[ent] then ent:SetCollisionGroup(HoldingEntities[ent]) end
+		if HoldingEntities[ent] then
+			ent:SetCollisionGroup(HoldingEntities[ent])
+		end
 	end
 	
 	HoldingEntities[ent] = nil
@@ -145,8 +159,10 @@ local function Think()
 			continue
 		end
 		
-		if DPP.GetConVar('apropkill_nopush') then 
-			if ent:GetCollisionGroup() ~= COLLISION_GROUP_PASSABLE_DOOR then
+		if DPP.GetConVar('apropkill_nopush') then
+			local group = ent:GetCollisionGroup()
+			
+			if not table.HasValue(Ignore, group) and group ~= COLLISION_GROUP_PASSABLE_DOOR then
 				ent:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
 			end
 		end

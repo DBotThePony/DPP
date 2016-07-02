@@ -28,7 +28,7 @@ function DPP.CreateTables()
 	DPP.Query([[
 		CREATE TABLE IF NOT EXISTS dpp_cvars (
 			CVAR VARCHAR(64) NOT NULL,
-			VALUE VARCHAR(64) NOT NULL,
+			`VALUE` VARCHAR(64) NOT NULL,
 			PRIMARY KEY (CVAR)
 		)
 	]])
@@ -671,8 +671,8 @@ function DPP.SaveCVars()
 		local LINK = DPP.GetLink()
 		LINK:Begin()
 		
-		for CVAR, VALUE in ipairs(t) do
-			LINK:Add(DMySQL3.ReplaceEasy('dpp_cvars', {CVAR = CVAR, VALUE = VALUE}))
+		for k, v in ipairs(t) do
+			LINK:Add(DMySQL3.ReplaceEasy('dpp_cvars', {CVAR = v[1], VALUE = v[2]}))
 		end
 		
 		LINK:Commit()
