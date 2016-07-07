@@ -194,7 +194,5 @@ hook.Add('PhysgunDrop', 'DPP.APropKill', PhysgunDrop)
 hook.Add('PhysgunPickup', 'DPP.APropKill', PhysgunPickup)
 hook.Add('PlayerSpawnedVehicle', 'DPP.APropKill', PlayerSpawnedVehicle)
 hook.Add('PlayerEnteredVehicle', 'DPP.APropKill', PlayerEnteredVehicle)
-
 hook.Add('CanTool', 'DPP.APropKill', CanTool, 2) --Extra low priority if we have UHook (ULib's Hook)/DHook installed
-
 hook.Add('PhysgunDrop', 'DPP.PreventPlayerStuck', DPP.CheckDroppedEntity)
