@@ -710,6 +710,99 @@ local function BuildPlayerProtectionPanel(Panel)
 	end
 end
 
+function SettingsClass.ModelListThink(self)
+	local w, h = self:GetSize()
+	
+	if w ~= self.LastW then
+		SettingsClass.UpdateModelsListGUI()
+		self.LastW = w
+	end
+end
+
+function SettingsClass.InitializeModelsListGUI()
+	local Panel = vgui.Create('DFrame')
+	SettingsClass.ModelsGUI = Panel
+	Panel:SetTitle('Model Blacklist')
+	Panel:SetSize(ScrW() - 100, ScrH() - 100)
+	Panel:Center()
+	Panel:MakePopup()
+	
+	local top = Panel:Add('EditablePanel')
+	top:Dock(TOP)
+	top:SetHeight(50)
+	
+	local lab = top:Add('DLabel')
+	lab:Dock(TOP)
+	lab:DockMargin(5, 5, 5, 5)
+	lab:SetText([[Model Blacklist. To open menu of model, click on it.]])
+	
+	local scroll = Panel:Add('DScrollPanel')
+	scroll:Dock(FILL)
+	Panel.scroll = scroll
+	
+	local canvas = Panel:Add('EditablePanel')
+	scroll:AddItem(canvas)
+	canvas:Dock(FILL)
+	Panel.canvas = canvas
+	canvas.Think = SettingsClass.ModelListThink
+	canvas.LastW = canvas:GetSize()
+	
+	return Panel
+end
+
+SettingsClass.ModelsWidth = 64
+SettingsClass.ModelsHeight = 64
+SettingsClass.ModelsSpacingX = 66
+SettingsClass.ModelsSpacingY = 66
+
+function SettingsClass.UpdateModelsListGUI()
+	if not IsValid(SettingsClass.ModelsGUI) then return end
+	local Panel = SettingsClass.ModelsGUI
+	local canvas = Panel.canvas
+	if not canvas.Icons then return end
+	
+	local w, h = canvas:GetSize()
+	w = math.floor(w / SettingsClass.ModelsSpacingX)
+	
+	local cw, ch = 0, 0
+	
+	for k, icon in ipairs(canvas.Icons) do
+		local x = cw * SettingsClass.ModelsSpacingX
+		local y = ch * SettingsClass.ModelsSpacingY
+		
+		icon:SetPos(x, y)
+		cw = cw + 1
+		
+		if cw + 1 > w then
+			cw = 0
+			ch = ch + 1
+		end
+	end
+	
+	canvas:SetSize(w * SettingsClass.ModelsSpacingX, (ch + 1) * SettingsClass.ModelsSpacingY) 
+	Panel.scroll:InvalidateLayout()
+end
+
+function SettingsClass.BuildModelsListGUI()
+	if not IsValid(SettingsClass.ModelsGUI) then
+		SettingsClass.InitializeModelsListGUI()
+	end
+	
+	local Panel = SettingsClass.ModelsGUI
+	local canvas = Panel.canvas
+	canvas.Icons = {}
+	canvas:Clear()
+	
+	for k, v in pairs(DPP.BlockedModels) do
+		local icon = canvas:Add('SpawnIcon')
+		icon:SetModel(k)
+		icon:SetSize(SettingsClass.ModelsWidth, SettingsClass.ModelsHeight)
+		table.insert(canvas.Icons, icon)
+	end
+	
+	SettingsClass.UpdateModelsListGUI()
+end
+
 local function BuildModelsList(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
@@ -740,6 +833,10 @@ local function BuildModelsList(Panel)
 		end)
 		menu:Open()
 	end
+	
+	local Apply = Panel:Button('Open visual list')
+	Apply.DoClick = SettingsClass.BuildModelsListGUI
+	SettingsClass.ApplyButtonStyle(Apply)
 	
 	local entry = vgui.Create('DTextEntry', Panel)
 	Panel:AddItem(entry)
