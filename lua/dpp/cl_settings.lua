@@ -721,6 +721,11 @@ end
 
 SettingsClass.UnblockIcon = 'icon16/accept.png'
 SettingsClass.BlockIcon = 'icon16/cross.png'
+SettingsClass.EditIcon = 'icon16/brick_edit.png'
+SettingsClass.RemoveIcon = 'icon16/brick_delete.png'
+SettingsClass.RemoveAllIcon = 'icon16/bomb.png'
+SettingsClass.AddIcon = 'icon16/brick_add.png'
+SettingsClass.AddAllIcon = 'icon16/lorry_add.png'
 
 SettingsClass.TagIcons = {}
 SettingsClass.ModelsMeta = {
@@ -921,13 +926,15 @@ local function BuildModelsList(Panel)
 	list.OnRowRightClick = function(self, line)
 		local val = self:GetLine(line):GetValue(1)
 		local menu = vgui.Create('DMenu')
+		
 		menu:AddOption('Copy model to clipboard', function()
 			SetClipboardText(val)
-		end)
+		end):SetIcon(table.Random(SettingsClass.TagIcons))
 		
 		menu:AddOption('Remove from blacklist', function()
 			RunConsoleCommand('dpp_removeblockedmodel', val)
-		end)
+		end):SetIcon(SettingsClass.RemoveIcon)
+		
 		menu:Open()
 	end
 	
@@ -1068,15 +1075,15 @@ local function BuildLimitsList(Panel)
 		local menu = vgui.Create('DMenu')
 		menu:AddOption('Copy class to clipboard', function()
 			SetClipboardText(val)
-		end)
+		end):SetIcon(table.Random(SettingsClass.TagIcons))
 		
 		menu:AddOption('Edit limit...', function()
 			OpenLimitEditPanel(val)
-		end)
+		end):SetIcon(SettingsClass.EditIcon)
 		
 		menu:AddOption('Remove this limit', function()
 			RunConsoleCommand('dpp_removeentitylimit', val, group)
-		end)
+		end):SetIcon(SettingsClass.RemoveIcon)
 		
 		menu:Open()
 	end
@@ -1302,21 +1309,22 @@ local function BuildSLimitsList(Panel)
 		local limit = self:GetLine(line):GetValue(3)
 		
 		local menu = vgui.Create('DMenu')
+		
 		menu:AddOption('Copy cvar name to clipboard', function()
 			SetClipboardText('sbox_max' .. val)
-		end)
+		end):SetIcon(table.Random(SettingsClass.TagIcons))
 		
 		menu:AddOption('Edit limit...', function()
 			OpenSLimitEditPanel(val)
-		end)
+		end):SetIcon(SettingsClass.EditIcon)
 		
 		menu:AddOption('Remove this limit', function()
 			RunConsoleCommand('dpp_removesboxlimit', val, group)
-		end)
+		end):SetIcon(SettingsClass.RemoveIcon)
 		
 		menu:AddOption('Remove this limit for all groups', function()
 			RemoveAllSLimits(val)
-		end)
+		end):SetIcon(SettingsClass.RemoveAllIcon)
 		
 		menu:Open()
 	end
@@ -1368,21 +1376,22 @@ local function BuildCLimitsList(Panel)
 		local limit = self:GetLine(line):GetValue(3)
 		
 		local menu = vgui.Create('DMenu')
+		
 		menu:AddOption('Copy class to clipboard', function()
 			SetClipboardText(val)
-		end)
+		end):SetIcon(table.Random(SettingsClass.TagIcons))
 		
 		menu:AddOption('Edit limit...', function()
 			OpenCLimitEditPanel(val)
-		end)
+		end):SetIcon(SettingsClass.EditIcon)
 		
 		menu:AddOption('Remove this limit', function()
 			RunConsoleCommand('dpp_removeconstlimit', val, group)
-		end)
+		end):SetIcon(SettingsClass.RemoveIcon)
 		
 		menu:AddOption('Remove this limit for all groups', function()
 			RemoveAllCLimits(val)
-		end)
+		end):SetIcon(SettingsClass.RemoveAllIcon)
 		
 		menu:Open()
 	end
@@ -1470,13 +1479,15 @@ function CustomBlockMenus.toolworld(Panel)
 	list.OnRowRightClick = function(self, line)
 		local val = self:GetLine(line):GetValue(1)
 		local menu = vgui.Create('DMenu')
+		
 		menu:AddOption('Copy tool mode to clipboard', function()
 			SetClipboardText(val)
-		end)
+		end):SetIcon(table.Random(SettingsClass.TagIcons))
 		
 		menu:AddOption('Remove from blacklist', function()
 			RunConsoleCommand('dpp_removeblockedentity' .. k, val)
-		end)
+		end):SetIcon(SettingsClass.RemoveIcon)
+		
 		menu:Open()
 	end
 	
@@ -1624,13 +1635,14 @@ entities.
 	list.OnRowRightClick = function(self, line)
 		local val = self:GetLine(line):GetValue(1)
 		local menu = vgui.Create('DMenu')
+		
 		menu:AddOption('Copy property class to clipboard', function()
 			SetClipboardText(val)
-		end)
+		end):SetIcon(table.Random(SettingsClass.TagIcons))
 		
-		menu:AddOption('Remove from whitelist', function()
+		menu:AddOption('Remove from exclude list', function()
 			RunConsoleCommand('dpp_removewhitelistedentity' .. k, val)
-		end)
+		end):SetIcon(SettingsClass.RemoveIcon)
 		
 		menu:Open()
 	end
@@ -1697,13 +1709,14 @@ can NOT be used on blacklisted from toolgun entities.
 	list.OnRowRightClick = function(self, line)
 		local val = self:GetLine(line):GetValue(1)
 		local menu = vgui.Create('DMenu')
+		
 		menu:AddOption('Copy tool mode to clipboard', function()
 			SetClipboardText(val)
-		end)
+		end):SetIcon(table.Random(SettingsClass.TagIcons))
 		
-		menu:AddOption('Remove from whitelist', function()
+		menu:AddOption('Remove from exclude list', function()
 			RunConsoleCommand('dpp_removewhitelistedentity' .. k, val)
-		end)
+		end):SetIcon(SettingsClass.RemoveIcon)
 		
 		menu:Open()
 	end
@@ -1758,21 +1771,23 @@ for k, v in pairs(DPP.BlockTypes) do
 		list.OnRowRightClick = function(self, line)
 			local val = self:GetLine(line):GetValue(1)
 			local menu = vgui.Create('DMenu')
+			
 			menu:AddOption('Copy class to clipboard', function()
 				SetClipboardText(val)
-			end)
+			end):SetIcon(table.Random(SettingsClass.TagIcons))
 			
 			menu:AddOption('Remove from blacklist', function()
 				RunConsoleCommand('dpp_removeblockedentity' .. k, val)
-			end)
+			end):SetIcon(SettingsClass.RemoveIcon)
 			
-			menu:AddOption('Add that entity to ALL blacklists', function()
+			menu:AddOption('Add that entity from ALL blacklists', function()
 				ADD_ALL(val)
-			end)
+			end):SetIcon(SettingsClass.AddAllIcon)
 			
-			menu:AddOption('Remove that entity to ALL blacklists', function()
+			menu:AddOption('Remove that entity from ALL blacklists', function()
 				REMOVE_ALL(val)
-			end)
+			end):SetIcon(SettingsClass.RemoveAllIcon)
+			
 			menu:Open()
 		end
 		
@@ -1810,7 +1825,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 		
-		local Apply = Panel:Button('Remove the entity you\'re looking at to the blacklist')
+		local Apply = Panel:Button('Remove the entity you\'re looking at from the blacklist')
 		Apply.DoClick = function()
 			local ent = LocalPlayer():GetEyeTrace().Entity
 			if not IsValid(ent) then return end
@@ -1826,7 +1841,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 		
-		local Apply = Panel:Button('Remove the entity you\'re looking at to ALL blacklists')
+		local Apply = Panel:Button('Remove the entity you\'re looking at from ALL blacklists')
 		Apply.DoClick = function()
 			local ent = LocalPlayer():GetEyeTrace().Entity
 			if not IsValid(ent) then return end
@@ -1897,21 +1912,23 @@ any whitelist!
 		list.OnRowRightClick = function(self, line)
 			local val = self:GetLine(line):GetValue(1)
 			local menu = vgui.Create('DMenu')
+			
 			menu:AddOption('Copy class to clipboard', function()
 				SetClipboardText(val)
-			end)
+			end):SetIcon(table.Random(SettingsClass.TagIcons))
 			
 			menu:AddOption('Remove from whitelist', function()
 				RunConsoleCommand('dpp_removewhitelistedentity' .. k, val)
-			end)
+			end):SetIcon(SettingsClass.RemoveIcon)
 			
 			menu:AddOption('Add that entity to ALL exclude lists', function()
 				ADD_ALL_W(val)
-			end)
+			end):SetIcon(SettingsClass.AddAllIcon)
 			
 			menu:AddOption('Remove that entity from ALL exclude lists', function()
 				REMOVE_ALL_W(val)
-			end)
+			end):SetIcon(SettingsClass.RemoveAllIcon)
+			
 			menu:Open()
 		end
 		
@@ -2087,17 +2104,18 @@ for k, v in pairs(DPP.RestrictTypes) do
 			local iswhite = self:GetLine(line):GetValue(3)
 			
 			local menu = vgui.Create('DMenu')
+			
 			menu:AddOption('Copy class to clipboard', function()
 				SetClipboardText(class)
-			end)
+			end):SetIcon(table.Random(SettingsClass.TagIcons))
 			
 			menu:AddOption('Remove from list', function()
 				RunConsoleCommand('dpp_unrestrict' .. k, class)
-			end)
+			end):SetIcon(SettingsClass.RemoveIcon)
 			
 			menu:AddOption('Modify...', function()
 				OpenModifyPanel(class)
-			end)
+			end):SetIcon(SettingsClass.EditIcon)
 			
 			menu:Open()
 		end
@@ -2142,19 +2160,19 @@ local function BuildFriendsPanel(Panel)
 		
 		menu:AddOption('Copy Name to clipboard', function()
 			SetClipboardText(name)
-		end)
+		end):SetIcon(table.Random(SettingsClass.TagIcons))
 		
 		menu:AddOption('Copy SteamID to clipboard', function()
 			SetClipboardText(steamid)
-		end)
+		end):SetIcon(table.Random(SettingsClass.TagIcons))
 		
 		menu:AddOption('Edit...', function()
 			DPP.OpenFriendEditMenu(steamid)
-		end)
+		end):SetIcon(SettingsClass.EditIcon)
 		
 		menu:AddOption('Remove from friends', function()
 			DPP.RemoveFriendBySteamID(steamid)
-		end)
+		end):SetIcon(SettingsClass.RemoveIcon)
 		
 		menu:Open()
 	end
@@ -2417,7 +2435,7 @@ local CleanupPlayer = {
 local ShareMenu = {
 	MenuLabel = 'Share this prop',
 	Order = 2400,
-	MenuIcon = 'icon16/brick_edit.png',
+	MenuIcon = SettingsClass.EditIcon,
 
 	Filter = function(self, ent, ply)
 		if not IsValid(ent) then return false end
