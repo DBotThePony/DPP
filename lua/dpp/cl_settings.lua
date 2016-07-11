@@ -719,6 +719,26 @@ function SettingsClass.ModelListThink(self)
 	end
 end
 
+SettingsClass.TagIcons = {}
+
+for k, v in ipairs{'blue', 'green', 'orange', 'pink', 'purple', 'red', 'yellow'} do
+	table.insert(SettingsClass.TagIcons, 'icon16/tag_' .. v .. '.png')
+end
+
+function SettingsClass.ModelClick(self)
+	local menu = vgui.Create('DMenu')
+	
+	menu:AddOption('Copy model to clipboard', function()
+		SetClipboardText(self.MyModel)
+	end):SetIcon(table.Random(SettingsClass.TagIcons))
+	
+	menu:AddOption('Unblock', function()
+		RunConsoleCommand('dpp_removeblockedmodel', self.MyModel)
+	end):SetIcon('icon16/accept.png')
+	
+	menu:Open()
+end
+
 function SettingsClass.InitializeModelsListGUI()
 	local Panel = vgui.Create('DFrame')
 	SettingsClass.ModelsGUI = Panel
@@ -797,6 +817,8 @@ function SettingsClass.BuildModelsListGUI()
 		local icon = canvas:Add('SpawnIcon')
 		icon:SetModel(k)
 		icon:SetSize(SettingsClass.ModelsWidth, SettingsClass.ModelsHeight)
+		icon.MyModel = k
+		icon.DoClick = SettingsClass.ModelClick
 		table.insert(canvas.Icons, icon)
 	end
 	
@@ -2235,10 +2257,18 @@ end)
 
 hook.Add('DPP.BlockedModelListChanged', 'DPP.Menu', function(s1)
 	BuildModelsList(DPP.SettingsClass.ModelPanel)
+	
+	if IsValid(SettingsClass.ModelsGUI) then
+		SettingsClass.BuildModelsListGUI()
+	end
 end)
 
 hook.Add('DPP.BlockedModelListReloaded', 'DPP.Menu', function(s1)
 	BuildModelsList(DPP.SettingsClass.ModelPanel)
+	
+	if IsValid(SettingsClass.ModelsGUI) then
+		SettingsClass.BuildModelsListGUI()
+	end
 end)
 
 hook.Add('PopulateToolMenu', 'DPP.Menu', PopulateToolMenu)
@@ -2352,8 +2382,8 @@ properties.Add("dpp.clearbyuid", CleanupPlayer)
 properties.Add('dpp.blockingmenu', BlockProperties)
 
 table.insert(BlockedPropetries, {
-	MenuLabel = "Add to DPP Blocked Models",
-	MenuIcon = "icon16/cross.png",
+	MenuLabel = 'Add to DPP Blocked Models',
+	MenuIcon = 'icon16/cross.png',
 
 	Filter = function(self, ent, ply)
 		if DPP.PlayerConVar(_, 'no_block_options') then return end
@@ -2369,8 +2399,8 @@ table.insert(BlockedPropetries, {
 })
 
 table.insert(BlockedPropetries, {
-	MenuLabel = "Remove from DPP Blocked Models",
-	MenuIcon = "icon16/accept.png",
+	MenuLabel = 'Remove from DPP Blocked Models',
+	MenuIcon = 'icon16/accept.png',
 
 	Filter = function(self, ent, ply)
 		if DPP.PlayerConVar(_, 'no_block_options') then return false end
