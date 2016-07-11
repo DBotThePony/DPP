@@ -400,6 +400,8 @@ local SortedConVars = {
 	
 	'grabs_disconnected',
 	'grabs_disconnected_admin',
+	
+	'freeze_on_disconnect',
 }
 
 local MiscConVars = {
