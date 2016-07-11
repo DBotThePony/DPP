@@ -720,6 +720,46 @@ function SettingsClass.ModelListThink(self)
 end
 
 SettingsClass.TagIcons = {}
+SettingsClass.ModelsMeta = {
+	Paint = function(self, w, h)
+		surface.SetDrawColor(200, 200, 200)
+		surface.DrawRect(0, 0, w, h)
+	end,
+	
+	OnMousePressed = function(self, key)
+		if key ~= MOUSE_LEFT then return end
+		self.Trap = true
+		self.StartX, self.StartY = gui.MousePos()
+		self.WindowX, self.WindowY = self.pnl:GetPos()
+	end,
+	
+	OnMouseReleased = function(self)
+		self.Trap = false
+	end,
+	
+	Think = function(self)
+		if not self.Trap then return end
+		
+		if not input.IsMouseDown(MOUSE_LEFT) then
+			self.Trap = false
+			return
+		end
+		
+		local pnl = self.pnl
+		
+		local cx, cy = gui.MousePos()
+		local x, y = cx - self.WindowX + 16, cy - self.WindowY + 16
+		
+		pnl:SetSize(x, y)
+		
+		if x ~= self.lx or y ~= self.ly then
+			SettingsClass.UpdateModelsListGUI()
+		end
+		
+		self.lx = x
+		self.ly = y
+	end,
+}
 
 for k, v in ipairs{'blue', 'green', 'orange', 'pink', 'purple', 'red', 'yellow'} do
 	table.insert(SettingsClass.TagIcons, 'icon16/tag_' .. v .. '.png')
@@ -728,7 +768,7 @@ end
 function SettingsClass.ModelClick(self)
 	local menu = vgui.Create('DMenu')
 	
-	menu:AddOption('Copy model to clipboard', function()
+	menu:AddOption('Copy model path to clipboard', function()
 		SetClipboardText(self.MyModel)
 	end):SetIcon(table.Random(SettingsClass.TagIcons))
 	
@@ -752,9 +792,41 @@ function SettingsClass.InitializeModelsListGUI()
 	top:SetHeight(50)
 	
 	local lab = top:Add('DLabel')
-	lab:Dock(TOP)
+	lab:Dock(FILL)
 	lab:DockMargin(5, 5, 5, 5)
 	lab:SetText([[Model Blacklist. To open menu of model, click on it.]])
+	
+	local bottom = Panel:Add('EditablePanel')
+	bottom:Dock(BOTTOM)
+	bottom:SetHeight(20)
+	
+	local resize = bottom:Add('EditablePanel')
+	resize:Dock(RIGHT)
+	resize:DockMargin(2, 2, 2, 2)
+	resize:SetSize(18, 18)
+	resize:SetCursor('sizenwse')
+	resize.pnl = Panel
+	
+	for k, v in pairs(SettingsClass.ModelsMeta) do
+		resize[k] = v
+	end
+	
+	local lab = bottom:Add('DLabel')
+	lab:Dock(LEFT)
+	lab:DockMargin(5, 5, 5, 5)
+	lab:SetText([[Resizeable]])
+	lab:SizeToContents()
+	
+	local lab = bottom:Add('DLabel')
+	lab:Dock(LEFT)
+	lab:DockMargin(5, 5, 5, 5)
+	lab:SetText([[Click here to reset window size.]])
+	lab:SetMouseInputEnabled(true)
+	lab:SetCursor('hand')
+	lab:SizeToContents()
+	lab.DoClick = function()
+		Panel:SetSize(ScrW() - 100, ScrH() - 100)
+	end
 	
 	local scroll = Panel:Add('DScrollPanel')
 	scroll:Dock(FILL)
