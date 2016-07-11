@@ -719,6 +719,9 @@ function SettingsClass.ModelListThink(self)
 	end
 end
 
+SettingsClass.UnblockIcon = 'icon16/accept.png'
+SettingsClass.BlockIcon = 'icon16/cross.png'
+
 SettingsClass.TagIcons = {}
 SettingsClass.ModelsMeta = {
 	Paint = function(self, w, h)
@@ -774,7 +777,7 @@ function SettingsClass.ModelClick(self)
 	
 	menu:AddOption('Unblock', function()
 		RunConsoleCommand('dpp_removeblockedmodel', self.MyModel)
-	end):SetIcon('icon16/accept.png')
+	end):SetIcon(SettingsClass.UnblockIcon)
 	
 	menu:Open()
 end
@@ -2357,9 +2360,9 @@ end)
 local BlockedPropetries = {}
 
 local BlockProperties = {
-	MenuLabel = "DPP Restrict options",
+	MenuLabel = 'DPP Restrict options',
 	Order = 2700,
-	MenuIcon = "icon16/cross.png",
+	MenuIcon = SettingsClass.BlockIcon,
 
 	Filter = function(self, ent, ply)
 		if not IsValid(ent) then return false end
@@ -2394,9 +2397,9 @@ local BlockProperties = {
 }
 
 local CleanupPlayer = {
-	MenuLabel = "Cleanup props of owner",
+	MenuLabel = 'Cleanup props of owner',
 	Order = 2400,
-	MenuIcon = "icon16/brick_delete.png",
+	MenuIcon = 'icon16/brick_delete.png',
 
 	Filter = function(self, ent, ply)
 		if not IsValid(ent) then return false end
@@ -2412,9 +2415,9 @@ local CleanupPlayer = {
 }
 
 local ShareMenu = {
-	MenuLabel = "Share this prop",
+	MenuLabel = 'Share this prop',
 	Order = 2400,
-	MenuIcon = "icon16/brick_edit.png",
+	MenuIcon = 'icon16/brick_edit.png',
 
 	Filter = function(self, ent, ply)
 		if not IsValid(ent) then return false end
@@ -2427,9 +2430,9 @@ local ShareMenu = {
 }
 
 local transfertoworld = {
-	MenuLabel = "Transfer ownership to world",
+	MenuLabel = 'Transfer ownership to world',
 	Order = 2700,
-	MenuIcon = "icon16/world.png",
+	MenuIcon = 'icon16/world.png',
 	
 	MenuOpen = function(self, menu, ent, tr)
 		local SubMenu = menu:AddSubMenu()
@@ -2448,14 +2451,14 @@ local transfertoworld = {
 	end,
 }
 
-properties.Add("dpp.transfertoworld", transfertoworld)
-properties.Add("dpp.share", ShareMenu)
-properties.Add("dpp.clearbyuid", CleanupPlayer)
+properties.Add('dpp.transfertoworld', transfertoworld)
+properties.Add('dpp.share', ShareMenu)
+properties.Add('dpp.clearbyuid', CleanupPlayer)
 properties.Add('dpp.blockingmenu', BlockProperties)
 
 table.insert(BlockedPropetries, {
 	MenuLabel = 'Add to DPP Blocked Models',
-	MenuIcon = 'icon16/cross.png',
+	MenuIcon = SettingsClass.BlockIcon,
 
 	Filter = function(self, ent, ply)
 		if DPP.PlayerConVar(_, 'no_block_options') then return end
@@ -2472,7 +2475,7 @@ table.insert(BlockedPropetries, {
 
 table.insert(BlockedPropetries, {
 	MenuLabel = 'Remove from DPP Blocked Models',
-	MenuIcon = 'icon16/accept.png',
+	MenuIcon = SettingsClass.UnblockIcon,
 
 	Filter = function(self, ent, ply)
 		if DPP.PlayerConVar(_, 'no_block_options') then return false end
@@ -2489,8 +2492,8 @@ table.insert(BlockedPropetries, {
 
 for k, v in pairs(DPP.BlockTypes) do
 	table.insert(BlockedPropetries, {
-		MenuLabel = "Add to DPP " .. v .. ' blacklist',
-		MenuIcon = 'icon16/cross.png',
+		MenuLabel = 'Add to DPP ' .. v .. ' blacklist',
+		MenuIcon = SettingsClass.BlockIcon,
 
 		Filter = function(self, ent, ply)
 			if DPP.PlayerConVar(_, 'no_block_options') then return false end
@@ -2504,8 +2507,8 @@ for k, v in pairs(DPP.BlockTypes) do
 	})
 	
 	table.insert(BlockedPropetries, {
-		MenuLabel = "Remove from DPP " .. v .. ' blacklist',
-		MenuIcon = 'icon16/accept.png',
+		MenuLabel = 'Remove from DPP ' .. v .. ' blacklist',
+		MenuIcon = SettingsClass.UnblockIcon,
 
 		Filter = function(self, ent, ply)
 			if DPP.PlayerConVar(_, 'no_block_options') then return false end
@@ -2591,8 +2594,8 @@ for k, v in pairs(DPP.RestrictTypes) do
 	end
 	
 	table.insert(BlockedPropetries, {
-		MenuLabel = "Add to DPP " .. v .. ' restrict black/white list',
-		MenuIcon = 'icon16/cross.png',
+		MenuLabel = 'Add to DPP ' .. v .. ' restrict black/white list',
+		MenuIcon = SettingsClass.BlockIcon,
 
 		Filter = function(self, ent, ply)
 			if DPP.PlayerConVar(_, 'no_restrict_options') then return false end
@@ -2608,8 +2611,8 @@ for k, v in pairs(DPP.RestrictTypes) do
 	})
 	
 	table.insert(BlockedPropetries, {
-		MenuLabel = "Remove from DPP " .. v .. ' restrict black/white list',
-		MenuIcon = 'icon16/accept.png',
+		MenuLabel = 'Remove from DPP ' .. v .. ' restrict black/white list',
+		MenuIcon = SettingsClass.UnblockIcon,
 
 		Filter = function(self, ent, ply)
 			if DPP.PlayerConVar(_, 'no_restrict_options') then return false end
@@ -2625,7 +2628,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 	})
 
 	table.insert(BlockedPropetries, {
-		MenuLabel = "Modify DPP " .. v .. ' restriction...',
+		MenuLabel = 'Modify DPP ' .. v .. ' restriction...',
 		MenuIcon = 'icon16/pencil.png',
 
 		Filter = function(self, ent, ply)
@@ -2718,9 +2721,9 @@ do
 	end
 	
 	table.insert(BlockedPropetries, {
-		MenuLabel = "Add to DPP " .. v .. ' restrict black/whitelist',
+		MenuLabel = 'Add to DPP ' .. v .. ' restrict black/whitelist',
 		Order = 2520,
-		MenuIcon = 'icon16/cross.png',
+		MenuIcon = SettingsClass.BlockIcon,
 
 		Filter = function(self, ent, ply)
 			if DPP.PlayerConVar(_, 'no_restrict_options') then return end
@@ -2736,9 +2739,9 @@ do
 	})
 	
 	table.insert(BlockedPropetries, {
-		MenuLabel = "Remove from DPP " .. v .. ' restrict black/whitelist',
+		MenuLabel = 'Remove from DPP ' .. v .. ' restrict black/whitelist',
 		Order = 2520,
-		MenuIcon = 'icon16/accept.png',
+		MenuIcon = SettingsClass.UnblockIcon,
 
 		Filter = function(self, ent, ply)
 			if DPP.PlayerConVar(_, 'no_restrict_options') then return end
@@ -2754,7 +2757,7 @@ do
 	})
 
 	table.insert(BlockedPropetries, {
-		MenuLabel = "Modify DPP " .. v .. ' restriction...',
+		MenuLabel = 'Modify DPP ' .. v .. ' restriction...',
 		Order = 2520,
 		MenuIcon = 'icon16/pencil.png',
 
