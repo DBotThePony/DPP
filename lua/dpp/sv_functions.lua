@@ -264,7 +264,7 @@ end
 function DPP.ClearPlayerEntities(ply)
 	local Ents = DPP.GetPlayerEntities(ply)
 	
-	for k, v in pairs(Ents) do
+	for k, v in ipairs(Ents) do
 		SafeRemoveEntity(v)
 	end
 	
@@ -275,7 +275,7 @@ end
 function DPP.FreezePlayerEntities(ply)
 	local Ents = DPP.GetPlayerEntities(ply)
 	
-	for k, v in pairs(Ents) do
+	for k, v in ipairs(Ents) do
 		local phys = v:GetPhysicsObject()
 		if IsValid(phys) then
 			phys:EnableMotion(false)
@@ -286,7 +286,7 @@ end
 function DPP.UnFreezePlayerEntities(ply)
 	local Ents = DPP.GetPlayerEntities(ply)
 	
-	for k, v in pairs(Ents) do
+	for k, v in ipairs(Ents) do
 		local phys = v:GetPhysicsObject()
 		if IsValid(phys) then
 			phys:EnableMotion(true)
@@ -345,7 +345,7 @@ function DPP.ClearDisconnectedProps()
 end
 
 function DPP.ClearByUID(uid)
-	for k, v in pairs(DPP.GetPropsByUID(uid)) do
+	for k, v in ipairs(DPP.GetPropsByUID(uid)) do
 		SafeRemoveEntity(v)
 	end
 	
@@ -356,7 +356,7 @@ end
 function DPP.FreezeByUID(uid)
 	local Ents = DPP.GetPropsByUID(uid)
 	
-	for k, v in pairs(Ents) do
+	for k, v in ipairs(Ents) do
 		local phys = v:GetPhysicsObject()
 		if IsValid(phys) then
 			phys:EnableMotion(false)
@@ -367,7 +367,7 @@ end
 function DPP.UnFreezeByUID(uid)
 	local Ents = DPP.GetPropsByUID(uid)
 	
-	for k, v in pairs(Ents) do
+	for k, v in ipairs(Ents) do
 		local phys = v:GetPhysicsObject()
 		if IsValid(phys) then
 			phys:EnableMotion(true)

@@ -406,6 +406,10 @@ function DPP.PlayerDisconnected(ply)
 		end
 	end
 	
+	if DPP.GetConVar('freeze_on_disconnect') then
+		DPP.FreezePlayerEntities(ply)
+	end
+	
 	timer.Simple(2, function()
 		net.Start('DPP.RefreshPlayerList')
 		net.Broadcast()

@@ -530,6 +530,12 @@ DPP.Settings = {
 		max = 300,
 		desc = 'Maximum entities that are allowed to be unfreezed at once'
 	},
+	
+	['freeze_on_disconnect'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Freeze player entities on disconnect'
+	},
 }
 
 DPP.BlockedEntities = DPP.BlockedEntities or {}
