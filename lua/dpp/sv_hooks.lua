@@ -974,25 +974,33 @@ local EmptyVector = Vector(0, 0, 0)
 function DPP.HandleTakeDamage(ent, dmg)
 	if ent:IsPlayer() then return end
 	local a = dmg:GetAttacker()
-	if not a:IsPlayer() then return end
+	if not IsValid(a) then return end
 	
-	local reply = DPP.CanDamage(a, ent)
+	local reply
 	
-	if reply == false then
-		dmg:SetDamage(0)
-		dmg:SetDamageForce(EmptyVector)
-		dmg:SetDamageBonus(0)
-		dmg:SetDamageType(0)
-		local isOnFire = ent:IsOnFire()
-		
-		timer.Simple(0.5, function()
-			if IsValid(ent) and not isOnFire then
-				ent:Extinguish() --Prevent burning weapons
-			end
-		end)
-		
-		return false
+	if a:IsPlayer() then
+		reply = DPP.CanDamage(a, ent)
+	elseif a:IsNPC() then
+		local owner = DPP.GetOwner(a)
+		if not IsValid(owner) then return end
+		reply = DPP.CanDamage(owner, ent)
 	end
+	
+	if reply ~= false then return end
+	
+	dmg:SetDamage(0)
+	dmg:SetDamageForce(EmptyVector)
+	dmg:SetDamageBonus(0)
+	dmg:SetDamageType(0)
+	local isOnFire = ent:IsOnFire()
+	
+	timer.Simple(0.1, function()
+		if IsValid(ent) and not isOnFire then
+			ent:Extinguish() --Prevent burning weapons
+		end
+	end)
+	
+	return false
 end
 
 hook.Add('EntityTakeDamage', 'DPP.Hooks', DPP.HandleTakeDamage, -2)
