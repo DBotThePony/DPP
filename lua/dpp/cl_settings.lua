@@ -504,6 +504,8 @@ local APropKillVars = {
 	'prevent_prop_throw',
 	'prevent_player_stuck',
 	'apropkill_clampspeed',
+	'prop_auto_ban',
+	'prop_auto_ban_size',
 }
 
 local PlacedCVars = {}
@@ -596,7 +598,12 @@ local function BuildAPropKillVarsPanel(Panel)
 	SettingsClass.SetupBackColor(Panel)
 	
 	for a, b in pairs(APropKillVars) do
-		ConVarCheckbox(Panel, b)
+		local class = DPP.Settings[b]
+		if class.bool then
+			ConVarCheckbox(Panel, b)
+		elseif class.int or class.float then
+			ConVarSlider(Panel, b)
+		end
 	end
 	
 	ConVarSlider(Panel, 'apropkill_clampspeed_val')
@@ -975,6 +982,8 @@ local function BuildModelsList(Panel)
 	SettingsClass.ApplyButtonStyle(Apply)
 	
 	ConVarCheckbox(Panel, 'model_blacklist')
+	ConVarCheckbox(Panel, 'prop_auto_ban')
+	ConVarSlider(Panel, 'prop_auto_ban_size')
 end
 
 local function OpenLimitEditPanel(class)

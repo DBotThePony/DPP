@@ -536,6 +536,20 @@ DPP.Settings = {
 		value = '1',
 		desc = 'Freeze player entities on disconnect'
 	},
+	
+	['prop_auto_ban'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Add huge models to blacklist by auto'
+	},
+	
+	['prop_auto_ban_size'] = {
+		type = 'int',
+		value = '4000',
+		min = 1,
+		max = 10000,
+		desc = 'Size limit'
+	},
 }
 
 DPP.BlockedEntities = DPP.BlockedEntities or {}
