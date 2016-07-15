@@ -228,7 +228,7 @@ function DPP.CheckStuck(ply, ent1, ent2)
 	if not cond then return false end
 	
 	local can = hook.Run('DPP_G_StuckHit', ply, ent1, ent2)
-	if can == false then return end
+	if can == false then return false end
 	
 	DPP.SetGhosted(ent1, true)
 	DPP.SetGhosted(ent2, true)
