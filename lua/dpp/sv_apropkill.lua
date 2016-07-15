@@ -26,6 +26,9 @@ function DPP.CheckDroppedEntity(ply, ent)
 		if v == ply then continue end
 		if v:InVehicle() then continue end
 		if DPP.IsPlayerInEntity(v, ent) then
+			local can = hook.Run('DPP_A_StuckHit', ply, ent, v)
+			if can == false then continue end
+			
 			DPP.Notify(ply, 'Your prop is stuck in other player')
 			DPP.SetGhosted(ent, true)
 			break
@@ -36,6 +39,10 @@ end
 local function CanTool(ply, tr)
 	--This hook must be runned after DPP protection module
 	if not IsValid(tr.Entity) then return end
+	
+	local can = hook.Run('DPP_A_StuckCheck', ply, tr.Entity)
+	if can == false then return end
+	
 	DPP.CheckDroppedEntity(ply, tr.Entity)
 end
 
@@ -43,6 +50,9 @@ local function EntityTakeDamage(ent, dmg)
 	if not DPP.GetConVar('apropkill_enable') then return end
 	if not DPP.GetConVar('apropkill_damage') then return end
 	if not ent:IsPlayer() then return end
+	
+	local can = hook.Run('DPP_A_EntityTakeDamage', ent, dmg)
+	if can == false then return end
 	
 	local attacker = dmg:GetAttacker()
 	local inflictor = dmg:GetInflictor()
@@ -77,6 +87,9 @@ local function PlayerSpawnedVehicle(ply, ent)
 	if not DPP.GetConVar('apropkill_enable') then return end
 	if not DPP.GetConVar('apropkill_vehicle') then return end
 	
+	local can = hook.Run('DPP_A_PlayerSpawnedVehicle', ply, ent)
+	if can == false then return end
+	
 	if ent:GetSolid() == SOLID_NONE then return end
 	
 	if ent:GetCollisionGroup() == COLLISION_GROUP_VEHICLE or ent:GetCollisionGroup() == COLLISION_GROUP_NONE then
@@ -87,6 +100,9 @@ end
 local function PlayerEnteredVehicle(ply, ent)
 	if not DPP.GetConVar('apropkill_enable') then return end
 	if not DPP.GetConVar('apropkill_vehicle') then return end
+	
+	local can = hook.Run('DPP_A_PlayerEnteredVehicle', ply, ent)
+	if can == false then return end
 	
 	if ent:GetSolid() == SOLID_NONE then return end
 	
@@ -111,6 +127,9 @@ local function PhysgunPickup(ply, ent)
 	if not DPP.GetConVar('apropkill_enable') then return end
 	if ent:IsPlayer() or ent:IsNPC() then return end
 	
+	local can = hook.Run('DPP_A_PhysgunPickup', ply, ent)
+	if can == false then return end
+	
 	HoldingEntities[ent] = HoldingEntities[ent] or ent:GetCollisionGroup()
 	
 	if DPP.GetConVar('apropkill_nopush') then
@@ -124,6 +143,9 @@ local function PhysgunDrop(ply, ent)
 	if not DPP.GetConVar('apropkill_enable') then return end
 	if not IsValid(ent) then return end --Dropping deleted entity
 	if ent:IsPlayer() or ent:IsNPC() then return end
+	
+	local can = hook.Run('DPP_A_PhysgunDrop', ply, ent)
+	if can == false then return end
 	
 	if DPP.GetConVar('apropkill_nopush') then
 		if HoldingEntities[ent] then
