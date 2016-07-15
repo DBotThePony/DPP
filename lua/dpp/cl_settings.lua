@@ -499,11 +499,13 @@ local ConVarCheckbox = SettingsClass.ConVarCheckbox
 local APropKillVars = {
 	'apropkill_enable',
 	'apropkill_nopush',
+	'apropkill_nopush_mode',
 	'apropkill_vehicle',
 	'apropkill_damage',
 	'prevent_prop_throw',
 	'prevent_player_stuck',
 	'apropkill_clampspeed',
+	'apropkill_clampspeed_val',
 	'prop_auto_ban',
 	'prop_auto_ban_size',
 }
@@ -605,8 +607,6 @@ local function BuildAPropKillVarsPanel(Panel)
 			ConVarSlider(Panel, b)
 		end
 	end
-	
-	ConVarSlider(Panel, 'apropkill_clampspeed_val')
 end
 
 local function BuildAntispamPanel(Panel)

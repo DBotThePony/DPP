@@ -133,8 +133,12 @@ local function PhysgunPickup(ply, ent)
 	HoldingEntities[ent] = HoldingEntities[ent] or ent:GetCollisionGroup()
 	
 	if DPP.GetConVar('apropkill_nopush') then
-		if not table.HasValue(Ignore, HoldingEntities[ent]) then
-			ent:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
+		if not DPP.GetConVar('apropkill_nopush_mode') then
+			if not table.HasValue(Ignore, HoldingEntities[ent]) then
+				ent:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
+			end
+		else
+			ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
 		end
 	end
 end
@@ -184,8 +188,14 @@ local function Think()
 		if DPP.GetConVar('apropkill_nopush') then
 			local group = ent:GetCollisionGroup()
 			
-			if not table.HasValue(Ignore, group) and group ~= COLLISION_GROUP_PASSABLE_DOOR then
-				ent:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
+			if not DPP.GetConVar('apropkill_nopush_mode') then
+				if not table.HasValue(Ignore, group) and group ~= COLLISION_GROUP_PASSABLE_DOOR then
+					ent:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
+				end
+			else
+				if group ~= COLLISION_GROUP_WORLD then
+					ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
+				end
 			end
 		end
 		

@@ -121,6 +121,12 @@ DPP.Settings = {
 		desc = 'Anti-Proppush',
 	},
 	
+	['apropkill_nopush_mode'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'False - player only, True - ALL collisions',
+	},
+	
 	['clear_disconnected'] = {
 		type = 'bool',
 		value = '1',
