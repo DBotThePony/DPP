@@ -108,30 +108,36 @@ function DPP.SendPlayerList()
 end
 
 function DPP.CheckSizes(ent, ply)
-	if not DPP.GetConVar('enable') then return end
-	if not DPP.GetConVar('check_sizes') then return end
-	if not IsValid(ent) then return end
-	if ent:IsConstraint() then return end
+	if not DPP.GetConVar('enable') then return false end
+	if not DPP.GetConVar('check_sizes') then return false end
+	if not IsValid(ent) then return false end
+	if ent:IsConstraint() then return false end
 	
 	local solid = ent:GetSolid()
 	local cgroup = ent:GetCollisionGroup()
 	
-	if solid == SOLID_NONE then return end
-	if cgroup == COLLISION_GROUP_WORLD then return end
+	if solid == SOLID_NONE then return false end
+	if cgroup == COLLISION_GROUP_WORLD then return false end
 	
 	local phys = ent:GetPhysicsObject()
-	if not IsValid(phys) then return end
+	if not IsValid(phys) then return false end
 	local size = phys:GetVolume()
-	if not size then return end
+	if not size then return false end
 	
-	if size / 1000 < DPP.GetConVar('max_size') then return end
+	if size / 1000 < DPP.GetConVar('max_size') then return false end
+	
+	local can = hook.Run('DPP_G_SizesHit', ent, ply)
+	if can == false then return false end
 	
 	timer.Simple(0, function() --Give entity time to initialize
+		if not IsValid(ent) then return end
 		DPP.SetGhosted(ent, true)
 		if ply and IsValid(ply) then
 			DPP.Notify(ply, 'Prop is ghosted because it is too big.')
 		end
 	end)
+	
+	return true
 end
 
 function DPP.CheckAutoBlock(ent, ply)
@@ -148,6 +154,9 @@ function DPP.CheckAutoBlock(ent, ply)
 	
 	if size / 1000 < DPP.GetConVar('prop_auto_ban_size') then return true end
 
+	local can = hook.Run('DPP_G_AutoBlockHit', ent, ply)
+	if can == false then return true end
+	
 	SafeRemoveEntity(ent)
 	DPP.ManipulateCommands.addblockedmodel(Entity(0), nil, {model})
 	if ply and IsValid(ply) then
@@ -158,7 +167,7 @@ function DPP.CheckAutoBlock(ent, ply)
 end
 
 function DPP.CheckSizesDelay(ent, ply)
-	if not IsValid(ent) then return end
+	if not IsValid(ent) then return false end
 	
 	timer.Simple(0, function()
 		if not IsValid(ent) then return end
@@ -167,45 +176,45 @@ function DPP.CheckSizesDelay(ent, ply)
 end
 
 function DPP.CheckStuck(ply, ent1, ent2)
-	if not DPP.GetConVar('enable') then return end
-	if not DPP.GetConVar('check_stuck') then return end
-	if ply:InVehicle() then return end
-	if ent1 == ent2 then return end
+	if not DPP.GetConVar('enable') then return false end
+	if not DPP.GetConVar('check_stuck') then return false end
+	if ply:InVehicle() then return false end
+	if ent1 == ent2 then return false end
 	
-	if ent1:IsPlayer() then return end
-	if ent2:IsPlayer() then return end
+	if ent1:IsPlayer() then return false end
+	if ent2:IsPlayer() then return false end
 	
-	if ent1:GetSolid() == SOLID_NONE then return end
-	if ent1:GetMoveType() == MOVETYPE_NONE then return end
-	if ent2:GetSolid() == SOLID_NONE then return end
-	if ent2:GetMoveType() == MOVETYPE_NONE then return end
+	if ent1:GetSolid() == SOLID_NONE then return false end
+	if ent1:GetMoveType() == MOVETYPE_NONE then return false end
+	if ent2:GetSolid() == SOLID_NONE then return false end
+	if ent2:GetMoveType() == MOVETYPE_NONE then return false end
 	
-	if ent1:IsWeapon() and IsValid(ent1:GetOwner()) then return end
-	if ent2:IsWeapon() and IsValid(ent2:GetOwner()) then return end
+	if ent1:IsWeapon() and IsValid(ent1:GetOwner()) then return false end
+	if ent2:IsWeapon() and IsValid(ent2:GetOwner()) then return false end
 	
 	local parent1, parent2 = ent1:GetParent(), ent2:GetParent()
 	
-	if parent1 == ent2 or parent2 == ent1 then return end
+	if parent1 == ent2 or parent2 == ent1 then return false end
 	
 	local phys1, phys2 = ent1:GetPhysicsObject(), ent2:GetPhysicsObject()
 	
 	if DPP.GetConVar('stuck_ignore_frozen') then
-		if IsValid(phys1) and not phys1:IsMotionEnabled() then return end
-		if IsValid(phys2) and not phys2:IsMotionEnabled() then return end
+		if IsValid(phys1) and not phys1:IsMotionEnabled() then return false end
+		if IsValid(phys2) and not phys2:IsMotionEnabled() then return false end
 	end
 	
-	if IsValid(phys1) and not phys1:IsCollisionEnabled() then return end
-	if IsValid(phys2) and not phys2:IsCollisionEnabled() then return end
+	if IsValid(phys1) and not phys1:IsCollisionEnabled() then return false end
+	if IsValid(phys2) and not phys2:IsCollisionEnabled() then return false end
 	
 	local const1 = constraint.FindConstraint(ent1, 'NoCollide')
 	local const2 = constraint.FindConstraint(ent2, 'NoCollide')
 	
 	if const1 then
-		if const1.Ent1 == ent2 or const1.Ent2 == ent2 then return end
+		if const1.Ent1 == ent2 or const1.Ent2 == ent2 then return false end
 	end
 	
 	if const2 then
-		if const2.Ent1 == ent1 or const2.Ent2 == ent1 then return end
+		if const2.Ent1 == ent1 or const2.Ent2 == ent1 then return false end
 	end
 	
 	local pos1, pos2 = ent1:GetPos(), ent2:GetPos()
@@ -216,15 +225,18 @@ function DPP.CheckStuck(ply, ent1, ent2)
 	local cond = max1:Distance(max2) < 10 and min1:Distance(min2) < 10 or
 		pos1:Distance(pos2) < 10
 	
-	if cond then 
-		DPP.SetGhosted(ent1, true)
-		DPP.SetGhosted(ent2, true)
-		if IsValid(ply) then
-			DPP.Notify(ply, 'It seems that prop is stuck in each other.')
-		end
-		
-		return true
+	if not cond then return false end
+	
+	local can = hook.Run('DPP_G_StuckHit', ply, ent1, ent2)
+	if can == false then return end
+	
+	DPP.SetGhosted(ent1, true)
+	DPP.SetGhosted(ent2, true)
+	if IsValid(ply) then
+		DPP.Notify(ply, 'It seems that prop is stuck in each other.')
 	end
+	
+	return true
 end
 
 function DPP.GetPlayerEntities(ply)
@@ -298,23 +310,33 @@ end
 function DPP.FreezePlayerEntities(ply)
 	local Ents = DPP.GetPlayerEntities(ply)
 	
+	local reply = {}
+	
 	for k, v in ipairs(Ents) do
 		local phys = v:GetPhysicsObject()
 		if IsValid(phys) then
 			phys:EnableMotion(false)
+			table.insert(reply, v)
 		end
 	end
+	
+	return reply
 end
 
 function DPP.UnFreezePlayerEntities(ply)
 	local Ents = DPP.GetPlayerEntities(ply)
 	
+	local reply = {}
+	
 	for k, v in ipairs(Ents) do
 		local phys = v:GetPhysicsObject()
 		if IsValid(phys) then
 			phys:EnableMotion(true)
+			table.insert(reply, v)
 		end
 	end
+	
+	return reply
 end
 
 function DPP.FindPlayerProps(ply)
@@ -372,8 +394,11 @@ function DPP.ClearByUID(uid)
 		SafeRemoveEntity(v)
 	end
 	
-	DPP.RecalculatePlayerList()
-	DPP.SendPlayerList()
+	--Recalculate after props is removed
+	timer.Simple(1, function()
+		DPP.RecalculatePlayerList()
+		DPP.SendPlayerList()
+	end)
 end
 
 function DPP.FreezeByUID(uid)
@@ -390,12 +415,17 @@ end
 function DPP.UnFreezeByUID(uid)
 	local Ents = DPP.GetPropsByUID(uid)
 	
+	local reply = {}
+	
 	for k, v in ipairs(Ents) do
 		local phys = v:GetPhysicsObject()
 		if IsValid(phys) then
 			phys:EnableMotion(true)
+			table.insert(reply, v)
 		end
 	end
+	
+	return reply
 end
 
 function DPP.RecalculateShare(ent)
@@ -471,20 +501,22 @@ function DPP.CheckAntispamDelay(ply, ent)
 end
 
 function DPP.CheckAntispam(ply, ent)
-	if not DPP.GetConVar('antispam') then return end
-	if not IsValid(ent) then return end
+	if not DPP.GetConVar('antispam') then return DPP.ANTISPAM_VALID end
+	if not IsValid(ent) then return DPP.ANTISPAM_VALID end
 	
-	if ent:GetSolid() == SOLID_NONE then return end
-	if ent:GetMoveType() == MOVETYPE_NONE then return end
+	if ent:GetSolid() == SOLID_NONE then return DPP.ANTISPAM_VALID end
+	if ent:GetMoveType() == MOVETYPE_NONE then return DPP.ANTISPAM_VALID end
 	
 	local reply = DPP.CheckAntispam_NoEnt(ply, true, true)
 	
 	if reply == DPP.ANTISPAM_INVALID then
 		SafeRemoveEntity(ent)
 		DPP.Notify(ply, 'Prop is removed due to spam', 1)
+		return DPP.ANTISPAM_INVALID
 	elseif reply == DPP.ANTISPAM_GHOSTED then
 		DPP.SetGhosted(ent, true)
 		DPP.Notify(ply, 'Prop is ghosted due to spam', 0)
+		return DPP.ANTISPAM_GHOSTED
 	end
 end
 
