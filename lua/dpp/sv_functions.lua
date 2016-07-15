@@ -135,23 +135,26 @@ function DPP.CheckSizes(ent, ply)
 end
 
 function DPP.CheckAutoBlock(ent, ply)
-	if not DPP.GetConVar('prop_auto_ban') then return end
-	if not IsValid(ent) then return end
-	if ent:IsConstraint() then return end
+	if not DPP.GetConVar('prop_auto_ban') then return true end
+	if not IsValid(ent) then return true end
+	if ent:IsConstraint() then return true end
 	
 	local model = ent:GetModel()
-	if not model then return end
+	if not model then return true end
 	local phys = ent:GetPhysicsObject()
-	if not IsValid(phys) then return end
+	if not IsValid(phys) then return true end
 	local size = phys:GetVolume()
-	if not size then return end
+	if not size then return true end
 	
-	if size / 1000 < DPP.GetConVar('prop_auto_ban_size') then return end
+	if size / 1000 < DPP.GetConVar('prop_auto_ban_size') then return true end
 
 	SafeRemoveEntity(ent)
+	DPP.ManipulateCommands.addblockedmodel(Entity(0), nil, {model})
 	if ply and IsValid(ply) then
 		DPP.Notify(ply, 'Prop is too big for ya.')
 	end
+	
+	return false
 end
 
 function DPP.CheckSizesDelay(ent, ply)

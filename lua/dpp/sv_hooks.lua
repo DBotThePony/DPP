@@ -62,6 +62,11 @@ local function LogTryPost(ply, type, ent)
 	SimpleLog(ply, SPACE, RED, ' tried ', GRAY, 'to spawn', SPACE2, string.format(' %s <%s | %s> (%s)', ent:GetClass(), tostring(ent), ent:GetModel(), type or 'N/A'))
 end
 
+--god
+local function LogTryPostInv(ply, ent, type)
+	LogTryPost(ply, type, ent)
+end
+
 local function StuckCheckDelay(ply, ent)
 	if not IsValid(ent) then return end
 	
@@ -291,6 +296,7 @@ function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog)
 	
 	Spawned(ply, ent)
 	DPP.CheckSizesDelay(ent, ply)
+	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, 'Prop') end return end
 	if DPP.GetConVar('check_stuck') then
 		StuckCheckDelay(ply, ent)
 	end
@@ -372,6 +378,7 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog)
 	
 	Spawned(ply, ent)
 	DPP.CheckSizesDelay(ent, ply)
+	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, 'Ragdoll') end return end
 	if not shouldHideLog then LogSpawn(ply, ent, 'Ragdoll') end
 	
 	PENDING = ent
@@ -404,6 +411,7 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog)
 	
 	Spawned(ply, ent)
 	DPP.CheckSizesDelay(ent, ply)
+	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, 'SENT') end return end
 	if not shouldHideLog then LogSpawn(ply, ent, 'SENT') end
 	
 	PENDING = ent
@@ -460,6 +468,8 @@ function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog)
 		SafeRemoveEntity(ent)
 		return false
 	end
+	
+	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, 'Vehicle') end return end
 	
 	if DPP.GetConVar('check_stuck') then
 		StuckCheckDelay(ply, ent)
