@@ -170,23 +170,25 @@ function DPP.RemoveBlockedModel(model)
 	net.Broadcast()
 end
 
-concommand.Add('dpp_addblockedmodel', function(ply, cmd, args)
-	if IsValid(ply) and not ply:IsSuperAdmin() then return end
-	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
-	DPP.AddBlockedModel(args[1])
-	local f = (IsValid(ply) and ply:Nick() or 'Console') .. ' added ' .. args[1] .. ' to model blacklist/whitelist'
-	DPP.Notify(player.GetAll(), f)
-	DPP.Message(f)
-end)
+DPP.ManipulateCommands = {
+	addblockedmodel = function(ply, cmd, args)
+		if IsValid(ply) and not ply:IsSuperAdmin() then return end
+		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+		DPP.AddBlockedModel(args[1])
+		local f = (IsValid(ply) and ply:Nick() or 'Console') .. ' added ' .. args[1] .. ' to model blacklist/whitelist'
+		DPP.Notify(player.GetAll(), f)
+		DPP.Message(f)
+	end,
 
-concommand.Add('dpp_removeblockedmodel', function(ply, cmd, args)
-	if IsValid(ply) and not ply:IsSuperAdmin() then return end
-	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
-	DPP.RemoveBlockedModel(args[1])
-	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' removed ' .. args[1] .. ' from model blacklist/whitelist'}
-	DPP.Notify(player.GetAll(), f)
-	DPP.Message(f)
-end)
+	removeblockedmodel = function(ply, cmd, args)
+		if IsValid(ply) and not ply:IsSuperAdmin() then return end
+		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+		DPP.RemoveBlockedModel(args[1])
+		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' removed ' .. args[1] .. ' from model blacklist/whitelist'}
+		DPP.Notify(player.GetAll(), f)
+		DPP.Message(f)
+	end,
+}
 
 function DPP.SaveAllBlockedModels()
 	DPP.Query('REMOVE FROM dpp_blockedmodels', function()
@@ -241,7 +243,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		DPP.Query('DELETE FROM dpp_blockedentities' .. k .. ' WHERE ENTITY = "' .. ent .. '"')
 	end
 	
-	concommand.Add('dpp_addblockedentity' .. k, function(ply, cmd, args)
+	DPP.ManipulateCommands['addblockedentity' .. k] = function(ply, cmd, args)
 		if IsValid(ply) and not ply:IsSuperAdmin() then return end
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		if blockedEnts[args[1]] then DPP.Notify(ply, 'You can not add that entity to blacklist') return end
@@ -249,9 +251,9 @@ for k, v in pairs(DPP.BlockTypes) do
 		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' added ' .. args[1] .. ' to ' .. v .. ' blacklist/whitelist'}
 		DPP.Notify(player.GetAll(), f)
 		DPP.Message(f)
-	end)
+	end
 	
-	concommand.Add('dpp_removeblockedentity' .. k, function(ply, cmd, args)
+	DPP.ManipulateCommands['removeblockedentity' .. k] = function(ply, cmd, args)
 		if IsValid(ply) and not ply:IsSuperAdmin() then return end
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		if blockedEnts[args[1]] then DPP.Notify(ply, 'You can not remove that entity from blacklist') return end
@@ -259,7 +261,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' removed ' .. args[1] .. ' from ' .. v .. ' blacklist/whitelist'}
 		DPP.Notify(player.GetAll(), f)
 		DPP.Message(f)
-	end)
+	end
 end
 
 for k, v in pairs(DPP.WhitelistTypes) do
@@ -292,23 +294,23 @@ for k, v in pairs(DPP.WhitelistTypes) do
 		DPP.Query('DELETE FROM dpp_whitelistentities' .. k .. ' WHERE ENTITY = "' .. ent .. '"')
 	end
 	
-	concommand.Add('dpp_addwhitelistedentity' .. k, function(ply, cmd, args)
+	DPP.ManipulateCommands['addwhitelistedentity' .. k] = function(ply, cmd, args)
 		if IsValid(ply) and not ply:IsSuperAdmin() then return end
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		DPP['AddWhitelistedEntity' .. v](args[1])
 		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' added ' .. args[1] .. ' to ' .. v .. ' excluded entities'}
 		DPP.Notify(player.GetAll(), f)
 		DPP.Message(f)
-	end)
+	end
 	
-	concommand.Add('dpp_removewhitelistedentity' .. k, function(ply, cmd, args)
+	DPP.ManipulateCommands['removewhitelistedentity' .. k] = function(ply, cmd, args)
 		if IsValid(ply) and not ply:IsSuperAdmin() then return end
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		DPP['RemoveWhitelistedEntity' .. v](args[1])
 		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' removed ' .. args[1] .. ' from ' .. v .. ' excluded entities'}
 		DPP.Notify(player.GetAll(), f)
 		DPP.Message(f)
-	end)
+	end
 end
 
 for k, v in pairs(DPP.RestrictTypes) do
@@ -345,7 +347,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		DPP.Query('DELETE FROM dpp_restricted' .. k .. ' WHERE CLASS = "' .. class .. '"')
 	end
 	
-	concommand.Add('dpp_restrict' .. k, function(ply, cmd, args)
+	DPP.ManipulateCommands['restrict' .. k] = function(ply, cmd, args)
 		if IsValid(ply) and not ply:IsSuperAdmin() then return end
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		if not args[2] then DPP.Notify(ply, 'Invalid argument') return end --No groups allowed
@@ -369,9 +371,9 @@ for k, v in pairs(DPP.RestrictTypes) do
 				DPP.Notify(ply, '(SILENT) You updated restricts for ' .. class)
 			end
 		end
-	end)
+	end
 	
-	concommand.Add('dpp_unrestrict' .. k, function(ply, cmd, args)
+	DPP.ManipulateCommands['unrestrict' .. k] = function(ply, cmd, args)
 		if IsValid(ply) and not ply:IsSuperAdmin() then return end
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		
@@ -382,7 +384,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' removed ' .. args[1] .. ' from restrticted ' .. k .. ' blacklist/whitelist'}
 		DPP.Notify(player.GetAll(), f)
 		DPP.Message(f)
-	end)
+	end
 end
 
 function DPP.AddEntityLimit(class, group, val)
@@ -539,7 +541,7 @@ end
 
 local Last = 0
 
-concommand.Add('dpp_addentitylimit', function(ply, cmd, args)
+DPP.ManipulateCommands.addentitylimit = function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsSuperAdmin() then return end
 	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
@@ -559,9 +561,9 @@ concommand.Add('dpp_addentitylimit', function(ply, cmd, args)
 		DPP.Message(f)
 		Last = CurTime() + 0.5
 	end
-end)
+end
 
-concommand.Add('dpp_removeentitylimit', function(ply, cmd, args)
+DPP.ManipulateCommands.removeentitylimit = function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsSuperAdmin() then return end
 	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
@@ -579,9 +581,9 @@ concommand.Add('dpp_removeentitylimit', function(ply, cmd, args)
 		DPP.Message(f)
 		Last = CurTime() + 0.5
 	end
-end)
+end
 
-concommand.Add('dpp_addsboxlimit', function(ply, cmd, args)
+DPP.ManipulateCommands.addsboxlimit = function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsSuperAdmin() then return end
 	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
@@ -599,9 +601,9 @@ concommand.Add('dpp_addsboxlimit', function(ply, cmd, args)
 	DPP.Notify(player.GetAll(), f)
 	DPP.Message(f)
 	Last = CurTime() + 0.5
-end)
+end
 
-concommand.Add('dpp_addconstlimit', function(ply, cmd, args)
+DPP.ManipulateCommands.addconstlimit = function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsSuperAdmin() then return end
 	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
@@ -619,9 +621,9 @@ concommand.Add('dpp_addconstlimit', function(ply, cmd, args)
 	DPP.Notify(player.GetAll(), f)
 	DPP.Message(f)
 	Last = CurTime() + 0.5
-end)
+end
 
-concommand.Add('dpp_removesboxlimit', function(ply, cmd, args)
+DPP.ManipulateCommands.removesboxlimit = function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsSuperAdmin() then return end
 	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
@@ -637,9 +639,9 @@ concommand.Add('dpp_removesboxlimit', function(ply, cmd, args)
 	DPP.Notify(player.GetAll(), f)
 	DPP.Message(f)
 	Last = CurTime() + 0.5
-end)
+end
 
-concommand.Add('dpp_removeconstlimit', function(ply, cmd, args)
+DPP.ManipulateCommands.removeconstlimit = function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsSuperAdmin() then return end
 	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
@@ -655,7 +657,7 @@ concommand.Add('dpp_removeconstlimit', function(ply, cmd, args)
 	DPP.Notify(player.GetAll(), f)
 	DPP.Message(f)
 	Last = CurTime() + 0.5
-end)
+end
 
 function DPP.SaveCVars()
 	local t = {}
@@ -699,6 +701,10 @@ function DPP.InitializeDefaultBlock()
 			DPP['AddBlockedEntity' .. v](name)
 		end
 	end
+end
+
+for k, v in pairs(DPP.ManipulateCommands) do
+	concommand.Add('dpp_' .. k, v)
 end
 
 local function Load()
