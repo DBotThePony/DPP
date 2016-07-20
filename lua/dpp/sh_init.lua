@@ -1101,6 +1101,38 @@ function DPP.AddDuplicatorType(str)
 	DPP.DTypes[str] = true
 end
 
+local PlayersTouchAccess = {}
+
+local function GetTouchAccess(ply)
+	DPP.HaveAccess(ply, 'touchother', function(result)
+		if result == nil then
+			result = DPP.DefaultAccessCheckLight(ply, 'touchother')
+		end
+		
+		PlayersTouchAccess[ply] = {
+			result = result,
+			expires = CurTime() + 10,
+			waiting = false,
+		}
+	end)
+end
+
+timer.Create('DPP.ClearPlayersTouchAccess', 1, 0, function()
+	local ctime = CurTime()
+	
+	for k, v in pairs(PlayersTouchAccess) do
+		if not IsValid(k) then
+			PlayersTouchAccess[k] = nil
+			continue
+		end
+		
+		if v.expires < ctime and not v.waiting then
+			GetTouchAccess(k)
+			v.waiting = true
+		end
+	end
+end)
+
 function DPP.CanTouch(ply, ent, mode)
 	if not DPP.GetConVar('enable') then return true end
 	if not IsValid(ply) then return true end
@@ -1120,6 +1152,10 @@ function DPP.CanTouch(ply, ent, mode)
 	if can == true then return true, reason end
 	--Otherwise, proceed default checks
 	
+	if PlayersTouchAccess[ply] == nil then
+		GetTouchAccess(ply)
+	end
+	
 	local owner = DPP.GetOwner(ent)
 	local isOwned = DPP.IsOwned(ent)
 	local OwnerName, OwnerUID, OwnerSteamID = DPP.GetOwnerDetails(ent)
@@ -1133,6 +1169,14 @@ function DPP.CanTouch(ply, ent, mode)
 	
 	local can = true
 	local reason
+	
+	local canTouchOther
+	
+	if PlayersTouchAccess[ply] ~= nil then
+		canTouchOther = PlayersTouchAccess[ply].result
+	else
+		canTouchOther = ply:IsAdmin()
+	end
 	
 	local admin, adminEverything = ply:IsAdmin(), DPP.GetConVar('admin_can_everything')
 	
@@ -1152,7 +1196,7 @@ function DPP.CanTouch(ply, ent, mode)
 					end
 					
 					continue
-				elseif admin and adminEverything then
+				elseif canTouchOther and adminEverything then
 					continue
 				else
 					can = false
@@ -1164,7 +1208,7 @@ function DPP.CanTouch(ply, ent, mode)
 			if string.gsub(owner, 1, 12) == 'disconnected' then
 				local UID = string.gsub(owner, 13)
 				
-				if admin and adminEverything then
+				if canTouchOther and adminEverything then
 					continue
 				else
 					can = false
@@ -1184,6 +1228,7 @@ function DPP.CanTouch(ply, ent, mode)
 				reason = 'dpp_no_touch is TRUE!'
 				break 
 			end
+			
 			continue
 		end
 		
@@ -1215,7 +1260,7 @@ function DPP.CanTouch(ply, ent, mode)
 					break
 				end
 				
-				if admin and adminEverything then
+				if canTouchOther and adminEverything then
 					continue
 				elseif not friend then
 					can = false

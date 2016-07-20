@@ -32,7 +32,7 @@ function DPP.RegisterAccess(id, default)
 	}
 end
 
-local function DefaultCheck(ply, id, callback)
+function DPP.DefaultAccessCheck(ply, id, callback)
 	local access = DPP.Access[id]
 	
 	if access == 'user' then
@@ -41,6 +41,18 @@ local function DefaultCheck(ply, id, callback)
 		callback(ply:IsAdmin(), 'admin rights')
 	elseif access == 'superadmin' then
 		callback(ply:IsSuperAdmin(), 'superadmin rights')
+	end
+end
+
+function DPP.DefaultAccessCheckLight(ply, id)
+	local access = DPP.Access[id]
+	
+	if access == 'user' then
+		return true, 'user rights'
+	elseif access == 'admin' or access == 'operator' then
+		return ply:IsAdmin(), 'admin rights'
+	elseif access == 'superadmin' then
+		return ply:IsSuperAdmin(), 'superadmin rights'
 	end
 end
 
@@ -74,7 +86,7 @@ function DPP.HaveAccess(ply, id, callback)
 		return
 	end
 	
-	DefaultCheck(ply, id, callback)
+	DPP.DefaultAccessCheck(ply, id, callback)
 end
 
 function DPP.CheckAccess(ply, id, call, ...)
@@ -90,6 +102,9 @@ function DPP.CheckAccess(ply, id, call, ...)
 end
 
 local default = {
+	--Core access
+	touchother = 'admin',
+	
 	--Usual Commands
 	cleardecals = 'operator',
 	toggleplayerprotect = 'admin',
