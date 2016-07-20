@@ -2386,6 +2386,42 @@ hook.Add('DPP.PlayerListChanged', 'DPP.Menu', function()
 	BuildPlayerList(DPP.SettingsClass.PlayerPanel)
 end)
 
+local AccessCache = {}
+
+local AccessCacheCheck = {
+	'share',
+	'clearbyuid',
+	'addblockedmodel',
+	'transfertoworld',
+	'removeblockedmodel',
+}
+
+local function InitializeCache()
+	local ply = LocalPlayer()
+	
+	for k, v in pairs(AccessCacheCheck) do
+		AccessCache[v] = DPP.DefaultAccessCheckLight(ply, v)
+		
+		DPP.HaveAccess(ply, v, function(result)
+			AccessCache[v] = result
+		end)
+	end
+end
+
+local function Access(id)
+	return AccessCache[id]
+end
+
+timer.Create('DPP.UpdateGUIAccessCache', 10, 0, function()
+	local ply = LocalPlayer()
+	
+	for id, status in pairs(AccessCache) do
+		DPP.HaveAccess(ply, id, function(result)
+			AccessCache[id] = result
+		end)
+	end
+end)
+
 local BlockedPropetries = {}
 
 local BlockProperties = {
@@ -2395,7 +2431,6 @@ local BlockProperties = {
 
 	Filter = function(self, ent, ply)
 		if not IsValid(ent) then return false end
-		if not ply:IsSuperAdmin() then return false end
 		return true
 	end,
 	
@@ -2432,7 +2467,7 @@ local CleanupPlayer = {
 
 	Filter = function(self, ent, ply)
 		if not IsValid(ent) then return false end
-		if not ply:IsAdmin() then return false end
+		if not Access('clearbyuid') then return false end
 		if not DPP.IsOwned(ent) then return false end
 		return true
 	end,
@@ -2450,6 +2485,7 @@ local ShareMenu = {
 
 	Filter = function(self, ent, ply)
 		if not IsValid(ent) then return false end
+		if not Access('share') then return false end
 		return DPP.GetOwner(ent) == ply
 	end,
 	
@@ -2472,7 +2508,7 @@ local transfertoworld = {
 	end,
 
 	Filter = function(self, ent, ply)
-		return IsValid(ent) and ply:IsAdmin() and DPP.IsOwned(ent)
+		return IsValid(ent) and Access('transfertoworld') and DPP.IsOwned(ent)
 	end,
 	
 	Action = function(self, ent)
@@ -2492,7 +2528,7 @@ table.insert(BlockedPropetries, {
 	Filter = function(self, ent, ply)
 		if DPP.PlayerConVar(_, 'no_block_options') then return end
 		if not IsValid(ent) then return false end
-		if not ply:IsSuperAdmin() then return false end
+		if not Access('addblockedmodel') then return false end
 		if DPP.IsModelEvenBlocked(ent:GetModel()) then return false end
 		return true
 	end,
@@ -2509,7 +2545,7 @@ table.insert(BlockedPropetries, {
 	Filter = function(self, ent, ply)
 		if DPP.PlayerConVar(_, 'no_block_options') then return false end
 		if not IsValid(ent) then return false end
-		if not ply:IsSuperAdmin() then return false end
+		if not Access('removeblockedmodel') then return false end
 		if not DPP.IsModelEvenBlocked(ent:GetModel()) then return false end
 		return true
 	end,
@@ -2525,6 +2561,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		MenuIcon = SettingsClass.BlockIcon,
 
 		Filter = function(self, ent, ply)
+			if not Access('addblockedentity' .. k) then return end
 			if DPP.PlayerConVar(_, 'no_block_options') then return false end
 			if DPP['IsEvenBlocked' .. v](ent:GetClass(), ply) then return false end
 			return true
@@ -2540,6 +2577,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		MenuIcon = SettingsClass.UnblockIcon,
 
 		Filter = function(self, ent, ply)
+			if not Access('removeblockedentity' .. k) then return end
 			if DPP.PlayerConVar(_, 'no_block_options') then return false end
 			if not DPP['IsEvenBlocked' .. v](ent:GetClass(), ply) then return false end
 			return true
@@ -2549,6 +2587,9 @@ for k, v in pairs(DPP.BlockTypes) do
 			RunConsoleCommand('dpp_removeblockedentity' .. k, ent:GetClass())
 		end,
 	})
+	
+	table.insert(AccessCacheCheck, 'addblockedentity' .. k)
+	table.insert(AccessCacheCheck, 'removeblockedentity' .. k)
 end
 
 for k, v in pairs(DPP.RestrictTypes) do
@@ -2627,6 +2668,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		MenuIcon = SettingsClass.BlockIcon,
 
 		Filter = function(self, ent, ply)
+			if not Access('restrict' .. k) then return end
 			if DPP.PlayerConVar(_, 'no_restrict_options') then return false end
 			local type = DPP.GetEntityType(ent)
 			if type ~= k then return false end
@@ -2644,6 +2686,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		MenuIcon = SettingsClass.UnblockIcon,
 
 		Filter = function(self, ent, ply)
+			if not Access('unrestrict' .. k) then return end
 			if DPP.PlayerConVar(_, 'no_restrict_options') then return false end
 			local type = DPP.GetEntityType(ent)
 			if type ~= k then return false end
@@ -2661,6 +2704,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		MenuIcon = 'icon16/pencil.png',
 
 		Filter = function(self, ent, ply)
+			if not Access('restrict' .. k) then return end
 			if DPP.PlayerConVar(_, 'no_restrict_options') then return false end
 			local type = DPP.GetEntityType(ent)
 			if type ~= k then return false end
@@ -2672,6 +2716,9 @@ for k, v in pairs(DPP.RestrictTypes) do
 			OpenModifyPanel(ent:GetClass(), false)
 		end,
 	})
+	
+	table.insert(AccessCacheCheck, 'restrict' .. k)
+	table.insert(AccessCacheCheck, 'unrestrict' .. k)
 end
 
 --Copy paste
@@ -2755,6 +2802,7 @@ do
 		MenuIcon = SettingsClass.BlockIcon,
 
 		Filter = function(self, ent, ply)
+			if not Access('restrict' .. k) then return end
 			if DPP.PlayerConVar(_, 'no_restrict_options') then return end
 			if not IsValid(ent) then return false end
 			if not ply:IsSuperAdmin() then return false end
@@ -2773,6 +2821,7 @@ do
 		MenuIcon = SettingsClass.UnblockIcon,
 
 		Filter = function(self, ent, ply)
+			if not Access('unrestrict' .. k) then return end
 			if DPP.PlayerConVar(_, 'no_restrict_options') then return end
 			if not IsValid(ent) then return false end
 			if not ply:IsSuperAdmin() then return false end
@@ -2791,6 +2840,7 @@ do
 		MenuIcon = 'icon16/pencil.png',
 
 		Filter = function(self, ent, ply)
+			if not Access('restrict' .. k) then return end
 			if DPP.PlayerConVar(_, 'no_restrict_options') then return end
 			if not IsValid(ent) then return false end
 			if not ply:IsSuperAdmin() then return false end
@@ -2802,129 +2852,9 @@ do
 			OpenModifyPanel(ent:GetModel(), false)
 		end,
 	})
+	
+	table.insert(AccessCacheCheck, 'restrict' .. k)
+	table.insert(AccessCacheCheck, 'unrestrict' .. k)
 end
 
-DPP.OldContentTypes = DPP.OldContentTypes or {}
-
---[[ --Can break spawnmenu
-local function OpenMenu(self)
-	if LocalPlayer():IsSuperAdmin() then
-		local name, obj = debug.getupvalue(self.openFunc, 1)
-		
-		local menu = DermaMenu()
-		
-		menu:AddOption( "Copy to Clipboard", function() SetClipboardText( obj.spawnname ) end )
-		menu:AddOption( "Spawn Using Toolgun", function() RunConsoleCommand( "gmod_tool", "creator" ) RunConsoleCommand( "creator_type", "0" ) RunConsoleCommand( "creator_name", obj.spawnname ) end )
-		menu:AddSpacer()
-		
-		for k, v in pairs(DPP.BlockTypes) do
-			menu:AddOption('Add to ' .. v .. ' blocked list', function()
-				RunConsoleCommand('dpp_addblockedentity' .. k, obj.spawnname)
-			end)
-		end
-		
-		menu:AddSpacer()
-		menu:AddOption( "Delete", function() icon:Remove() hook.Run( "SpawnlistContentChanged", icon ) end )
-		
-		menu:Open()
-	else
-		self.openFunc(self)
-	end
-end
-
---That's bad
-local function OverrideSpawnMenuIcons()
-	if not spawnmenu then return end --Not sandbox
-	DPP.OldContentTypes.entity = DPP.OldContentTypes.entity or spawnmenu.GetContentType('entity')
-	
-	spawnmenu.AddContentType('entity', function(container, obj)
-		local icon = DPP.OldContentTypes.entity(container, obj)
-		local openFunc = icon.OpenMenu
-		icon.openFunc = openFunc
-		icon.OpenMenu = OpenMenu
-		
-		return icon
-	end)
-end
-
-timer.Simple(0, OverrideSpawnMenuIcons)
-]]
-
---[[ -- Fucking slow
-local CachedMaterials = {}
-
-local function Exists(class)
-	return file.Exists("materials/entities/" .. class .. ".png", 'GAME')
-end
-
-local function OpenRestrictionMenu()
-	local frame = vgui.Create('DFrame')
-	SettingsClass.ApplyFrameStyle(frame)
-	frame:SetSize(ScrW() - 200, ScrH() - 200)
-	frame:SetPos(100, 100)
-	frame:MakePopup()
-	frame:SetTitle('DPP Restriction Menu')
-	
-	local w = ScrW() - 200
-	
-	local sheet = frame:Add('DPropertySheet')
-	sheet:Dock(FILL)
-	
-	local NPCs = list.Get('NPC')
-	local NPCsPanel = sheet:Add('DScrollPanel')
-	sheet:AddSheet('NPCs', NPCsPanel)
-	NPCsPanel:Dock(FILL)
-	NPCsPanel:SetBackgroundColor(Color(0, 0, 0, 0))
-	
-	local SortedNPC = {}
-	
-	for k, v in pairs(NPCs) do
-		SortedNPC[v.Category] = SortedNPC[v.Category] or {}
-		SortedNPC[v.Category][k] = v
-	end
-	
-	local CurrentLine = 0
-	local CurrentColumn = 0
-	local IWidth, IHeight = 128, 128
-	
-	local PanelsCateg = {}
-	local i = 0
-	
-	for category, data in pairs(SortedNPC) do
-		PanelsCateg[category] = NPCsPanel:Add('DCollapsibleCategory')
-		PanelsCateg[category]:SetLabel(category)
-		CurrentColumn = 0
-		CurrentLine = 0
-		
-		for class, v in pairs(data) do
-			local iW, iH = CurrentColumn * IWidth, CurrentLine * IHeight
-			if ((CurrentColumn + 1) * IWidth) > w then
-				CurrentLine = CurrentLine + 1
-				CurrentColumn = 0
-				iW, iH = CurrentColumn * IWidth, CurrentLine * IHeight
-			end
-			
-			i = i + 1
-			
-			local icon = NPCsPanel:Add('ContentIcon')
-			icon:SetContentType("vehicle")
-			icon:SetSpawnName(v.Class)
-			icon:SetName(v.Name)
-			icon:SetPos(iW, iH)
-			icon.SetIconAt = CurTime() + i * 0.05
-			icon.Think = function(self)
-				if self.SetIconAt < CurTime() and not self.IconSettedUp then
-					self:SetMaterial("materials/entities/" .. v.Class .. ".png")
-					self.IconSettedUp = true
-				end
-			end
-			
-			icon:SetColor(color_black)
-			
-			CurrentColumn = CurrentColumn + 1
-		end
-	end
-end
-
-OpenRestrictionMenu()
-]]
+timer.Simple(0, InitializeCache)
