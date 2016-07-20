@@ -17,6 +17,14 @@ limitations under the License.
 
 --Server
 
+AddCSLuaFile('sh_init.lua')
+AddCSLuaFile('sh_cppi.lua')
+AddCSLuaFile('sh_functions.lua')
+AddCSLuaFile('sh_hooks.lua')
+AddCSLuaFile('cl_init.lua')
+AddCSLuaFile('cl_settings.lua')
+
+include('sv_fpp_comp.lua')
 include('sv_functions.lua')
 
 DPP.PropListing = DPP.PropListing or {}

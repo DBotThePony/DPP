@@ -36,18 +36,12 @@ limitations under the License.
 
 if SERVER then
 	include('sv_init.lua')
-	include('sv_fpp_comp.lua')
-	AddCSLuaFile('sh_init.lua')
-	AddCSLuaFile('sh_cppi.lua')
-	AddCSLuaFile('sh_functions.lua')
-	AddCSLuaFile('sh_hooks.lua')
-	AddCSLuaFile('cl_init.lua')
-	AddCSLuaFile('cl_settings.lua')
 else
 	include('cl_init.lua')
 end
 
 include('sh_cppi.lua')
+include('sh_access.lua')
 include('sh_functions.lua')
 
 DPP.PlayerList = DPP.PlayerList or {}

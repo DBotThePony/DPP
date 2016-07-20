@@ -18,9 +18,14 @@ limitations under the License.
 local DisconnectedPlayer = Color(134, 255, 154)
 local Gray = Color(200, 200, 200)
 
+local function WrapFunction(func, id)
+	return function(ply, ...)
+		DPP.CheckAccess(ply, id, func, ply, ...)
+	end
+end
+
 DPP.Commands = {
 	cleardecals = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsAdmin() then return end
 		for k, v in pairs(player.GetAll()) do
 			v:ConCommand('r_cleardecals')
 			v:SendLua('game.RemoveRagdolls()')
@@ -29,7 +34,6 @@ DPP.Commands = {
 	end,
 	
 	toggleplayerprotect = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsAdmin() then return end
 		
 		if not args[1] then DPP.Notify(ply, 'Invalid argument') return end
 		if not args[2] then DPP.Notify(ply, 'Invalid argument') return end
@@ -48,13 +52,11 @@ DPP.Commands = {
 	end,
 	
 	cleardisconnected = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsAdmin() then return end
 		DPP.ClearDisconnectedProps()
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' cleared all disconnected players entities'}
 	end,
 	
 	clearmap = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsAdmin() then return end
 		for k, v in pairs(DPP.GetAllProps()) do
 			SafeRemoveEntity(v)
 		end
@@ -66,19 +68,16 @@ DPP.Commands = {
 	end,
 	
 	clearbyuid = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsAdmin() then return end
 		local uid = args[1]
 		if not tonumber(uid) then DPP.Notify(ply, 'Invalid argument') return end
 		
 		local Target = player.GetByUniqueID(uid)
 		DPP.ClearByUID(uid)
 		
-		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' cleared all ', Target or DisconnectedPlayer, Gray, '\' props'}
+		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' cleared all ', Target or DisconnectedPlayer, Gray, '\'s props'}
 	end,
 	
 	freezeall = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsAdmin() then return end
-		
 		for k, v in pairs(DPP.GetAllProps()) do
 			local phys = v:GetPhysicsObject()
 			if IsValid(phys) then
@@ -90,15 +89,12 @@ DPP.Commands = {
 	end,
 	
 	freezephys = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsAdmin() then return end
-		
 		local i = DPP.FreezeAllPhysObjects()
 		
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' freezed all physics objects. Total frozen: ' .. i}
 	end,
 	
 	clearplayer = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsAdmin() then return end
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		
 		if tonumber(args[1]) then
@@ -132,8 +128,6 @@ DPP.Commands = {
 	end,
 	
 	transfertoworld = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsAdmin() then return end
-		
 		local id = args[1]
 		if not id then DPP.Notify(ply, 'Invalid argument') return end
 		local num = tonumber(id)
@@ -147,8 +141,6 @@ DPP.Commands = {
 	end,
 	
 	transfertoworld_constrained = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsAdmin() then return end
-		
 		local id = args[1]
 		if not id then DPP.Notify(ply, 'Invalid argument') return end
 		local num = tonumber(id)
@@ -167,7 +159,6 @@ DPP.Commands = {
 	end,
 	
 	freezeplayer = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsAdmin() then return end
 		if not args[1] then DPP.Notify(ply, 'Invalid argument') return end
 		
 		if tonumber(args[1]) then
@@ -193,8 +184,6 @@ DPP.Commands = {
 	end,
 	
 	freezebyuid = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsAdmin() then return end
-		
 		local uid = args[1]
 		
 		if not tonumber(args[1]) then DPP.Notify(ply, 'Invalid argument') return end
@@ -206,8 +195,6 @@ DPP.Commands = {
 	end,
 	
 	unfreezebyuid = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsAdmin() then return end
-		
 		local uid = args[1]
 		
 		if not tonumber(args[1]) then DPP.Notify(ply, 'Invalid argument') return end
@@ -219,7 +206,6 @@ DPP.Commands = {
 	end,
 	
 	unfreezeplayer = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsAdmin() then return end
 		if not args[1] then DPP.Notify(ply, 'Invalid argument') return end
 		
 		if tonumber(args[1]) then
@@ -263,16 +249,15 @@ DPP.Commands = {
 	end,
 	
 	entcheck = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsAdmin() then return end
 		DPP.Notify(ply, 'Look into console')
 		DPP.SimpleLog(IsValid(ply) and ply or 'Console', Gray, ' requested entities report')
 		DPP.ReportEntitiesPrint()
 	end,
 }
 
-DPP.Commands.entreport = DPP.Commands.entcheck
-
 for k, v in pairs(DPP.Commands) do
-	concommand.Add('dpp_' .. k, v)
+	DPP.Commands[k] = WrapFunction(v, k)
+	concommand.Add('dpp_' .. k, DPP.Commands[k])
 end
 
+DPP.Commands.entreport = DPP.Commands.entcheck

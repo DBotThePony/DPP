@@ -172,7 +172,6 @@ end
 
 DPP.ManipulateCommands = {
 	addblockedmodel = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsSuperAdmin() then return end
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		DPP.AddBlockedModel(args[1])
 		local f = (IsValid(ply) and ply:Nick() or 'Console') .. ' added ' .. args[1] .. ' to model blacklist/whitelist'
@@ -181,7 +180,6 @@ DPP.ManipulateCommands = {
 	end,
 
 	removeblockedmodel = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsSuperAdmin() then return end
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		DPP.RemoveBlockedModel(args[1])
 		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' removed ' .. args[1] .. ' from model blacklist/whitelist'}
@@ -244,7 +242,6 @@ for k, v in pairs(DPP.BlockTypes) do
 	end
 	
 	DPP.ManipulateCommands['addblockedentity' .. k] = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsSuperAdmin() then return end
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		if blockedEnts[args[1]] then DPP.Notify(ply, 'You can not add that entity to blacklist') return end
 		DPP['AddBlockedEntity' .. v](args[1])
@@ -254,7 +251,6 @@ for k, v in pairs(DPP.BlockTypes) do
 	end
 	
 	DPP.ManipulateCommands['removeblockedentity' .. k] = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsSuperAdmin() then return end
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		if blockedEnts[args[1]] then DPP.Notify(ply, 'You can not remove that entity from blacklist') return end
 		DPP['RemoveBlockedEntity' .. v](args[1])
@@ -295,7 +291,6 @@ for k, v in pairs(DPP.WhitelistTypes) do
 	end
 	
 	DPP.ManipulateCommands['addwhitelistedentity' .. k] = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsSuperAdmin() then return end
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		DPP['AddWhitelistedEntity' .. v](args[1])
 		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' added ' .. args[1] .. ' to ' .. v .. ' excluded entities'}
@@ -304,7 +299,6 @@ for k, v in pairs(DPP.WhitelistTypes) do
 	end
 	
 	DPP.ManipulateCommands['removewhitelistedentity' .. k] = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsSuperAdmin() then return end
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		DPP['RemoveWhitelistedEntity' .. v](args[1])
 		local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' removed ' .. args[1] .. ' from ' .. v .. ' excluded entities'}
@@ -348,7 +342,6 @@ for k, v in pairs(DPP.RestrictTypes) do
 	end
 	
 	DPP.ManipulateCommands['restrict' .. k] = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsSuperAdmin() then return end
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		if not args[2] then DPP.Notify(ply, 'Invalid argument') return end --No groups allowed
 		if not args[3] or args[3] == '' or args[3] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
@@ -374,7 +367,6 @@ for k, v in pairs(DPP.RestrictTypes) do
 	end
 	
 	DPP.ManipulateCommands['unrestrict' .. k] = function(ply, cmd, args)
-		if IsValid(ply) and not ply:IsSuperAdmin() then return end
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		
 		local class = args[1]
@@ -542,7 +534,6 @@ end
 local Last = 0
 
 DPP.ManipulateCommands.addentitylimit = function(ply, cmd, args)
-	if IsValid(ply) and not ply:IsSuperAdmin() then return end
 	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	if not args[3] or args[3] == '' or args[3] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
@@ -564,7 +555,6 @@ DPP.ManipulateCommands.addentitylimit = function(ply, cmd, args)
 end
 
 DPP.ManipulateCommands.removeentitylimit = function(ply, cmd, args)
-	if IsValid(ply) and not ply:IsSuperAdmin() then return end
 	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	
@@ -584,7 +574,6 @@ DPP.ManipulateCommands.removeentitylimit = function(ply, cmd, args)
 end
 
 DPP.ManipulateCommands.addsboxlimit = function(ply, cmd, args)
-	if IsValid(ply) and not ply:IsSuperAdmin() then return end
 	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	if not args[3] or args[3] == '' or args[3] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
@@ -604,7 +593,6 @@ DPP.ManipulateCommands.addsboxlimit = function(ply, cmd, args)
 end
 
 DPP.ManipulateCommands.addconstlimit = function(ply, cmd, args)
-	if IsValid(ply) and not ply:IsSuperAdmin() then return end
 	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	if not args[3] or args[3] == '' or args[3] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
@@ -624,7 +612,6 @@ DPP.ManipulateCommands.addconstlimit = function(ply, cmd, args)
 end
 
 DPP.ManipulateCommands.removesboxlimit = function(ply, cmd, args)
-	if IsValid(ply) and not ply:IsSuperAdmin() then return end
 	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	
@@ -642,7 +629,6 @@ DPP.ManipulateCommands.removesboxlimit = function(ply, cmd, args)
 end
 
 DPP.ManipulateCommands.removeconstlimit = function(ply, cmd, args)
-	if IsValid(ply) and not ply:IsSuperAdmin() then return end
 	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 	
@@ -703,8 +689,15 @@ function DPP.InitializeDefaultBlock()
 	end
 end
 
+local function WrapFunction(func, id)
+	return function(ply, ...)
+		DPP.CheckAccess(ply, id, func, ply, ...)
+	end
+end
+
 for k, v in pairs(DPP.ManipulateCommands) do
-	concommand.Add('dpp_' .. k, v)
+	DPP.ManipulateCommands[k] = WrapFunction(v, k)
+	concommand.Add('dpp_' .. k, DPP.ManipulateCommands[k])
 end
 
 local function Load()
