@@ -41,7 +41,6 @@ else
 end
 
 include('sh_cppi.lua')
-include('sh_access.lua')
 include('sh_functions.lua')
 
 DPP.PlayerList = DPP.PlayerList or {}
@@ -1377,6 +1376,7 @@ function DPP.Format(...)
 	return repack
 end
 
+include('sh_access.lua')
 include('sh_hooks.lua')
 if SERVER then
 	include('sv_savedata.lua')
