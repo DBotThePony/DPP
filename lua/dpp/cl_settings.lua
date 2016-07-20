@@ -2857,4 +2857,4 @@ do
 	table.insert(AccessCacheCheck, 'unrestrict' .. k)
 end
 
-timer.Simple(0, InitializeCache)
+hook.Add('InitPostEntity', 'DPP.InitializeGUIAccessCache', InitializeCache)
