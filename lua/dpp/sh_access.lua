@@ -156,14 +156,13 @@ end
 
 function DPP.RegisterRights()
 	for k, v in pairs(default) do
-		local trace
-		local status, reason = xpcall(DPP.RegisterAccess, function(err) trace = debug.traceback() end, k, v)
+		local trace, reason
+		local status = xpcall(DPP.RegisterAccess, function(err) reason = err trace = debug.traceback() end, k, v)
 		
-		--Maked checks to able to pass FAdmin
 		if not status and SERVER then
 			CAMIFailed = true
-			DPP.DoEcho(Color(255, 0, 0), 'ERROR: CAMI Failed. You are unable to use CAMI Privileges for now. Contact your admin mod developer!\nThe Error: ' .. reason)
-			MsgC(trace, '\n')
+			DPP.DoEcho(Color(255, 0, 0), 'ERROR: CAMI Failed. You are unable to use CAMI Privileges for now. Contact your admin mod developer!\nThe Error: ' .. (reason or '<unknown>'))
+			DPP.DoEcho(Color(255, 0, 0), trace)
 		end
 	end
 end

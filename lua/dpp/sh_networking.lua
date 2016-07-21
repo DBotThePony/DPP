@@ -107,7 +107,7 @@ function DPP.RegisterNetworkVar(id, send, receive, type)
 	
 	nextId = nextId + 1
 	
-	DPP.Assert(nextId < 32, 'Maximal of DPP networked vars reached!', 1, true)
+	DPP.Assert(nextId < 64, 'Maximal of DPP networked vars reached!', 1, true)
 end
 
 local entMeta = FindMetaTable('Entity')
