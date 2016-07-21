@@ -584,6 +584,10 @@ DPP.ShareTypes = {
 	damage = 'Damage',
 }
 
+for k, v in pairs(DPP.ShareTypes) do
+	DPP.RegisterNetworkVar('share' .. k, net.WriteBool, net.ReadBool, 'boolean')
+end
+
 DPP.RestrictTypes = {
 	tool = 'Tool',
 	sent = 'SENT',
@@ -698,6 +702,8 @@ for k, v in pairs(DPP.ProtectionModes) do
 		value = '0',
 		desc = 'Disable "' .. k .. '" protection for my entities',
 	}
+	
+	DPP.RegisterNetworkVar('disablepp.' .. k, net.WriteBool, net.ReadBool, 'boolean')
 end
 
 for k, v in pairs(DPP.Settings) do
@@ -1308,10 +1314,16 @@ end
 
 local RED = Color(255, 0, 0)
 
-function DPP.Assert(check, str, level)
+function DPP.Assert(check, str, level, notabug)
 	if check then return end
-	local info = debug.getinfo(level or 3)
-	if SERVER then DPP.DoEcho(RED, 'ERROR: ' .. str .. '\nTO USERS: THIS IS A BUG IN ' .. info.short_src .. ':' .. info.currentline) end
+	
+	if not notabug then
+		local info = debug.getinfo(level or 3)
+		if SERVER then DPP.DoEcho(RED, 'ERROR: ' .. str .. '\nTO USERS: THIS IS A BUG IN ' .. info.short_src .. ':' .. info.currentline) end
+	else
+		if SERVER then DPP.DoEcho(RED, 'ERROR: ' .. str) end
+	end
+	
 	error(str, level or 3)
 end
 

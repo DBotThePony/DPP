@@ -44,7 +44,7 @@ function DPP.IsShared(ent)
 end
 
 function DPP.IsSharedType(ent, mode)
-	return ent:GetNWBool('DPP.Share' .. mode)
+	return ent:DPPVar('share' .. mode)
 end
 
 function DPP.GetSharedTable(ent)
@@ -243,7 +243,7 @@ function DPP.IsModelEvenBlocked(model)
 end
 
 function DPP.GetIsProtectionDisabledByServer(ply, mode)
-	return ply:GetNWBool('dpp.DisablePP.' .. mode)
+	return ply:DPPVar('DisablePP.' .. mode)
 end
 
 function DPP.GetIsProtectionDisabledByPlayer(ply, mode)

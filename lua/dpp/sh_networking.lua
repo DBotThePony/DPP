@@ -95,7 +95,20 @@ for k, v in pairs(DPP.NetworkVars) do
 	nextId = nextId + 1
 end
 
-nextId = nil
+function DPP.RegisterNetworkVar(id, send, receive, type)
+	id = id:lower()
+	DPP.NetworkVars[id] = {
+		send = send,
+		receive = receive,
+		type = type,
+		ID = id,
+		NetworkID = nextId,
+	}
+	
+	nextId = nextId + 1
+	
+	DPP.Assert(nextId < 32, 'Maximal of DPP networked vars reached!', 1, true)
+end
 
 local entMeta = FindMetaTable('Entity')
 

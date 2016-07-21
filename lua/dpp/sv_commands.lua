@@ -34,7 +34,6 @@ DPP.Commands = {
 	end,
 	
 	toggleplayerprotect = function(ply, cmd, args)
-		
 		if not args[1] then DPP.Notify(ply, 'Invalid argument') return end
 		if not args[2] then DPP.Notify(ply, 'Invalid argument') return end
 		if not args[3] then DPP.Notify(ply, 'Invalid argument') return end
@@ -238,6 +237,8 @@ DPP.Commands = {
 		if not num then DPP.Notify(ply, 'Invalid argument') return end
 		if not type then DPP.Notify(ply, 'Invalid argument') return end
 		if not status then DPP.Notify(ply, 'Invalid argument') return end
+		
+		if not DPP.ShareTypes[type] then DPP.Notify(ply, 'Invalid argument') return end
 		
 		local ent = Entity(num)
 		if not IsValid(ent) then DPP.Notify(ply, 'Entity does not exists') return end

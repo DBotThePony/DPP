@@ -446,7 +446,7 @@ function DPP.SetIsShared(ent, mode, status)
 		ent:SetDPPVar('IsShared', true)
 	end
 	
-	ent:SetNWBool('DPP.Share' .. mode, status)
+	ent:SetDPPVar('share' .. mode, status)
 	
 	timer.Create('DPP.RecalculateShared.' .. ent:EntIndex(), 0, 0, function()
 		if IsValid(ent) then DPP.RecalculateShare(ent) end
@@ -795,7 +795,7 @@ function DPP.GetPropsByUID(uid)
 end
 
 function DPP.SetProtectionDisabled(ply, mode, status)
-	ply:SetNWBool('dpp.DisablePP.' .. mode, status)
+	ply:SetDPPVar('DisablePP.' .. mode, status)
 end
 
 function DPP.FreezeAllPhysObjects()
