@@ -68,6 +68,11 @@ local function NetworkedEntityVars()
 	end
 end
 
+local function NetworkedRemove()
+	local uid = net.ReadUInt(12)
+	DPP.NETWORK_DB[uid] = nil
+end
+
 local Initialize = false
 
 local function KeyPress()
@@ -79,4 +84,5 @@ end
 
 net.Receive('DPP.NetworkedEntityVars', NetworkedEntityVars)
 net.Receive('DPP.NetworkedVar', NetworkedVar)
+net.Receive('DPP.NetworkedRemove', NetworkedRemove)
 hook.Add('KeyPress', 'DPP.Networking', KeyPress)

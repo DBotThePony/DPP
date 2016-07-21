@@ -48,6 +48,7 @@ util.AddNetworkString('properties_dpp')
 util.AddNetworkString('DPP.NetworkedVar')
 util.AddNetworkString('DPP.NetworkedEntityVars')
 util.AddNetworkString('DPP.NetworkedVarFull')
+util.AddNetworkString('DPP.NetworkedRemove')
 
 local entMeta = FindMetaTable('Entity')
 
@@ -121,8 +122,13 @@ local function EntityRemoved(ent)
 			end
 		end
 	end
+	
+	DPP.NETWORK_DB[euid] = nil
+	net.Start('DPP.NetworkedRemove')
+	net.WriteUInt(euid, 12) --4096 should be enough
+	net.Broadcast()
 end
 
-hook.Add('EntityRemoved', 'DPP.NetworkedVarFull', EntityRemoved)
+hook.Add('EntityRemoved', 'DPP.Networking', EntityRemoved)
 net.Receive('DPP.NetworkedVarFull', NetworkedVarFull)
 timer.Create('DPP.NetworkedVarFull', 0.1, 0, SendTimer)

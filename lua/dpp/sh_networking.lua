@@ -126,9 +126,3 @@ if CLIENT then
 else
 	include('sv_networking.lua')
 end
-
-local function EntityRemoved(ent)
-	DPP.NETWORK_DB[ent:EntIndex()] = nil
-end
-
-hook.Add('EntityRemoved', 'DPP.Networking', EntityRemoved)
