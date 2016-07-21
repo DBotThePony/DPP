@@ -542,6 +542,19 @@ local function BuildSVarPanel(Panel)
 	lab:SetTooltip(Text)
 end
 
+SettingsClass.MixerColors = {
+	R = 'r',
+	G = 'g',
+	B = 'b',
+	A = 'a',
+}
+
+SettingsClass.MixerCVars = {
+	{'dpp_color_background', 'Owner display background color'},
+	{'dpp_color_cantouch', 'Color when can touch'},
+	{'dpp_color_cannottouch', 'Color when can not touch'},
+}
+
 local function BuildCVarPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
@@ -577,6 +590,25 @@ local function BuildCVarPanel(Panel)
 	end
 	
 	Lab:SetTextColor(SettingsClass.TextColor)
+	
+	for i, data in ipairs(SettingsClass.MixerCVars) do
+		local lab = vgui.Create('DLabel', Panel)
+		local text = data[2]
+		Panel:AddItem(lab)
+		lab:SetText(text)
+		lab:SetTextColor(SettingsClass.TextColor)
+		lab:SizeToContents()
+		lab:SetTooltip(text)
+		
+		local mixer = vgui.Create('DColorMixer', Panel)
+		Panel:AddItem(mixer)
+		mixer:SetAlphaBar(true)
+		mixer:SetPalette(true)
+		
+		for k, v in pairs(SettingsClass.MixerColors) do
+			mixer['SetConVar' .. k](mixer, data[1] .. '_' .. v)
+		end
+	end
 end
 
 local function BuildMiscVarsPanel(Panel)

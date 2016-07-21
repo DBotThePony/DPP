@@ -17,6 +17,21 @@ limitations under the License.
 
 --Client
 
+local DISPLAY_BACKGROUND_R = CreateConVar('dpp_color_background_r', 0, FCVAR_ARCHIVE, 'Red Channel for display info background')
+local DISPLAY_BACKGROUND_G = CreateConVar('dpp_color_background_g', 0, FCVAR_ARCHIVE, 'Green Channel for display info background')
+local DISPLAY_BACKGROUND_B = CreateConVar('dpp_color_background_b', 0, FCVAR_ARCHIVE, 'Blue Channel for display info background')
+local DISPLAY_BACKGROUND_A = CreateConVar('dpp_color_background_a', 200, FCVAR_ARCHIVE, 'Alpha Channel for display info background')
+
+local DISPLAY_TOUCH_CAN_R = CreateConVar('dpp_color_cantouch_r', 40, FCVAR_ARCHIVE, 'Red Channel for "can touch" text')
+local DISPLAY_TOUCH_CAN_G = CreateConVar('dpp_color_cantouch_g', 255, FCVAR_ARCHIVE, 'Green Channel for "can touch" text')
+local DISPLAY_TOUCH_CAN_B = CreateConVar('dpp_color_cantouch_b', 51, FCVAR_ARCHIVE, 'Blue Channel for "can touch" text')
+local DISPLAY_TOUCH_CAN_A = CreateConVar('dpp_color_cantouch_a', 255, FCVAR_ARCHIVE, 'Alpha Channel for "can touch" text')
+
+local DISPLAY_TOUCH_CANNOT_R = CreateConVar('dpp_color_cannottouch_r', 255, FCVAR_ARCHIVE, 'Red Channel for "can not touch" text')
+local DISPLAY_TOUCH_CANNOT_G = CreateConVar('dpp_color_cannottouch_g', 51, FCVAR_ARCHIVE, 'Green Channel for "can not touch" text')
+local DISPLAY_TOUCH_CANNOT_B = CreateConVar('dpp_color_cannottouch_b', 0, FCVAR_ARCHIVE, 'Blue Channel for "can not touch" text')
+local DISPLAY_TOUCH_CANNOT_A = CreateConVar('dpp_color_cannottouch_a', 255, FCVAR_ARCHIVE, 'Alpha Channel for "can not touch" text')
+
 DPP.ClientFriends = {}
 DPP.ActiveFriends = {}
 DPP.FriendsCPPI = {}
@@ -321,8 +336,6 @@ concommand.Add('dpp_remfriend', function(ply, cmd, args)
 end)
 
 local DEFAULT_FONT = 'DPP.FONT'
-local Green = Color(40, 255, 51)
-local Red = Color(255, 51, 0)
 
 surface.CreateFont(DEFAULT_FONT, {
 	font = 'Roboto',
@@ -477,6 +490,9 @@ local function PostDrawHUDDefault(x, y)
 	x = x or X
 	y = y or Y
 	
+	local Green = Color(DISPLAY_TOUCH_CAN_R:GetInt(), DISPLAY_TOUCH_CAN_G:GetInt(), DISPLAY_TOUCH_CAN_B:GetInt(), DISPLAY_TOUCH_CAN_A:GetInt())
+	local Red = Color(DISPLAY_TOUCH_CANNOT_R:GetInt(), DISPLAY_TOUCH_CANNOT_G:GetInt(), DISPLAY_TOUCH_CANNOT_B:GetInt(), DISPLAY_TOUCH_CANNOT_A:GetInt())
+	
 	local ent = LocalPlayer():GetEyeTrace().Entity
 	if not IsValid(ent) then return end
 	
@@ -595,7 +611,7 @@ local function PostDrawHUDDefault(x, y)
 	local get = DPP.GetFont()
 	surface.SetFont(get)
 	local W, H = surface.GetTextSize(name)
-	surface.SetDrawColor(0, 0, 0, 200)
+	surface.SetDrawColor(DISPLAY_BACKGROUND_R:GetInt(), DISPLAY_BACKGROUND_G:GetInt(), DISPLAY_BACKGROUND_B:GetInt(), DISPLAY_BACKGROUND_A:GetInt())
 	surface.DrawRect(x, y, W + 8, H + 4)
 
 	draw.DrawText(name, get, x + 4, y + 3, CanTouch and Green or Red)
@@ -606,6 +622,9 @@ end
 local function HUDPaintSimple(x, y)
 	x = x or X
 	y = y or Y
+	
+	local Green = Color(DISPLAY_TOUCH_CAN_R:GetInt(), DISPLAY_TOUCH_CAN_G:GetInt(), DISPLAY_TOUCH_CAN_B:GetInt(), DISPLAY_TOUCH_CAN_A:GetInt())
+	local Red = Color(DISPLAY_TOUCH_CANNOT_R:GetInt(), DISPLAY_TOUCH_CANNOT_G:GetInt(), DISPLAY_TOUCH_CANNOT_B:GetInt(), DISPLAY_TOUCH_CANNOT_A:GetInt())
 	
 	local ent = LocalPlayer():GetEyeTrace().Entity
 	if not IsValid(ent) then return end
