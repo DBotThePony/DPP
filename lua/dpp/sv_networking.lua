@@ -75,9 +75,13 @@ local function SendTimer()
 		end
 		
 		local uid = table.remove(tosend)
+		if not uid then
+			Clients[ply] = nil
+			continue
+		end
 		
 		local data = DPP.NETWORK_DB[uid]
-		if not data then return end --???
+		if not data then continue end --???
 		
 		net.Start('DPP.NetworkedEntityVars')
 		net.WriteUInt(uid, 12) --4096 should be enough
