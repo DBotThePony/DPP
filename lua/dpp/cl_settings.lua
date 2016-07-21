@@ -555,6 +555,9 @@ SettingsClass.MixerCVars = {
 	{'dpp_color_cannottouch', 'Color when can not touch'},
 }
 
+local POSITION_X = CreateConVar('dpp_position_x', 0, FCVAR_ARCHIVE, 'X coordinate (percent) on screen for owner display')
+local POSITION_Y = CreateConVar('dpp_position_Y', 50, FCVAR_ARCHIVE, 'Y coordinate (percent) on screen for owner display')
+
 local function BuildCVarPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
@@ -608,6 +611,22 @@ local function BuildCVarPanel(Panel)
 		for k, v in pairs(SettingsClass.MixerColors) do
 			mixer['SetConVar' .. k](mixer, data[1] .. '_' .. v)
 		end
+	end
+	
+	local Slider = Panel:NumSlider('X coordinate (percent) on screen for owner display', nil, 0, 100)
+	SettingsClass.ApplySliderStyle(Slider)
+	Slider:SetTooltip('X coordinate (percent) on screen for owner display')
+	Slider:SetValue(POSITION_X:GetFloat())
+	Slider.OnValueChanged = function()
+		RunConsoleCommand('dpp_position_x', Slider:GetValue())
+	end
+	
+	local Slider = Panel:NumSlider('Y coordinate (percent) on screen for owner display', nil, 0, 100)
+	SettingsClass.ApplySliderStyle(Slider)
+	Slider:SetTooltip('Y coordinate (percent) on screen for owner display')
+	Slider:SetValue(POSITION_Y:GetFloat())
+	Slider.OnValueChanged = function()
+		RunConsoleCommand('dpp_position_y', Slider:GetValue())
 	end
 end
 

@@ -32,6 +32,9 @@ local DISPLAY_TOUCH_CANNOT_G = CreateConVar('dpp_color_cannottouch_g', 51, FCVAR
 local DISPLAY_TOUCH_CANNOT_B = CreateConVar('dpp_color_cannottouch_b', 0, FCVAR_ARCHIVE, 'Blue Channel for "can not touch" text')
 local DISPLAY_TOUCH_CANNOT_A = CreateConVar('dpp_color_cannottouch_a', 255, FCVAR_ARCHIVE, 'Alpha Channel for "can not touch" text')
 
+local POSITION_X = CreateConVar('dpp_position_x', 0, FCVAR_ARCHIVE, 'X coordinate (percent) on screen for owner display')
+local POSITION_Y = CreateConVar('dpp_position_Y', 50, FCVAR_ARCHIVE, 'Y coordinate (percent) on screen for owner display')
+
 DPP.ClientFriends = {}
 DPP.ActiveFriends = {}
 DPP.FriendsCPPI = {}
@@ -484,6 +487,7 @@ function DPP.GetFont(name)
 	end
 end
 
+--Keep these to be safe
 local X, Y = 0, ScrH() / 2
 
 local function PostDrawHUDDefault(x, y)
@@ -801,10 +805,12 @@ local function HUDPaint()
 		end
 	end
 	
+	local x, y = ScrW() * POSITION_X:GetFloat() / 100, ScrH() * POSITION_Y:GetFloat() / 100
+	
 	if not DPP.PlayerConVar(nil, 'simple_hud') then
-		PostDrawHUDDefault()
+		PostDrawHUDDefault(x, y)
 	else
-		HUDPaintSimple()
+		HUDPaintSimple(x, y)
 	end
 end
 
