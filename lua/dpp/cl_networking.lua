@@ -26,7 +26,7 @@ function entMeta:SetDPPVar(var, val)
 end
 
 local function NetworkedVar()
-	local id = net.ReadUInt(5)
+	local id = net.ReadUInt(6)
 	
 	local data, var
 	
@@ -51,7 +51,7 @@ local function NetworkedEntityVars()
 	DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
 	
 	for i = 1, count do
-		local id = net.ReadUInt(5)
+		local id = net.ReadUInt(6)
 		
 		local data, var
 		
