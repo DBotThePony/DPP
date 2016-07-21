@@ -15,12 +15,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
+local CAMIFailed = false
 DPP.Access = DPP.Access or {}
 
 function DPP.RegisterAccess(id, default)
 	DPP.Access[id] = default
 	
-	if not CAMI then return end
+	if not CAMI or CAMIFailed then return end
 	
 	if default == 'operator' and not CAMI.GetUsergroup('operator') then
 		default = 'admin'
@@ -62,10 +63,14 @@ function DPP.HaveAccess(ply, id, callback)
 		return
 	end
 	
-	if CAMI then
+	if CAMI and not CAMIFailed then
 		local access = DPP.Access[id]
 		
 		local function callbackWrapper(result, reason)
+			if result == nil then --Admin mod got confused
+				result = DPP.DefaultAccessCheckLight(ply, id)
+			end
+			
 			if reason == 'Fallback.' then
 				if access == 'operator' then
 					access = 'admin'
@@ -151,7 +156,15 @@ end
 
 function DPP.RegisterRights()
 	for k, v in pairs(default) do
-		DPP.RegisterAccess(k, v)
+		local trace
+		local status, reason = xpcall(DPP.RegisterAccess, function(err) trace = debug.traceback() end, k, v)
+		
+		--Maked checks to able to pass FAdmin
+		if not status and SERVER then
+			CAMIFailed = true
+			DPP.DoEcho(Color(255, 0, 0), 'ERROR: CAMI Failed. You are unable to use CAMI Privileges for now. Contact your admin mod developer!\nThe Error: ' .. reason)
+			MsgC(trace, '\n')
+		end
 	end
 end
 
