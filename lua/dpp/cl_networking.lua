@@ -25,7 +25,7 @@ function entMeta:SetDPPVar(var, val)
 	DPP.NETWORK_DB[uid][var] = val
 end
 
-net.Receive('DPP.NetworkedVar', function()
+local function NetworkedVar()
 	local id = net.ReadUInt(5)
 	
 	local data, var
@@ -42,7 +42,31 @@ net.Receive('DPP.NetworkedVar', function()
 	local uid = net.ReadUInt(12)
 	DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
 	DPP.NETWORK_DB[uid][var] = data.receive()
-end)
+end
+
+local function NetworkedEntityVars()
+	local uid = net.ReadUInt(12)
+	local count = net.ReadUInt(6)
+	
+	DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
+	
+	for i = 1, count do
+		local id = net.ReadUInt(5)
+		
+		local data, var
+		
+		for k, v in pairs(DPP.NetworkVars) do
+			if v.NetworkID ~= id then continue end
+			data = v
+			var = k
+			break
+		end
+		
+		if not data then continue end
+		
+		DPP.NETWORK_DB[uid][var] = data.receive()
+	end
+end
 
 local Initialize = false
 
@@ -53,4 +77,6 @@ local function KeyPress()
 	net.SendToServer()
 end
 
+net.Receive('DPP.NetworkedEntityVars', NetworkedEntityVars)
+net.Receive('DPP.NetworkedVar', NetworkedVar)
 hook.Add('KeyPress', 'DPP.Networking', KeyPress)

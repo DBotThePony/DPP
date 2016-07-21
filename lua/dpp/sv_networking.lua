@@ -46,6 +46,7 @@ util.AddNetworkString('DPP.ConVarChanged')
 util.AddNetworkString('properties_dpp')
 
 util.AddNetworkString('DPP.NetworkedVar')
+util.AddNetworkString('DPP.NetworkedEntityVars')
 util.AddNetworkString('DPP.NetworkedVarFull')
 
 local entMeta = FindMetaTable('Entity')
@@ -78,13 +79,16 @@ local function SendTimer()
 		local data = DPP.NETWORK_DB[uid]
 		if not data then return end --???
 		
+		net.Start('DPP.NetworkedEntityVars')
+		net.WriteUInt(uid, 12) --4096 should be enough
+		net.WriteUInt(table.Count(data), 6) --Quite bigger than max number of vars
+		
 		for var, val in pairs(data) do
-			net.Start('DPP.NetworkedVar')
 			net.WriteUInt(DPP.NetworkVars[var].NetworkID, 5)
-			net.WriteUInt(uid, 12) --4096 should be enough
 			DPP.NetworkVars[var].send(val)
-			net.Send(ply)
 		end
+		
+		net.Send(ply)
 	end
 end
 
