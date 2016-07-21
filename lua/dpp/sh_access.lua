@@ -162,7 +162,7 @@ function DPP.RegisterRights()
 		--Maked checks to able to pass FAdmin
 		if not status and SERVER then
 			CAMIFailed = true
-			DPP.DoEcho(Color(255, 0, 0), 'ERROR: CAMI Failed. You are unable to use CAMI Privileges for now. Contact your admin mod developer!\nThe Error: ' .. reason)
+			DPP.DoEcho(Color(255, 0, 0), 'ERROR: CAMI Failed. You are unable to use CAMI Privileges for now. Contact your admin mod developer!\nThe Error: ' .. (reason or '<unknown>'))
 			MsgC(trace, '\n')
 		end
 	end
