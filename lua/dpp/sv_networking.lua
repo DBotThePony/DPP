@@ -59,7 +59,7 @@ function entMeta:SetDPPVar(var, val)
 	DPP.NETWORK_DB[uid][var] = val
 	
 	net.Start('DPP.NetworkedVar')
-	net.WriteUInt(DPP.NetworkVars[var].NetworkID, 5)
+	net.WriteUInt(DPP.NetworkVars[var].NetworkID, 6)
 	net.WriteUInt(uid, 12) --4096 should be enough
 	DPP.NetworkVars[var].send(val)
 	net.Broadcast()
@@ -84,7 +84,7 @@ local function SendTimer()
 		net.WriteUInt(table.Count(data), 6) --Quite bigger than max number of vars
 		
 		for var, val in pairs(data) do
-			net.WriteUInt(DPP.NetworkVars[var].NetworkID, 5)
+			net.WriteUInt(DPP.NetworkVars[var].NetworkID, 6)
 			DPP.NetworkVars[var].send(val)
 		end
 		
