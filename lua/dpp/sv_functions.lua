@@ -22,7 +22,7 @@ function DPP.SetGhosted(ent, status)
 	if status and DPP.GetGhosted(ent) then return end
 	
 	if status then
-		ent:SetNWBool('DPP.IsGhosted', true)
+		ent:SetDPPVar('IsGhosted', true)
 		
 		ent.__DPPColor = ent:GetColor()
 		ent.DPP_oldCollision = ent:GetCollisionGroup()
@@ -39,7 +39,7 @@ function DPP.SetGhosted(ent, status)
 			phys:EnableCollisions(false)
 		end
 	else
-		ent:SetNWBool('DPP.IsGhosted', false)
+		ent:SetDPPVar('IsGhosted', false)
 		
 		if ent.DPP_OldRenderMode then ent:SetRenderMode(ent.DPP_OldRenderMode) end
 		if ent.__DPPColor then ent:SetColor(ent.__DPPColor) end
@@ -264,7 +264,7 @@ function DPP.FindEntitiesByClass(ply, class)
 end
 
 function DPP.SetUpForGrabs(ent, status)
-	ent:SetNWBool('DPP.IsUpForGraps', status)
+	ent:SetDPPVar('IsUpForGraps', status)
 end
 
 function DPP.CheckUpForGrabs(ent, ply)
@@ -438,12 +438,12 @@ function DPP.RecalculateShare(ent)
 		end
 	end
 	
-	ent:SetNWBool('DPP.IsShared', hit)
+	ent:SetDPPVar('IsShared', hit)
 end
 
 function DPP.SetIsShared(ent, mode, status)
 	if status then
-		ent:SetNWBool('DPP.IsShared', true)
+		ent:SetDPPVar('IsShared', true)
 	end
 	
 	ent:SetNWBool('DPP.Share' .. mode, status)

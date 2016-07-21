@@ -16,22 +16,22 @@ limitations under the License.
 ]]
 
 function DPP.GetGhosted(ent)
-	return ent:GetNWBool('DPP.IsGhosted')
+	return ent:DPPVar('IsGhosted')
 end
 
 function DPP.IsOwned(ent)
 	if not IsValid(ent) then return false end
-	return ent:GetNWBool('DPP.IsOwned')
+	return ent:DPPVar('IsOwned')
 end
 
 function DPP.IsUpForGrabs(ent)
-	return ent:GetNWBool('DPP.IsUpForGraps')
+	return ent:DPPVar('IsUpForGraps')
 end
 
 function DPP.GetOwnerDetails(ent)
-	return ent:GetNWString('DPP.OwnerString', 'World'),
-		ent:GetNWInt('DPP.OwnerUID', 0),
-		ent:GetNWString('DPP.OwnerSteamID', '')
+	return ent:DPPVar('OwnerString', 'World'),
+		ent:DPPVar('OwnerUID', 0),
+		ent:DPPVar('OwnerSteamID', '')
 end
 
 function DPP.GetConstrainedTable(ent)
@@ -40,7 +40,7 @@ function DPP.GetConstrainedTable(ent)
 end
 
 function DPP.IsShared(ent)
-	return ent:GetNWBool('DPP.IsShared')
+	return ent:DPPVar('IsShared')
 end
 
 function DPP.IsSharedType(ent, mode)

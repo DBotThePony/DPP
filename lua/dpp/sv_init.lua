@@ -22,6 +22,8 @@ AddCSLuaFile('sh_cppi.lua')
 AddCSLuaFile('sh_functions.lua')
 AddCSLuaFile('sh_access.lua')
 AddCSLuaFile('sh_hooks.lua')
+AddCSLuaFile('sh_networking.lua')
+AddCSLuaFile('cl_networking.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('cl_settings.lua')
 
@@ -30,34 +32,6 @@ include('sv_functions.lua')
 
 DPP.PropListing = DPP.PropListing or {}
 DPP.ConstraintsListing = DPP.ConstraintsListing or {}
-
-util.AddNetworkString('DPP.Log')
-util.AddNetworkString('DPP.Lists')
-util.AddNetworkString('DPP.RLists')
-util.AddNetworkString('DPP.LLists')
-util.AddNetworkString('DPP.SLists')
-util.AddNetworkString('DPP.CLists')
-util.AddNetworkString('DPP.WLists')
-util.AddNetworkString('DPP.ListsInsert')
-util.AddNetworkString('DPP.RListsInsert')
-util.AddNetworkString('DPP.LListsInsert')
-util.AddNetworkString('DPP.SListsInsert')
-util.AddNetworkString('DPP.CListsInsert')
-util.AddNetworkString('DPP.WListsInsert')
-util.AddNetworkString('DPP.ModelsInsert')
-util.AddNetworkString('DPP.ModelLists')
-util.AddNetworkString('DPP.Notify')
-util.AddNetworkString('DPP.ReloadFiendList')
-util.AddNetworkString('DPP.RefreshConVarList')
-util.AddNetworkString('DPP.RefreshPlayerList')
-util.AddNetworkString('DPP.SetConVar')
-util.AddNetworkString('DPP.ConstrainedTable')
-util.AddNetworkString('DPP.ReceiveFriendList')
-util.AddNetworkString('DPP.SendConstrainedWith')
-util.AddNetworkString('DPP.PlayerList')
-
-util.AddNetworkString('DPP.ConVarChanged')
-util.AddNetworkString('properties_dpp')
 
 resource.AddWorkshop('659044893')
 
@@ -154,7 +128,7 @@ end
 function DPP.SetOwner(ent, ply)
 	--if ent:IsConstraint() then return end --Constraint can't have an owner
 	local old = DPP.GetOwner(ent)
-	ent:SetNWEntity('DPP.Owner', ply)
+	ent:SetDPPVar('Owner', ply)
 	
 	local isConst = DPP.IsConstraint(ent)
 	
@@ -163,19 +137,19 @@ function DPP.SetOwner(ent, ply)
 		
 		ply.DPP_Ents[ent] = true
 		
-		ent:SetNWBool('DPP.IsOwned', true)
-		ent:SetNWString('DPP.OwnerString', ply:Nick())
-		ent:SetNWInt('DPP.OwnerUID', ply:UniqueID())
-		ent:SetNWString('DPP.OwnerSteamID', ply:SteamID())
+		ent:SetDPPVar('IsOwned', true)
+		ent:SetDPPVar('OwnerString', ply:Nick())
+		ent:SetDPPVar('OwnerUID', ply:UniqueID())
+		ent:SetDPPVar('OwnerSteamID', ply:SteamID())
 		if isConst then
 			DPP.ConstraintsListing[ent] = true
 		end
 		DPP.PropListing[ent] = true
 	else
-		ent:SetNWBool('DPP.IsOwned', false)
-		ent:SetNWString('DPP.OwnerString', 'World')
-		ent:SetNWInt('DPP.OwnerUID', 0)
-		ent:SetNWString('DPP.OwnerSteamID', '')
+		ent:SetDPPVar('IsOwned', false)
+		ent:SetDPPVar('OwnerString', 'World')
+		ent:SetDPPVar('OwnerUID', 0)
+		ent:SetDPPVar('OwnerSteamID', '')
 		DPP.PropListing[ent] = nil
 		DPP.ConstraintsListing[ent] = nil
 	end

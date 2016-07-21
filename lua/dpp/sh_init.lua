@@ -42,6 +42,7 @@ end
 
 include('sh_cppi.lua')
 include('sh_functions.lua')
+include('sh_networking.lua')
 
 DPP.PlayerList = DPP.PlayerList or {}
 
@@ -808,7 +809,7 @@ end
 
 function DPP.GetOwner(ent)
 	if not IsValid(ent) then return NULL end
-	return ent:GetNWEntity('DPP.Owner')
+	return ent:DPPVar('Owner')
 end
 
 function DPP.AddConVar(k, tab)

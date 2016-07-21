@@ -2908,4 +2908,6 @@ do
 	table.insert(AccessCacheCheck, 'unrestrict' .. k)
 end
 
-hook.Add('InitPostEntity', 'DPP.InitializeGUIAccessCache', InitializeCache)
+hook.Add('InitPostEntity', 'DPP.InitializeGUIAccessCache', function()
+	timer.Simple(5, InitializeCache)
+end)
