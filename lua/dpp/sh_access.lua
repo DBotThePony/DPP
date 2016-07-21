@@ -23,10 +23,6 @@ function DPP.RegisterAccess(id, default)
 	
 	if not CAMI or CAMIFailed then return end
 	
-	if default == 'operator' and not CAMI.GetUsergroup('operator') then
-		default = 'admin'
-	end
-	
 	CAMI.RegisterPrivilege{
 		Name = 'dpp_' .. id,
 		MinAccess = default,
@@ -38,7 +34,7 @@ function DPP.DefaultAccessCheck(ply, id, callback)
 	
 	if access == 'user' then
 		callback(true, 'user rights')
-	elseif access == 'admin' or access == 'operator' then
+	elseif access == 'admin' then
 		callback(ply:IsAdmin(), 'admin rights')
 	elseif access == 'superadmin' then
 		callback(ply:IsSuperAdmin(), 'superadmin rights')
@@ -50,7 +46,7 @@ function DPP.DefaultAccessCheckLight(ply, id)
 	
 	if access == 'user' then
 		return true, 'user rights'
-	elseif access == 'admin' or access == 'operator' then
+	elseif access == 'admin' then
 		return ply:IsAdmin(), 'admin rights'
 	elseif access == 'superadmin' then
 		return ply:IsSuperAdmin(), 'superadmin rights'
@@ -72,10 +68,6 @@ function DPP.HaveAccess(ply, id, callback)
 			end
 			
 			if reason == 'Fallback.' then
-				if access == 'operator' then
-					access = 'admin'
-				end
-				
 				reason = access .. ' rights'
 			end
 			
@@ -85,7 +77,7 @@ function DPP.HaveAccess(ply, id, callback)
 		--If i do not specify target as nil, it would be C "no value"
 		
 		CAMI.PlayerHasAccess(ply, 'dpp_' .. id, callbackWrapper, nil, {
-			Fallback = access == 'operator' and 'admin' or access,
+			Fallback = access,
 		})
 		
 		return
@@ -111,7 +103,7 @@ local default = {
 	touchother = 'admin',
 	
 	--Usual Commands
-	cleardecals = 'operator',
+	cleardecals = 'admin',
 	toggleplayerprotect = 'admin',
 	cleardisconnected = 'admin',
 	clearmap = 'admin',
@@ -126,7 +118,7 @@ local default = {
 	unfreezebyuid = 'admin',
 	unfreezeplayer = 'admin',
 	share = 'user',
-	entcheck = 'operator',
+	entcheck = 'admin',
 	
 	--Database manipulate commands
 	addblockedmodel = 'superadmin',
