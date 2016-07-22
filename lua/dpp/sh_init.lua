@@ -394,6 +394,12 @@ DPP.Settings = {
 		desc = 'Advanced spawn checks (for WAC Aircraft, SCars, etc.)',
 	},
 	
+	['strict_spawn_checks'] = {
+		type = 'bool',
+		value = '1',
+		desc = '[Experimental/Beta] (Very) Strict spawn checks.\nTARDIS, Combine APC and other\naddons like that would be owned by spawned player',
+	},
+	
 	['verbose_logging'] = {
 		type = 'bool',
 		value = '0',

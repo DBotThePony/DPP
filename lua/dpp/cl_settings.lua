@@ -417,6 +417,7 @@ local MiscConVars = {
 	'player_cant_punt',
 	'prevent_explosions_crash',
 	'advanced_spawn_checks',
+	'strict_spawn_checks',
 	'experemental_spawn_checks',
 	'allow_damage_vehicles',
 	'allow_damage_sent',

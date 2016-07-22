@@ -207,25 +207,25 @@ DPP.oldCleanupAdd = DPP.oldCleanupAdd or cleanup.Add
 DPP.oldUndoAddEntity = DPP.oldUndoAddEntity or undo.AddEntity
 DPP.oldUndoFinish = DPP.oldUndoFinish or undo.Finish
 
-local function CheckBefore(ply, ent, forceVerbose)
+local function CheckBefore(ply, ent, forceVerbose, ignoreAntispam)
 	local hide = not forceVerbose and not DPP.GetConVar('verbose_logging')
 	if not ent then return end
 	if IsValid(ent) and not DPP.IsOwned(ent) or not IsValid(DPP.GetOwner(ent)) then --Wow, we spawned entity without calling spawning hook!
 		if ent:GetClass() == 'prop_physics' then
-			SpawnFunctions.PlayerSpawnedProp(ply, ent:GetModel(), ent, hide)
+			SpawnFunctions.PlayerSpawnedProp(ply, ent:GetModel(), ent, hide, ignoreAntispam)
 		elseif ent:IsNPC() then
-			SpawnFunctions.PlayerSpawnedNPC(ply, ent, hide)
+			SpawnFunctions.PlayerSpawnedNPC(ply, ent, hide, ignoreAntispam)
 		elseif ent:IsRagdoll() then
-			SpawnFunctions.PlayerSpawnedRagdoll(ply, ent:GetModel(), ent, hide)
+			SpawnFunctions.PlayerSpawnedRagdoll(ply, ent:GetModel(), ent, hide, ignoreAntispam)
 		elseif ent:IsVehicle() then
-			SpawnFunctions.PlayerSpawnedVehicle(ply, ent, hide)
+			SpawnFunctions.PlayerSpawnedVehicle(ply, ent, hide, ignoreAntispam)
 		elseif ent:IsWeapon() then
-			SpawnFunctions.PlayerSpawnedSWEP(ply, ent, hide)
+			SpawnFunctions.PlayerSpawnedSWEP(ply, ent, hide, ignoreAntispam)
 		--elseif not ent:IsConstraint() then
 		elseif DPP.IsConstraint(ent) then
-			timer.Simple(0, function() SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide) end)
+			timer.Simple(0, function() SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide, ignoreAntispam) end)
 		else
-			SpawnFunctions.PlayerSpawnedSENT(ply, ent, hide)
+			SpawnFunctions.PlayerSpawnedSENT(ply, ent, hide, ignoreAntispam)
 		end
 	end
 end
@@ -284,7 +284,7 @@ local function cleanup_Add(ply, type, ent)
 	return DPP.oldCleanupAdd(ply, type, ent)
 end
 
-function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog)
+function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog, ignoreAntispam)
 	if ent.DPP_SpawnTime  == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 	
@@ -295,7 +295,7 @@ function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog)
 	end
 	
 	Spawned(ply, ent)
-	DPP.CheckSizesDelay(ent, ply)
+	if not ignoreAntispam then DPP.CheckSizesDelay(ent, ply) end
 	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, 'Prop') end return end
 	if DPP.GetConVar('check_stuck') then
 		StuckCheckDelay(ply, ent)
@@ -320,7 +320,7 @@ local ropesConstraints = {
 	['muscle'] = true,
 }
 
-function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide)
+function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide, ignoreAntispam)
 	DPP.AssertPlayer(ply)
 	if not IsValid(ply) then return end
 	if not IsValid(ent) then return end
@@ -361,7 +361,7 @@ function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide)
 	end
 end
 
-function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog)
+function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog, ignoreAntispam)
 	DPP.AssertPlayer(ply)
 	if ent.DPP_SpawnTime  == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
@@ -377,7 +377,7 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog)
 	end
 	
 	Spawned(ply, ent)
-	DPP.CheckSizesDelay(ent, ply)
+	if not ignoreAntispam then DPP.CheckSizesDelay(ent, ply) end
 	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, 'Ragdoll') end return end
 	if not shouldHideLog then LogSpawn(ply, ent, 'Ragdoll') end
 	
@@ -387,7 +387,7 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog)
 	CheckBlocked(ply, ent)
 end
 
-function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog)
+function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog, ignoreAntispam)
 	DPP.AssertPlayer(ply)
 	if ent.DPP_SpawnTime  == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
@@ -410,7 +410,7 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog)
 	end
 	
 	Spawned(ply, ent)
-	DPP.CheckSizesDelay(ent, ply)
+	if not ignoreAntispam then DPP.CheckSizesDelay(ent, ply) end
 	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, 'SENT') end return end
 	if not shouldHideLog then LogSpawn(ply, ent, 'SENT') end
 	
@@ -420,7 +420,7 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog)
 	CheckBlocked(ply, ent)
 end
 
-function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog)
+function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog, ignoreAntispam)
 	DPP.AssertPlayer(ply)
 	if ent.DPP_SpawnTime  == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
@@ -451,7 +451,7 @@ function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog)
 	CheckBlocked(ply, ent)
 end
 
-function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog)
+function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog, ignoreAntispam)
 	DPP.AssertPlayer(ply)
 	if ent.DPP_SpawnTime  == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
@@ -701,6 +701,29 @@ local function OnEntityCreated(ent)
 	end)
 end
 
+local RECURSIVE_MEM = {}
+
+local function FindEntitiesRecursiveFunc(tab)
+	for k, v in pairs(tab) do
+		local t = type(v)
+		
+		if t == 'Entity' or t == 'Vehicle' then
+			table.insert(RECURSIVE_MEM, v)
+		end
+		
+		if t == 'table' then
+			FindEntitiesRecursiveFunc(v)
+		end
+	end
+end
+
+local function FindEntitiesRecursive(tab)
+	FindEntitiesRecursiveFunc(tab)
+	local reply = RECURSIVE_MEM
+	RECURSIVE_MEM = {}
+	return reply
+end
+
 function PostEntityCreated(ent, Timestamp)
 	if not IsValid(ent) then return end
 	local Timestamp2 = CurTime()
@@ -748,26 +771,32 @@ function PostEntityCreated(ent, Timestamp)
 		end
 	end
 	
-	if DPP.GetConVar('experemental_spawn_checks') then
-		if ent.EntOwner and isentity(ent.EntOwner) then
-			local nent = ent.EntOwner
-			local owner = not nent:IsPlayer() and DPP.GetOwner(nent) or nent
+	if DPP.GetConVar('strict_spawn_checks') then
+		local get = DPP.GetOwner(ent)
+		
+		if IsValid(get) then
+			local Ents = FindEntitiesRecursive(ent:GetTable())
 			
-			if isentity(nent) and not nent:IsPlayer() then
-				DPP.SetConstrainedBetween(ent, nent, true)
-				
-				DPP.SendConstrainedWith(ent)
-				DPP.SendConstrainedWith(nent)
-			end
-			
-			if IsValid(owner) and owner:IsPlayer() then
-				CheckBefore(owner, ent)
-				--DPP.SetOwner(ent, owner)
+			for k, v in ipairs(Ents) do
+				if Timestamps[v] ~= Timestamp then continue end
+				if DPP.IsOwned(v) then continue end
+				CheckBefore(get, v, false, true)
 			end
 		end
+	end
+	
+	if DPP.GetConVar('experemental_spawn_checks') then
+		local nent
 		
-		if ent.SpawnedBy and isentity(ent.SpawnedBy) then
-			local nent = ent.SpawnedBy
+		if isentity(ent.EntOwner) then
+			nent = ent.SpawnedBy
+		end
+		
+		if isentity(ent.SpawnedBy) then
+			nent = ent.SpawnedBy
+		end
+		
+		if nent then
 			local owner = not nent:IsPlayer() and DPP.GetOwner(nent) or nent
 			
 			if isentity(nent) and not nent:IsPlayer() then
