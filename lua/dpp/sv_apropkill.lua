@@ -46,6 +46,11 @@ local function CanTool(ply, tr)
 	DPP.CheckDroppedEntity(ply, tr.Entity)
 end
 
+local WhitelistProps = {
+	['func_door'] = true,
+	['prop_door_rotating'] = true,
+}
+
 local function EntityTakeDamage(ent, dmg)
 	if not DPP.GetConVar('apropkill_enable') then return end
 	if not DPP.GetConVar('apropkill_damage') then return end
@@ -71,10 +76,13 @@ local function EntityTakeDamage(ent, dmg)
 		end
 	end
 	
-	local cond = dmg:GetDamageType() == DMG_CRUSH or 
+	local Aclass = IsValid(attacker) and attacker:GetClass()
+	local Iclass = IsValid(inflictor) and inflictor:GetClass()
+	
+	local cond = dmg:GetDamageType() == DMG_CRUSH and ((not Aclass or not WhitelistProps[Aclass]) and (not Iclass or not WhitelistProps[Iclass])) or 
 		(dmg:GetDamageType() == DMG_VEHICLE and DPP.GetConVar('apropkill_damage_vehicle')) or
-		(IsValid(attacker) and attacker:GetClass() == 'prop_physics') or
-		(IsValid(inflictor) and inflictor:GetClass() == 'prop_physics')
+		(Aclass == 'prop_physics' or Aclass == 'prop_ragdoll' or Aclass == 'prop_physics_multiplayer') or
+		(Iclass == 'prop_physics' or Iclass == 'prop_ragdoll' or Iclass == 'prop_physics_multiplayer')
 	
 	if cond then
 		dmg:SetDamage(0)
