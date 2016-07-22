@@ -158,6 +158,9 @@ function DPP.SetOwner(ent, ply)
 		old.DPP_Ents = old.DPP_Ents or {}
 		old.DPP_Ents[ent] = nil
 	end
+	
+	--Running AssignOwnership after we done default behaviour
+	hook.Run('DPP.AssignOwnership', ply, ent)
 end
 
 concommand.Add('dpp_setvar', function(ply, cmd, args)
