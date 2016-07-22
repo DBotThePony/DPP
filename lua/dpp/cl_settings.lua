@@ -2460,6 +2460,7 @@ end
 
 timer.Create('DPP.UpdateGUIAccessCache', 10, 0, function()
 	local ply = LocalPlayer()
+	if not IsValid(ply) then return end
 	
 	for i, id in pairs(AccessCacheCheck) do
 		DPP.HaveAccess(ply, id, function(result)
