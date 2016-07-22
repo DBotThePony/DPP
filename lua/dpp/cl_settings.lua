@@ -2449,14 +2449,8 @@ local AccessCacheCheck = {
 }
 
 local function InitializeCache()
-	local ply = LocalPlayer()
-	
 	for k, v in pairs(AccessCacheCheck) do
-		AccessCache[v] = DPP.DefaultAccessCheckLight(ply, v)
-		
-		DPP.HaveAccess(ply, v, function(result)
-			AccessCache[v] = result
-		end)
+		AccessCache[v] = false
 	end
 end
 
@@ -2467,7 +2461,7 @@ end
 timer.Create('DPP.UpdateGUIAccessCache', 10, 0, function()
 	local ply = LocalPlayer()
 	
-	for id, status in pairs(AccessCache) do
+	for i, id in pairs(AccessCacheCheck) do
 		DPP.HaveAccess(ply, id, function(result)
 			AccessCache[id] = result
 		end)
@@ -2909,6 +2903,4 @@ do
 	table.insert(AccessCacheCheck, 'unrestrict' .. k)
 end
 
-hook.Add('InitPostEntity', 'DPP.InitializeGUIAccessCache', function()
-	timer.Simple(5, InitializeCache)
-end)
+InitializeCache()
