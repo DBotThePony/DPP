@@ -702,16 +702,29 @@ local function OnEntityCreated(ent)
 end
 
 local RECURSIVE_MEM = {}
+local MEM_TABLE_CACHE = {}
+
+local function HaveValueLight(tab, val)
+	for k = 1, #tab do
+		if tab[k] == val then return true end
+	end
+	
+	return false
+end
 
 local function FindEntitiesRecursiveFunc(tab)
 	for k, v in pairs(tab) do
 		local t = type(v)
 		
 		if t == 'Entity' or t == 'Vehicle' then
+			if HaveValueLight(RECURSIVE_MEM, v) then continue end --Prevent recursion
 			table.insert(RECURSIVE_MEM, v)
+			FindEntitiesRecursiveFunc(tab)
 		end
 		
 		if t == 'table' then
+			if MEM_TABLE_CACHE[v] then continue end --Prevent recursion
+			MEM_TABLE_CACHE[v] = true
 			FindEntitiesRecursiveFunc(v)
 		end
 	end
@@ -721,6 +734,7 @@ local function FindEntitiesRecursive(tab)
 	FindEntitiesRecursiveFunc(tab)
 	local reply = RECURSIVE_MEM
 	RECURSIVE_MEM = {}
+	MEM_TABLE_CACHE = {}
 	return reply
 end
 
