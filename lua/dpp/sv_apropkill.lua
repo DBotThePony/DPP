@@ -81,18 +81,6 @@ local function EntityTakeDamage(ent, dmg)
 	
 	local Aclass = aValid and attacker:GetClass()
 	local Iclass = iValid and inflictor:GetClass()
-	local AIsOwned = aValid and DPP.IsOwned(attacker)
-	local IIsOwned = iValid and DPP.IsOwned(inflictor)
-	
-	if aValid and attacker:IsPlayer() then
-		AIsOwned = true
-	end
-	
-	if iValid and inflictor:IsPlayer() then
-		IIsOwned = true
-	end
-	
-	if not AIsOwned and not IIsOwned then return end
 	
 	local cond = dmg:GetDamageType() == DMG_CRUSH and ((not Aclass or not WhitelistProps[Aclass]) and (not Iclass or not WhitelistProps[Iclass])) or 
 		(dmg:GetDamageType() == DMG_VEHICLE and DPP.GetConVar('apropkill_damage_vehicle')) or
