@@ -87,6 +87,16 @@ local function EntityTakeDamage(ent, dmg)
 		(Aclass == 'prop_physics' or Aclass == 'prop_ragdoll' or Aclass == 'prop_physics_multiplayer') or
 		(Iclass == 'prop_physics' or Iclass == 'prop_ragdoll' or Iclass == 'prop_physics_multiplayer')
 	
+	if not aValid and attacker ~= NULL then --Worldspawn, sometimes player getting hit from prop that's attacker and inflictor set to worldspawn
+		cond = true
+	end
+	
+	if aValid and not IsValid(DPP.GetOwner(attacker)) then --Logic or map entity
+		if not iValid or not IsValid(DPP.GetOwner(inflictor)) then
+			cond = false
+		end
+	end
+	
 	if cond then
 		dmg:SetDamage(0)
 		dmg:SetDamageForce(EmptyVector)
