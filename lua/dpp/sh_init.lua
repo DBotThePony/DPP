@@ -126,6 +126,12 @@ DPP.Settings = {
 		desc = 'Anti-Propkill',
 	},
 	
+	['apropkill_damage_noworld'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'World owned entities bypass damage check',
+	},
+	
 	['apropkill_clampspeed'] = {
 		type = 'bool',
 		value = '0',
