@@ -54,6 +54,9 @@ end
 
 function DPP.ClientConVarChanged(var, old, new)
 	var = string.sub(var, 5)
+	
+	if DPP.CSettings[var].nosend then return end
+	
 	net.Start('DPP.ConVarChanged')
 	net.WriteString(var)
 	net.SendToServer()

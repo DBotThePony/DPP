@@ -1129,8 +1129,16 @@ if SERVER then
 	end
 else
 	for k, v in pairs(DPP.CSettings) do
-		DPP.CVars[k] = CreateClientConVar('dpp_' .. k, v.value, true, true, v.desc)
+		local flags = {FCVAR_ARCHIVE}
+		
+		if not v.nosend then
+			table.insert(flags, FCVAR_USERINFO)
+		end
+		
+		DPP.CVars[k] = CreateConVar('dpp_' .. k, v.value, flags, v.desc)
+		
 		cvars.AddChangeCallback('dpp_' .. k, DPP.ClientConVarChanged, 'DPP')
+		
 		timer.Simple(0, function()
 			DPP.ClientConVarChanged('dpp_' .. k)
 		end)
