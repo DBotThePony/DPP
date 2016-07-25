@@ -90,9 +90,13 @@ DPP.NetworkVars = {
 local nextId = 1
 
 for k, v in pairs(DPP.NetworkVars) do
+	local nk = k:lower()
 	v.ID = k
 	v.NetworkID = nextId
 	nextId = nextId + 1
+	
+	DPP.NetworkVars[k] = nil
+	DPP.NetworkVars[nk] = v
 end
 
 function DPP.RegisterNetworkVar(id, send, receive, type)
@@ -115,10 +119,17 @@ local entMeta = FindMetaTable('Entity')
 function entMeta:DPPVar(var, ifNothing)
 	var = var:lower()
 	local uid = self:EntIndex()
-	local data = DPP.NETWORK_DB[uid]
-	if not data then return ifNothing end
-	if data[var] == nil then return ifNothing end
-	return data[var]
+	
+	if uid > 0 then
+		local data = DPP.NETWORK_DB[uid]
+		if not data then return ifNothing end
+		if data[var] == nil then return ifNothing end
+		return data[var]
+	else
+		self.DPPVars = self.DPPVars or {}
+		if self.DPPVars[var] == nil then return ifNothing end
+		return self.DPPVars[var]
+	end
 end
 
 if CLIENT then

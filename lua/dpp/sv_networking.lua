@@ -55,15 +55,21 @@ local entMeta = FindMetaTable('Entity')
 function entMeta:SetDPPVar(var, val)
 	var = var:lower()
 	local uid = self:EntIndex()
-	DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
-	if val == nil then val = DPP.NetworkVars[var].default end
-	DPP.NETWORK_DB[uid][var] = val
 	
-	net.Start('DPP.NetworkedVar')
-	net.WriteUInt(DPP.NetworkVars[var].NetworkID, 6)
-	net.WriteUInt(uid, 12) --4096 should be enough
-	DPP.NetworkVars[var].send(val)
-	net.Broadcast()
+	if uid > 0 then
+		DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
+		if val == nil then val = DPP.NetworkVars[var].default end
+		DPP.NETWORK_DB[uid][var] = val
+		
+		net.Start('DPP.NetworkedVar')
+		net.WriteUInt(DPP.NetworkVars[var].NetworkID, 6)
+		net.WriteUInt(uid, 12) --4096 should be enough
+		DPP.NetworkVars[var].send(val)
+		net.Broadcast()
+	else
+		self.DPPVars = self.DPPVars or {}
+		self.DPPVars[var] = val
+	end
 end
 
 local Clients = {}

@@ -99,11 +99,14 @@ local function EntityTakeDamage(ent, dmg)
 		end
 	end
 	
-	if cond then
-		dmg:SetDamage(0)
-		dmg:SetDamageForce(EmptyVector)
-		dmg:SetDamageType(DMG_GENERIC)
-	end
+	if not cond then return end
+	
+	local can = hook.Run('DPP_A_EntityTakeDamage_Hit', ent, dmg)
+	if can == false then return end
+	
+	dmg:SetDamage(0)
+	dmg:SetDamageForce(EmptyVector)
+	dmg:SetDamageType(DMG_GENERIC)
 end
 
 local function PlayerSpawnedVehicle(ply, ent)

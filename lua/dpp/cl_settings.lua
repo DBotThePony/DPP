@@ -503,6 +503,7 @@ local APropKillVars = {
 	'apropkill_nopush_mode',
 	'apropkill_vehicle',
 	'apropkill_damage',
+	'apropkill_damage_noworld',
 	'prevent_prop_throw',
 	'prevent_player_stuck',
 	'apropkill_clampspeed',

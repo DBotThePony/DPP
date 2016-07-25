@@ -20,9 +20,15 @@ local entMeta = FindMetaTable('Entity')
 function entMeta:SetDPPVar(var, val)
 	var = var:lower()
 	local uid = self:EntIndex()
-	DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
-	if val == nil then val = DPP.NetworkVars[var].default end
-	DPP.NETWORK_DB[uid][var] = val
+	
+	if uid > 0 then
+		DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
+		if val == nil then val = DPP.NetworkVars[var].default end
+		DPP.NETWORK_DB[uid][var] = val
+	else
+		self.DPPVars = self.DPPVars or {}
+		self.DPPVars[var] = val
+	end
 end
 
 local function NetworkedVar()
