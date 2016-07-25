@@ -25,6 +25,8 @@ function entMeta:SetDPPVar(var, val)
 		DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
 		if val == nil then val = DPP.NetworkVars[var].default end
 		DPP.NETWORK_DB[uid][var] = val
+		
+		self.__DPP_Vars_Save = DPP.NETWORK_DB[uid]
 	else
 		self.DPPVars = self.DPPVars or {}
 		self.DPPVars[var] = val

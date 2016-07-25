@@ -66,6 +66,8 @@ function entMeta:SetDPPVar(var, val)
 		net.WriteUInt(uid, 12) --4096 should be enough
 		DPP.NetworkVars[var].send(val)
 		net.Broadcast()
+		
+		self.__DPP_Vars_Save = DPP.NETWORK_DB[uid]
 	else
 		self.DPPVars = self.DPPVars or {}
 		self.DPPVars[var] = val

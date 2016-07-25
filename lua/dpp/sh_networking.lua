@@ -132,6 +132,29 @@ function entMeta:DPPVar(var, ifNothing)
 	end
 end
 
+local function OnEntityCreated(ent)
+	local uid = ent:EntIndex()
+	if uid <= 0 then return end
+	
+	timer.Simple(0, function()
+		timer.Simple(0, function() --Skip two frames
+			if not ent.__DPP_Vars_Save then return end
+			DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
+			local data = DPP.NETWORK_DB[uid]
+			
+			local rep = ent.__DPP_Vars_Save --Store
+			
+			for k, v in pairs(rep) do
+				if data[k] ~= nil then continue end
+				if not DPP.NetworkVars[k:lower()] then continue end --Old network variable
+				ent:SetDPPVar(k, v)
+			end
+		end)
+	end)
+end
+
+hook.Add('OnEntityCreated', 'DPP.Networking', OnEntityCreated)
+
 if CLIENT then
 	include('cl_networking.lua')
 else
