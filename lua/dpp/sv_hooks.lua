@@ -688,8 +688,12 @@ timer.Create('DPP.ClearTimestamps', 30, 0, function()
 end)
 
 local function DPP_ReplacedSetPlayer(self, ply)
-	DPP.SetOwner(self, ply)
-	return self.__DPP_OldSetPlayer(self, ply)
+	if DPP.GetConVar('experemental_spawn_checks') then
+		DPP.SetOwner(self, ply)
+		return self.__DPP_OldSetPlayer(self, ply)
+	else
+		return self.__DPP_OldSetPlayer(self, ply)
+	end
 end
 
 local PostEntityCreated
