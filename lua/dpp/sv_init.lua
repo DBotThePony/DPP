@@ -236,27 +236,6 @@ function DPP.NotifyLog(t)
 	DLog.Log('DPP', 1, t, {Private = false, PrintClient = false})
 end
 
-local function PlayerInitialSpawn(ply)
-	timer.Simple(2, function()
-		if not IsValid(ply) then return end
-		DPP.FindPlayerProps(ply)
-		net.Start('DPP.ReloadFiendList')
-		net.Broadcast()
-		
-		--Still would call twice rebuilding player list on client
-		net.Start('DPP.RefreshPlayerList')
-		net.Broadcast()
-		
-		DPP.RecalculatePlayerList()
-		DPP.SendPlayerList()
-	end)
-	
-	timer.Simple(10, function()
-		DPP.BroadcastLists()
-		DPP.ReBroadcastCVars()
-	end)
-end
-
 local File
 local CurrentPatch
 
@@ -322,6 +301,27 @@ end
 
 timer.Create('DPP.RefreshLogFile', 10, 0, DPP.RefreshLogFile)
 timer.Simple(0, DPP.RefreshLogFile)
+
+function DPP.PlayerInitialSpawn(ply)
+	timer.Simple(2, function()
+		if not IsValid(ply) then return end
+		DPP.FindPlayerProps(ply)
+		net.Start('DPP.ReloadFiendList')
+		net.Broadcast()
+		
+		--Still would call twice rebuilding player list on client
+		net.Start('DPP.RefreshPlayerList')
+		net.Broadcast()
+		
+		DPP.RecalculatePlayerList()
+		DPP.SendPlayerList()
+	end)
+	
+	timer.Simple(10, function()
+		DPP.BroadcastLists()
+		DPP.ReBroadcastCVars()
+	end)
+end
 
 function DPP.PlayerDisconnected(ply)
 	if DPP.GetConVar('disconnected_freeze') then
@@ -420,7 +420,7 @@ net.Receive('DPP.SetConVar', function(len, ply)
 	RunConsoleCommand('dpp_' .. c, new)
 end)
 
-hook.Add('PlayerInitialSpawn', 'DPP.Hooks', PlayerInitialSpawn)
+hook.Add('PlayerInitialSpawn', 'DPP.Hooks', DPP.PlayerInitialSpawn)
 hook.Add('PlayerDisconnected', 'DPP.Hooks', DPP.PlayerDisconnected)
 
 net.Receive('DPP.ConVarChanged', function(len, ply)

@@ -18,6 +18,8 @@ limitations under the License.
 --FPP Funcs compability
 
 FPP = FPP or {}
+FPP.AntiSpam = FPP.AntiSpam or {}
+FPP.Protect = FPP.Protect or {}
 
 function FPP.plyCanTouchEnt(ply, ent, type)
 	if not type then --We are ignoring type
@@ -40,19 +42,77 @@ function FPP.plyCanTouchEnt(ply, ent, type)
 end
 
 concommand.Add('FPP_AddBlockedModel', function(ply, cmd, args)
-	if IsValid(ply) and not ply:IsSuperAdmin() then return end
-	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
-	DPP.AddBlockedModel(args[1])
-	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' added ' .. args[1] .. ' to model blacklist/whitelist'}
-	DPP.Notify(player.GetAll(), f)
-	DPP.Message(f)
+	DPP.ManipulateCommands.addblockedmodel(ply, cmd, args)
 end)
 
 concommand.Add('FPP_RemoveBlockedModel', function(ply, cmd, args)
-	if IsValid(ply) and not ply:IsSuperAdmin() then return end
-	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
-	DPP.RemoveBlockedModel(args[1])
-	local f = {IsValid(ply) and team.GetColor(ply:Team()) or Color(196, 0, 255), (IsValid(ply) and ply:Nick() or 'Console'), Color(200, 200, 200), ' removed ' .. args[1] .. ' to model blacklist/whitelist'}
-	DPP.Notify(player.GetAll(), f)
-	DPP.Message(f)
+	DPP.ManipulateCommands.removeblockedmodel(ply, cmd, args)
 end)
+
+function FPP.AntiSpam.GhostFreeze(ent, phys) --phys arg is ignored
+	DPP.SetGhosted(ent, true)
+end
+
+function FPP.UnGhost(ply, ent) --phys arg is ignored
+	if DPP.GetGhosted(ent) then
+		DPP.SetGhosted(ent, false)
+	end
+end
+
+function FPP.AntiSpam.CreateEntity(ply, ent, IsDuplicate)
+	DPP.SpawnFunctions.CheckBefore(ply, ent, nil, IsDuplicate)
+	DPP.SetOwner(ent, ply)
+end
+
+function FPP.AntiSpam.DuplicatorSpam(ply)
+	return true --ugh
+end
+
+--Protection
+
+function FPP.Protect.PhysgunPickup(ply, ent)
+	return DPP.PhysgunPickup(ply, ent)
+end
+
+function FPP.Protect.PhysgunReload(weapon, ply)
+	return DPP.OnPhysgunReload(phys, ply)
+end
+
+function FPP.Protect.GravGunPickup(ply, ent)
+	return DPP.CanGravgun(ply, ent)
+end
+
+function FPP.Protect.GravGunPunt(ply, ent)
+	return DPP.CanGravgunPunt(ply, ent)
+end
+
+function FPP.Protect.PlayerUse(ply, ent)
+	return DPP.PlayerUse(ply, ent)
+end
+
+function FPP.Protect.EntityDamage(ent, dmginfo)
+	local ply = dmginfo:GetAttacker()
+	if not IsValid(ply) then return end
+	if not ply:IsPlayer() then return end
+	return DPP.CanDamage(ply, ent)
+end
+
+function FPP.Protect.CanTool(ply, trace, tool, ENT)
+	return DPP.CanTool(ply, trace.Entity, tool)
+end
+
+function FPP.Protect.CanProperty(ply, property, ent)
+	return DPP.CanProperty(ply, property, ent)
+end
+
+function FPP.Protect.CanDrive(ply, ent)
+	return DPP.CanDrive(ply, ent)
+end
+
+function FPP.PlayerDisconnect(ply)
+	DPP.PlayerDisconnected(ply)
+end
+
+function FPP.PlayerInitialSpawn(ply)
+	DPP.PlayerInitialSpawn(ply)
+end

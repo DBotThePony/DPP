@@ -230,6 +230,8 @@ local function CheckBefore(ply, ent, forceVerbose, ignoreAntispam)
 	end
 end
 
+SpawnFunctions.CheckBefore = CheckBefore
+
 local function undo_Finish(name)
 	local name, val = debug.getupvalue(DPP.oldUndoFinish, 1)
 	

@@ -21,6 +21,9 @@ function DPP.SetGhosted(ent, status)
 	if ent:IsPlayer() then return end
 	if status and DPP.GetGhosted(ent) then return end
 	
+	local can = hook.Run('DPP_SetGhosted', ent, status)
+	if can == false then return end
+	
 	if status then
 		ent:SetDPPVar('IsGhosted', true)
 		
