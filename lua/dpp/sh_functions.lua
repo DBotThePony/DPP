@@ -19,6 +19,8 @@ function DPP.GetGhosted(ent)
 	return ent:DPPVar('IsGhosted')
 end
 
+DPP.IsGhosted = DPP.GetGhosted
+
 function DPP.IsOwned(ent)
 	if not IsValid(ent) then return false end
 	return ent:DPPVar('IsOwned')

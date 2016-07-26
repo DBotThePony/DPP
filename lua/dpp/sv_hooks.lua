@@ -749,6 +749,7 @@ function PostEntityCreated(ent, Timestamp)
 	local Timestamp2 = CurTime()
 	
 	local spawn_checks_noaspam = DPP.GetConVar('spawn_checks_noaspam')
+	local iGhost = DPP.GetGhosted(ent)
 	
 	if ent.IsConstraint and ent:IsConstraint() then
 		local ent1, ent2 = DPP.GetConstrainedEntities(ent)
@@ -762,11 +763,13 @@ function PostEntityCreated(ent, Timestamp)
 				
 				if t1 == Timestamp and not IsValid(o1) and IsValid(o2) then --Because we are running on next frame
 					o1 = o2
+					if DPP.GetGhosted(ent2) then DPP.SetGhosted(ent1, true) end
 					CheckBefore(o2, ent1, false, spawn_checks_noaspam)
 				end
 				
 				if t2 == Timestamp and not IsValid(o2) and IsValid(o1) then
 					o2 = o1
+					if DPP.GetGhosted(ent1) then DPP.SetGhosted(ent2, true) end
 					CheckBefore(o1, ent2, false, spawn_checks_noaspam)
 				end
 			end
@@ -802,6 +805,7 @@ function PostEntityCreated(ent, Timestamp)
 			for k, v in ipairs(Ents) do
 				if Timestamps[v] ~= Timestamp then continue end
 				if DPP.IsOwned(v) then continue end
+				if iGhost then DPP.SetGhosted(v, true) end
 				CheckBefore(get, v, false, spawn_checks_noaspam)
 			end
 		end
