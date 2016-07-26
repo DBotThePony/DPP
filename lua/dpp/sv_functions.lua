@@ -507,12 +507,12 @@ function DPP.CheckAntispamDelay(ply, ent)
 	end)
 end
 
-function DPP.CheckAntispam(ply, ent)
+function DPP.CheckAntispam(ply, ent, force)
 	if not DPP.GetConVar('antispam') then return DPP.ANTISPAM_VALID end
 	if not IsValid(ent) then return DPP.ANTISPAM_VALID end
 	
-	if ent:GetSolid() == SOLID_NONE then return DPP.ANTISPAM_VALID end
-	if ent:GetMoveType() == MOVETYPE_NONE then return DPP.ANTISPAM_VALID end
+	if not force and ent:GetSolid() == SOLID_NONE then return DPP.ANTISPAM_VALID end
+	if not force and ent:GetMoveType() == MOVETYPE_NONE then return DPP.ANTISPAM_VALID end
 	
 	local can = hook.Run('DPP_AntiSpamEnt', ply, ent)
 	if can == false then return DPP.ANTISPAM_VALID end
@@ -534,6 +534,16 @@ function DPP.CheckAntispam(ply, ent)
 		DPP.Notify(ply, 'Prop is ghosted due to spam', 0)
 		return DPP.ANTISPAM_GHOSTED
 	end
+end
+
+function DPP.IsChekedByAntispam(ent)
+	if not DPP.GetConVar('antispam') then return false end
+	if not IsValid(ent) then return false end
+	
+	if ent:GetSolid() == SOLID_NONE then return false end
+	if ent:GetMoveType() == MOVETYPE_NONE then return false end
+	
+	return true
 end
 
 function DPP.BroadcastLists()

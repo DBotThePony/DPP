@@ -750,6 +750,29 @@ function PostEntityCreated(ent, Timestamp)
 	
 	local spawn_checks_noaspam = DPP.GetConVar('spawn_checks_noaspam')
 	local iGhost = DPP.GetGhosted(ent)
+	local wasChecked = DPP.IsChekedByAntispam(ent)
+	local shouldRemove = false
+	
+	local function AntispamHit(ply)
+		if wasChecked then return end
+		
+		wasChecked = true
+		local status = DPP.CheckAntispam_NoEnt(ply, true, true)
+		
+		if status == DPP.ANTISPAM_INVALID then
+			if not shouldRemove then
+				DPP.Notify(ply, 'Prop is removed due to spam', 1)
+			end
+			
+			shouldRemove = true
+		elseif status == DPP.ANTISPAM_GHOSTED then
+			if not iGhost then
+				DPP.Notify(ply, 'Prop is ghosted due to spam', 0)
+			end
+			
+			iGhost = true
+		end
+	end
 	
 	if ent.IsConstraint and ent:IsConstraint() then
 		local ent1, ent2 = DPP.GetConstrainedEntities(ent)
@@ -805,10 +828,26 @@ function PostEntityCreated(ent, Timestamp)
 			for k, v in ipairs(Ents) do
 				if Timestamps[v] ~= Timestamp then continue end
 				if DPP.IsOwned(v) then continue end
-				if iGhost then DPP.SetGhosted(v, true) end
-				CheckBefore(get, v, false, spawn_checks_noaspam)
+				
+				AntispamHit(get)
+				
+				if not shouldRemove then
+					if iGhost then DPP.SetGhosted(v, true) end
+					CheckBefore(get, v, false, spawn_checks_noaspam)
+				else
+					SafeRemoveEntity(v)
+				end
 			end
 		end
+	end
+	
+	if shouldRemove then
+		SafeRemoveEntity(ent)
+		return
+	end
+	
+	if iGhost and not DPP.GetGhosted(ent) then
+		DPP.SetGhosted(ent, true)
 	end
 	
 	if DPP.GetConVar('experemental_spawn_checks') then
