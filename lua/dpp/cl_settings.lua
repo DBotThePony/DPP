@@ -419,6 +419,7 @@ local MiscConVars = {
 	'advanced_spawn_checks',
 	'strict_spawn_checks',
 	'experemental_spawn_checks',
+	'spawn_checks_noaspam',
 	'allow_damage_vehicles',
 	'allow_damage_sent',
 	'allow_damage_npc',
