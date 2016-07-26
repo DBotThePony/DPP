@@ -442,6 +442,7 @@ local ClientVars = {
 	'no_player_touch',
 	'no_touch_world',
 	'no_touch_other',
+	'smaller_fonts',
 	
 	'no_restrict_options',
 	'no_block_options',

@@ -342,87 +342,90 @@ concommand.Add('dpp_remfriend', function(ply, cmd, args)
 end)
 
 local DEFAULT_FONT = 'DPP.FONT'
+local DEFAULT_FONT_SMALL = 'DPP.FONT_small'
 
-surface.CreateFont(DEFAULT_FONT, {
-	font = 'Roboto',
-	size = 18,
-	weight = 500,
-	extended = true,
-})
+DPP.FontsData = {
+	[DEFAULT_FONT] = {
+		font = 'Roboto',
+		size = 18,
+		weight = 500,
+		extended = true,
+	},
 
-surface.CreateFont('DPP.Arial', {
-	font = 'Arial',
-	size = 16,
-	weight = 1000,
-	extended = true,
-})
+	['DPP.Arial'] = {
+		font = 'Arial',
+		size = 16,
+		weight = 1000,
+		extended = true,
+	},
 
-surface.CreateFont('DPP.Terminal', {
-	font = 'Terminal',
-	size = 16,
-	weight = 1000,
-})
+	['DPP.Terminal'] = {
+		font = 'Terminal',
+		size = 16,
+		weight = 1000,
+	},
 
-surface.CreateFont('DPP.Time', {
-	font = 'Time',
-	size = 18,
-	weight = 1200,
-})
+	['DPP.Time'] = {
+		font = 'Time',
+		size = 18,
+		weight = 1200,
+	},
 
-surface.CreateFont('DPP.System', {
-	font = 'System',
-	size = 16,
-	weight = 1000,
-})
+	['DPP.System'] = {
+		font = 'System',
+		size = 16,
+		weight = 1000,
+	},
 
-surface.CreateFont('DPP.OpenSans', {
-	font = 'Open Sans',
-	size = 18,
-	weight = 400,
-	extended = true,
-})
+	['DPP.OpenSans'] = {
+		font = 'Open Sans',
+		size = 18,
+		weight = 400,
+		extended = true,
+	},
 
-surface.CreateFont('DPP.MSSans', {
-	font = 'Microsoft Sans',
-	size = 16,
-	weight = 1000,
-	extended = true,
-})
+	['DPP.MSSans'] = {
+		font = 'Microsoft Sans',
+		size = 16,
+		weight = 1000,
+		extended = true,
+	},
 
-surface.CreateFont('DPP.LBiolinumG', {
-	font = 'Linux Biolinum G',
-	size = 16,
-	weight = 600,
-	extended = true,
-})
+	['DPP.LBiolinumG'] = {
+		font = 'Linux Biolinum G',
+		size = 16,
+		weight = 600,
+		extended = true,
+	},
 
-surface.CreateFont('DPP.ComicSans', {
-	font = 'Comic Sans MS',
-	size = 20,
-	weight = 1000,
-	extended = true,
-})
+	['DPP.ComicSans'] = {
+		font = 'Comic Sans MS',
+		size = 20,
+		weight = 1000,
+		extended = true,
+	},
 
-surface.CreateFont('DPP.Impact', {
-	font = 'Impact',
-	size = 20,
-	weight = 500,
-	extended = true,
-})
+	['DPP.Impact'] = {
+		font = 'Impact',
+		size = 20,
+		weight = 500,
+		extended = true,
+	},
 
-surface.CreateFont('DPP.TNR', {
-	font = 'Times New Roman',
-	size = 20,
-	weight = 500,
-	extended = true,
-})
+	['DPP.TNR'] = {
+		font = 'Times New Roman',
+		size = 20,
+		weight = 500,
+		extended = true,
+	},
 
-surface.CreateFont('DPP.UbuntuLight', {
-	font = 'Ubuntu Light',
-	size = 20,
-	weight = 500,
-	extended = true,
-})
+	['DPP.UbuntuLight'] = {
+		font = 'Ubuntu Light',
+		size = 20,
+		weight = 500,
+		extended = true,
+	},
+}
 
 local Roboto = {
 	['RobotoLight'] = 'Roboto Light',
@@ -468,23 +471,44 @@ DPP.Fonts = {
 }
 
 for k, v in pairs(Roboto) do
-	surface.CreateFont('DPP.' .. k, {
+	DPP.FontsData['DPP.' .. k] = {
 		font = v,
 		size = 18,
 		weight = 500,
 		extended = true,
-	})
+	}
 	
 	table.insert(DPP.Fonts, {id = 'DPP.' .. k, name = v})
+end
+
+DPP.FontsDataSmall = {}
+
+for k, v in pairs(DPP.FontsData) do
+	DPP.FontsDataSmall[k] = table.Copy(v)
+	DPP.FontsDataSmall[k].size = DPP.FontsDataSmall[k].size - 4
+	
+	surface.CreateFont(k, v)
+	surface.CreateFont(k .. '_small', DPP.FontsDataSmall[k])
+	
+	for i, data in ipairs(DPP.Fonts) do
+		if data.id == k then
+			data.sid = k .. '_small'
+		end
+	end
 end
 
 function DPP.GetFont(name)
 	local var = DPP.PlayerConVar(LocalPlayer(), 'font')
 	
-	if not DPP.Fonts[var] then return DEFAULT_FONT end
+	local Smaller = DPP.LocalConVar('smaller_fonts')
+	
+	if not DPP.Fonts[var] then
+		return not Smaller and DEFAULT_FONT or DEFAULT_FONT_SMALL
+	end
 	
 	if not name then
-		return DPP.Fonts[var].id
+		local d = DPP.Fonts[var]
+		return not Smaller and d.id or d.sid
 	else
 		return DPP.Fonts[var].name
 	end

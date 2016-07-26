@@ -789,6 +789,13 @@ DPP.CSettings = {
 		nosend = true,
 		desc = 'Display whatever prop is up for grabs',
 	},
+	
+	['smaller_fonts'] = {
+		type = 'bool',
+		value = '0',
+		nosend = true,
+		desc = 'Use smaller fonts (works only with DPP fonts)',
+	},
 }
 
 DPP.ProtectionModes = {
