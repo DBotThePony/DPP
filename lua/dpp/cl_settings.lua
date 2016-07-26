@@ -454,6 +454,16 @@ local ClientVars = {
 	'disable_vehicle_protection',
 }
 
+SettingsClass.ClientVars2 = {
+	'display_owner',
+	'display_entityclass',
+	'display_entityclass2',
+	'display_entityname',
+	'display_reason',
+	'display_disconnected',
+	'display_grabs',
+}
+
 function SettingsClass.ConVarSlider(Panel, var)
 	local v = DPP.Settings[var]
 	
@@ -560,6 +570,23 @@ SettingsClass.MixerCVars = {
 local POSITION_X = CreateConVar('dpp_position_x', 0, FCVAR_ARCHIVE, 'X coordinate (percent) on screen for owner display')
 local POSITION_Y = CreateConVar('dpp_position_Y', 50, FCVAR_ARCHIVE, 'Y coordinate (percent) on screen for owner display')
 
+function SettingsClass.ClientConVarCheckbox(Panel, idx)
+	local v = DPP.CSettings[idx]
+	local val = DPP.LocalConVar(idx)
+	
+	local checkbox = Panel:CheckBox(v.desc)
+	checkbox:SetChecked(val)
+	checkbox.Button.LastVal = val
+	checkbox.Button.val = idx
+	checkbox.Button.DoClick = FUNCTIONS.CCheckBoxDoClick
+	checkbox.Button.Think = FUNCTIONS.CCheckBoxThink
+	checkbox:SetTooltip(v.desc)
+	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
+	SettingsClass.MakeCheckboxBetter(checkbox)
+	
+	return checkbox
+end
+
 local function BuildCVarPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
@@ -567,21 +594,9 @@ local function BuildCVarPanel(Panel)
 	
 	SettingsClass.ApplyButtonStyle(Panel:Button('Remove my entities', 'dpp_clearself'))
 	
-	for a, b in pairs(ClientVars) do
-		local k = b
-		local v = DPP.CSettings[b]
-		if not v.bool then continue end
-		local val = DPP.PlayerConVar(LocalPlayer(), k)
-		
-		local checkbox = Panel:CheckBox(v.desc)
-		checkbox:SetChecked(val)
-		checkbox.Button.LastVal = val
-		checkbox.Button.val = k
-		checkbox.Button.DoClick = FUNCTIONS.CCheckBoxDoClick
-		checkbox.Button.Think = FUNCTIONS.CCheckBoxThink
-		checkbox:SetTooltip(v.desc)
-		SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
-		SettingsClass.MakeCheckboxBetter(checkbox)
+	for k, v in pairs(ClientVars) do
+		if not DPP.CSettings[v].bool then continue end
+		SettingsClass.ClientConVarCheckbox(Panel, v)
 	end
 	
 	local FontBox, Lab = Panel:ComboBox('Font')
@@ -595,6 +610,27 @@ local function BuildCVarPanel(Panel)
 	end
 	
 	Lab:SetTextColor(SettingsClass.TextColor)
+	
+	local lab = vgui.Create('DLabel', Panel)
+	local text = 'Display customization'
+	Panel:AddItem(lab)
+	lab:SetText(text)
+	lab:SetTextColor(SettingsClass.TextColor)
+	lab:SizeToContents()
+	lab:SetTooltip(text)
+	
+	for k, v in pairs(SettingsClass.ClientVars2) do
+		if not DPP.CSettings[v].bool then continue end
+		SettingsClass.ClientConVarCheckbox(Panel, v)
+	end
+	
+	local lab = vgui.Create('DLabel', Panel)
+	local text = 'Display colors customization'
+	Panel:AddItem(lab)
+	lab:SetText(text)
+	lab:SetTextColor(SettingsClass.TextColor)
+	lab:SizeToContents()
+	lab:SetTooltip(text)
 	
 	for i, data in ipairs(SettingsClass.MixerCVars) do
 		local lab = vgui.Create('DLabel', Panel)

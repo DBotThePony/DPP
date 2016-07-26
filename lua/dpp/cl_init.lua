@@ -530,7 +530,39 @@ local function PostDrawHUDDefault(x, y)
 		name = ent:Nick()
 	end
 	
-	name = name .. '\n' .. string.format('%s<%s>\n%s', ent:GetClass(), tostring(ent), ent:IsPlayer() and ent:Nick() or ent:IsWeapon() and ent:GetPrintName() or ent.PrintName or '')
+	local f = DPP.LocalConVar('display_owner')
+	
+	if not f then
+		name = ''
+	end
+	
+	if DPP.LocalConVar('display_entityclass') then
+		if f then
+			name = name .. '\n'
+			f = false
+		end
+		
+		name = name .. ent:GetClass()
+	end
+	
+	if DPP.LocalConVar('display_entityclass2') then
+		if f then
+			name = name .. '\n'
+			f = false
+		end
+		
+		name = name .. '<' .. tostring(ent) .. '>'
+	end
+	
+	if DPP.LocalConVar('display_entityname') then
+		local str = ent:IsPlayer() and ent:Nick() or ent:IsWeapon() and ent:GetPrintName() or ent.PrintName or ''
+		
+		if str ~= '' then
+			name = name .. '\n' .. str
+		end
+	end
+	
+	local DisplayReason = DPP.LocalConVar('display_reason')
 	
 	if IsValid(curWeapon) and DPP.GetConVar('enable') then
 		local class = curWeapon:GetClass()
@@ -540,7 +572,7 @@ local function PostDrawHUDDefault(x, y)
 			local CanTouch1, reason = DPP.CanTool(LocalPlayer(), ent, curWeapon:GetMode())
 			CanTouch = CanTouch1 ~= false
 			
-			if reason then
+			if reason and DisplayReason then
 				name = name .. '\n' .. reason
 			end
 			
@@ -552,14 +584,14 @@ local function PostDrawHUDDefault(x, y)
 			CanTouch = CanTouch ~= false
 			
 			if DPP.GetConVar('enable_physgun') then
-				if status then
+				if status and DisplayReason then
 					name = name .. '\nPhysgun blocked'
 				end
 			else
 				CanTouch = true
 			end
 			
-			if reason then
+			if reason and DisplayReason then
 				name = name .. '\n' .. reason
 			end
 			
@@ -572,14 +604,14 @@ local function PostDrawHUDDefault(x, y)
 			CanTouch = CanTouch ~= false
 			
 			if DPP.GetConVar('enable_gravgun') then
-				if status then
+				if status and DisplayReason then
 					name = name .. '\nGravgun blocked'
 				end
 			else
 				CanTouch = true
 			end
 			
-			if reason then
+			if reason and DisplayReason then
 				name = name .. '\n' .. reason
 			end
 			
@@ -603,15 +635,15 @@ local function PostDrawHUDDefault(x, y)
 	
 	local CanDamage, dreason = DPP.CanDamage(LocalPlayer(), ent)
 	
-	if dreason and dreason ~= reason then
+	if dreason and dreason ~= reason and DisplayReason then
 		name = name .. '\n' .. dreason
 	end
 	
-	if disconnected then
+	if DPP.LocalConVar('display_disconnected') and disconnected then
 		name = name .. '\nDisconnected Player'
 	end
 	
-	if DPP.IsUpForGrabs(ent) then
+	if DPP.LocalConVar('display_grabs') and DPP.IsUpForGrabs(ent) then
 		name = name .. '\nUp for grabs!'
 	end
 	

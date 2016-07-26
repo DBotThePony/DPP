@@ -740,6 +740,55 @@ DPP.CSettings = {
 		value = '0',
 		desc = 'Disable toolgun fancy owner display',
 	},
+	
+	['display_entityclass'] = {
+		type = 'bool',
+		value = '1',
+		nosend = true,
+		desc = 'Display entity class',
+	},
+	
+	['display_owner'] = {
+		type = 'bool',
+		value = '1',
+		nosend = true,
+		desc = 'Display entity owner',
+	},
+	
+	['display_entityclass2'] = {
+		type = 'bool',
+		value = '1',
+		nosend = true,
+		desc = 'Display entity network ID and network class',
+	},
+	
+	['display_entityname'] = {
+		type = 'bool',
+		value = '1',
+		nosend = true,
+		desc = 'Display entity name',
+	},
+	
+	['display_reason'] = {
+		type = 'bool',
+		value = '1',
+		nosend = true,
+		desc = 'Display "can touch" touch reason',
+	},
+	
+	['display_disconnected'] = {
+		type = 'bool',
+		value = '1',
+		nosend = true,
+		desc = 'Display whatever owner is disconnected',
+	},
+	
+	['display_grabs'] = {
+		type = 'bool',
+		value = '1',
+		nosend = true,
+		desc = 'Display whatever prop is up for grabs',
+	},
 }
 
 DPP.ProtectionModes = {
@@ -789,6 +838,23 @@ if CLIENT then
 			val = ply:GetNWString('dpp.cvar_' .. var, '')
 			if not val or (val == '' and not t.blank) then return ifUndefined end
 		end
+		
+		if type == 'bool' then
+			return tobool(val)
+		elseif type == 'int' then
+			return math.floor(tonumber(val))
+		elseif type == 'float' then
+			return tonumber(val)
+		else
+			return val
+		end
+	end
+	
+	function DPP.LocalConVar(var, ifUndefined)
+		local t = DPP.CSettings[var]
+		if not t then return ifUndefined end
+		local type = t.type
+		local val = DPP.CVars[var]:GetString()
 		
 		if type == 'bool' then
 			return tobool(val)
