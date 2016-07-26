@@ -462,6 +462,10 @@ DPP.ANTISPAM_INVALID = 2
 
 function DPP.CheckAntispam_NoEnt(ply, updatecount, updatetime)
 	if not DPP.GetConVar('antispam') then return DPP.ANTISPAM_VALID end
+	
+	local can = hook.Run('DPP_AntiSpam', ply, updatecount, updatetime)
+	if can == false then return DPP.ANTISPAM_VALID end
+	
 	ply.DPP_AntiSpam = ply.DPP_AntiSpam or {}
 	local I = ply.DPP_AntiSpam
 	I.GhostCooldown = I.GhostCooldown or 0
@@ -487,14 +491,14 @@ function DPP.CheckAntispam_NoEnt(ply, updatecount, updatetime)
 	end
 	
 	if I.Count > DPP.GetConVar('antispam_remove') then
-		return DPP.ANTISPAM_INVALID
+		return hook.Run('DPP_AntiSpam_Hit', ply, updatecount, updatetime, DPP.ANTISPAM_INVALID) or DPP.ANTISPAM_INVALID
 	end
 	
 	if I.Count > DPP.GetConVar('antispam_ghost') then
-		return DPP.ANTISPAM_GHOSTED
+		return hook.Run('DPP_AntiSpam_Hit', ply, updatecount, updatetime, DPP.ANTISPAM_GHOSTED) or DPP.ANTISPAM_GHOSTED
 	end
 	
-	return DPP.ANTISPAM_VALID
+	return hook.Run('DPP_AntiSpam_Miss', ply, updatecount, updatetime) or DPP.ANTISPAM_VALID
 end
 
 function DPP.CheckAntispamDelay(ply, ent)
@@ -510,13 +514,22 @@ function DPP.CheckAntispam(ply, ent)
 	if ent:GetSolid() == SOLID_NONE then return DPP.ANTISPAM_VALID end
 	if ent:GetMoveType() == MOVETYPE_NONE then return DPP.ANTISPAM_VALID end
 	
+	local can = hook.Run('DPP_AntiSpamEnt', ply, ent)
+	if can == false then return DPP.ANTISPAM_VALID end
+	
 	local reply = DPP.CheckAntispam_NoEnt(ply, true, true)
 	
 	if reply == DPP.ANTISPAM_INVALID then
+		local can = hook.Run('DPP_AntiSpamEnt_Hit', ply, ent, DPP.ANTISPAM_INVALID)
+		if can == false then return DPP.ANTISPAM_VALID end
+		
 		SafeRemoveEntity(ent)
 		DPP.Notify(ply, 'Prop is removed due to spam', 1)
 		return DPP.ANTISPAM_INVALID
 	elseif reply == DPP.ANTISPAM_GHOSTED then
+		local can = hook.Run('DPP_AntiSpamEnt_Hit', ply, ent, DPP.ANTISPAM_GHOSTED)
+		if can == false then return DPP.ANTISPAM_VALID end
+		
 		DPP.SetGhosted(ent, true)
 		DPP.Notify(ply, 'Prop is ghosted due to spam', 0)
 		return DPP.ANTISPAM_GHOSTED
