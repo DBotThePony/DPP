@@ -406,6 +406,12 @@ DPP.Settings = {
 		desc = '[Experimental/Beta] (Very) Strict spawn checks.\nTARDIS, Combine APC and other\naddons like that would be owned by spawned player',
 	},
 	
+	['spawn_checks_noaspam'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Disable antispam check for connected entities on spawn',
+	},
+	
 	['verbose_logging'] = {
 		type = 'bool',
 		value = '0',

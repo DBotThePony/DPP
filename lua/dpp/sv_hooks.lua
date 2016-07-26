@@ -748,6 +748,8 @@ function PostEntityCreated(ent, Timestamp)
 	if not IsValid(ent) then return end
 	local Timestamp2 = CurTime()
 	
+	local spawn_checks_noaspam = DPP.GetConVar('spawn_checks_noaspam')
+	
 	if ent.IsConstraint and ent:IsConstraint() then
 		local ent1, ent2 = DPP.GetConstrainedEntities(ent)
 		
@@ -760,12 +762,12 @@ function PostEntityCreated(ent, Timestamp)
 				
 				if t1 == Timestamp and not IsValid(o1) and IsValid(o2) then --Because we are running on next frame
 					o1 = o2
-					CheckBefore(o2, ent1)
+					CheckBefore(o2, ent1, false, spawn_checks_noaspam)
 				end
 				
 				if t2 == Timestamp and not IsValid(o2) and IsValid(o1) then
 					o2 = o1
-					CheckBefore(o1, ent2)
+					CheckBefore(o1, ent2, false, spawn_checks_noaspam)
 				end
 			end
 			
@@ -800,7 +802,7 @@ function PostEntityCreated(ent, Timestamp)
 			for k, v in ipairs(Ents) do
 				if Timestamps[v] ~= Timestamp then continue end
 				if DPP.IsOwned(v) then continue end
-				CheckBefore(get, v, false, true)
+				CheckBefore(get, v, false, spawn_checks_noaspam)
 			end
 		end
 	end
@@ -827,7 +829,7 @@ function PostEntityCreated(ent, Timestamp)
 			end
 			
 			if IsValid(owner) and owner:IsPlayer() then
-				CheckBefore(owner, ent)
+				CheckBefore(owner, ent, false, spawn_checks_noaspam)
 				--DPP.SetOwner(ent, owner)
 			end
 		end
@@ -837,7 +839,7 @@ function PostEntityCreated(ent, Timestamp)
 			
 			local owner = ent:GetPlayer()
 			if IsValid(owner) then
-				CheckBefore(owner, ent)
+				CheckBefore(owner, ent, false, spawn_checks_noaspam)
 			end
 			
 			ent.SetPlayer = DPP_ReplacedSetPlayer
