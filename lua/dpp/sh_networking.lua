@@ -42,48 +42,55 @@ DPP.NetworkVars = {
 		end,
 		
 		type = 'Entity',
+		default = NULL,
 	},
 	
 	['isowned'] = {
 		send = function(val) net.WriteBool(val) end,
 		receive = function() return net.ReadBool() end,
 		type = 'boolean',
+		default = false,
 	},
 	
 	['ownerstring'] = {
 		send = function(val) net.WriteString(val) end,
 		receive = function() return net.ReadString() end,
 		type = 'string',
+		default = '',
 	},
 	
 	['ownersteamid'] = {
-		send = function(val) net.WriteString(val) end,
-		receive = function() return net.ReadString() end,
+		send = net.WriteString,
+		receive = net.ReadString,
 		type = 'string',
+		default = '',
 	},
 	
 	['owneruid'] = {
 		send = function(val) net.WriteUInt(tonumber(val), 32) end,
 		receive = function() return tostring(net.ReadUInt(32)) end,
 		type = 'string', --Actually needs to be number
+		default = '',
 	},
 	
 	['isghosted'] = {
-		send = function(val) net.WriteBool(val) end,
-		receive = function() return net.ReadBool() end,
+		send = net.WriteBool,
+		receive = net.ReadBool,
 		type = 'boolean',
 	},
 	
 	['isupforgraps'] = {
-		send = function(val) net.WriteBool(val) end,
-		receive = function() return net.ReadBool() end,
+		send = net.WriteBool,
+		receive = net.ReadBool,
 		type = 'boolean',
+		default = false,
 	},
 	
 	['isshared'] = {
-		send = function(val) net.WriteBool(val) end,
-		receive = function() return net.ReadBool() end,
+		send = net.WriteBool,
+		receive = net.ReadBool,
 		type = 'boolean',
+		default = false,
 	},
 }
 
@@ -99,12 +106,13 @@ for k, v in pairs(DPP.NetworkVars) do
 	DPP.NetworkVars[nk] = v
 end
 
-function DPP.RegisterNetworkVar(id, send, receive, type)
+function DPP.RegisterNetworkVar(id, send, receive, type, default)
 	id = id:lower()
 	DPP.NetworkVars[id] = {
 		send = send,
 		receive = receive,
 		type = type,
+		default = default,
 		ID = id,
 		NetworkID = nextId,
 	}
@@ -122,12 +130,27 @@ function entMeta:DPPVar(var, ifNothing)
 	
 	if uid > 0 then
 		local data = DPP.NETWORK_DB[uid]
-		if not data then return ifNothing end
-		if data[var] == nil then return ifNothing end
+		
+		if not data or data[var] == nil then
+			if ifNothing ~= nil then
+				return ifNothing
+			else
+				return DPP.NetworkVars[var].default
+			end
+		end
+		
 		return data[var]
 	else
 		self.DPPVars = self.DPPVars or {}
-		if self.DPPVars[var] == nil then return ifNothing end
+		
+		if self.DPPVars[var] == nil then
+			if ifNothing ~= nil then
+				return ifNothing
+			else
+				return DPP.NetworkVars[var].default
+			end
+		end
+		
 		return self.DPPVars[var]
 	end
 end

@@ -671,7 +671,7 @@ DPP.ShareTypes = {
 }
 
 for k, v in pairs(DPP.ShareTypes) do
-	DPP.RegisterNetworkVar('share' .. k, net.WriteBool, net.ReadBool, 'boolean')
+	DPP.RegisterNetworkVar('share' .. k, net.WriteBool, net.ReadBool, 'boolean', false)
 end
 
 DPP.RestrictTypes = {
