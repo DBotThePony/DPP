@@ -73,7 +73,7 @@ function DPP.AssertArguments(funcName, args)
 		
 		if Type == expected then continue end
 		if Type == 'Vehicle' and expected == 'Entity' then continue end
-		if expected == 'AnyEntity' and (Type == 'Entity' or Type == 'Player' or Type == 'Vehicle') then continue end
+		if expected == 'AnyEntity' and (Type == 'Entity' or Type == 'Player' or Type == 'Vehicle' or Type == 'Weapon') then continue end
 		
 		DPP.ThrowError(string.format('Bad argument #%s to %s (%s expected, got %s)', k, funcName, expected, Type), DPP.FindBestLevel())
 	end
