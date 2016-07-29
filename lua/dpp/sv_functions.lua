@@ -18,6 +18,7 @@ limitations under the License.
 local GhostColor = Color(255, 255, 255, 224)
 
 function DPP.SetGhosted(ent, status)
+	if not IsValid(ent) then return end
 	if ent:IsPlayer() then return end
 	if status and DPP.GetGhosted(ent) then return end
 	
