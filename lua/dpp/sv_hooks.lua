@@ -233,7 +233,6 @@ end
 SpawnFunctions.CheckBefore = CheckBefore
 
 local function undo_Finish(name)
-	DPP.AssertArguments('undo.Finish', {{name, 'string'}})
 	local name, val = debug.getupvalue(DPP.oldUndoFinish, 1)
 	
 	if name == 'Current_Undo' and val then
