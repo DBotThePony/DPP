@@ -233,6 +233,7 @@ end
 SpawnFunctions.CheckBefore = CheckBefore
 
 local function undo_Finish(name)
+	DPP.AssertArguments('undo.Finish', {{name, 'string'}})
 	local name, val = debug.getupvalue(DPP.oldUndoFinish, 1)
 	
 	if name == 'Current_Undo' and val then
@@ -251,7 +252,8 @@ local function undo_Finish(name)
 end
 
 local function cleanup_Add(ply, type, ent)
-	DPP.AssertPlayer(ply)
+	DPP.AssertArguments('cleanup.Add', {{ply, 'Player'}, {type, 'string'}, {ent, 'AnyEntity'}})
+	
 	if PENDING ~= ent then
 		if IsValid(PENDING_PLY) then DPP.CheckAntispam(PENDING_PLY, PENDING) end
 		PENDING = nil
@@ -287,7 +289,9 @@ local function cleanup_Add(ply, type, ent)
 end
 
 function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog, ignoreAntispam)
-	if ent.DPP_SpawnTime  == CurTime() then return end
+	DPP.AssertArguments('PlayerSpawnedProp', {{ply, 'Player'}, {model, 'string'}, {ent, 'AnyEntity'}})
+	
+	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 	
 	if CheckEntityLimit(ply, ent:GetClass()) then 
@@ -323,9 +327,11 @@ local ropesConstraints = {
 }
 
 function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide, ignoreAntispam)
-	DPP.AssertPlayer(ply)
 	if not IsValid(ply) then return end
 	if not IsValid(ent) then return end
+	
+	DPP.AssertArguments('PlayerSpawnedConstraint', {{ply, 'Player'}, {ent, 'AnyEntity'}})
+	
 	Spawned(ply, ent)
 	
 	local type = DPP.GetContstrainType(ent)
@@ -364,8 +370,9 @@ function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide, ignoreAntispam)
 end
 
 function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog, ignoreAntispam)
-	DPP.AssertPlayer(ply)
-	if ent.DPP_SpawnTime  == CurTime() then return end
+	DPP.AssertArguments('PlayerSpawnedRagdoll', {{ply, 'Player'}, {model, 'string'}, {ent, 'AnyEntity'}})
+	
+	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 	
 	if CheckEntityLimit(ply, ent:GetClass()) then 
@@ -390,8 +397,9 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog, ign
 end
 
 function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog, ignoreAntispam)
-	DPP.AssertPlayer(ply)
-	if ent.DPP_SpawnTime  == CurTime() then return end
+	DPP.AssertArguments('PlayerSpawnedSENT', {{ply, 'Player'}, {ent, 'AnyEntity'}})
+	
+	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 	
 	if DPP.IsRestrictedSENT(ent:GetClass(), ply) then 
@@ -423,8 +431,9 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog, ignoreAntispa
 end
 
 function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog, ignoreAntispam)
-	DPP.AssertPlayer(ply)
-	if ent.DPP_SpawnTime  == CurTime() then return end
+	DPP.AssertArguments('PlayerSpawnedSWEP', {{ply, 'Player'}, {ent, 'AnyEntity'}})
+	
+	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 	
 	if DPP.IsRestrictedSWEP(ent:GetClass(), ply) then 
@@ -454,8 +463,9 @@ function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog, ignoreAntispa
 end
 
 function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog, ignoreAntispam)
-	DPP.AssertPlayer(ply)
-	if ent.DPP_SpawnTime  == CurTime() then return end
+	DPP.AssertArguments('PlayerSpawnedVehicle', {{ply, 'Player'}, {ent, 'AnyEntity'}})
+
+	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 	
 	if DPP.IsRestrictedVehicle(ent:GetClass(), ply) then 
@@ -487,7 +497,8 @@ function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog, ignoreAnti
 end
 
 function SpawnFunctions.PlayerSpawnProp(ply, model)
-	DPP.AssertPlayer(ply)
+	DPP.AssertArguments('PlayerSpawnProp', {{ply, 'Player'}, {model, 'string'}})
+	
 	if DPP.IsModelBlocked(model, ply) then 
 		LogTry(ply, 'Prop', model)
 		return false 
@@ -511,7 +522,8 @@ function SpawnFunctions.PlayerSpawnProp(ply, model)
 end
 
 function SpawnFunctions.PlayerSpawnObject(ply, model)
-	DPP.AssertPlayer(ply)
+	DPP.AssertArguments('PlayerSpawnObject', {{ply, 'Player'}, {model, 'string'}})
+	
 	if DPP.IsModelBlocked(model, ply) then 
 		LogTry(ply, 'Object/Generic', model)
 		return false 
@@ -530,7 +542,8 @@ function SpawnFunctions.PlayerSpawnObject(ply, model)
 end
 
 function SpawnFunctions.PlayerSpawnRagdoll(ply, model)
-	DPP.AssertPlayer(ply)
+	DPP.AssertArguments('PlayerSpawnRagdoll', {{ply, 'Player'}, {model, 'string'}})
+	
 	if DPP.IsModelBlocked(model, ply) then 
 		LogTry(ply, 'Ragdoll', model)
 		return false 
@@ -549,7 +562,8 @@ function SpawnFunctions.PlayerSpawnRagdoll(ply, model)
 end
 
 function SpawnFunctions.PlayerSpawnVehicle(ply, model, class)
-	DPP.AssertPlayer(ply)
+	DPP.AssertArguments('PlayerSpawnVehicle', {{ply, 'Player'}, {model, 'string'}, {class, 'string'}})
+	
 	if DPP.IsModelBlocked(model, ply) then 
 		LogTry(ply, 'Vehicle', model)
 		return false 
@@ -579,7 +593,8 @@ function SpawnFunctions.PlayerSpawnVehicle(ply, model, class)
 end
 
 function SpawnFunctions.PlayerSpawnSENT(ply, ent)
-	DPP.AssertPlayer(ply)
+	DPP.AssertArguments('PlayerSpawnSENT', {{ply, 'Player'}, {ent, 'string'}})
+	
 	if DPP.IsRestrictedSENT(ent, ply) then 
 		LogTry(ply, 'SENT', 'N/A', ent)
 		DPP.Notify(ply, 'That entity is restricted', 1)
@@ -593,7 +608,8 @@ function SpawnFunctions.PlayerSpawnSENT(ply, ent)
 end
 
 function SpawnFunctions.PlayerSpawnSWEP(ply, ent)
-	DPP.AssertPlayer(ply)
+	DPP.AssertArguments('PlayerSpawnSWEP', {{ply, 'Player'}, {ent, 'string'}})
+	
 	if DPP.IsRestrictedSWEP(ent, ply) then 
 		LogTry(ply, 'SWEP', 'N/A', ent)
 		DPP.Notify(ply, 'That swep is restricted', 1)
@@ -607,14 +623,16 @@ function SpawnFunctions.PlayerSpawnSWEP(ply, ent)
 end
 
 function SpawnFunctions.PlayerGiveSWEP(ply, class, tab)
-	DPP.AssertPlayer(ply)
+	DPP.AssertArguments('PlayerSpawnSWEP', {{ply, 'Player'}, {class, 'string'}})
+	
 	local can = SpawnFunctions.PlayerSpawnSWEP(ply, class)
 	if can == false then return false end
 	LogSpawnC(ply, class, 'SWEP', tab and (tab.Model or tab.WorldModel) or 'N/A')
 end
 
 function SpawnFunctions.PlayerSpawnNPC(ply, ent)
-	DPP.AssertPlayer(ply)
+	DPP.AssertArguments('PlayerSpawnNPC', {{ply, 'Player'}, {ent, 'string'}})
+	
 	if DPP.IsRestrictedNPC(ent, ply) then 
 		LogTry(ply, 'NPC', 'N/A', ent)
 		DPP.Notify(ply, 'That entity is restricted', 1)
