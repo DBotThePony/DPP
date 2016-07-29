@@ -251,8 +251,8 @@ local function undo_Finish(name)
 end
 
 local function cleanup_Add(ply, type, ent)
-	--DPP.AssertArguments('cleanup.Add', {{ply, 'Player'}, {type, 'string'}, {ent, 'AnyEntity'}})
 	if not ent then return end --Fuck this down
+	DPP.AssertArguments('cleanup.Add', {{ply, 'Player'}, {type, 'string'}, {ent, 'AnyEntity'}})
 	
 	if PENDING ~= ent then
 		if IsValid(PENDING_PLY) then DPP.CheckAntispam(PENDING_PLY, PENDING) end
