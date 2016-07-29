@@ -62,6 +62,14 @@ function DPP.AssertEntity(obj)
 	DPP.Assert(isentity(obj) and IsValid(obj), 'Argument is not a valid entity! Argument is ' .. type(obj) .. ' (' .. tostring(obj) .. ')', DPP.FindBestLevel())
 end
 
+local EntityTypes = {
+	['Entity'] = true,
+	['Player'] = true,
+	['Vehicle'] = true,
+	['Weapon'] = true,
+	['NPC'] = true,
+}
+
 function DPP.AssertArguments(funcName, args)
 	for k, v in ipairs(args) do
 		local val = v[1]
@@ -73,7 +81,7 @@ function DPP.AssertArguments(funcName, args)
 		
 		if Type == expected then continue end
 		if Type == 'Vehicle' and expected == 'Entity' then continue end
-		if expected == 'AnyEntity' and (Type == 'Entity' or Type == 'Player' or Type == 'Vehicle' or Type == 'Weapon') then continue end
+		if expected == 'AnyEntity' and EntityTypes[Type] then continue end
 		
 		DPP.ThrowError(string.format('Bad argument #%s to %s (%s expected, got %s)', k, funcName, expected, Type), DPP.FindBestLevel())
 	end
