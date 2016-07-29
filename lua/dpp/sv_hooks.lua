@@ -634,6 +634,8 @@ end
 function DPP.CanPickupItem(ply, ent)
 	if not DPP.GetConVar('enable_pickup') then return end
 	
+	DPP.AssertArguments('DPP.CanPickupItem', {{ply, 'Player'}, {ent, 'AnyEntity'}})
+	
 	local class = ent:GetClass()
 	
 	if DPP.IsEntityBlockedPickup(class) then return false end
@@ -641,8 +643,7 @@ function DPP.CanPickupItem(ply, ent)
 	if DPP.IsEntityWhitelistedPickup(eclass) then return false end
 	
 	if not DPP.IsOwned(ent) then return end
-	local can = DPP.CanTouch(ply, ent, 'pickup')
-	if not can then return can end
+	if not DPP.CanTouch(ply, ent, 'pickup') then return false end
 end
 
 hook.Add('PlayerCanPickupItem', 'DPP.ProtectionHooks', DPP.CanPickupItem)
@@ -896,32 +897,7 @@ hook.Add('EntityRemoved', 'DPP.EntityRemoved', EntityRemoved)
 function DPP.SetPlayerMeta(self, ply)
 	--Compability
 	
-	if not IsValid(ply) then 
-		if not DPP.GetConVar('advanced_spawn_checks') then return end
-		local name, Ent = debug.getlocal(2, 1)
-		
-		timer.Simple(0, function() --Wait before entity is initialized and owner is defined
-			if IsValid(Ent) then
-				local owner = DPP.GetOwner(Ent)
-				if not DLog then
-					SimpleLog(RED, 'That should never happen: Entity:SetPlayer() is called without player argument! Entity: ' .. tostring(self) .. '. I detected real owner: ' .. (IsValid(owner) and owner:Nick() or 'World') .. '\nTO USERS: Yes, this is a BUG in ' .. tostring(self) .. ' and you should report it to author!')
-				else
-					DLog.Log('DPP', 3, 'That should never happen: Entity:SetPlayer() is called without player argument! Entity: ' .. tostring(self) .. '. I detected real owner: ', owner, '\nTO USERS: Yes, this is a BUG in ' .. tostring(self) .. ' and you should report it to author!')
-				end
-				
-				CheckBefore(owner, self)
-				--DPP.SetOwner(self, owner)
-			else
-				if not DLog then
-					SimpleLog(RED, 'That should never happen: Entity:SetPlayer() is called without player argument! Entity: ' .. tostring(self) .. '.\nTO USERS: Yes, this is a BUG in ' .. tostring(self) .. ' and you should report it to author!')
-				else
-					DLog.Log('DPP', 3, 'That should never happen: Entity:SetPlayer() is called without player argument! Entity: ' .. tostring(self) .. '.\nTO USERS: Yes, this is a BUG in ' .. tostring(self) .. ' and you should report it to author!')
-				end
-			end
-		end)
-		
-		return 
-	end
+	DPP.AssertArguments('SetPlayer', {{self, 'AnyEntity'}, {ply, 'Player'}})
 	
 	CheckBefore(ply, self)
 	

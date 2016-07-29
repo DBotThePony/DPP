@@ -55,14 +55,33 @@ function DPP.FindBestLevel()
 end
 
 function DPP.AssertPlayer(obj)
-	DPP.Assert(DPP.IsPlayer(obj), 'Argument is not a player!', DPP.FindBestLevel())
+	DPP.Assert(DPP.IsPlayer(obj), 'Argument is not a player! Argument is ' .. type(obj), DPP.FindBestLevel())
+end
+
+function DPP.AssertEntity(obj)
+	DPP.Assert(isentity(obj) and IsValid(obj), 'Argument is not a valid entity! Argument is ' .. type(obj) .. ' (' .. tostring(obj) .. ')', DPP.FindBestLevel())
+end
+
+function DPP.AssertArguments(funcName, args)
+	for k, v in ipairs(args) do
+		local val = v[1]
+		local expected = v[2]
+		
+		if not expected then continue end
+		
+		local Type = type(val)
+		
+		if Type == expected then continue end
+		if Type == 'Vehicle' and expected == 'Entity' then continue end
+		if expected == 'AnyEntity' and (Type == 'Entity' or Type == 'Player' or Type == 'Vehicle') then continue end
+		
+		DPP.ThrowError(string.format('Bad argument #%s to %s (%s expected, got %s)', k, funcName, expected, Type), DPP.FindBestLevel())
+	end
 end
 
 local RED = Color(255, 0, 0)
 
-function DPP.Assert(check, str, level, notabug)
-	if check then return end
-	
+function DPP.ThrowError(str, level, notabug)
 	if not notabug then
 		local info = debug.getinfo(level or 3)
 		if SERVER then DPP.DoEcho(RED, 'ERROR: ' .. str .. '\nTO USERS: THIS IS A BUG IN ' .. info.short_src .. ':' .. info.currentline) end
@@ -71,6 +90,12 @@ function DPP.Assert(check, str, level, notabug)
 	end
 	
 	error(str, level or 3)
+end
+
+function DPP.Assert(check, str, level, notabug)
+	if check then return end
+	level = (level or 3) + 1
+	DPP.ThrowError(str, level, notabug)
 end
 
 function DPP.IsPlayer(obj)
