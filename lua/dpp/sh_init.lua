@@ -83,7 +83,18 @@ function DPP.AssertArguments(funcName, args)
 		if Type == 'Vehicle' and expected == 'Entity' then continue end
 		if expected == 'AnyEntity' and EntityTypes[Type] then continue end
 		
-		DPP.ThrowError(string.format('Bad argument #%s to %s (%s expected, got %s)', k, funcName, expected, Type), DPP.FindBestLevel())
+		local TypeName = Type
+		local ExpectedName = expected
+		
+		if val == NULL then
+			TypeName = 'NULL Entity'
+		end
+		
+		if expected == 'AnyEntity' then
+			ExpectedName = 'Any Entity'
+		end
+		
+		DPP.ThrowError(string.format('Bad argument #%s to %s (%s expected, got %s)', k, funcName, ExpectedName, TypeName), DPP.FindBestLevel())
 	end
 end
 
