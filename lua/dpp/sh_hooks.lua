@@ -92,6 +92,8 @@ function DPP.PhysgunReloadTouch(phys, ply)
 end
 
 function DPP.ToolgunTouch(ply, tr, mode)
+	if not mode then return end
+	
 	if DPP.GetConVar('antispam_toolgun_enable') then
 		local val = DPP.GetConVar('antispam_toolgun')
 		ply._DPP_LastToolgunUse = ply._DPP_LastToolgunUse or 0
@@ -233,6 +235,9 @@ local ropeModes = {
 
 function DPP.CanTool(ply, ent, mode)
 	if not DPP.GetConVar('enable_tool') then return end
+	
+	if not mode then return end
+	
 	DPP.AssertArguments('DPP.CanTool', {{ply, 'Player'}, {ent, 'AnyEntity'}, {mode, 'string'}})
 	
 	if DPP.IsRestrictedTool(mode, ply) then 
