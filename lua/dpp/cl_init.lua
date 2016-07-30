@@ -593,7 +593,9 @@ local function PostDrawHUDDefault(x, y)
 		local hit = false
 		
 		if class == 'gmod_tool' then
-			local CanTouch1, reason = DPP.CanTool(LocalPlayer(), ent, curWeapon:GetMode())
+			local mode = curWeapon:GetMode()
+			if not mode then return 0, 0 end --Eh
+			local CanTouch1, reason = DPP.CanTool(LocalPlayer(), ent, mode)
 			CanTouch = CanTouch1 ~= false
 			
 			if reason and DisplayReason then
@@ -724,7 +726,9 @@ local function HUDPaintSimple(x, y)
 		local hit = false
 		
 		if class == 'gmod_tool' then
-			local CanTouch1, reason = DPP.CanTool(LocalPlayer(), ent, curWeapon:GetMode())
+			local mode = curWeapon:GetMode()
+			if not mode then return 0, 0 end --Eh
+			local CanTouch1, reason = DPP.CanTool(LocalPlayer(), ent, mode)
 			CanTouch = CanTouch1 ~= false
 			
 			hit = true
