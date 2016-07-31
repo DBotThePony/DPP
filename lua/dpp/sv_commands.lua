@@ -19,8 +19,21 @@ local DisconnectedPlayer = Color(134, 255, 154)
 local Gray = Color(200, 200, 200)
 
 local function WrapFunction(func, id)
+	local function ProceedFunc(ply, ...)
+		local status, notify, notifyLevel = func(ply, ...)
+		
+		if status then return end
+		if notify then return end
+		
+		if IsValid(ply) then
+			DPP.Notify(ply, notify, notifyLevel)
+		else
+			DPP.Message(unpack(notify))
+		end
+	end
+	
 	return function(ply, ...)
-		DPP.CheckAccess(ply, id, func, ply, ...)
+		DPP.CheckAccess(ply, id, ProceedFunc, ply, ...)
 	end
 end
 
@@ -34,25 +47,29 @@ DPP.Commands = {
 	end,
 	
 	toggleplayerprotect = function(ply, cmd, args)
-		if not args[1] then DPP.Notify(ply, 'Invalid argument') return end
-		if not args[2] then DPP.Notify(ply, 'Invalid argument') return end
-		if not args[3] then DPP.Notify(ply, 'Invalid argument') return end
+		if not args[1] then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not args[2] then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not args[3] then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		
 		local target = Player(args[1])
 		local mode = args[2]
 		local status = tobool(args[3])
 		
-		if not IsValid(target) then DPP.Notify(ply, 'Invalid argument') return end
-		if not DPP.ProtectionModes[mode] then DPP.Notify(ply, 'Invalid argument') return end
+		if not IsValid(target) then return false, {'Invalid target'}, NOTIFY_ERROR end
+		if not DPP.ProtectionModes[mode] then return false, {'Invalid protection mode'}, NOTIFY_ERROR end
 		
 		DPP.SetProtectionDisabled(target, mode, status)
 		local f = {IsValid(ply) and ply or 'Console', Gray, (status and ' disabled ' or ' enabled '), 'protection mode ' .. mode .. ' for ', target}
 		DPP.DoEcho(f)
+		
+		return true
 	end,
 	
 	cleardisconnected = function(ply, cmd, args)
 		DPP.ClearDisconnectedProps()
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' cleared all disconnected players entities'}
+		
+		return true
 	end,
 	
 	clearmap = function(ply, cmd, args)
@@ -64,16 +81,20 @@ DPP.Commands = {
 		DPP.SendPlayerList()
 		
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' cleaned up map'}
+		
+		return true
 	end,
 	
 	clearbyuid = function(ply, cmd, args)
 		local uid = args[1]
-		if not tonumber(uid) then DPP.Notify(ply, 'Invalid argument') return end
+		if not tonumber(uid) then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		
 		local Target = player.GetByUniqueID(uid)
 		DPP.ClearByUID(uid)
 		
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' cleared all ', Target or DisconnectedPlayer, Gray, '\'s props'}
+		
+		return true
 	end,
 	
 	freezeall = function(ply, cmd, args)
@@ -85,20 +106,24 @@ DPP.Commands = {
 		end
 		
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' freezed all player\'s entities'}
+		
+		return true
 	end,
 	
 	freezephys = function(ply, cmd, args)
 		local i = DPP.FreezeAllPhysObjects()
 		
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' freezed all physics objects. Total frozen: ' .. i}
+		
+		return true
 	end,
 	
 	clearplayer = function(ply, cmd, args)
-		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+		if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		
 		if tonumber(args[1]) then
 			local found = Player(tonumber(args[1]))
-			if not found then DPP.Notify(ply, 'Invalid argument') return end
+			if not found then return false, {'Invalid argument'}, NOTIFY_ERROR end
 			DPP.ClearPlayerEntities(found)
 			
 			DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' cleared all ', found, Gray, '\'s entities'}
@@ -112,61 +137,70 @@ DPP.Commands = {
 			if string.find(string.lower(v:Nick()), Ply) then found = v end
 		end
 		
-		if not found then DPP.Notify(ply, 'Invalid argument') return end
+		if not found then return false, {'Invalid target'}, NOTIFY_ERROR end
 		DPP.ClearPlayerEntities(found)
 		
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' cleared all ', found, Gray, '\'s entities'}
+		
+		return true
 	end,
 	
 	clearself = function(ply, cmd, args)
-		if not IsValid(ply) then return end
+		if not IsValid(ply) then return false, {'You are console'} end
 		
 		DPP.ClearPlayerEntities(ply)
 		
-		DPP.NotifyLog{'(SILENT) ', IsValid(ply) and ply or 'Console', Gray, ' cleared his props'}
+		DPP.NotifyLog{'(SILENT) ', ply, Gray, ' cleared his props'}
+		
+		return true
 	end,
 	
 	transfertoworld = function(ply, cmd, args)
 		local id = args[1]
-		if not id then DPP.Notify(ply, 'Invalid argument') return end
+		if not id then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		local num = tonumber(id)
-		if not num then DPP.Notify(ply, 'Invalid argument') return end
+		if not num then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		local ent = Entity(num)
-		if not IsValid(ent) then DPP.Notify(ply, 'Invalid argument') return end
+		if not IsValid(ent) then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		
 		DPP.SetOwner(ent, NULL)
 		DPP.DeleteEntityUndo(ent)
 		DPP.RecalcConstraints(ent)
+		
+		return true
 	end,
 	
 	transfertoworld_constrained = function(ply, cmd, args)
 		local id = args[1]
-		if not id then DPP.Notify(ply, 'Invalid argument') return end
+		if not id then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		local num = tonumber(id)
-		if not num then DPP.Notify(ply, 'Invalid argument') return end
+		if not num then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		local ent = Entity(num)
-		if not IsValid(ent) then DPP.Notify(ply, 'Invalid argument') return end
+		if not IsValid(ent) then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		
 		local Entities = DPP.GetAllConnectedEntities(ent)
 		
 		for k, v in pairs(Entities) do
+			if not IsValid(v) then continue end --World
 			DPP.SetOwner(v, NULL)
 			DPP.DeleteEntityUndo(v)
 		end
 		
 		DPP.RecalcConstraints(ent)
+		
+		return true
 	end,
 	
 	freezeplayer = function(ply, cmd, args)
-		if not args[1] then DPP.Notify(ply, 'Invalid argument') return end
+		if not args[1] then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		
 		if tonumber(args[1]) then
 			local found = Player(tonumber(args[1]))
-			if not found then DPP.Notify(ply, 'Invalid argument') return end
+			if not found then return false, {'Invalid target'}, NOTIFY_ERROR end
 			DPP.FreezePlayerEntities(found)
 			
 			DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' freeze all ', found, Gray, '\'s entities'}
-			return
+			return true
 		end
 		
 		local Ply = string.lower(args[1])
@@ -176,44 +210,50 @@ DPP.Commands = {
 			if string.find(string.lower(v:Nick()), Ply) then found = v end
 		end
 		
-		if not found then DPP.Notify(ply, 'Invalid argument') return end
+		if not found then return false, {'Invalid target'}, NOTIFY_ERROR end
 		DPP.FreezePlayerEntities(found)
 		
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' freeze all ', found, Gray, '\'s entities'}
+		
+		return true
 	end,
 	
 	freezebyuid = function(ply, cmd, args)
 		local uid = args[1]
 		
-		if not tonumber(args[1]) then DPP.Notify(ply, 'Invalid argument') return end
+		if not tonumber(args[1]) then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		
 		local Target = player.GetByUniqueID(uid)
 		DPP.FreezeByUID(uid)
 			
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' freeze all ', Target or DisconnectedPlayer, Gray, '\'s entities'}
+		
+		return true
 	end,
 	
 	unfreezebyuid = function(ply, cmd, args)
 		local uid = args[1]
 		
-		if not tonumber(args[1]) then DPP.Notify(ply, 'Invalid argument') return end
+		if not tonumber(args[1]) then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		
 		local Target = player.GetByUniqueID(uid)
 		DPP.UnFreezeByUID(uid)
 			
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' unfreeze all ', Target or DisconnectedPlayer, Gray, '\'s entities'}
+		
+		return true
 	end,
 	
 	unfreezeplayer = function(ply, cmd, args)
-		if not args[1] then DPP.Notify(ply, 'Invalid argument') return end
+		if not args[1] then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		
 		if tonumber(args[1]) then
 			local found = Player(tonumber(args[1]))
-			if not found then DPP.Notify(ply, 'Invalid argument') return end
+			if not found then return false, {'Invalid target'}, NOTIFY_ERROR end
 			DPP.UnFreezePlayerEntities(found)
 			
 			DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' unfreeze all ', found, Gray, '\'s entities'}
-			return
+			return true
 		end
 		
 		local Ply = string.lower(args[1])
@@ -223,10 +263,12 @@ DPP.Commands = {
 			if string.find(string.lower(v:Nick()), Ply) then found = v end
 		end
 		
-		if not found then DPP.Notify(ply, 'Invalid argument') return end
+		if not found then return false, {'Invalid target'}, NOTIFY_ERROR end
 		DPP.UnFreezePlayerEntities(found)
 		
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' unfreeze all ', found, Gray, '\'s entities'}
+		
+		return true
 	end,
 	
 	share = function(ply, cmd, args)
@@ -234,25 +276,32 @@ DPP.Commands = {
 		local type = args[2]
 		local status = args[3]
 		
-		if not num then DPP.Notify(ply, 'Invalid argument') return end
-		if not type then DPP.Notify(ply, 'Invalid argument') return end
-		if not status then DPP.Notify(ply, 'Invalid argument') return end
+		if not num then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not type then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not status then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		
-		if not DPP.ShareTypes[type] then DPP.Notify(ply, 'Invalid argument') return end
+		if not DPP.ShareTypes[type] then return false, {'Invalid share type'}, NOTIFY_ERROR end
 		
 		local ent = Entity(num)
-		if not IsValid(ent) then DPP.Notify(ply, 'Entity does not exists') return end
-		if IsValid(ply) and DPP.GetOwner(ent) ~= ply then DPP.Notify(ply, 'Not a owner') return end
+		if not IsValid(ent) then return false, {'Entity does not exists'}, NOTIFY_ERROR end
+		if IsValid(ply) and DPP.GetOwner(ent) ~= ply then return false, {'Not a owner'}, NOTIFY_ERROR end
 		
 		status = tobool(status)
 		
 		DPP.SetIsShared(ent, type, status)
+		
+		return true
 	end,
 	
 	entcheck = function(ply, cmd, args)
-		DPP.Notify(ply, 'Look into console')
+		if IsValid(ply) then
+			DPP.Notify(ply, 'Look into console')
+		end
+		
 		DPP.SimpleLog(IsValid(ply) and ply or 'Console', Gray, ' requested entities report')
 		DPP.ReportEntitiesPrint()
+		
+		return true
 	end,
 }
 
