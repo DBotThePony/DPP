@@ -46,9 +46,9 @@ DPP.Commands = {
 	end,
 	
 	toggleplayerprotect = function(ply, cmd, args)
-		if not args[1] then return false, {'Invalid argument'}, NOTIFY_ERROR end
-		if not args[2] then return false, {'Invalid argument'}, NOTIFY_ERROR end
-		if not args[3] then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not args[1] then return false, {'Invalid target'}, NOTIFY_ERROR end
+		if not args[2] then return false, {'Invalid mode'}, NOTIFY_ERROR end
+		if not args[3] then return false, {'Invalid status'}, NOTIFY_ERROR end
 		
 		local target = Player(args[1])
 		local mode = args[2]
@@ -86,7 +86,7 @@ DPP.Commands = {
 	
 	clearbyuid = function(ply, cmd, args)
 		local uid = args[1]
-		if not tonumber(uid) then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not tonumber(uid) then return false, {'Invalid player UID'}, NOTIFY_ERROR end
 		
 		DPP.ClearByUID(uid)
 		
@@ -117,11 +117,11 @@ DPP.Commands = {
 	end,
 	
 	clearplayer = function(ply, cmd, args)
-		if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'Invalid player UserID/Nickname'}, NOTIFY_ERROR end
 		
 		if tonumber(args[1]) then
 			local found = Player(tonumber(args[1]))
-			if not found then return false, {'Invalid argument'}, NOTIFY_ERROR end
+			if not found then return false, {'Invalid player UserID'}, NOTIFY_ERROR end
 			DPP.ClearPlayerEntities(found)
 			
 			DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' cleared all ', found, Gray, '\'s entities'}
@@ -155,11 +155,11 @@ DPP.Commands = {
 	
 	transfertoworld = function(ply, cmd, args)
 		local id = args[1]
-		if not id then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not id then return false, {'Invalid Entity Network ID (#1)'}, NOTIFY_ERROR end
 		local num = tonumber(id)
-		if not num then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not num then return false, {'Invalid Entity Network ID (#1)'}, NOTIFY_ERROR end
 		local ent = Entity(num)
-		if not IsValid(ent) then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not IsValid(ent) then return false, {'Entity is not valid (#2)'}, NOTIFY_ERROR end
 		
 		DPP.SetOwner(ent, NULL)
 		DPP.DeleteEntityUndo(ent)
@@ -170,11 +170,11 @@ DPP.Commands = {
 	
 	transfertoworld_constrained = function(ply, cmd, args)
 		local id = args[1]
-		if not id then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not id then return false, {'Invalid Entity Network ID (#1)'}, NOTIFY_ERROR end
 		local num = tonumber(id)
-		if not num then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not num then return false, {'Invalid Entity Network ID (#1)'}, NOTIFY_ERROR end
 		local ent = Entity(num)
-		if not IsValid(ent) then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not IsValid(ent) then return false, {'Entity is not valid (#2)'}, NOTIFY_ERROR end
 		
 		local Entities = DPP.GetAllConnectedEntities(ent)
 		
@@ -190,11 +190,11 @@ DPP.Commands = {
 	end,
 	
 	freezeplayer = function(ply, cmd, args)
-		if not args[1] then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not args[1] then return false, {'Invalid UserID/Nickname'}, NOTIFY_ERROR end
 		
 		if tonumber(args[1]) then
 			local found = Player(tonumber(args[1]))
-			if not found then return false, {'Invalid target'}, NOTIFY_ERROR end
+			if not found then return false, {'Invalid UserID'}, NOTIFY_ERROR end
 			DPP.FreezePlayerEntities(found)
 			
 			DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' freeze all ', found, Gray, '\'s entities'}
@@ -208,7 +208,7 @@ DPP.Commands = {
 			if string.find(string.lower(v:Nick()), Ply) then found = v end
 		end
 		
-		if not found then return false, {'Invalid target'}, NOTIFY_ERROR end
+		if not found then return false, {'No target found'}, NOTIFY_ERROR end
 		DPP.FreezePlayerEntities(found)
 		
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' freeze all ', found, Gray, '\'s entities'}
@@ -219,7 +219,7 @@ DPP.Commands = {
 	freezebyuid = function(ply, cmd, args)
 		local uid = args[1]
 		
-		if not tonumber(args[1]) then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not tonumber(args[1]) then return false, {'Invalid Player UID'}, NOTIFY_ERROR end
 		DPP.FreezeByUID(uid)
 			
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' freeze all ', {type = 'UIDPlayer', uid = uid}, Gray, '\'s entities'}
@@ -230,7 +230,7 @@ DPP.Commands = {
 	unfreezebyuid = function(ply, cmd, args)
 		local uid = args[1]
 		
-		if not tonumber(args[1]) then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not tonumber(args[1]) then return false, {'Invalid Player UID'}, NOTIFY_ERROR end
 		
 		DPP.UnFreezeByUID(uid)
 			
@@ -240,11 +240,11 @@ DPP.Commands = {
 	end,
 	
 	unfreezeplayer = function(ply, cmd, args)
-		if not args[1] then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not args[1] then return false, {'Invalid UserID/Nickname'}, NOTIFY_ERROR end
 		
 		if tonumber(args[1]) then
 			local found = Player(tonumber(args[1]))
-			if not found then return false, {'Invalid target'}, NOTIFY_ERROR end
+			if not found then return false, {'Invalid UserID'}, NOTIFY_ERROR end
 			DPP.UnFreezePlayerEntities(found)
 			
 			DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' unfreeze all ', found, Gray, '\'s entities'}
@@ -258,7 +258,7 @@ DPP.Commands = {
 			if string.find(string.lower(v:Nick()), Ply) then found = v end
 		end
 		
-		if not found then return false, {'Invalid target'}, NOTIFY_ERROR end
+		if not found then return false, {'No target found'}, NOTIFY_ERROR end
 		DPP.UnFreezePlayerEntities(found)
 		
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' unfreeze all ', found, Gray, '\'s entities'}
@@ -271,14 +271,14 @@ DPP.Commands = {
 		local type = args[2]
 		local status = args[3]
 		
-		if not num then return false, {'Invalid argument'}, NOTIFY_ERROR end
-		if not type then return false, {'Invalid argument'}, NOTIFY_ERROR end
-		if not status then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not num then return false, {'Invalid Entity Network ID (#1)'}, NOTIFY_ERROR end
+		if not type then return false, {'Invalid share type (#2)'}, NOTIFY_ERROR end
+		if not status then return false, {'Invalid status'}, NOTIFY_ERROR end
 		
-		if not DPP.ShareTypes[type] then return false, {'Invalid share type'}, NOTIFY_ERROR end
+		if not DPP.ShareTypes[type] then return false, {'Invalid share type (#2)'}, NOTIFY_ERROR end
 		
 		local ent = Entity(num)
-		if not IsValid(ent) then return false, {'Entity does not exists'}, NOTIFY_ERROR end
+		if not IsValid(ent) then return false, {'Entity does not exists or not valid'}, NOTIFY_ERROR end
 		if IsValid(ply) and DPP.GetOwner(ent) ~= ply then return false, {'Not a owner'}, NOTIFY_ERROR end
 		
 		status = tobool(status)
