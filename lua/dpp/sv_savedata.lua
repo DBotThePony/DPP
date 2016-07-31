@@ -199,19 +199,19 @@ end
 
 DPP.ManipulateCommands = {
 	addblockedmodel = function(ply, cmd, args)
-		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+		if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower()
+		if DPP.BlockedModels[args[1]] then return false, {'Model already blocked'} end
 		DPP.AddBlockedModel(args[1])
-		local f = {IsValid(ply) and ply or 'Console', Gray, ' added ' .. args[1] .. ' to model blacklist/whitelist'}
-		DPP.NotifyLog(f)
+		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' added ' .. args[1] .. ' to model blacklist/whitelist'}
 	end,
 
 	removeblockedmodel = function(ply, cmd, args)
-		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+		if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower()
+		if not DPP.BlockedModels[args[1]] then return false, {'Model is not blocked'} end
 		DPP.RemoveBlockedModel(args[1])
-		local f = {IsValid(ply) and ply or 'Console', Gray, ' removed ' .. args[1] .. ' from model blacklist/whitelist'}
-		DPP.NotifyLog(f)
+		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' removed ' .. args[1] .. ' from model blacklist/whitelist'}
 	end,
 }
 
@@ -269,19 +269,17 @@ for k, v in pairs(DPP.BlockTypes) do
 	end
 	
 	DPP.ManipulateCommands['addblockedentity' .. k] = function(ply, cmd, args)
-		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+		if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		if blockedEnts[args[1]] then DPP.Notify(ply, 'You can not add that entity to blacklist') return end
 		DPP['AddBlockedEntity' .. v](args[1])
-		local f = {IsValid(ply) and ply or 'Console', Gray, ' added ' .. args[1] .. ' to ' .. v .. ' blacklist/whitelist'}
-		DPP.NotifyLog(f)
+		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' added ' .. args[1] .. ' to ' .. v .. ' blacklist/whitelist'}
 	end
 	
 	DPP.ManipulateCommands['removeblockedentity' .. k] = function(ply, cmd, args)
-		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+		if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		if blockedEnts[args[1]] then DPP.Notify(ply, 'You can not remove that entity from blacklist') return end
 		DPP['RemoveBlockedEntity' .. v](args[1])
-		local f = {IsValid(ply) and ply or 'Console', Gray, ' removed ' .. args[1] .. ' from ' .. v .. ' blacklist/whitelist'}
-		DPP.NotifyLog(f)
+		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' removed ' .. args[1] .. ' from ' .. v .. ' blacklist/whitelist'}
 	end
 end
 
@@ -316,17 +314,15 @@ for k, v in pairs(DPP.WhitelistTypes) do
 	end
 	
 	DPP.ManipulateCommands['addwhitelistedentity' .. k] = function(ply, cmd, args)
-		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+		if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		DPP['AddWhitelistedEntity' .. v](args[1])
-		local f = {IsValid(ply) and ply or 'Console', Gray, ' added ' .. args[1] .. ' to ' .. v .. ' excluded entities'}
-		DPP.NotifyLog(f)
+		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' added ' .. args[1] .. ' to ' .. v .. ' excluded entities'}
 	end
 	
 	DPP.ManipulateCommands['removewhitelistedentity' .. k] = function(ply, cmd, args)
-		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+		if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		DPP['RemoveWhitelistedEntity' .. v](args[1])
-		local f = {IsValid(ply) and ply or 'Console', Gray, ' removed ' .. args[1] .. ' from ' .. v .. ' excluded entities'}
-		DPP.NotifyLog(f)
+		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' removed ' .. args[1] .. ' from ' .. v .. ' excluded entities'}
 	end
 end
 
@@ -347,6 +343,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 			groups = groups,
 			iswhite = isWhite
 		}
+		
 		DPP.Query(string.format('REPLACE INTO dpp_restricted' .. k .. ' (CLASS, GROUPS, IS_WHITE) VALUES (%q, \'%s\', %q)', class, util.TableToJSON(groups), isWhite and '1' or '0'))
 	end
 	
@@ -365,9 +362,9 @@ for k, v in pairs(DPP.RestrictTypes) do
 	end
 	
 	DPP.ManipulateCommands['restrict' .. k] = function(ply, cmd, args)
-		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
-		if not args[2] then DPP.Notify(ply, 'Invalid argument') return end --No groups allowed
-		if not args[3] or args[3] == '' or args[3] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+		if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not args[2] then return false, {'Invalid argument'}, NOTIFY_ERROR end --No groups allowed
+		if not args[3] or args[3] == '' or args[3] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		
 		local class = args[1]
 		local groups = string.Explode(',', args[2])
@@ -377,8 +374,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		DPP['Restrict' .. v](class, groups, isWhite)
 		
 		if not old then
-			local f = {IsValid(ply) and ply or 'Console', Gray, ' added ' .. class .. ' to restrticted ' .. k .. ' blacklist/whitelist'}
-			DPP.NotifyLog(f)
+			DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' added ' .. class .. ' to restrticted ' .. k .. ' blacklist/whitelist'}
 		else
 			DPP.DoEcho(IsValid(ply) and ply or 'Console', Gray, ' updated restricts for ' .. class)
 			if IsValid(ply) then
@@ -388,14 +384,13 @@ for k, v in pairs(DPP.RestrictTypes) do
 	end
 	
 	DPP.ManipulateCommands['unrestrict' .. k] = function(ply, cmd, args)
-		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+		if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		
 		local class = args[1]
 		
 		DPP['UnRestrict' .. v](class)
 		
-		local f = {IsValid(ply) and ply or 'Console', Gray, ' removed ' .. args[1] .. ' from restrticted ' .. k .. ' blacklist/whitelist'}
-		DPP.NotifyLog(f)
+		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' removed ' .. args[1] .. ' from restrticted ' .. k .. ' blacklist/whitelist'}
 	end
 end
 
@@ -554,15 +549,15 @@ end
 local Last = 0
 
 DPP.ManipulateCommands.addentitylimit = function(ply, cmd, args)
-	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
-	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
-	if not args[3] or args[3] == '' or args[3] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+	if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+	if not args[2] or args[2] == '' or args[2] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+	if not args[3] or args[3] == '' or args[3] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
 	
 	local class = args[1]
 	local group = args[2]
 	local num = tonumber(args[3])
 	
-	if not num then DPP.Notify(ply, 'Invalid argument') return end
+	if not num then return false, {'Invalid argument'}, NOTIFY_ERROR end
 	
 	DPP.AddEntityLimit(class, group, num)
 	
@@ -574,13 +569,13 @@ DPP.ManipulateCommands.addentitylimit = function(ply, cmd, args)
 end
 
 DPP.ManipulateCommands.removeentitylimit = function(ply, cmd, args)
-	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
-	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+	if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+	if not args[2] or args[2] == '' or args[2] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
 	
 	local class = args[1]
 	local group = args[2]
-	if not DPP.EntsLimits[class] then return end
-	if not DPP.EntsLimits[class][group] then return end
+	if not DPP.EntsLimits[class] then return false, {'Limit for class does not exists'} end
+	if not DPP.EntsLimits[class][group] then return false, {'Limit for group does not exists'} end
 	
 	DPP.RemoveEntityLimit(class, group)
 	
@@ -592,15 +587,15 @@ DPP.ManipulateCommands.removeentitylimit = function(ply, cmd, args)
 end
 
 DPP.ManipulateCommands.addsboxlimit = function(ply, cmd, args)
-	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
-	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
-	if not args[3] or args[3] == '' or args[3] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+	if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+	if not args[2] or args[2] == '' or args[2] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+	if not args[3] or args[3] == '' or args[3] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
 	
 	local class = args[1]
 	local group = args[2]
 	local num = tonumber(args[3])
 	
-	if not num then DPP.Notify(ply, 'Invalid argument') return end
+	if not num then return false, {'Invalid argument'}, NOTIFY_ERROR end
 	
 	DPP.AddSBoxLimit(class, group, num)
 	
@@ -610,15 +605,15 @@ DPP.ManipulateCommands.addsboxlimit = function(ply, cmd, args)
 end
 
 DPP.ManipulateCommands.addconstlimit = function(ply, cmd, args)
-	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
-	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
-	if not args[3] or args[3] == '' or args[3] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+	if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+	if not args[2] or args[2] == '' or args[2] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+	if not args[3] or args[3] == '' or args[3] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
 	
 	local class = args[1]
 	local group = args[2]
 	local num = tonumber(args[3])
 	
-	if not num then DPP.Notify(ply, 'Invalid argument') return end
+	if not num then return false, {'Invalid argument'}, NOTIFY_ERROR end
 	
 	DPP.AddConstLimit(class, group, num)
 	
@@ -628,13 +623,13 @@ DPP.ManipulateCommands.addconstlimit = function(ply, cmd, args)
 end
 
 DPP.ManipulateCommands.removesboxlimit = function(ply, cmd, args)
-	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
-	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+	if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+	if not args[2] or args[2] == '' or args[2] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
 	
 	local class = args[1]
 	local group = args[2]
-	if not DPP.SBoxLimits[class] then return end
-	if not DPP.SBoxLimits[class][group] then return end
+	if not DPP.SBoxLimits[class] then return false, {'Limit for class does not exists'} end
+	if not DPP.SBoxLimits[class][group] then return false, {'Limit for group does not exists'} end
 	
 	DPP.RemoveSBoxLimit(class, group)
 	
@@ -644,13 +639,13 @@ DPP.ManipulateCommands.removesboxlimit = function(ply, cmd, args)
 end
 
 DPP.ManipulateCommands.removeconstlimit = function(ply, cmd, args)
-	if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
-	if not args[2] or args[2] == '' or args[2] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
+	if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+	if not args[2] or args[2] == '' or args[2] == ' ' then return false, {'Invalid argument'}, NOTIFY_ERROR end
 	
 	local class = args[1]
 	local group = args[2]
-	if not DPP.ConstrainsLimits[class] then return end
-	if not DPP.ConstrainsLimits[class][group] then return end
+	if not DPP.ConstrainsLimits[class] then return false, {'Limit for class does not exists'} end
+	if not DPP.ConstrainsLimits[class][group] then return false, {'Limit for class does not exists'} end
 	
 	DPP.RemoveConstLimit(class, group)
 	
@@ -704,8 +699,21 @@ function DPP.InitializeDefaultBlock()
 end
 
 local function WrapFunction(func, id)
+	local function ProceedFunc(ply, ...)
+		local status, notify, notifyLevel = func(ply, ...)
+		
+		if status then return end
+		if not notify then return end
+		
+		if IsValid(ply) then
+			DPP.Notify(ply, notify, notifyLevel)
+		else
+			DPP.Message(unpack(notify))
+		end
+	end
+	
 	return function(ply, ...)
-		DPP.CheckAccess(ply, id, func, ply, ...)
+		DPP.CheckAccess(ply, id, ProceedFunc, ply, ...)
 	end
 end
 
