@@ -18,51 +18,59 @@ limitations under the License.
 include('sv_mysql.lua')
 
 function DPP.CreateTables()
-	DPP.Query([[
-		CREATE TABLE IF NOT EXISTS dpp_blockedmodels (
-			MODEL VARCHAR(64) NOT NULL,
-			PRIMARY KEY (MODEL)
-		)
-	]])
-	
-	DPP.Query([[
-		CREATE TABLE IF NOT EXISTS dpp_cvars (
-			CVAR VARCHAR(64) NOT NULL,
-			`VALUE` VARCHAR(64) NOT NULL,
-			PRIMARY KEY (CVAR)
-		)
-	]])
-	
-	DPP.Query([[
-		CREATE TABLE IF NOT EXISTS dpp_entitylimits (
-			CLASS VARCHAR(64) NOT NULL,
-			UGROUP VARCHAR(64) NOT NULL,
-			ULIMIT INT NOT NULL,
-			PRIMARY KEY (CLASS, UGROUP)
-		)
-	]])
-	
-	DPP.Query([[
-		CREATE TABLE IF NOT EXISTS dpp_sboxlimits (
-			CLASS VARCHAR(64) NOT NULL,
-			UGROUP VARCHAR(64) NOT NULL,
-			ULIMIT INT NOT NULL,
-			PRIMARY KEY (CLASS, UGROUP)
-		)
-	]])
-	
-	DPP.Query([[
-		CREATE TABLE IF NOT EXISTS dpp_constlimits (
-			CLASS VARCHAR(64) NOT NULL,
-			UGROUP VARCHAR(64) NOT NULL,
-			ULIMIT INT NOT NULL,
-			PRIMARY KEY (CLASS, UGROUP)
-		)
-	]])
+	DPP.SQL_TABLES = {
+		[[
+			CREATE TABLE IF NOT EXISTS dpp_blockedmodels
+			(
+				MODEL VARCHAR(64) NOT NULL,
+				PRIMARY KEY (MODEL)
+			)
+		]],
+		
+		[[
+			CREATE TABLE IF NOT EXISTS dpp_cvars
+			(
+				CVAR VARCHAR(64) NOT NULL,
+				`VALUE` VARCHAR(64) NOT NULL,
+				PRIMARY KEY (CVAR)
+			)
+		]],
+		
+		[[
+			CREATE TABLE IF NOT EXISTS dpp_entitylimits
+			(
+				CLASS VARCHAR(64) NOT NULL,
+				UGROUP VARCHAR(64) NOT NULL,
+				ULIMIT INT NOT NULL,
+				PRIMARY KEY (CLASS, UGROUP)
+			)
+		]],
+		
+		[[
+			CREATE TABLE IF NOT EXISTS dpp_sboxlimits
+			(
+				CLASS VARCHAR(64) NOT NULL,
+				UGROUP VARCHAR(64) NOT NULL,
+				ULIMIT INT NOT NULL,
+				PRIMARY KEY (CLASS, UGROUP)
+			)
+		]],
+		
+		[[
+			CREATE TABLE IF NOT EXISTS dpp_constlimits
+			(
+				CLASS VARCHAR(64) NOT NULL,
+				UGROUP VARCHAR(64) NOT NULL,
+				ULIMIT INT NOT NULL,
+				PRIMARY KEY (CLASS, UGROUP)
+			)
+		]],
+	}
 	
 	for k, v in pairs(DPP.BlockTypes) do
-		DPP.Query([[
-			CREATE TABLE IF NOT EXISTS dpp_blockedentities]] .. k .. [[ (
+		table.insert(DPP.SQL_TABLES, [[
+			CREATE TABLE IF NOT EXISTS dpp_blockedentities]] .. k .. [[
+			(
 				ENTITY VARCHAR(64) NOT NULL,
 				PRIMARY KEY (ENTITY)
 			)
@@ -70,8 +78,9 @@ function DPP.CreateTables()
 	end
 	
 	for k, v in pairs(DPP.WhitelistTypes) do
-		DPP.Query([[
-			CREATE TABLE IF NOT EXISTS dpp_whitelistentities]] .. k .. [[ (
+		table.insert(DPP.SQL_TABLES, [[
+			CREATE TABLE IF NOT EXISTS dpp_whitelistentities]] .. k .. [[
+			(
 				ENTITY VARCHAR(64) NOT NULL,
 				PRIMARY KEY (ENTITY)
 			)
@@ -79,8 +88,9 @@ function DPP.CreateTables()
 	end
 	
 	for k, v in pairs(DPP.RestrictTypes) do
-		DPP.Query([[
-			CREATE TABLE IF NOT EXISTS dpp_restricted]] .. k .. [[ (
+		table.insert(DPP.SQL_TABLES, [[
+			CREATE TABLE IF NOT EXISTS dpp_restricted]] .. k .. [[
+			(
 				CLASS VARCHAR(64) NOT NULL,
 				GROUPS VARCHAR(255) NOT NULL,
 				IS_WHITE BOOL NOT NULL,
@@ -88,6 +98,21 @@ function DPP.CreateTables()
 			)
 		]])
 	end
+	
+	DPP.Message('Initializing database tables')
+	local Time = SysTime()
+	
+	local LINK = DPP.GetLink()
+	LINK:Begin(true)
+	
+	for k, v in ipairs(DPP.SQL_TABLES) do
+		LINK:Add(v)
+	end
+	
+	LINK:Commit(function()
+		DPP.Message('Finished in ' .. math.floor((SysTime() - Time) * 100000) / 100 .. 'ms')
+		DPP.ContinueDatabaseStartup()
+	end)
 end
 
 local Gray = Color(200, 200, 200)
@@ -692,8 +717,12 @@ for k, v in pairs(DPP.ManipulateCommands) do
 	concommand.Add('dpp_' .. k, DPP.ManipulateCommands[k])
 end
 
-local function Load()
-	DPP.CreateTables()
+function DPP.ContinueDatabaseStartup()
+	hook.Run('DPP_SQLTablesInitialized')
+	
+	DPP.Message('Loading data from database')
+	local Time = SysTime()
+	
 	DPP.LoadBlockedModels()
 	DPP.LoadLimits()
 	DPP.LoadSLimits()
@@ -737,7 +766,17 @@ local function Load()
 	DPP.FindInfoEntities()
 	DPP.InitializeDefaultBlock()
 	
+	if DPP.IsMySQL() then
+		DPP.Message('Finished (queuing) SQL queries in ' .. math.floor((SysTime() - Time) * 100000) / 100 .. 'ms')
+	else
+		DPP.Message('Finished SQL queries in ' .. math.floor((SysTime() - Time) * 100000) / 100 .. 'ms')
+	end
+	
 	DPP.BroadcastLists()
+	
+	hook.Run('DPP_SQLQueriesInitialized')
 end
 
-timer.Simple(0, Load)
+DPP.StartDatabase = DPP.CreateTables
+
+timer.Simple(0, DPP.CreateTables)
