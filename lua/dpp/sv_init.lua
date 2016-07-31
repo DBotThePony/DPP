@@ -163,13 +163,6 @@ function DPP.SetOwner(ent, ply)
 	hook.Run('DPP.AssignOwnership', ply, ent)
 end
 
-concommand.Add('dpp_setvar', function(ply, cmd, args)
-	if IsValid(ply) and not ply:IsSuperAdmin() then return end
-	if not args[1] then DPP.Notify(ply, 'Invalid argument') return end
-	if not args[2] then DPP.Notify(ply, 'Invalid argument') return end
-	RunConsoleCommand('dpp_' .. args[1], args[2])
-end)
-
 function DPP.GetFriendTable(ply)
 	return ply.DPP_Friends or {}
 end
@@ -429,6 +422,34 @@ net.Receive('DPP.SetConVar', function(len, ply)
 	local new = net.ReadString()
 	RunConsoleCommand('dpp_' .. c, new)
 end)
+
+DPP.SetVarCommandRaw = function(ply, cmd, args)
+	if not args[1] then return false, {'Invalid server variable'}, NOTIFY_ERROR end
+	args[1] = args[1]:lower()
+	if not DPP.Settings[args[1]] then return false, {'Invalid server variable'}, NOTIFY_ERROR end
+	if not args[2] then return false, {'Invalid value'}, NOTIFY_ERROR end
+	RunConsoleCommand('dpp_' .. args[1], args[2])
+	return true
+end
+
+local function SetVarProceed(ply, cmd, args)
+	local status, notify, notifyLevel = DPP.SetVarCommandRaw(ply, cmd, args)
+	
+	if status then return end
+	if not notify then return end
+	
+	if IsValid(ply) then
+		DPP.Notify(ply, notify, notifyLevel)
+	else
+		DPP.Message(unpack(notify))
+	end
+end
+
+DPP.SetVarCommand = function(ply, cmd, args)
+	DPP.CheckAccess(ply, 'setvar', SetVarProceed, ply, cmd, args)
+end
+
+concommand.Add('dpp_setvar', DPP.SetVarCommand)
 
 hook.Add('PlayerInitialSpawn', 'DPP.Hooks', DPP.PlayerInitialSpawn)
 hook.Add('PlayerDisconnected', 'DPP.Hooks', DPP.PlayerDisconnected)

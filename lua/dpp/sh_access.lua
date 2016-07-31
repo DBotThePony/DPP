@@ -101,6 +101,7 @@ end
 local default = {
 	--Core access
 	touchother = 'admin',
+	setvar = 'superadmin',
 	
 	--Usual Commands
 	cleardecals = 'admin',
