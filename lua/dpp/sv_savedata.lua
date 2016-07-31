@@ -355,8 +355,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 			local f = {IsValid(ply) and ply or 'Console', Gray, ' added ' .. class .. ' to restrticted ' .. k .. ' blacklist/whitelist'}
 			DPP.NotifyLog(f)
 		else
-			local f = {IsValid(ply) and ply or 'Console', Gray, ' updated restricts for ' .. class}
-			DPP.DoEcho(f)
+			DPP.DoEcho(IsValid(ply) and ply or 'Console', Gray, ' updated restricts for ' .. class)
 			if IsValid(ply) then
 				DPP.Notify(ply, '(SILENT) You updated restricts for ' .. class)
 			end
