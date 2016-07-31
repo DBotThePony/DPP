@@ -684,7 +684,10 @@ local function WrapFunction(func, id)
 	end
 end
 
+DPP.RawManipulateCommands = {}
+
 for k, v in pairs(DPP.ManipulateCommands) do
+	DPP.RawManipulateCommands[k] = v
 	DPP.ManipulateCommands[k] = WrapFunction(v, k)
 	concommand.Add('dpp_' .. k, DPP.ManipulateCommands[k])
 end

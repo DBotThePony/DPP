@@ -256,7 +256,10 @@ DPP.Commands = {
 	end,
 }
 
+DPP.RawCommands = {}
+
 for k, v in pairs(DPP.Commands) do
+	DPP.RawCommands[k] = v
 	DPP.Commands[k] = WrapFunction(v, k)
 	concommand.Add('dpp_' .. k, DPP.Commands[k])
 end
