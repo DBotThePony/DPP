@@ -90,6 +90,14 @@ function DPP.AssertArguments(funcName, args)
 			TypeName = 'NULL Entity'
 		end
 		
+		if expected == 'Player' then
+			--Trying to Duck type
+			
+			if EntityTypes[Type] and val ~= NULL then
+				if val.SteamID and val.SteamID64 and val.Nick then continue end --Duck typed
+			end
+		end
+		
 		if expected == 'AnyEntity' then
 			ExpectedName = 'Any Entity'
 		end
