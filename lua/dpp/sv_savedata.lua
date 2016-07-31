@@ -176,8 +176,7 @@ DPP.ManipulateCommands = {
 		args[1] = args[1]:lower()
 		DPP.AddBlockedModel(args[1])
 		local f = {IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' added ' .. args[1] .. ' to model blacklist/whitelist'}
-		DPP.Notify(player.GetAll(), f)
-		DPP.Message(f)
+		DPP.NotifyLog(f)
 	end,
 
 	removeblockedmodel = function(ply, cmd, args)
@@ -185,8 +184,7 @@ DPP.ManipulateCommands = {
 		args[1] = args[1]:lower()
 		DPP.RemoveBlockedModel(args[1])
 		local f = {IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' removed ' .. args[1] .. ' from model blacklist/whitelist'}
-		DPP.Notify(player.GetAll(), f)
-		DPP.Message(f)
+		DPP.NotifyLog(f)
 	end,
 }
 
@@ -248,8 +246,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		if blockedEnts[args[1]] then DPP.Notify(ply, 'You can not add that entity to blacklist') return end
 		DPP['AddBlockedEntity' .. v](args[1])
 		local f = {IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' added ' .. args[1] .. ' to ' .. v .. ' blacklist/whitelist'}
-		DPP.Notify(player.GetAll(), f)
-		DPP.Message(f)
+		DPP.NotifyLog(f)
 	end
 	
 	DPP.ManipulateCommands['removeblockedentity' .. k] = function(ply, cmd, args)
@@ -257,8 +254,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		if blockedEnts[args[1]] then DPP.Notify(ply, 'You can not remove that entity from blacklist') return end
 		DPP['RemoveBlockedEntity' .. v](args[1])
 		local f = {IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' removed ' .. args[1] .. ' from ' .. v .. ' blacklist/whitelist'}
-		DPP.Notify(player.GetAll(), f)
-		DPP.Message(f)
+		DPP.NotifyLog(f)
 	end
 end
 
@@ -296,16 +292,14 @@ for k, v in pairs(DPP.WhitelistTypes) do
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		DPP['AddWhitelistedEntity' .. v](args[1])
 		local f = {IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' added ' .. args[1] .. ' to ' .. v .. ' excluded entities'}
-		DPP.Notify(player.GetAll(), f)
-		DPP.Message(f)
+		DPP.NotifyLog(f)
 	end
 	
 	DPP.ManipulateCommands['removewhitelistedentity' .. k] = function(ply, cmd, args)
 		if not args[1] or args[1] == '' or args[1] == ' ' then DPP.Notify(ply, 'Invalid argument') return end
 		DPP['RemoveWhitelistedEntity' .. v](args[1])
 		local f = {IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' removed ' .. args[1] .. ' from ' .. v .. ' excluded entities'}
-		DPP.Notify(player.GetAll(), f)
-		DPP.Message(f)
+		DPP.NotifyLog(f)
 	end
 end
 
@@ -357,8 +351,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		
 		if not old then
 			local f = {IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' added ' .. class .. ' to restrticted ' .. k .. ' blacklist/whitelist'}
-			DPP.Notify(player.GetAll(), f)
-			DPP.Message(f)
+			DPP.NotifyLog(f)
 		else
 			local f = {IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' updated restricts for ' .. class}
 			DPP.DoEcho(f)
@@ -376,8 +369,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		DPP['UnRestrict' .. v](class)
 		
 		local f = {IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' removed ' .. args[1] .. ' from restrticted ' .. k .. ' blacklist/whitelist'}
-		DPP.Notify(player.GetAll(), f)
-		DPP.Message(f)
+		DPP.NotifyLog(f)
 	end
 end
 
@@ -550,8 +542,7 @@ DPP.ManipulateCommands.addentitylimit = function(ply, cmd, args)
 	
 	if Last < CurTime() then
 		local f = {IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' added/updated ' .. class .. ' limits'}
-		DPP.Notify(player.GetAll(), f)
-		DPP.Message(f)
+		DPP.NotifyLog(f)
 		Last = CurTime() + 0.5
 	end
 end
@@ -569,8 +560,7 @@ DPP.ManipulateCommands.removeentitylimit = function(ply, cmd, args)
 	
 	if Last < CurTime() then
 		local f = {IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' removed ' .. class .. ' from limits list'}
-		DPP.Notify(player.GetAll(), f)
-		DPP.Message(f)
+		DPP.NotifyLog(f)
 		Last = CurTime() + 0.5
 	end
 end
@@ -589,8 +579,7 @@ DPP.ManipulateCommands.addsboxlimit = function(ply, cmd, args)
 	DPP.AddSBoxLimit(class, group, num)
 	
 	local f = {IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' added/updated ' .. class .. ' sbox limits list for ' .. group}
-	DPP.Notify(player.GetAll(), f)
-	DPP.Message(f)
+	DPP.NotifyLog(f)
 	Last = CurTime() + 0.5
 end
 
@@ -608,8 +597,7 @@ DPP.ManipulateCommands.addconstlimit = function(ply, cmd, args)
 	DPP.AddConstLimit(class, group, num)
 	
 	local f = {IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' added/updated ' .. class .. ' constaints limit list for ' .. group}
-	DPP.Notify(player.GetAll(), f)
-	DPP.Message(f)
+	DPP.NotifyLog(f)
 	Last = CurTime() + 0.5
 end
 
@@ -625,8 +613,7 @@ DPP.ManipulateCommands.removesboxlimit = function(ply, cmd, args)
 	DPP.RemoveSBoxLimit(class, group)
 	
 	local f = {IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' removed ' .. class .. ' from sbox limits list for ' .. group}
-	DPP.Notify(player.GetAll(), f)
-	DPP.Message(f)
+	DPP.NotifyLog(f)
 	Last = CurTime() + 0.5
 end
 
@@ -642,8 +629,7 @@ DPP.ManipulateCommands.removeconstlimit = function(ply, cmd, args)
 	DPP.RemoveConstLimit(class, group)
 	
 	local f = {IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' removed ' .. class .. ' from constaints limit list for ' .. group}
-	DPP.Notify(player.GetAll(), f)
-	DPP.Message(f)
+	DPP.NotifyLog(f)
 	Last = CurTime() + 0.5
 end
 
