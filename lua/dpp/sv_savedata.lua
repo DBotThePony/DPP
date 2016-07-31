@@ -269,7 +269,7 @@ for k, v in pairs(DPP.BlockTypes) do
 	end
 	
 	DPP.ManipulateCommands['addblockedentity' .. k] = function(ply, cmd, args)
-		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid entity class'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower():Trim()
 		if blockedEnts[args[1]] then DPP.Notify(ply, 'You can not add that entity to blacklist') return end
 		DPP['AddBlockedEntity' .. v](args[1])
@@ -277,7 +277,7 @@ for k, v in pairs(DPP.BlockTypes) do
 	end
 	
 	DPP.ManipulateCommands['removeblockedentity' .. k] = function(ply, cmd, args)
-		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid entity class'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower():Trim()
 		if blockedEnts[args[1]] then DPP.Notify(ply, 'You can not remove that entity from blacklist') return end
 		DPP['RemoveBlockedEntity' .. v](args[1])
@@ -316,14 +316,14 @@ for k, v in pairs(DPP.WhitelistTypes) do
 	end
 	
 	DPP.ManipulateCommands['addwhitelistedentity' .. k] = function(ply, cmd, args)
-		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid entity class'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower():Trim()
 		DPP['AddWhitelistedEntity' .. v](args[1])
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' added ' .. args[1] .. ' to ' .. v .. ' excluded entities'}
 	end
 	
 	DPP.ManipulateCommands['removewhitelistedentity' .. k] = function(ply, cmd, args)
-		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid entity class'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower():Trim()
 		DPP['RemoveWhitelistedEntity' .. v](args[1])
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' removed ' .. args[1] .. ' from ' .. v .. ' excluded entities'}
@@ -366,9 +366,9 @@ for k, v in pairs(DPP.RestrictTypes) do
 	end
 	
 	DPP.ManipulateCommands['restrict' .. k] = function(ply, cmd, args)
-		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
-		if not args[2] then return false, {'Invalid argument'}, NOTIFY_ERROR end --No groups allowed
-		if not args[3] or args[3]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid class to restrict (#1)'}, NOTIFY_ERROR end
+		if not args[2] then return false, {'Invalid group(s). Groups are seperated by comma, without spaces (#2)'}, NOTIFY_ERROR end --No groups allowed
+		if not args[3] or args[3]:Trim() == '' then return false, {'Invalid argument "is white list" (#3)'}, NOTIFY_ERROR end
 		
 		local class = args[1]:lower():Trim()
 		local groups = string.Explode(',', args[2])
@@ -388,7 +388,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 	end
 	
 	DPP.ManipulateCommands['unrestrict' .. k] = function(ply, cmd, args)
-		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid class to unrestrict'}, NOTIFY_ERROR end
 		
 		local class = args[1]:lower():Trim()
 		
@@ -553,15 +553,15 @@ end
 local Last = 0
 
 DPP.ManipulateCommands.addentitylimit = function(ply, cmd, args)
-	if not args[1] or args[1]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
-	if not args[2] or args[2]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
-	if not args[3] or args[3]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+	if not args[1] or args[1]:Trim() == '' then return false, {'Invalid class (#1)'}, NOTIFY_ERROR end
+	if not args[2] or args[2]:Trim() == '' then return false, {'Invalid group(s). Groups are seperated by comma, without spaces (#2)'}, NOTIFY_ERROR end
+	if not args[3] or args[3]:Trim() == '' then return false, {'Invalid limit (#3)'}, NOTIFY_ERROR end
 	
 	local class = args[1]:lower():Trim()
 	local group = args[2]
 	local num = tonumber(args[3])
 	
-	if not num then return false, {'Invalid argument'}, NOTIFY_ERROR end
+	if not num then return false, {'Invalid limit (#3)'}, NOTIFY_ERROR end
 	
 	DPP.AddEntityLimit(class, group, num)
 	
@@ -573,8 +573,8 @@ DPP.ManipulateCommands.addentitylimit = function(ply, cmd, args)
 end
 
 DPP.ManipulateCommands.removeentitylimit = function(ply, cmd, args)
-	if not args[1] or args[1]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
-	if not args[2] or args[2]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+	if not args[1] or args[1]:Trim() == '' then return false, {'Invalid class (#1)'}, NOTIFY_ERROR end
+	if not args[2] or args[2]:Trim() == '' then return false, {'Invalid group (#2)'}, NOTIFY_ERROR end
 	
 	local class = args[1]:lower():Trim()
 	local group = args[2]
@@ -591,15 +591,15 @@ DPP.ManipulateCommands.removeentitylimit = function(ply, cmd, args)
 end
 
 DPP.ManipulateCommands.addsboxlimit = function(ply, cmd, args)
-	if not args[1] or args[1]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
-	if not args[2] or args[2]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
-	if not args[3] or args[3]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+	if not args[1] or args[1]:Trim() == '' then return false, {'Invalid sbox limit name (#1)'}, NOTIFY_ERROR end
+	if not args[2] or args[2]:Trim() == '' then return false, {'Invalid group (#2)'}, NOTIFY_ERROR end
+	if not args[3] or args[3]:Trim() == '' then return false, {'Invalid value (#3)'}, NOTIFY_ERROR end
 	
 	local class = args[1]:lower():Trim()
 	local group = args[2]
 	local num = tonumber(args[3])
 	
-	if not num then return false, {'Invalid argument'}, NOTIFY_ERROR end
+	if not num then return false, {'Invalid value (#3)'}, NOTIFY_ERROR end
 	
 	DPP.AddSBoxLimit(class, group, num)
 	
@@ -609,15 +609,15 @@ DPP.ManipulateCommands.addsboxlimit = function(ply, cmd, args)
 end
 
 DPP.ManipulateCommands.addconstlimit = function(ply, cmd, args)
-	if not args[1] or args[1]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
-	if not args[2] or args[2]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
-	if not args[3] or args[3]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+	if not args[1] or args[1]:Trim() == '' then return false, {'Invalid constraint class (#1)'}, NOTIFY_ERROR end
+	if not args[2] or args[2]:Trim() == '' then return false, {'Invalid group (#2)'}, NOTIFY_ERROR end
+	if not args[3] or args[3]:Trim() == '' then return false, {'Invalid value (#3)'}, NOTIFY_ERROR end
 	
 	local class = args[1]:lower():Trim()
 	local group = args[2]
 	local num = tonumber(args[3])
 	
-	if not num then return false, {'Invalid argument'}, NOTIFY_ERROR end
+	if not num then return false, {'Invalid value (#3)'}, NOTIFY_ERROR end
 	
 	DPP.AddConstLimit(class, group, num)
 	
@@ -627,8 +627,8 @@ DPP.ManipulateCommands.addconstlimit = function(ply, cmd, args)
 end
 
 DPP.ManipulateCommands.removesboxlimit = function(ply, cmd, args)
-	if not args[1] or args[1]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
-	if not args[2] or args[2]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+	if not args[1] or args[1]:Trim() == '' then return false, {'Invalid sbox limit name (#1)'}, NOTIFY_ERROR end
+	if not args[2] or args[2]:Trim() == '' then return false, {'Invalid group (#2)'}, NOTIFY_ERROR end
 	
 	local class = args[1]:lower():Trim()
 	local group = args[2]
@@ -643,8 +643,8 @@ DPP.ManipulateCommands.removesboxlimit = function(ply, cmd, args)
 end
 
 DPP.ManipulateCommands.removeconstlimit = function(ply, cmd, args)
-	if not args[1] or args[1]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
-	if not args[2] or args[2]:Trim() == '' then return false, {'Invalid argument'}, NOTIFY_ERROR end
+	if not args[1] or args[1]:Trim() == '' then return false, {'Invalid constraint class (#1)'}, NOTIFY_ERROR end
+	if not args[2] or args[2]:Trim() == '' then return false, {'Invalid group (#2)'}, NOTIFY_ERROR end
 	
 	local class = args[1]:lower():Trim()
 	local group = args[2]
