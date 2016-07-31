@@ -271,6 +271,16 @@ function DPP.LogIntoFile(...)
 			if v.type == 'Spacing' then
 				str = str .. string.rep(' ', v.length - #str)
 			end
+			
+			if v.type == 'UIDPlayer' then
+				local ply = player.GetByUniqueID(v.uid)
+				
+				if ply then
+					str = str .. ConcatSafe(DPP.FormatPlayer(ply))
+				else
+					str = str .. DPP.DisconnectedPlayerNick(v.uid)
+				end
+			end
 		end
 	end
 	

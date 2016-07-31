@@ -15,7 +15,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
-local DisconnectedPlayer = Color(134, 255, 154)
 local Gray = Color(200, 200, 200)
 
 local function WrapFunction(func, id)
@@ -23,7 +22,7 @@ local function WrapFunction(func, id)
 		local status, notify, notifyLevel = func(ply, ...)
 		
 		if status then return end
-		if notify then return end
+		if not notify then return end
 		
 		if IsValid(ply) then
 			DPP.Notify(ply, notify, notifyLevel)
@@ -89,10 +88,9 @@ DPP.Commands = {
 		local uid = args[1]
 		if not tonumber(uid) then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		
-		local Target = player.GetByUniqueID(uid)
 		DPP.ClearByUID(uid)
 		
-		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' cleared all ', Target or DisconnectedPlayer, Gray, '\'s props'}
+		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' cleared all ', {type = 'UIDPlayer', uid = uid}, Gray, '\'s props'}
 		
 		return true
 	end,
@@ -222,11 +220,9 @@ DPP.Commands = {
 		local uid = args[1]
 		
 		if not tonumber(args[1]) then return false, {'Invalid argument'}, NOTIFY_ERROR end
-		
-		local Target = player.GetByUniqueID(uid)
 		DPP.FreezeByUID(uid)
 			
-		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' freeze all ', Target or DisconnectedPlayer, Gray, '\'s entities'}
+		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' freeze all ', {type = 'UIDPlayer', uid = uid}, Gray, '\'s entities'}
 		
 		return true
 	end,
@@ -236,10 +232,9 @@ DPP.Commands = {
 		
 		if not tonumber(args[1]) then return false, {'Invalid argument'}, NOTIFY_ERROR end
 		
-		local Target = player.GetByUniqueID(uid)
 		DPP.UnFreezeByUID(uid)
 			
-		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' unfreeze all ', Target or DisconnectedPlayer, Gray, '\'s entities'}
+		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' unfreeze all ', {type = 'UIDPlayer', uid = uid}, Gray, '\'s entities'}
 		
 		return true
 	end,

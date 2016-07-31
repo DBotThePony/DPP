@@ -1483,6 +1483,7 @@ function DPP.CanTouch(ply, ent, mode)
 end
 
 local ConsoleColor = Color(196, 0, 255)
+local DisconnectedPlayerColor = Color(134, 255, 154)
 
 function DPP.FormatPlayer(ply)
 	local t = {}
@@ -1496,10 +1497,9 @@ function DPP.FormatPlayer(ply)
 end
 
 function DPP.Format(...)
-	local original = {...}
 	local repack = {}
 	
-	for k, v in ipairs(original) do
+	for k, v in ipairs{...} do
 		local Type = type(v)
 		
 		if Type == 'Player' then
@@ -1516,10 +1516,29 @@ function DPP.Format(...)
 		end
 		
 		if Type == 'table' then
-			if v.r and v.g and v.b and v.a then
+			if v.r and v.g and v.b and v.a then --Duck typing
 				table.insert(repack, v)
 				continue
 			end
+			
+			if v.type then
+				if v.type == 'UIDPlayer' then
+					local ply = player.GetByUniqueID(v.uid)
+					
+					if ply then
+						for a, b in ipairs(DPP.FormatPlayer(ply)) do
+							table.insert(repack, b)
+						end
+					else
+						table.insert(repack, DisconnectedPlayerColor)
+						table.insert(repack, DPP.DisconnectedPlayerNick(v.uid))
+					end
+					
+					continue
+				end
+			end
+			
+			continue
 		end
 		
 		if Type == 'number' then
