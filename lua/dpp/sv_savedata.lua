@@ -271,7 +271,8 @@ for k, v in pairs(DPP.BlockTypes) do
 	DPP.ManipulateCommands['addblockedentity' .. k] = function(ply, cmd, args)
 		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid entity class'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower():Trim()
-		if blockedEnts[args[1]] then DPP.Notify(ply, 'You can not add that entity to blacklist') return end
+		if DPP.BlockedEntities[k][args[1]] then return false, {'Entity is already listed in that blacklist'} end
+		if blockedEnts[args[1]] then return false, {'You can not add that entity to blacklist'}, NOTIFY_ERROR end
 		DPP['AddBlockedEntity' .. v](args[1])
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' added ' .. args[1] .. ' to ' .. v .. ' blacklist/whitelist'}
 	end
@@ -279,7 +280,8 @@ for k, v in pairs(DPP.BlockTypes) do
 	DPP.ManipulateCommands['removeblockedentity' .. k] = function(ply, cmd, args)
 		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid entity class'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower():Trim()
-		if blockedEnts[args[1]] then DPP.Notify(ply, 'You can not remove that entity from blacklist') return end
+		if not DPP.BlockedEntities[k][args[1]] then return false, {'Entity is not listed in that blacklist'} end
+		if blockedEnts[args[1]] then return false, {'You can not remove that entity from blacklist'}, NOTIFY_ERROR end
 		DPP['RemoveBlockedEntity' .. v](args[1])
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' removed ' .. args[1] .. ' from ' .. v .. ' blacklist/whitelist'}
 	end
@@ -318,6 +320,8 @@ for k, v in pairs(DPP.WhitelistTypes) do
 	DPP.ManipulateCommands['addwhitelistedentity' .. k] = function(ply, cmd, args)
 		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid entity class'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower():Trim()
+		if DPP.WhitelistedEntities[k][args[1]] then return false, {'Entity is already in that exclude list'} end
+		if blockedEnts[args[1]] then return false, {'You can not add that entity to exclude list'}, NOTIFY_ERROR end
 		DPP['AddWhitelistedEntity' .. v](args[1])
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' added ' .. args[1] .. ' to ' .. v .. ' excluded entities'}
 	end
@@ -325,6 +329,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 	DPP.ManipulateCommands['removewhitelistedentity' .. k] = function(ply, cmd, args)
 		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid entity class'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower():Trim()
+		if not DPP.WhitelistedEntities[k][args[1]] then return false, {'Entity is not in that exclude list'} end
 		DPP['RemoveWhitelistedEntity' .. v](args[1])
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' removed ' .. args[1] .. ' from ' .. v .. ' excluded entities'}
 	end
