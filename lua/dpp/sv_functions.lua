@@ -20,6 +20,7 @@ local GhostColor = Color(255, 255, 255, 224)
 function DPP.SetGhosted(ent, status)
 	if not IsValid(ent) then return end
 	if ent:IsPlayer() then return end
+	if ent.IsConstraint and ent:IsConstraint() then return end
 	if status and DPP.GetGhosted(ent) then return end
 	
 	local can = hook.Run('DPP_SetGhosted', ent, status)
@@ -36,7 +37,8 @@ function DPP.SetGhosted(ent, status)
 		ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
 		
 		local phys = ent:GetPhysicsObject()
-		if IsValid(phys) then
+		
+		if IsValid(phys) and phys ~= Entity(0):GetPhysicsObject() then
 			phys:EnableMotion(false)
 			ent.DPP_OldCollisions = phys:IsCollisionEnabled()
 			phys:Sleep()
@@ -50,7 +52,8 @@ function DPP.SetGhosted(ent, status)
 		if ent.DPP_oldCollision then ent:SetCollisionGroup(ent.DPP_oldCollision) end
 		
 		local phys = ent:GetPhysicsObject()
-		if IsValid(phys) then
+		
+		if IsValid(phys) and phys ~= Entity(0):GetPhysicsObject() then
 			phys:EnableMotion(true)
 			if ent.DPP_OldCollisions then phys:EnableCollisions(ent.DPP_OldCollisions) end
 			phys:Wake()
