@@ -741,10 +741,14 @@ local function FindEntitiesRecursiveFunc(tab)
 	for k, v in pairs(tab) do
 		local t = type(v)
 		
-		if t == 'Entity' or t == 'Vehicle' then
+		if t ~= 'Player' and DPP.ENTITY_TYPES[t] and IsValid(v) then
 			if HaveValueLight(RECURSIVE_MEM, v) then continue end --Prevent recursion
 			table.insert(RECURSIVE_MEM, v)
-			FindEntitiesRecursiveFunc(v:GetTable())
+			local eTab = v:GetTable()
+			
+			if eTab then
+				FindEntitiesRecursiveFunc(eTab)
+			end
 		end
 		
 		if t == 'table' then

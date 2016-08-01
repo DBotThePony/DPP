@@ -70,6 +70,8 @@ local EntityTypes = {
 	['NPC'] = true,
 }
 
+DPP.ENTITY_TYPES = EntityTypes
+
 function DPP.AssertArguments(funcName, args)
 	for k, v in ipairs(args) do
 		local val = v[1]
