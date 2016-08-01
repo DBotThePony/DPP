@@ -744,7 +744,7 @@ local function FindEntitiesRecursiveFunc(tab)
 		if t == 'Entity' or t == 'Vehicle' then
 			if HaveValueLight(RECURSIVE_MEM, v) then continue end --Prevent recursion
 			table.insert(RECURSIVE_MEM, v)
-			FindEntitiesRecursiveFunc(tab)
+			FindEntitiesRecursiveFunc(v:GetTable())
 		end
 		
 		if t == 'table' then
@@ -845,6 +845,7 @@ function PostEntityCreated(ent, Timestamp)
 			local Ents = FindEntitiesRecursive(ent:GetTable())
 			
 			for k, v in ipairs(Ents) do
+				if not IsValid(v) then continue end
 				if Timestamps[v] ~= Timestamp then continue end
 				if DPP.IsOwned(v) then continue end
 				
