@@ -67,6 +67,7 @@ local EntityTypes = {
 	['Player'] = true,
 	['Vehicle'] = true,
 	['Weapon'] = true,
+	['NextBot'] = true,
 	['NPC'] = true,
 }
 
