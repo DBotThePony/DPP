@@ -416,12 +416,7 @@ net.Receive('DPP.ReloadFiendList', function(len, ply)
 	net.Broadcast()
 end)
 
-net.Receive('DPP.SetConVar', function(len, ply)
-	if not ply:IsSuperAdmin() then return end
-	local c = net.ReadString()
-	local new = net.ReadString()
-	RunConsoleCommand('dpp_' .. c, new)
-end)
+local Gray = Color(200, 200, 200)
 
 DPP.SetVarCommandRaw = function(ply, cmd, args)
 	if not args[1] then return false, {'Invalid server variable'}, NOTIFY_ERROR end
@@ -429,6 +424,7 @@ DPP.SetVarCommandRaw = function(ply, cmd, args)
 	if not DPP.Settings[args[1]] then return false, {'Invalid server variable'}, NOTIFY_ERROR end
 	if not args[2] then return false, {'Invalid value'}, NOTIFY_ERROR end
 	RunConsoleCommand('dpp_' .. args[1], args[2])
+	DPP.SimpleLog(IsValid(ply) and ply or 'Console', Gray, ' set convar ', color_white, args[1], Gray, ' to ', color_white, args[2])
 	return true
 end
 
@@ -448,6 +444,12 @@ end
 DPP.SetVarCommand = function(ply, cmd, args)
 	DPP.CheckAccess(ply, 'setvar', SetVarProceed, ply, cmd, args)
 end
+
+net.Receive('DPP.SetConVar', function(len, ply)
+	local c = net.ReadString()
+	local new = net.ReadString()
+	DPP.CheckAccess(ply, 'setvar', SetVarProceed, ply, 'dpp_setvar ' .. c .. ' ' .. new, {c, new})
+end)
 
 concommand.Add('dpp_setvar', DPP.SetVarCommand)
 
