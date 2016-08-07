@@ -41,25 +41,29 @@ SpawnFunctions.SPACE2 = SPACE2
 local function LogSpawn(ply, ent, type)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
-	SimpleLog(ply, SPACE, GRAY, ' spawned ', color_white, SPACE2, ent:GetClass(), GRAY, string.format(' <%s | %s> (%s)', tostring(ent), ent:GetModel(), type or 'N/A'))
+	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
+	logFunc(ply, SPACE, GRAY, ' spawned ', color_white, SPACE2, ent:GetClass(), GRAY, string.format(' <%s | %s> (%s)', tostring(ent), ent:GetModel(), type or 'N/A'))
 end
 
 local function LogSpawnC(ply, class, type, model)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[class] then return end
-	SimpleLog(ply, SPACE, GRAY, ' spawned ', color_white, SPACE2, class, GRAY, string.format(' <%s | %s> (%s)', class, model or 'N/A', type or 'N/A'))
+	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
+	logFunc(ply, SPACE, GRAY, ' spawned ', color_white, SPACE2, class, GRAY, string.format(' <%s | %s> (%s)', class, model or 'N/A', type or 'N/A'))
 end
 
 local function LogTry(ply, type, model, class)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[class] then return end
-	SimpleLog(ply, SPACE, RED, ' tried ', GRAY, 'to spawn', SPACE2, string.format(' %s <%s | %s> (%s)', class or 'N/A', class or 'N/A', model or 'N/A', type or 'N/A'))
+	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
+	logFunc(ply, SPACE, RED, ' tried ', GRAY, 'to spawn', SPACE2, string.format(' %s <%s | %s> (%s)', class or 'N/A', class or 'N/A', model or 'N/A', type or 'N/A'))
 end
 
 local function LogTryPost(ply, type, ent)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
-	SimpleLog(ply, SPACE, RED, ' tried ', GRAY, 'to spawn', SPACE2, string.format(' %s <%s | %s> (%s)', ent:GetClass(), tostring(ent), ent:GetModel(), type or 'N/A'))
+	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
+	logFunc(ply, SPACE, RED, ' tried ', GRAY, 'to spawn', SPACE2, string.format(' %s <%s | %s> (%s)', ent:GetClass(), tostring(ent), ent:GetModel(), type or 'N/A'))
 end
 
 --god
@@ -93,7 +97,8 @@ local function LogConstraint(ply, ent)
 		ent2 = '<unknown>'
 	end
 	
-	SimpleLog(ply, SPACE, GRAY, ' created constraint ', SPACE2, color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
+	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
+	logFunc(ply, SPACE, GRAY, ' created constraint ', SPACE2, color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
 end
 
 local function LogConstraintTry(ply, ent)
@@ -110,7 +115,8 @@ local function LogConstraintTry(ply, ent)
 		ent2 = '<unknown>'
 	end
 	
-	SimpleLog(ply, SPACE, RED, ' tried ', GRAY, SPACE2, 'to create constraint ', color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
+	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
+	logFunc(ply, SPACE, RED, ' tried ', GRAY, SPACE2, 'to create constraint ', color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
 end
 
 local function CheckEntityLimit(ply, class)

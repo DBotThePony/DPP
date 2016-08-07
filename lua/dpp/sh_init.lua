@@ -280,7 +280,13 @@ DPP.Settings = {
 	['log_spawns'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Log spawns',
+		desc = 'Log spawns. Disables logging to files of spawns!',
+	},
+	
+	['echo_spawns'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Echo spawns (server/admin console)',
 	},
 	
 	['log_file'] = {
@@ -600,13 +606,19 @@ DPP.Settings = {
 	['no_tool_log'] = {
 		type = 'bool',
 		value = '0',
-		desc = 'Disable toolgun log'
+		desc = 'Disable toolgun log. Disables toolgun logging into files!'
 	},
 	
 	['no_tool_fail_log'] = {
 		type = 'bool',
 		value = '0',
 		desc = 'Disable toolgun "tries" log'
+	},
+	
+	['no_tool_log_echo'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Disable toolgun echo log (server/admin console messages)'
 	},
 	
 	['no_clear_messages'] = {
