@@ -76,39 +76,58 @@ end
 
 local Clients = {}
 
+local function SendTo(ply, tosend)
+	if not IsValid(ply) then
+		Clients[ply] = nil
+		return
+	end
+	
+	local uid = table.remove(tosend)
+	if not uid then
+		Clients[ply] = nil
+		return
+	end
+	
+	local data = DPP.NETWORK_DB[uid]
+	if not data then return end --???
+	
+	net.Start('DPP.NetworkedEntityVars')
+	net.WriteUInt(uid, 12) --4096 should be enough
+	net.WriteUInt(table.Count(data), 6) --Quite bigger than max number of vars
+	
+	for var, val in pairs(data) do
+		net.WriteUInt(DPP.NetworkVars[var].NetworkID, 6)
+		DPP.NetworkVars[var].send(val)
+	end
+	
+	net.Send(ply)
+end
+
+local RED = Color(200, 100, 100)
+
+local function NetworkError(Message)
+	DPP.SimpleLog(RED, 'Oh no! Something went terribly wrong! i am unable to send data to client. The error message follows:')
+	DPP.SimpleLog(RED, Message)
+	DPP.SimpleLog(RED, debug.traceback())
+	DPP.SimpleLog(RED, 'If you thinks this is DPP problem, report on BitBucket and tell how did you got this.')
+end
+
 local function SendTimer()
 	for ply, tosend in pairs(Clients) do
-		if not IsValid(ply) then
-			Clients[ply] = nil
-			continue
-		end
-		
-		local uid = table.remove(tosend)
-		if not uid then
-			Clients[ply] = nil
-			continue
-		end
-		
-		local data = DPP.NETWORK_DB[uid]
-		if not data then continue end --???
-		
-		net.Start('DPP.NetworkedEntityVars')
-		net.WriteUInt(uid, 12) --4096 should be enough
-		net.WriteUInt(table.Count(data), 6) --Quite bigger than max number of vars
-		
-		for var, val in pairs(data) do
-			net.WriteUInt(DPP.NetworkVars[var].NetworkID, 6)
-			DPP.NetworkVars[var].send(val)
-		end
-		
-		net.Send(ply)
+		xpcall(SendTo, NetworkError, ply, tosend)
 	end
 end
 
-local function NetworkedVarFull(len, ply)
+local Gray = Color(200, 200, 200)
+
+local function NetworkedVarFull(len, ply, auto)
 	ply.DPP_NetowrkingFullLast = ply.DPP_NetowrkingFullLast or 0
-	if ply.DPP_NetowrkingFullLast > CurTime() then return end
+	if ply.DPP_NetowrkingFullLast > CurTime() then return false end
 	ply.DPP_NetowrkingFullLast = CurTime() + 60
+	
+	if not auto then
+		DPP.SimpleLog(ply, Gray, ' Requested full network update automatically')
+	end
 	
 	local reply = {}
 	
@@ -117,6 +136,7 @@ local function NetworkedVarFull(len, ply)
 	end
 	
 	Clients[ply] = reply
+	return true
 end
 
 local function EntityRemoved(ent)
@@ -137,6 +157,20 @@ local function EntityRemoved(ent)
 	net.Broadcast()
 end
 
+local function command(ply)
+	if not IsValid(ply) then DPP.Message('Are you serious?') return end
+	
+	local reply = NetworkedVarFull(nil, ply, true)
+	
+	if not reply then
+		DPP.Notify(ply, 'You must wait before requesting full network pocket again!')
+	else
+		DPP.Notify(ply, 'Accepted.')
+		DPP.SimpleLog(ply, Gray, ' Requested full network update manually')
+	end
+end
+
 hook.Add('EntityRemoved', 'DPP.Networking', EntityRemoved)
 net.Receive('DPP.NetworkedVarFull', NetworkedVarFull)
 timer.Create('DPP.NetworkedVarFull', 0.1, 0, SendTimer)
+concommand.Add('dpp_requestnetupdate', command)
