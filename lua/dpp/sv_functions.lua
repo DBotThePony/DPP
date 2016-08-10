@@ -240,7 +240,7 @@ function DPP.CheckStuck(ply, ent1, ent2)
 	DPP.SetGhosted(ent1, true)
 	DPP.SetGhosted(ent2, true)
 	if IsValid(ply) then
-		DPP.Notify(ply, 'It seems that prop is stuck in each other.')
+		DPP.Notify(ply, 'It seems that this prop is stuck in another.')
 	end
 	
 	return true
