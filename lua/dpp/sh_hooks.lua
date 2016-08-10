@@ -25,7 +25,7 @@ function DPP.CanDamage(ply, ent, ignoreEnt)
 	end
 	
 	if DPP.IsEntityWhitelistedDamage(ent:GetClass()) then
-		return true, 'Damage allowed (Whitelisted)'
+		return true, 'Damage allowed (Excluded)'
 	end
 	
 	local type = DPP.GetEntityType(ent)
@@ -167,7 +167,7 @@ function DPP.CanPhysgun(ply, ent)
 	end
 	
 	if DPP.IsEntityWhitelistedPhysgun(ent:GetClass()) then
-		return true, 'Entity is whitelisted'
+		return true, 'Entity is excluded'
 	end
 	
 	return DPP.CanTouch(ply, ent, 'physgun')
@@ -190,7 +190,7 @@ function DPP.CanGravgun(ply, ent)
 	end
 	
 	if DPP.IsEntityWhitelistedGravgun(ent:GetClass()) then
-		return true, 'Entity is whitelisted'
+		return true, 'Entity is excluded'
 	end
 	
 	if DPP.GetConVar('disable_gravgun_world') and not DPP.IsOwned(ent) then
@@ -260,11 +260,11 @@ function DPP.CanTool(ply, ent, mode)
 	end
 	
 	if mode ~= 'remover' and DPP.IsEntityWhitelistedTool(ent:GetClass()) then
-		return true, 'Entity is whitelisted'
+		return true, 'Entity is excluded'
 	end
 	
 	if mode and DPP.IsEntityWhitelistedToolMode(mode) then
-		return true, 'Tool mode is whitelisted'
+		return true, 'Tool mode is excluded'
 	end
 	
 	if ent:IsPlayer() then
