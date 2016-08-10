@@ -405,6 +405,7 @@ local SortedConVars = {
 }
 
 local MiscConVars = {
+	'apanti_disable',
 	'check_stuck',
 	'no_rope_world',
 	'no_rope_world_weld',

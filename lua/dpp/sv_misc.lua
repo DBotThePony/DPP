@@ -206,9 +206,18 @@ end)
 
 local function KillAPAnti()
 	if not APA then return end
+	
+	if not DPP.GetConVar('apanti_disable') then return end
+	if not DPP.GetConVar('apropkill_enable') then return end
+	if not DPP.GetConVar('apropkill_nopush') then return end
+	
 	DPP.Message('----------------------------------------')
 	DPP.Message('APAnti has been detected!')
 	DPP.Message('Forcing bugging CVars to be disabled')
+	DPP.Message('The reason of that: CONFLICT. Props get ghosted')
+	DPP.Message('Forever. If you want to use APAnti ghosting, you MUST')
+	DPP.Message('disable Anti prop push in DPP, or set')
+	DPP.Message('dpp_apanti_disable to 0 at your own risk')
 	DPP.Message('----------------------------------------')
 	
 	RunConsoleCommand('apa_GhostPickup', '0')
@@ -218,4 +227,4 @@ local function KillAPAnti()
 	RunConsoleCommand('apa_GhostsNoCollide', '0')
 end
 
-timer.Simple(1, KillAPAnti)
+timer.Simple(4, KillAPAnti)

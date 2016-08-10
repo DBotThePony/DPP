@@ -665,6 +665,12 @@ DPP.Settings = {
 		desc = 'Freeze player entities on disconnect'
 	},
 	
+	['apanti_disable'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Disable APAnti ghosting'
+	},
+	
 	['prop_auto_ban'] = {
 		type = 'bool',
 		value = '0',
