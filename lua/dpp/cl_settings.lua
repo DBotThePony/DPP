@@ -770,6 +770,80 @@ local function BuildPlayerList(Panel)
 	end
 end
 
+SettingsClass.FallbackLabelChange = function(self, ent, var, val)
+	if var ~= 'fallback' then return end
+	if ent ~= LocalPlayer() then return end
+	
+	local Text
+	
+	if IsValid(val) then
+		Text = 'Current selected player: ' .. val:Nick() .. '\nSteamID: ' .. val:SteamID()
+	else
+		Text = 'Current selected player: None\n'
+	end
+	
+	self:SetText(Text)
+	self:SetTooltip(Text)
+	self:SizeToContents()
+end
+
+local function BuildFallbackList(Panel)
+	if not IsValid(Panel) then return end
+	Panel:Clear()
+	SettingsClass.SetupBackColor(Panel)
+	
+	DPP.SettingsClass.FallbackPanel = Panel
+	
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	local Text = 'This page is "owning fallback"\nWhen you disconnect from server, DPP will assign\nownership of your props to selected player.'
+	Lab:SetText(Text)
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SizeToContents()
+	Lab:SetTooltip(Text)
+	
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	local Text = 'Current selected player: None\n'
+	Lab:SetText(Text)
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SizeToContents()
+	Lab:SetTooltip(Text)
+	
+	local ply = LocalPlayer()
+	local Selected = ply:DPPVar('fallback')
+	
+	if IsValid(Selected) then
+		Text = 'Current selected player: ' .. Selected:Nick() .. '\nSteamID: ' .. Selected:SteamID()
+		Lab:SetText(Text)
+		Lab:SetTooltip(Text)
+		Lab:SizeToContents()
+	end
+	
+	hook.Add('DPP_EntityVarsChanges', Lab, SettingsClass.FallbackLabelChange)
+	
+	for k, v in ipairs(player.GetAll()) do
+		if v == ply then continue end
+		local Button = Panel:Button('Set Fallback to ' .. v:Nick(), 'dpp_fallbackto', v:UserID())
+		SettingsClass.ApplyButtonStyle(Button)
+	end
+	
+	local lab = Label('')
+	Panel:AddItem(lab)
+	
+	local Button = Panel:Button('Remove Fallback', 'dpp_removefallbackto')
+	SettingsClass.ApplyButtonStyle(Button)
+	
+	local lab = Label('!!!DANGER!!!')
+	Panel:AddItem(lab)
+	
+	for k, v in ipairs(player.GetAll()) do
+		if v == ply then continue end
+		local Button = Panel:Button('Transfer ownership of ALL props to ' .. v:Nick(), 'dpp_transfertoplayer_all', v:UserID())
+		SettingsClass.ApplyButtonStyle(Button)
+	end
+end
+
 SettingsClass.PlayerProtectionCheckboxThink = function(self)
 	if not IsValid(self.Ply) then return end
 	local status = DPP.GetIsProtectionDisabledByServer(self.Ply, self.Mode)
@@ -2370,6 +2444,7 @@ local function PopulateToolMenu()
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Friends', 'Friends', '', '', BuildFriendsPanel)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.PPPanel', 'Player Protection Controls', '', '', BuildPlayerProtectionPanel)
 	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.About', 'About', '', '', About)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Fallback', 'Fallback and Transfer', '', '', BuildFallbackList)
 	
 	for k, v in pairs(DPP.BlockTypes) do
 		spawnmenu.AddToolMenuOption('Utilities', 'DPP Blacklists', 'DPP.' .. k, v .. ' blacklist', '', '', PanelsFunctions[k])
@@ -2473,6 +2548,7 @@ hook.Add('PopulateToolMenu', 'DPP.Menu', PopulateToolMenu)
 net.Receive('DPP.RefreshPlayerList', function()
 	BuildFriendsPanel(DPP.SettingsClass.FriendPanel)
 	BuildPlayerList(DPP.SettingsClass.PlayerPanel)
+	BuildFallbackList(DPP.SettingsClass.FallbackPanel)
 end)
 
 hook.Add('DPP.PlayerListChanged', 'DPP.Menu', function()
@@ -2487,6 +2563,7 @@ local AccessCacheCheck = {
 	'addblockedmodel',
 	'transfertoworld',
 	'removeblockedmodel',
+	'transfertoplayer',
 }
 
 local function InitializeCache()
@@ -2604,7 +2681,35 @@ local transfertoworld = {
 	end,
 }
 
+local transfertoplayer = {
+	MenuLabel = 'Transfer ownership to player...',
+	Order = 2700,
+	MenuIcon = 'icon16/user.png',
+	
+	MenuOpen = function(self, menu, ent, tr)
+		local SubMenu = menu:AddSubMenu()
+		local ply = LocalPlayer()
+		
+		for k, v in ipairs(player.GetAll()) do
+			if v == ply then continue end
+			SubMenu:AddOption(v:Nick(), function()
+				RunConsoleCommand('dpp_transfertoplayer', v:UserID(), ent:EntIndex())
+			end)
+		end
+	end,
+
+	Filter = function(self, ent, ply)
+		if #player.GetAll() <= 1 then return false end
+		return IsValid(ent) and Access('transfertoplayer') and DPP.GetOwner(ent) == ply
+	end,
+	
+	Action = function(self, ent)
+		
+	end,
+}
+
 properties.Add('dpp.transfertoworld', transfertoworld)
+properties.Add('dpp.transfertoplayer', transfertoplayer)
 properties.Add('dpp.share', ShareMenu)
 properties.Add('dpp.clearbyuid', CleanupPlayer)
 properties.Add('dpp.blockingmenu', BlockProperties)

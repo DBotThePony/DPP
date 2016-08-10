@@ -341,6 +341,8 @@ function DPP.PlayerInitialSpawn(ply)
 	end)
 end
 
+local Gray = Color(200, 200, 200)
+
 function DPP.PlayerDisconnected(ply)
 	if DPP.GetConVar('disconnected_freeze') then
 		for k, v in pairs(DPP.GetPlayerEntities(ply)) do
@@ -360,11 +362,28 @@ function DPP.PlayerDisconnected(ply)
 	local props = DPP.GetPropsByUID(uid)
 	if #props == 0 then return end
 	
+	local userFallback = ply:DPPVar('fallback')
+	
+	if IsValid(userFallback) then
+		for k, v in ipairs(props) do
+			DPP.SetOwner(v, userFallback)
+		end
+		
+		DPP.SimpleLog(Gray, 'Transfering props ownership from ', ply, Gray, ' to ', userFallback)
+		DPP.Notify(userFallback, DPP.Format('All ', ply, Gray, ' props now belong to you.'))
+		DPP.TransferUndoTo(ply, userFallback)
+	end
+	
 	timer.Simple(2, function()
+		net.Start('DPP.RefreshPlayerList')
+		net.Broadcast()
+		
 		for k, v in pairs(DPP.GetPropsByUID(uid)) do
 			DPP.RecalcConstraints(v)
 		end
 	end)
+
+	if IsValid(userFallback) then return end
 	
 	if clear then
 		if isAdmin and clearAdmin or not isAdmin then
@@ -413,11 +432,6 @@ function DPP.PlayerDisconnected(ply)
 	if DPP.GetConVar('freeze_on_disconnect') then
 		DPP.FreezePlayerEntities(ply)
 	end
-	
-	timer.Simple(2, function()
-		net.Start('DPP.RefreshPlayerList')
-		net.Broadcast()
-	end)
 end
 
 net.Receive('DPP.ReloadFiendList', function(len, ply)
@@ -430,8 +444,6 @@ net.Receive('DPP.ReloadFiendList', function(len, ply)
 	net.WriteTable(ply.DPP_Friends)
 	net.Broadcast()
 end)
-
-local Gray = Color(200, 200, 200)
 
 DPP.SetVarCommandRaw = function(ply, cmd, args)
 	if not args[1] then return false, {'Invalid server variable'}, NOTIFY_ERROR end

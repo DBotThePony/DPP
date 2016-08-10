@@ -31,6 +31,8 @@ function entMeta:SetDPPVar(var, val)
 		self.DPPVars = self.DPPVars or {}
 		self.DPPVars[var] = val
 	end
+	
+	hook.Run('DPP_EntityVarsChanges', self, var, val)
 end
 
 local function NetworkedVar()
@@ -50,6 +52,13 @@ local function NetworkedVar()
 	local uid = net.ReadUInt(12)
 	DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
 	DPP.NETWORK_DB[uid][var] = data.receive()
+	
+	local Ent = Entity(uid)
+	if IsValid(Ent) then
+		hook.Run('DPP_EntityVarsChanges', Ent, var, Ent:DPPVar(var))
+	else
+		hook.Run('DPP_EntityVarsChangesRaw', uid, var, DPP.NETWORK_DB[uid][var])
+	end
 end
 
 local function NetworkedEntityVars()

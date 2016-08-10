@@ -165,6 +165,9 @@ DPP.Commands = {
 		DPP.DeleteEntityUndo(ent)
 		DPP.RecalcConstraints(ent)
 		
+		DPP.SimpleLog(ply, Gray, ' transfered ownership of ', ent, Gray, ' to world')
+		DPP.Notify(ply, DPP.Format('Successfully transfered ownership of prop to world'))
+		
 		return true
 	end,
 	
@@ -183,6 +186,9 @@ DPP.Commands = {
 			DPP.SetOwner(v, NULL)
 			DPP.DeleteEntityUndo(v)
 		end
+		
+		DPP.SimpleLog(ply, Gray, ' transfered ownership of ', ent, Gray, ' and constrained props to world')
+		DPP.Notify(ply, DPP.Format('Successfully transfered ownership of prop and constrained props to world'))
 		
 		DPP.RecalcConstraints(ent)
 		
@@ -295,6 +301,133 @@ DPP.Commands = {
 		
 		DPP.SimpleLog(IsValid(ply) and ply or 'Console', Gray, ' requested entities report')
 		DPP.ReportEntitiesPrint()
+		
+		return true
+	end,
+	
+	fallbackto = function(ply, cmd, args)
+		if not IsValid(ply) then return false, {'You are console'} end
+		if not args[1] then return false, {'Invalid target'}, NOTIFY_ERROR end
+		
+		local found
+		
+		if tonumber(args[1]) then
+			found = Player(tonumber(args[1]))
+			if not IsValid(found) then
+				found = nil
+			end
+		else
+			local Ply = string.lower(args[1])
+			
+			for k, v in ipairs(player.GetAll()) do
+				if string.find(string.lower(v:Nick()), Ply) then
+					found = v
+				end
+			end
+		end
+		
+		if not found or found == ply then return false, {'No target found'}, NOTIFY_ERROR end
+		
+		DPP.SimpleLog(ply, Gray, ' target ', found, Gray, ' as prop owner fallback')
+		DPP.Notify(ply, DPP.Format('Success. ', found, Gray, ' now will own your props if you disconnect'))
+		
+		ply:SetDPPVar('fallback', found)
+		
+		return true
+	end,
+	
+	transfertoplayer = function(ply, cmd, args)
+		if not IsValid(ply) then return false, {'You are console'} end
+		if not args[1] then return false, {'Invalid target (#1)'}, NOTIFY_ERROR end
+		
+		local found
+		
+		if tonumber(args[1]) then
+			found = Player(tonumber(args[1]))
+			if not IsValid(found) then
+				found = nil
+			end
+		else
+			local Ply = string.lower(args[1])
+			
+			for k, v in ipairs(player.GetAll()) do
+				if string.find(string.lower(v:Nick()), Ply) then
+					found = v
+				end
+			end
+		end
+		
+		if not found or found == ply then return false, {'No target found (#1)'}, NOTIFY_ERROR end
+		
+		local id = args[2]
+		if not id then return false, {'Invalid Entity Network ID (#2)'}, NOTIFY_ERROR end
+		local num = tonumber(id)
+		if not num then return false, {'Invalid Entity Network ID (#2)'}, NOTIFY_ERROR end
+		local ent = Entity(num)
+		if not IsValid(ent) then return false, {'Entity is not valid (#2)'}, NOTIFY_ERROR end
+		
+		if DPP.GetOwner(ent) ~= ply then return false, {'Not a owner'}, NOTIFY_ERROR end
+		
+		DPP.DeleteEntityUndo(ent)
+		DPP.SetOwner(ent, found)
+		
+		undo.Create('TransferedProp')
+		undo.SetPlayer(found)
+		undo.AddEntity(ent)
+		undo.Finish()
+		
+		DPP.SimpleLog(ply, Gray, ' transfered ownership of ', ent, Gray, ' to ', found)
+		DPP.Notify(ply, DPP.Format('Successfully transfered ownership of prop to ', found))
+		
+		return true
+	end,
+	
+	transfertoplayer_all = function(ply, cmd, args)
+		if not IsValid(ply) then return false, {'You are console'} end
+		if not args[1] then return false, {'Invalid target'}, NOTIFY_ERROR end
+		
+		local found
+		
+		if tonumber(args[1]) then
+			found = Player(tonumber(args[1]))
+			if not IsValid(found) then
+				found = nil
+			end
+		else
+			local Ply = string.lower(args[1])
+			
+			for k, v in ipairs(player.GetAll()) do
+				if string.find(string.lower(v:Nick()), Ply) then
+					found = v
+				end
+			end
+		end
+		
+		if not found or found == ply then return false, {'No target found'}, NOTIFY_ERROR end
+		
+		local props = DPP.GetPropsByUID(ply:UniqueID())
+		if #props == 0 then return false, {'No props to transfer'} end
+		
+		for k, v in ipairs(props) do
+			DPP.SetOwner(v, found)
+		end
+		
+		DPP.TransferUndoTo(ply, found)
+		
+		DPP.SimpleLog(ply, Gray, ' transfered ownership of all his props to ', found)
+		DPP.Notify(ply, DPP.Format('Successfully transfered ownership of all props to ', found))
+		
+		return true
+	end,
+	
+	removefallbackto = function(ply, cmd, args)
+		if not IsValid(ply) then return false, {'You are console'} end
+		if not IsValid(ply:DPPVar('fallback')) then return false, {'Already no owning fallback'}, NOTIFY_ERROR end
+		
+		DPP.SimpleLog(ply, Gray, ' removed their owning fallback.')
+		DPP.Notify(ply, 'Fallback removed')
+		
+		ply:SetDPPVar('fallback', NULL)
 		
 		return true
 	end,

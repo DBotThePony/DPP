@@ -94,6 +94,8 @@ DPP.NetworkVars = {
 	},
 }
 
+DPP.NetworkVars.fallback = table.Copy(DPP.NetworkVars.owner)
+
 local nextId = 1
 
 for k, v in pairs(DPP.NetworkVars) do

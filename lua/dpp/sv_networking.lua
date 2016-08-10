@@ -72,6 +72,8 @@ function entMeta:SetDPPVar(var, val)
 		self.DPPVars = self.DPPVars or {}
 		self.DPPVars[var] = val
 	end
+	
+	hook.Run('DPP_EntityVarsChanges', self, var, val)
 end
 
 local Clients = {}

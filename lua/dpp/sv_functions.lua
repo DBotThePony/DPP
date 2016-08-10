@@ -303,6 +303,36 @@ function DPP.DeleteEntityUndo(ent)
 	end
 end
 
+function DPP.TransferUndoTo(source, target)
+	local tab = undo.GetTable()
+	
+	local uidS = source:UniqueID()
+	local uidT = target:UniqueID()
+	
+	if not tab[uidS] then return end
+	
+	for i, data in ipairs(tab[uidS]) do
+		data.Entities = data.Entities or {}
+		data.Functions = data.Functions or {}
+		
+		undo.Create(data.Name)
+		undo.SetPlayer(target)
+		
+		for k, ent in ipairs(data.Entities) do
+			undo.AddEntity(ent)
+		end
+		
+		for k, funcTab in ipairs(data.Functions) do
+			undo.AddFunction(funcTab[1], unpack(funcTab[2]))
+		end
+		
+		undo.Finish()
+		
+		data.Entities = {}
+		data.Functions = {}
+	end
+end
+
 function DPP.ClearPlayerEntities(ply)
 	local Ents = DPP.GetPlayerEntities(ply)
 	

@@ -122,6 +122,10 @@ local default = {
 	unfreezebyuid = 'admin',
 	unfreezeplayer = 'admin',
 	share = 'user',
+	fallbackto = 'user',
+	removefallbackto = 'user',
+	transfertoplayer = 'user',
+	transfertoplayer_all = 'user',
 	entcheck = 'admin',
 	
 	--Database manipulate commands
