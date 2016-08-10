@@ -31,7 +31,7 @@ function FPP.plyCanTouchEnt(ply, ent, type)
 	elseif type == 'Gravgun' then
 		return DPP.CanGravgun(ply, ent)
 	elseif type == 'Toolgun' then
-		return DPP.CanTool(ply, ent)
+		return DPP.CanTool(ply, ent, '')
 	elseif type == 'PlayerUse' then
 		return DPP.PlayerUse(ply, ent)
 	elseif type == 'EntityDamage' then
