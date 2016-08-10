@@ -858,8 +858,8 @@ function PostEntityCreated(ent, Timestamp)
 				if not IsValid(v) then continue end
 				if Timestamps[v] ~= Timestamp then continue end
 				if DPP.IsOwned(v) then continue end
-				if v.CHECK_HIT == Timestamp then continue end
-				v.CHECK_HIT = Timestamp
+				if v.DPP_CHECK_HIT == Timestamp then continue end
+				v.DPP_CHECK_HIT = Timestamp
 				
 				AntispamHit(get)
 				
