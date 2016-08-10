@@ -29,15 +29,15 @@ function DPP.RegisterAccess(id, default)
 	}
 end
 
-function DPP.DefaultAccessCheck(ply, id, callback)
+function DPP.DefaultAccessCheck(ply, id, callback, ...)
 	local access = DPP.Access[id]
 	
 	if access == 'user' then
-		callback(true, 'user rights')
+		callback(true, 'user rights', ...)
 	elseif access == 'admin' then
-		callback(ply:IsAdmin(), 'admin rights')
+		callback(ply:IsAdmin(), 'admin rights', ...)
 	elseif access == 'superadmin' then
-		callback(ply:IsSuperAdmin(), 'superadmin rights')
+		callback(ply:IsSuperAdmin(), 'superadmin rights', ...)
 	end
 end
 
@@ -53,13 +53,15 @@ function DPP.DefaultAccessCheckLight(ply, id)
 	end
 end
 
-function DPP.HaveAccess(ply, id, callback)
+function DPP.HaveAccess(ply, id, callback, ...)
 	if not IsValid(ply) then
-		callback(true, 'console')
+		callback(true, 'console', ...)
 		return
 	end
 	
 	if CAMI and not CAMIFailed then
+		local args = {...}
+		
 		local access = DPP.Access[id]
 		
 		local function callbackWrapper(result, reason)
@@ -71,7 +73,7 @@ function DPP.HaveAccess(ply, id, callback)
 				reason = access .. ' rights'
 			end
 			
-			callback(result, reason)
+			callback(result, reason, unpack(args))
 		end
 		
 		--If i do not specify target as nil, it would be C "no value"
@@ -83,7 +85,7 @@ function DPP.HaveAccess(ply, id, callback)
 		return
 	end
 	
-	DPP.DefaultAccessCheck(ply, id, callback)
+	DPP.DefaultAccessCheck(ply, id, callback, ...)
 end
 
 function DPP.CheckAccess(ply, id, call, ...)
@@ -101,6 +103,7 @@ end
 local default = {
 	--Core access
 	touchother = 'admin',
+	seelogs = 'admin',
 	setvar = 'superadmin',
 	
 	--Usual Commands

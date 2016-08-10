@@ -183,16 +183,31 @@ end
 
 --Don't overflow net channel when player pastes a big dupe
 local Queued = {}
+local AccessCache = {}
+
+do
+	local function AccessCallback(can, reason, ply)
+		if can then
+			table.insert(AccessCache, ply)
+		end
+	end
+
+	timer.Create('DPP.DoEchoAccessCacheClear', 10, 0, function()
+		AccessCache = {}
+		
+		for k, ply in ipairs(player.GetAll()) do
+			DPP.HaveAccess(ply, 'seelogs', AccessCallback, ply)
+		end
+	end)
+end
 
 local function Think()
 	for k, v in pairs(Queued) do
 		DPP.Message(unpack(v))
 		local admins = {}
 		
-		for k, v in pairs(player.GetAll()) do
-			if v:IsAdmin() then
-				table.insert(admins, v)
-			end
+		for k, v in ipairs(AccessCache) do
+			table.insert(admins, v)
 		end
 		
 		net.Start('DPP.Log')
