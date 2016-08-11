@@ -36,12 +36,14 @@ function DPP.CheckDroppedEntity(ply, ent)
 	end
 end
 
-local function CanTool(ply, tr)
+local function CanTool(ply, tr, mode)
 	--This hook must be runned after DPP protection module
 	if not IsValid(tr.Entity) then return end
 	
 	local can = hook.Run('DPP_A_StuckCheck', ply, tr.Entity)
 	if can == false then return end
+	
+	if not DPP.CanTool(ply, tr.Entity, mode) then return end
 	
 	DPP.CheckDroppedEntity(ply, tr.Entity)
 end
@@ -155,6 +157,8 @@ local function PhysgunPickup(ply, ent)
 	
 	local can = hook.Run('DPP_A_PhysgunPickup', ply, ent)
 	if can == false then return end
+	
+	if not DPP.CanPhysgun(ply, ent) then return end --Feck
 	
 	HoldingEntities[ent] = HoldingEntities[ent] or ent:GetCollisionGroup()
 	
