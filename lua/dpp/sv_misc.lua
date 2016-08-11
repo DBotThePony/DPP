@@ -53,6 +53,7 @@ concommand.Add('dpp_importurs', function(ply, cmd, args)
 		
 		for class, groups in pairs(tab) do
 			if not istable(groups) then continue end
+			if type(class) ~= 'string' then continue end
 			if table.Count(groups) == 0 then continue end
 			
 			if not isTest then
