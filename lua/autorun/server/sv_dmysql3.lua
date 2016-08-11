@@ -442,14 +442,14 @@ function obj:Commit(finish)
 	function success(data)
 		xpcall(TRX[current][2], debug.traceback, data)
 		current = current + 1
-		if current >= total then xpcall(finish, debug.traceback) return end
+		if current > total then xpcall(finish, debug.traceback) return end
 		self:Query(TRX[current][1], success, err)
 	end
 	
 	function err(data)
 		xpcall(TRX[current][3], debug.traceback, data)
 		current = current + 1
-		if current >= total then xpcall(finish, debug.traceback) return end
+		if current > total then xpcall(finish, debug.traceback) return end
 		self:Query(TRX[current][1], success, err)
 	end
 	
