@@ -127,6 +127,8 @@ local function NetworkedVarFull(len, ply, auto)
 	if ply.DPP_NetowrkingFullLast > CurTime() then return false end
 	ply.DPP_NetowrkingFullLast = CurTime() + 60
 	
+	DPP.BroadcastLists(ply)
+	
 	if not auto then
 		DPP.SimpleLog(ply, Gray, ' Requested full network update automatically')
 	end

@@ -336,7 +336,6 @@ function DPP.PlayerInitialSpawn(ply)
 	end)
 	
 	timer.Simple(10, function()
-		DPP.BroadcastLists()
 		DPP.ReBroadcastCVars()
 	end)
 end
