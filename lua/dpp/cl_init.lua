@@ -914,62 +914,11 @@ net.Receive('DPP.Notify', function()
 	DPP.Notify(net.ReadTable(), net.ReadUInt(6))
 end)
 
-net.Receive('DPP.Lists', function()
-	local str = net.ReadString()
-	DPP.BlockedEntities[str] = net.ReadTable()
-	
-	hook.Run('DPP.BlockedEntitiesReloaded', str, DPP.BlockedEntities[str])
-	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Blacklist "' .. str .. '" received from server, reloading') end
-end)
-
-net.Receive('DPP.WLists', function()
-	local str = net.ReadString()
-	DPP.WhitelistedEntities[str] = net.ReadTable()
-	
-	hook.Run('DPP.WhitelistedEntitiesReloaded', str, DPP.WhitelistedEntities[str])
-	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Whitelist "' .. str .. '" received from server, reloading') end
-end)
-
-net.Receive('DPP.RLists', function()
-	local str = net.ReadString()
-	DPP.RestrictedTypes[str] = net.ReadTable()
-	
-	hook.Run('DPP.RestrictedTypesReloaded', str, DPP.RestrictedTypes[str])
-	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Restricted list "' .. str .. '" received from server, reloading') end
-end)
-
-net.Receive('DPP.LLists', function()
-	DPP.EntsLimits = net.ReadTable()
-	
-	hook.Run('DPP.EntsLimitsReloaded', DPP.EntsLimits)
-	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Entity limit list received from server, reloading') end
-end)
-
-net.Receive('DPP.SLists', function()
-	DPP.SBoxLimits = net.ReadTable()
-	
-	hook.Run('DPP.EntsLimitsReloaded', DPP.SBoxLimits)
-	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('SBox limit list received from server, reloading') end
-end)
-
-net.Receive('DPP.CLists', function()
-	DPP.ConstrainsLimits = net.ReadTable()
-	
-	hook.Run('DPP.ConstrainsLimitsReloaded', DPP.ConstrainsLimits)
-	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Constrains limit list received from server, reloading') end
-end)
-
 net.Receive('DPP.PlayerList', function()
 	DPP.PlayerList = net.ReadTable()
 	
 	hook.Run('DPP.PlayerListChanged', DPP.PlayerList)
 	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Player list changed, reloading') end
-end)
-
-net.Receive('DPP.ModelLists', function()
-	DPP.BlockedModels = net.ReadTable()
-	hook.Run('DPP.BlockedModelListReloaded', DPP.BlockedModels)
-	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Blacklisted models received from server, reloading') end
 end)
 
 net.Receive('DPP.ConstrainedTable', function()
@@ -981,78 +930,6 @@ net.Receive('DPP.ConstrainedTable', function()
 			v._DPP_Constrained = Owners
 		end
 	end
-end)
-
-net.Receive('DPP.ListsInsert', function()
-	local s1, s2, b = net.ReadString(), net.ReadString(), net.ReadBool()
-	
-	if b then
-		DPP.BlockedEntities[s1][s2] = b
-	else
-		DPP.BlockedEntities[s1][s2] = nil
-	end
-	
-	hook.Run('DPP.BlockedEntitiesChanged', s1, s2, b)
-end)
-
-net.Receive('DPP.WListsInsert', function()
-	local s1, s2, b = net.ReadString(), net.ReadString(), net.ReadBool()
-	
-	if b then
-		DPP.WhitelistedEntities[s1][s2] = b
-	else
-		DPP.WhitelistedEntities[s1][s2] = nil
-	end
-	
-	hook.Run('DPP.WhitelistedEntitiesChanged', s1, s2, b)
-end)
-
-net.Receive('DPP.RListsInsert', function()
-	local s1, s2, b = net.ReadString(), net.ReadString(), net.ReadBool()
-	
-	if b then
-		DPP.RestrictedTypes[s1][s2] = {
-			groups = net.ReadTable(),
-			iswhite = net.ReadBool()
-		}
-	else
-		DPP.RestrictedTypes[s1][s2] = nil
-	end
-	
-	hook.Run('DPP.RestrictedTypesUpdated', s1, s2, b)
-end)
-
-net.Receive('DPP.LListsInsert', function()
-	local s1 = net.ReadString()
-	DPP.EntsLimits[s1] = net.ReadTable()
-	
-	hook.Run('DPP.EntsLimitsUpdated', s1)
-end)
-
-net.Receive('DPP.SListsInsert', function()
-	local s1 = net.ReadString()
-	DPP.SBoxLimits[s1] = net.ReadTable()
-	
-	hook.Run('DPP.SBoxLimitsUpdated', s1)
-end)
-
-net.Receive('DPP.CListsInsert', function()
-	local s1 = net.ReadString()
-	DPP.ConstrainsLimits[s1] = net.ReadTable()
-	
-	hook.Run('DPP.ConstrainsLimitsUpdated', s1)
-end)
-
-net.Receive('DPP.ModelsInsert', function()
-	local s, b = net.ReadString(), net.ReadBool()
-	
-	if b then
-		DPP.BlockedModels[s] = b
-	else
-		DPP.BlockedModels[s] = nil
-	end
-	
-	hook.Run('DPP.BlockedModelListChanged', s, b)
 end)
 
 net.Receive('DPP.Log', function()

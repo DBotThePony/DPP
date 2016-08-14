@@ -249,6 +249,7 @@ end
 for k, v in pairs(DPP.BlockTypes) do
 	DPP['AddBlockedEntity' .. v] = function(ent)
 		ent = ent:lower():Trim()
+		if HasValueLight(blockedEnts, ent) then return end
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 		
 		net.Start('DPP.ListsInsert')
@@ -298,6 +299,7 @@ end
 for k, v in pairs(DPP.WhitelistTypes) do
 	DPP['AddWhitelistedEntity' .. v] = function(ent)
 		ent = ent:lower():Trim()
+		if HasValueLight(blockedEnts, ent) then return end
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 		
 		net.Start('DPP.WListsInsert')

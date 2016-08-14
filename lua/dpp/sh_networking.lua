@@ -178,6 +178,26 @@ local function OnEntityCreated(ent)
 	end)
 end
 
+function DPP.WriteStringList(tab)
+	net.WriteUInt(#tab, 16)
+	
+	for k, v in ipairs(tab) do
+		net.WriteString(v)
+	end
+end
+
+function DPP.ReadStringList()
+	local count = net.ReadUInt(16)
+	
+	local reply = {}
+	
+	for i = 1, count do
+		table.insert(reply, net.ReadString())
+	end
+	
+	return reply
+end
+
 hook.Add('OnEntityCreated', 'DPP.Networking', OnEntityCreated)
 
 if CLIENT then

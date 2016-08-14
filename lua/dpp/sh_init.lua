@@ -1585,6 +1585,7 @@ include('sh_hooks.lua')
 if SERVER then
 	include('sv_savedata.lua')
 	include('sv_apropkill.lua')
+	include('sv_networking_post.lua')
 else
 	include('cl_settings.lua')
 end
