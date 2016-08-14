@@ -51,9 +51,9 @@ function DPP.ConVarChanged(var, old, new)
 		DPP.SaveCVars()
 	end
 	
+	local can = hook.Run('DPP_SuppressConVarBroadcast', var, old, new)
+	if can ~= true then DPP.NetworkConVarToClient(player.GetAll(), var:sub(5)) end
 	hook.Run('DPP_ConVarChanges', var, old, new)
-	
-	DPP.NetworkConVarToClient(player.GetAll(), var:sub(5))
 end
 
 function DPP.RefreshPropList()
