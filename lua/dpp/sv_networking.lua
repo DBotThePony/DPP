@@ -31,7 +31,6 @@ util.AddNetworkString('DPP.ModelsInsert')
 util.AddNetworkString('DPP.ModelLists')
 
 util.AddNetworkString('DPP.ReloadFiendList')
-util.AddNetworkString('DPP.RefreshConVarList')
 util.AddNetworkString('DPP.RefreshPlayerList')
 
 util.AddNetworkString('DPP.ConstrainedTable')
@@ -45,6 +44,8 @@ util.AddNetworkString('DPP.PlayerList')
 util.AddNetworkString('DPP.ConVarChanged')
 util.AddNetworkString('properties_dpp')
 
+util.AddNetworkString('DPP.NetworkedConVar')
+util.AddNetworkString('DPP.NetworkedConVarFull')
 util.AddNetworkString('DPP.NetworkedVar')
 util.AddNetworkString('DPP.NetworkedEntityVars')
 util.AddNetworkString('DPP.NetworkedVarFull')
@@ -128,6 +129,7 @@ local function NetworkedVarFull(len, ply, auto)
 	ply.DPP_NetowrkingFullLast = CurTime() + 60
 	
 	DPP.BroadcastLists(ply)
+	DPP.SendConVarsTo(ply)
 	
 	if not auto then
 		DPP.SimpleLog(ply, Gray, ' Requested full network update automatically')
@@ -172,6 +174,42 @@ local function command(ply)
 		DPP.Notify(ply, 'Accepted.')
 		DPP.SimpleLog(ply, Gray, ' Requested full network update manually')
 	end
+end
+
+local function WriteEasy(data, val)
+	if data.bool then
+		net.WriteBool(val)
+	elseif data.int then
+		net.WriteInt(val, 32)
+	elseif data.float then
+		net.WriteFloat(val)
+	else
+		net.WriteString(val)
+	end
+end
+
+function DPP.NetworkConVarToClient(ply, var)
+	local val = DPP.GetConVar(var)
+	local data = DPP.Settings[var]
+	
+	net.Start('DPP.NetworkedConVar')
+	net.WriteUInt(data.NetworkID, 12)
+	
+	WriteEasy(data, val)
+	
+	net.Send(ply)
+end
+
+function DPP.SendConVarsTo(ply)
+	ply = ply or player.GetAll()
+	
+	net.Start('DPP.NetworkedConVarFull')
+	
+	for k, v in pairs(DPP.Settings) do
+		WriteEasy(v, DPP.GetConVar(k))
+	end
+	
+	net.Send(ply)
 end
 
 hook.Add('EntityRemoved', 'DPP.Networking', EntityRemoved)

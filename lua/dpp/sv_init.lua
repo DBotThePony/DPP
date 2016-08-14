@@ -46,27 +46,14 @@ function DPP.Notify(ply, message, type)
 	end
 end
 
-function DPP.ReBroadcastCVars()
-	for k, v in pairs(DPP.SVars) do
-		SetGlobalString('DPP.' .. k, v:GetString())
-	end
-end
-
-timer.Create('DPP.ReBroadcastCVars', 30, 0, DPP.ReBroadcastCVars)
-
 function DPP.ConVarChanged(var, old, new)
-	net.Start('DPP.RefreshConVarList')
-	net.WriteString(var)
-	net.Broadcast()
-	
-	--local var = string.sub(var, 5)
-	--DPP.BroadcastCVar(var)
-	
 	if not DPP.IGNORE_CVAR_SAVE then
 		DPP.SaveCVars()
 	end
 	
-	DPP.ReBroadcastCVars()
+	hook.Run('DPP_ConVarChanges', var, old, new)
+	
+	DPP.NetworkConVarToClient(player.GetAll(), var:sub(5))
 end
 
 function DPP.RefreshPropList()
@@ -333,10 +320,6 @@ function DPP.PlayerInitialSpawn(ply)
 		
 		DPP.RecalculatePlayerList()
 		DPP.SendPlayerList()
-	end)
-	
-	timer.Simple(10, function()
-		DPP.ReBroadcastCVars()
 	end)
 end
 

@@ -99,6 +99,38 @@ local function KeyPress()
 	net.SendToServer()
 end
 
+local function GetConVarByNetworkID(id)
+	for k, v in pairs(DPP.Settings) do
+		if v.NetworkID == id then return v, k end
+	end
+end
+
+local function ReadEasy(data)
+	if data.bool then
+		return net.ReadBool()
+	elseif data.int then
+		return net.ReadInt(32)
+	elseif data.float then
+		return net.ReadFloat()
+	else
+		return net.ReadString()
+	end
+end
+
+local function ConVarReceived()
+	local netID = net.ReadUInt(12)
+	local var, key = GetConVarByNetworkID(netID)
+	if not var then DPP.ThrowError('Unknown ConVar Network ID! ' .. netID, 1, true) end
+	
+	DPP.NetworkedConVarsDB[key] = ReadEasy(var)
+end
+
+local function ConVarReceivedFull()
+	for k, v in pairs(DPP.Settings) do
+		DPP.NetworkedConVarsDB[k] = ReadEasy(v)
+	end
+end
+
 local function ReadInvertedTable()
 	local reply = {}
 	local read = DPP.ReadStringList()
@@ -288,6 +320,8 @@ for k, v in pairs(DPP.ClientReceiveFuncs) do
 	net.Receive('DPP.' .. k, v)
 end
 
+net.Receive('DPP.NetworkedConVarFull', ConVarReceivedFull)
+net.Receive('DPP.NetworkedConVar', ConVarReceived)
 net.Receive('DPP.NetworkedEntityVars', NetworkedEntityVars)
 net.Receive('DPP.NetworkedVar', NetworkedVar)
 net.Receive('DPP.NetworkedRemove', NetworkedRemove)

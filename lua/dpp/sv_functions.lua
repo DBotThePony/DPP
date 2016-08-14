@@ -580,10 +580,6 @@ function DPP.IsChekedByAntispam(ent)
 	return true
 end
 
---[[timer.Remove('DPP.BroadcastCVars', 30, 0, function()
-	DPP.BroadcastCVars()
-end)]]
-
 --Send constrained with is just half of protection
 function DPP.SendConstrained(ent)
 	ent._DPP_Constrained = ent._DPP_Constrained or {}

@@ -983,14 +983,23 @@ else
 end
 
 if CLIENT then
+	DPP.NetworkedConVarsDB = {}
+	
+	for k, v in pairs(DPP.Settings) do
+		if v.bool then
+			DPP.NetworkedConVarsDB[k] = v.value == '1'
+		elseif v.int then
+			DPP.NetworkedConVarsDB[k] = math.floor(tonumber(v.value))
+		elseif v.float then
+			DPP.NetworkedConVarsDB[k] = tonumber(v.value)
+		else
+			DPP.NetworkedConVarsDB[k] = v.value
+		end
+	end
+	
 	function DPP.GetConVar(cvar)
 		if not DPP.Settings[cvar] then return end
-		local t = DPP.Settings[cvar]
-		
-		local var = GetGlobalString('DPP.' .. cvar) or t.value --Default value
-		if var == '' and not t.blank then var  = t.value end
-		if t.bool then return tobool(var) end
-		return t.int and math.floor(tonumber(var) or tonumber(t.value)) or t.float and (tonumber(var) or tonumber(t.value)) or var
+		return DPP.NetworkedConVarsDB[cvar]
 	end
 else
 	function DPP.GetConVar(cvar)
@@ -1579,6 +1588,8 @@ function DPP.Format(...)
 	
 	return repack
 end
+
+DPP.AssignConVarNetworkIDs()
 
 include('sh_access.lua')
 include('sh_hooks.lua')
