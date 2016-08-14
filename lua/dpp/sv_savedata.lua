@@ -166,6 +166,14 @@ local blockedEnts = {
 	'env_shake',
 }
 
+local function HasValueLight(tab, val)
+	for i = 1, #tab do
+		if val == tab[i] then return true end
+	end
+	
+	return false
+end
+
 function DPP.FindInfoEntities() --Add custom entities
 	local list = scripted_ents.GetList()
 	
@@ -255,7 +263,7 @@ for k, v in pairs(DPP.BlockTypes) do
 	
 	DPP['RemoveBlockedEntity' .. v] = function(ent)
 		ent = ent:lower():Trim()
-		if blockedEnts[ent] then return end
+		if HasValueLight(blockedEnts, ent) then return end
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 		
 		net.Start('DPP.ListsInsert')
@@ -272,7 +280,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid entity class'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower():Trim()
 		if DPP.BlockedEntities[k][args[1]] then return false, {'Entity is already listed in that blacklist'} end
-		if blockedEnts[args[1]] then return false, {'You can not add that entity to blacklist'}, NOTIFY_ERROR end
+		if HasValueLight(blockedEnts, args[1]) then return false, {'You can not add that entity to blacklist'}, NOTIFY_ERROR end
 		DPP['AddBlockedEntity' .. v](args[1])
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' added ' .. args[1] .. ' to ' .. v .. ' blacklist/whitelist'}
 	end
@@ -281,7 +289,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid entity class'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower():Trim()
 		if not DPP.BlockedEntities[k][args[1]] then return false, {'Entity is not listed in that blacklist'} end
-		if blockedEnts[args[1]] then return false, {'You can not remove that entity from blacklist'}, NOTIFY_ERROR end
+		if HasValueLight(blockedEnts, args[1]) then return false, {'You can not remove that entity from blacklist'}, NOTIFY_ERROR end
 		DPP['RemoveBlockedEntity' .. v](args[1])
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' removed ' .. args[1] .. ' from ' .. v .. ' blacklist/whitelist'}
 	end
@@ -304,7 +312,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 	
 	DPP['RemoveWhitelistedEntity' .. v] = function(ent)
 		ent = ent:lower():Trim()
-		if blockedEnts[ent] then return end
+		if HasValueLight(blockedEnts, ent) then return end
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 		
 		net.Start('DPP.WListsInsert')
@@ -321,7 +329,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 		if not args[1] or args[1]:Trim() == '' then return false, {'Invalid entity class'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower():Trim()
 		if DPP.WhitelistedEntities[k][args[1]] then return false, {'Entity is already in that exclude list'} end
-		if blockedEnts[args[1]] then return false, {'You can not add that entity to exclude list'}, NOTIFY_ERROR end
+		if HasValueLight(blockedEnts, args[1]) then return false, {'You can not add that entity to exclude list'}, NOTIFY_ERROR end
 		DPP['AddWhitelistedEntity' .. v](args[1])
 		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' added ' .. args[1] .. ' to ' .. v .. ' excluded entities'}
 	end
