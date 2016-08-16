@@ -142,6 +142,7 @@ function DPP.GetGroups()
 	return reply
 end
 
+--I don't remember why i have IsBlockedModel and IsModelBlocked x.x
 function DPP.IsBlockedModel(model)
 	return DPP.BlockedModels[model] or false
 end

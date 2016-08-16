@@ -58,6 +58,21 @@ e2function number entity:isSingleOwner()
 	return DPP.IsSingleOwner(this, DPP.GetOwner(this)) and 1 or 0
 end
 
+e2function number entity:isUpForGrabs()
+	if not IsValid(this) then return 0 end
+	return DPP.IsUpForGrabs(this) and 1 or 0
+end
+
+e2function number entity:isShared()
+	if not IsValid(this) then return 0 end
+	return DPP.IsShared(this) and 1 or 0
+end
+
+e2function number entity:isSharedType(string type)
+	if not IsValid(this) then return 0 end
+	return DPP.IsSharedType(this, type) and 1 or 0
+end
+
 e2function number isModelBlocked(string model)
 	if not IsValid(self.player) then return 1 end
 	return DPP.IsModelBlocked(model, self.player, true) and 1 or 0
