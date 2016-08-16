@@ -655,24 +655,6 @@ for k, v in pairs(SpawnFunctions) do
 	hook.Add(k, '!DPP.SpawnHooks', v, -1)
 end
 
-function DPP.CanPickupItem(ply, ent)
-	if not DPP.GetConVar('enable_pickup') then return end
-	
-	DPP.AssertArguments('DPP.CanPickupItem', {{ply, 'Player'}, {ent, 'AnyEntity'}})
-	
-	local class = ent:GetClass()
-	
-	if DPP.IsEntityBlockedPickup(class) then return false end
-	if DPP.IsRestrictedPickup(class, ply) then return false end
-	if DPP.IsEntityWhitelistedPickup(eclass) then return false end
-	
-	if not DPP.IsOwned(ent) then return end
-	if not DPP.CanTouch(ply, ent, 'pickup') then return false end
-end
-
-hook.Add('PlayerCanPickupItem', 'DPP.ProtectionHooks', DPP.CanPickupItem)
-hook.Add('PlayerCanPickupWeapon', 'DPP.ProtectionHooks', DPP.CanPickupItem)
-
 local function EntityRemoved(ent)
 	if ent.IsConstraint and ent:IsConstraint() then
 		local ent1, ent2 = DPP.GetConstrainedEntities(ent)
