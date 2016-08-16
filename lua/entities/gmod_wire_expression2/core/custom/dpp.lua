@@ -27,11 +27,12 @@ end
 e2function number entity:setOwner(entity owner)
 	if not IsValid(this) then return 0 end
 	if DPP.GetOwner(this) ~= self.player then return 0 end --Not a owner
+	if IsValid(owner) and not owner:IsPlayer() then return 0 end
 	
 	DPP.DeleteEntityUndo(this)
 	DPP.SetOwner(this, owner or NULL)
 	
-	if IsValid(owner) and owner:IsPlayer() then
+	if IsValid(owner) then
 		undo.Create('TransferedProp')
 		undo.SetPlayer(owner)
 		undo.AddEntity(this)
@@ -39,6 +40,18 @@ e2function number entity:setOwner(entity owner)
 	end
 	
 	DPP.SimpleLog(self.player, Gray, ' transfered ownership of ', this, Gray, ' to ', owner or 'world', Gray, ' using Expression2')
+	
+	return 1
+end
+
+e2function number entity:setOwner()
+	if not IsValid(this) then return 0 end
+	if DPP.GetOwner(this) ~= self.player then return 0 end --Not a owner
+	
+	DPP.DeleteEntityUndo(this)
+	DPP.SetOwner(this, NULL)
+	
+	DPP.SimpleLog(self.player, Gray, ' transfered ownership of ', this, Gray, ' to ', owner, Gray, ' using Expression2')
 	
 	return 1
 end
