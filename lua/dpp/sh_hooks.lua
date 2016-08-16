@@ -281,21 +281,37 @@ function DPP.CanTool(ply, ent, mode)
 	return DPP.CanTouch(ply, ent, 'toolgun')
 end
 
-function DPP.CanPlayerEnterVehicle(ply, ent)
-	if not DPP.GetConVar('enable_veh') then return end
-	DPP.AssertArguments('DPP.CanPlayerEnterVehicle', {{ply, 'Player'}, {ent, 'AnyEntity'}})
-	if ent.IgnoreVehicleProtection then return end
-	if not DPP.IsOwned(ent) then return end
+function DPP.CanPlayerEnterVehicleTouch(ply, ent)
+	if SERVER then DPP.CheckUpForGrabs(ent, ply) end
 	
-	local reply = DPP.CanTouch(ply, ent, 'vehicle')
-	if not reply then return false end
+	local reply, r = DPP.CanPlayerEnterVehicle(ply, ent)
+	if not reply then return false, r end
+	
+	if SERVER and DPP.GetGhosted(ent) then DPP.SetGhosted(ent, false) end
+end
+
+function DPP.CanPlayerEnterVehicle(ply, ent)
+	if not DPP.GetConVar('enable_veh') then return true, 'Protection disabled' end
+	DPP.AssertArguments('DPP.CanPlayerEnterVehicle', {{ply, 'Player'}, {ent, 'AnyEntity'}})
+	if ent.IgnoreVehicleProtection then return true, 'Ignored vehicle protection' end
+	if not DPP.IsOwned(ent) then return true, 'Owned by world' end
+	
+	return DPP.CanTouch(ply, ent, 'vehicle')
+end
+
+function DPP.CanEditVariableTouch(ent, ply, key, val, editor)
+	if SERVER then DPP.CheckUpForGrabs(ent, ply) end
+	
+	local reply, r = DPP.CanEditVariable(ent, ply, key, val, editor)
+	if not reply then return false, r end
+	
+	if SERVER and DPP.GetGhosted(ent) then DPP.SetGhosted(ent, false) end
 end
 
 function DPP.CanEditVariable(ent, ply, key, val, editor)
-	if not DPP.GetConVar('enable_tool') then return end
+	if not DPP.GetConVar('enable_tool') then return true, 'Protection disabled' end
 	DPP.AssertArguments('DPP.CanEditVariable', {{ent, 'AnyEntity'}, {ply, 'Player'}})
-	local reply = DPP.CanTool(ply, ent, '')
-	if not reply then return false end
+	return DPP.CanTool(ply, ent, '')
 end
 
 function DPP.CanProperty(ply, str, ent)
@@ -340,14 +356,22 @@ function DPP.PlayerUse(ply, ent)
 	return DPP.CanTouch(ply, ent, 'use')
 end
 
-function DPP.CanDrive(ply, ent)
-	if not DPP.GetConVar('enable_drive') then return end
-	DPP.AssertArguments('DPP.CanDrive', {{ply, 'Player'}, {ent, 'AnyEntity'}})
-	local reply = DPP.CanPhysgun(ply, ent) --I will mean Drive as Physgun
-	if reply == false then return false end
+function DPP.CanDriveTouch(ply, ent)
+	if SERVER then DPP.CheckUpForGrabs(ent, ply) end
+	
+	local reply, r = DPP.CanDrive(ply, ent)
+	if reply == false then return false, r end
+	
+	if SERVER and DPP.GetGhosted(ent) then DPP.SetGhosted(ent, false) end
 end
 
-DPP.CanDrive = DPP.Wrap(DPP.CanDrive, nil, 'Protection disabled')
+function DPP.CanDrive(ply, ent)
+	if not DPP.GetConVar('enable_drive') then return true, 'Protection disabled' end
+	DPP.AssertArguments('DPP.CanDrive', {{ply, 'Player'}, {ent, 'AnyEntity'}})
+	return DPP.CanPhysgun(ply, ent)
+end
+
+DPP.CanDrive = DPP.Wrap(DPP.CanDrive, true, 'Protection disabled')
 DPP.CanDamage = DPP.Wrap(DPP.CanDamage, true, 'Protection disabled')
 DPP.CanPhysgun = DPP.Wrap(DPP.CanPhysgun, true, 'Protection disabled')
 DPP.CanProperty = DPP.Wrap(DPP.CanProperty, true, 'Protection disabled')
@@ -355,8 +379,8 @@ DPP.CanGravgun = DPP.Wrap(DPP.CanGravgun, true, 'Protection disabled')
 DPP.CanGravgunPunt = DPP.Wrap(DPP.CanGravgunPunt, true, 'Protection disabled')
 DPP.OnPhysgunReload = DPP.Wrap(DPP.OnPhysgunReload, true, 'Protection disabled')
 DPP.CanTool = DPP.Wrap(DPP.CanTool, true, 'Protection disabled')
-DPP.CanEditVariable = DPP.Wrap(DPP.CanEditVariable, nil, 'Protection disabled')
-DPP.CanPlayerEnterVehicle = DPP.Wrap(DPP.CanPlayerEnterVehicle, nil, 'Protection disabled')
+DPP.CanEditVariable = DPP.Wrap(DPP.CanEditVariable, true, 'Protection disabled')
+DPP.CanPlayerEnterVehicle = DPP.Wrap(DPP.CanPlayerEnterVehicle, true, 'Protection disabled')
 DPP.PlayerUse = DPP.Wrap(DPP.PlayerUse, true, 'Protection disabled')
 
 function DPP.CanPickupItem(ply, ent)
@@ -395,10 +419,9 @@ hook.Add('PhysgunPickup', '!DPP.Hooks', DPP.PhysgunTouch, -1)
 hook.Add('CanProperty', '!DPP.Hooks', DPP.PropertyTouch, -1)
 hook.Add('CanTool', '!DPP.Hooks', DPP.ToolgunTouch, -1)
 hook.Add('PlayerUse', '!DPP.Hooks', DPP.UseTouch, -1)
-
-hook.Add('CanDrive', '!DPP.Hooks', DPP.CanDrive, -1)
-hook.Add('CanEditVariable', '!DPP.Hooks', DPP.CanEditVariable, -1)
-hook.Add('CanPlayerEnterVehicle', '!DPP.Hooks', DPP.CanPlayerEnterVehicle, -1)
+hook.Add('CanDrive', '!DPP.Hooks', DPP.CanDriveTouch, -1)
+hook.Add('CanEditVariable', '!DPP.Hooks', DPP.CanEditVariableTouch, -1)
+hook.Add('CanPlayerEnterVehicle', '!DPP.Hooks', DPP.CanPlayerEnterVehicleTouch, -1)
 
 function DPP.OverrideE2Adv()
 	if not EXPADV then return end

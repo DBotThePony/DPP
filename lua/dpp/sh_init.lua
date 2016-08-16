@@ -1363,9 +1363,9 @@ timer.Create('DPP.ClearPlayersTouchAccess', 1, 0, function()
 end)
 
 function DPP.CanTouch(ply, ent, mode)
-	if not DPP.GetConVar('enable') then return true end
-	if not IsValid(ply) then return true end
-	if not IsValid(ent) then return false end
+	if not DPP.GetConVar('enable') then return true, 'Protection disabled' end
+	if not IsValid(ply) then return true, 'World' end
+	if not IsValid(ent) then return false, 'Entity is not valid' end
 	if ent:IsPlayer() then return end
 	
 	local model = ent:GetModel()
