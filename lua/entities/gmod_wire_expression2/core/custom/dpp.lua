@@ -51,7 +51,7 @@ e2function number entity:setOwner()
 	DPP.DeleteEntityUndo(this)
 	DPP.SetOwner(this, NULL)
 	
-	DPP.SimpleLog(self.player, Gray, ' transfered ownership of ', this, Gray, ' to ', owner, Gray, ' using Expression2')
+	DPP.SimpleLog(self.player, Gray, ' transfered ownership of ', this, Gray, ' to ', 'world', Gray, ' using Expression2')
 	
 	return 1
 end
