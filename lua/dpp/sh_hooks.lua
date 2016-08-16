@@ -36,9 +36,9 @@ function DPP.CanDamage(ply, ent, ignoreEnt)
 	local ads = DPP.GetConVar('allow_damage_sent')
 	local adn = DPP.GetConVar('allow_damage_npc')
 	
-	if type == 'vehicle' and adv then return nil, 'Damage allowed' end
-	if type == 'sent' and DPP.IsOwned(ent) and ads then return nil, 'Damage allowed' end
-	if type == 'npc' and adn then return nil, 'Damage allowed' end
+	if type == 'vehicle' and adv then return true, 'Damage allowed' end
+	if type == 'sent' and DPP.IsOwned(ent) and ads then return true, 'Damage allowed' end
+	if type == 'npc' and adn then return true, 'Damage allowed' end
 	
 	ignoreEnt = ignoreEnt or {}
 	
@@ -50,7 +50,7 @@ function DPP.CanDamage(ply, ent, ignoreEnt)
 		local can, Reason = DPP.CanDamage(ply, k, ignoreEnt)
 		
 		if can ~= false then
-			return nil, Reason
+			return true, Reason
 		end
 	end
 	
@@ -347,17 +347,45 @@ function DPP.CanDrive(ply, ent)
 	if reply == false then return false end
 end
 
-DPP.CanDrive = DPP.Wrap(DPP.CanDrive)
-DPP.CanDamage = DPP.Wrap(DPP.CanDamage, true)
-DPP.CanPhysgun = DPP.Wrap(DPP.CanPhysgun, true)
-DPP.CanProperty = DPP.Wrap(DPP.CanProperty, true)
-DPP.CanGravgun = DPP.Wrap(DPP.CanGravgun, true)
-DPP.CanGravgunPunt = DPP.Wrap(DPP.CanGravgunPunt, true)
-DPP.OnPhysgunReload = DPP.Wrap(DPP.OnPhysgunReload, true)
-DPP.CanTool = DPP.Wrap(DPP.CanTool, true)
-DPP.CanEditVariable = DPP.Wrap(DPP.CanEditVariable)
-DPP.CanPlayerEnterVehicle = DPP.Wrap(DPP.CanPlayerEnterVehicle)
-DPP.PlayerUse = DPP.Wrap(DPP.PlayerUse, true)
+DPP.CanDrive = DPP.Wrap(DPP.CanDrive, nil, 'Protection disabled')
+DPP.CanDamage = DPP.Wrap(DPP.CanDamage, true, 'Protection disabled')
+DPP.CanPhysgun = DPP.Wrap(DPP.CanPhysgun, true, 'Protection disabled')
+DPP.CanProperty = DPP.Wrap(DPP.CanProperty, true, 'Protection disabled')
+DPP.CanGravgun = DPP.Wrap(DPP.CanGravgun, true, 'Protection disabled')
+DPP.CanGravgunPunt = DPP.Wrap(DPP.CanGravgunPunt, true, 'Protection disabled')
+DPP.OnPhysgunReload = DPP.Wrap(DPP.OnPhysgunReload, true, 'Protection disabled')
+DPP.CanTool = DPP.Wrap(DPP.CanTool, true, 'Protection disabled')
+DPP.CanEditVariable = DPP.Wrap(DPP.CanEditVariable, nil, 'Protection disabled')
+DPP.CanPlayerEnterVehicle = DPP.Wrap(DPP.CanPlayerEnterVehicle, nil, 'Protection disabled')
+DPP.PlayerUse = DPP.Wrap(DPP.PlayerUse, true, 'Protection disabled')
+
+function DPP.CanPickupItem(ply, ent)
+	if not DPP.GetConVar('enable') then return true, 'Protection disabled' end
+	if not DPP.GetConVar('enable_pickup') then return true, 'Protection disabled' end
+	
+	DPP.AssertArguments('DPP.CanPickupItem', {{ply, 'Player'}, {ent, 'AnyEntity'}})
+	
+	local class = ent:GetClass()
+	
+	if DPP.IsEntityBlockedPickup(class) then return false, 'Blacklisted' end
+	if DPP.IsRestrictedPickup(class, ply) then return false, 'Restricted' end
+	if DPP.IsEntityWhitelistedPickup(class) then return true, 'Excluded' end
+	
+	if not DPP.IsOwned(ent) then return true, 'Not owned' end
+	return DPP.CanTouch(ply, ent, 'pickup')
+end
+
+function DPP.CanPickupItemTouch(ply, ent)
+	local can, r = DPP.CanPickupItem(ply, ent)
+	
+	if can == false then
+		return can, r
+	end
+end
+
+--I think this would be useful shared
+hook.Add('PlayerCanPickupItem', '!DPP.Hooks', DPP.CanPickupItemTouch, -1)
+hook.Add('PlayerCanPickupWeapon', '!DPP.Hooks', DPP.CanPickupItemTouch, -1)
 
 --Maximal Priority
 hook.Add('GravGunPunt', '!DPP.Hooks', DPP.GravGunPuntTouch, -1)
