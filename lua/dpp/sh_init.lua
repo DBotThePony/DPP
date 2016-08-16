@@ -1022,9 +1022,9 @@ function DPP.Message(first, ...)
 	MsgC('\n')
 end
 
-function DPP.Wrap(func, retval)
+function DPP.Wrap(func, retval, arg)
 	return function(...)
-		if not DPP.GetConVar('enable') then return retval end
+		if not DPP.GetConVar('enable') then return retval, arg end
 		return func(...)
 	end
 end
@@ -1083,8 +1083,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		end
 		
 		if not ply then
-			local status = DPP.BlockedEntities[k][ent]
-			if not status then return false else return true end
+			return DPP.BlockedEntities[k][ent]
 		else
 			local isAdmin = ply:IsAdmin()
 			local c, cA = DPP.GetConVar('blacklist_' .. k .. '_player_can'), DPP.GetConVar('blacklist_' .. k .. '_admin_can')
