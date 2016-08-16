@@ -784,6 +784,8 @@ function DPP.GetPropsByUID(uid)
 	return t
 end
 
+DPP.GetEntitiesByUID = DPP.GetPropsByUID
+
 function DPP.SetProtectionDisabled(ply, mode, status)
 	ply:SetDPPVar('DisablePP.' .. mode, status)
 end

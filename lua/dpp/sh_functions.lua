@@ -225,7 +225,7 @@ function DPP.GetPlayerList()
 	return r
 end
 
-function DPP.IsModelBlocked(model, ply)
+function DPP.IsModelBlocked(model, ply, nonotify)
 	if not DPP.GetConVar('enable_blocked') then return false end
 	if not DPP.GetConVar('model_blacklist') then return false end
 	local white = DPP.GetConVar('model_whitelist')
@@ -233,7 +233,7 @@ function DPP.IsModelBlocked(model, ply)
 	
 	if white then status = not status end
 	
-	if SERVER and status and IsValid(ply) then
+	if SERVER and not nonotify and status and IsValid(ply) then
 		DPP.Notify(ply, 'Model of that entity is in the black list!', 1)
 	end
 	
