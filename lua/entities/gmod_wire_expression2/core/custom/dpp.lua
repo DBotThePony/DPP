@@ -146,6 +146,234 @@ e2function number entity:dppCanDrive()
 	return DPP.CanDrive(self.player, this) and 1 or 0
 end
 
+--Player orentiated
+
+--Using entity number
+e2function number entity:dppCanDamage(number targetID)
+	local target = Entity(targetID)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanDamage(this, target) and 1 or 0
+end
+
+e2function number entity:dppCanGravgun(number targetID)
+	local target = Entity(targetID)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanGravgun(this, target) and 1 or 0
+end
+
+e2function number entity:dppCanGravgunPunt(number targetID)
+	local target = Entity(targetID)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanGravgunPunt(this, target) and 1 or 0
+end
+
+e2function number entity:dppCanTool(number targetID, string mode)
+	local target = Entity(targetID)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanTool(this, target, mode) and 1 or 0
+end
+
+e2function number entity:dppCanTool(number targetID)
+	local target = Entity(targetID)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanTool(this, target, '') and 1 or 0
+end
+
+e2function number entity:dppCanEnterVehicle(number targetID)
+	local target = Entity(targetID)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanPlayerEnterVehicle(this, target) and 1 or 0
+end
+
+e2function number entity:dppCanEditVariable(number targetID, string key)
+	local target = Entity(targetID)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanEditVariable(this, target, key) and 1 or 0
+end
+
+e2function number entity:dppCanProperty(number targetID, string property)
+	local target = Entity(targetID)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanProperty(this, property, target) and 1 or 0
+end
+
+e2function number entity:dppCanProperty(number targetID)
+	local target = Entity(targetID)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanProperty(this, '', target) and 1 or 0
+end
+
+e2function number entity:dppCanUse(number targetID)
+	local target = Entity(targetID)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.PlayerUse(this, target) and 1 or 0
+end
+
+e2function number entity:dppCanDrive(number targetID)
+	local target = Entity(targetID)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanDrive(this, target) and 1 or 0
+end
+
+---------
+
+--Using entity directly
+e2function number entity:dppCanDamage(entity target)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanDamage(this, target) and 1 or 0
+end
+
+e2function number entity:dppCanGravgun(entity target)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanGravgun(this, target) and 1 or 0
+end
+
+e2function number entity:dppCanGravgunPunt(entity target)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanGravgunPunt(this, target) and 1 or 0
+end
+
+e2function number entity:dppCanTool(entity target, string mode)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanTool(this, target, mode) and 1 or 0
+end
+
+e2function number entity:dppCanTool(entity target)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanTool(this, target, '') and 1 or 0
+end
+
+e2function number entity:dppCanEnterVehicle(entity target)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanPlayerEnterVehicle(this, target) and 1 or 0
+end
+
+e2function number entity:dppCanEditVariable(entity target, string key)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanEditVariable(this, target, key) and 1 or 0
+end
+
+e2function number entity:dppCanProperty(entity target, string property)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanProperty(this, property, target) and 1 or 0
+end
+
+e2function number entity:dppCanProperty(entity target)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanProperty(this, '', target) and 1 or 0
+end
+
+e2function number entity:dppCanUse(entity target)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.PlayerUse(this, target) and 1 or 0
+end
+
+e2function number entity:dppCanDrive(entity target)
+	if not IsValid(target) then return 0 end
+	if not IsValid(this) then return 1 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.CanDrive(this, target) and 1 or 0
+end
+
+--Limits
+
+e2function number dppEntityHasLimit(entity arg)
+	if not IsValid(arg) then return 0 end
+	return DPP.EntityHasLimit(arg:GetClass()) and 1 or 0
+end
+
+e2function number dppEntityHasLimit(string arg)
+	return DPP.EntityHasLimit(arg) and 1 or 0
+end
+
+e2function number dppSBoxLimitExists(entity arg)
+	if not IsValid(arg) then return 0 end
+	return DPP.SBoxLimitExists(arg:GetClass()) and 1 or 0
+end
+
+e2function number dppSBoxLimitExists(string arg)
+	return DPP.SBoxLimitExists(arg) and 1 or 0
+end
+
+--Getting limits
+
+e2function number dppGetSBoxLimit(string arg)
+	if not IsValid(self.player) then return 0 end
+	return DPP.GetSBoxLimit(arg, self.player:GetUserGroup())
+end
+
+e2function number entity:dppGetSBoxLimit(string arg)
+	if not IsValid(this) then return 0 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.GetSBoxLimit(arg, this:GetUserGroup())
+end
+
+e2function number dppGetEntityLimit(string arg)
+	if not IsValid(self.player) then return 0 end
+	return DPP.GetEntityLimit(arg, self.player:GetUserGroup())
+end
+
+e2function number entity:dppGetEntityLimit(string arg)
+	if not IsValid(this) then return 0 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.GetEntityLimit(arg, this:GetUserGroup())
+end
+
+e2function number dppGetEntityLimit(entity arg)
+	if not IsValid(self.player) then return 0 end
+	if not IsValid(arg) then return 0 end
+	return DPP.GetEntityLimit(arg:GetClass(), self.player:GetUserGroup())
+end
+
+e2function number entity:dppGetEntityLimit(entity arg)
+	if not IsValid(this) then return 0 end
+	if not IsValid(arg) then return 0 end
+	if not this:IsPlayer() then return 0 end
+	return DPP.GetEntityLimit(arg:GetClass(), this:GetUserGroup())
+end
+
 __e2setcost(50)
 
 e2function array getOwnedProps()
