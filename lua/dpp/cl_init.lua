@@ -35,6 +35,9 @@ local DISPLAY_TOUCH_CANNOT_A = CreateConVar('dpp_color_cannottouch_a', 255, FCVA
 local POSITION_X = CreateConVar('dpp_position_x', 0, FCVAR_ARCHIVE, 'X coordinate (percent) on screen for owner display')
 local POSITION_Y = CreateConVar('dpp_position_Y', 50, FCVAR_ARCHIVE, 'Y coordinate (percent) on screen for owner display')
 
+language.Add('Undo_TransferedProp', 'Undo DPP Transfered Entity')
+language.Add('Undo_Owned_Prop', 'Undo DPP Owned Entity')
+
 DPP.ClientFriends = {}
 DPP.ActiveFriends = {}
 DPP.FriendsCPPI = {}
