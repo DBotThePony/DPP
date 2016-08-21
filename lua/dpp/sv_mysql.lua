@@ -18,20 +18,25 @@ limitations under the License.
 --If you want to use MySQL, go to dpp_config_example.lua in Lua root folder
 if not DMySQL3 then include('autorun/server/sv_dmysql3.lua') end
 
-if file.Exists('dpp_config.lua', 'LUA') then
-	include('dpp_config.lua')
-end
-
-if DPP_MySQLConfig then
-	DPP.Message('ATTENTION! DPP MySQL CONFIG THROUGH LUA IS DEPRECATED\nYOU SHOULD USE DATA FOLDER INSTEAD. LOOK INTO dmysql3/dpp.txt')
-	DPP_MySQLConfig.User = DPP_MySQLConfig.Username
-	DMySQL3.WriteConfig('dpp', DPP_MySQLConfig)
-end
-
 local LINK = DMySQL3.Connect('dpp')
 
+local function FindSuperAdmins()
+	local reply = {}
+	
+	for k, v in ipairs(player.GetAll()) do
+		if v:IsSuperAdmin() then table.insert(reply, v) end
+	end
+	
+	return reply
+end
+
 local function SQError(err)
-	print('DPP Query failed: ' .. err)
+	DPP.Message('SQL QUERY FAILED!: ' .. err)
+	DPP.Message('PLEASE SEND THIS ERROR MESSAGE TO DBot')
+	DPP.Message('Usually SQL errors should never happen')
+	
+	local f = FindSuperAdmins()
+	DPP.Notify(f, 'DPP SQL QUERY FAILED!: ' .. err .. '\nPLEASE SEND THIS ERROR MESSAGE TO DBot\nUsually SQL errors should never happen', NOTIFY_ERROR)
 end
 
 function DPP.Query(query, callback)

@@ -17,6 +17,14 @@ limitations under the License.
 
 include('sv_mysql.lua')
 
+local RED = Color(200, 0, 0)
+
+local function DBError(Message)
+	DPP.SimpleLog(RED, '-----------------------------------------')
+	DPP.SimpleLog(RED, 'FATAL: Failed to create SQL tables!\nError message was: ' .. Message)
+	DPP.SimpleLog(RED, '-----------------------------------------')
+end
+
 function DPP.CreateTables()
 	DPP.SQL_TABLES = {
 		[[
@@ -106,7 +114,7 @@ function DPP.CreateTables()
 	LINK:Begin(true)
 	
 	for k, v in ipairs(DPP.SQL_TABLES) do
-		LINK:Add(v)
+		LINK:Add(v, nil, DBError)
 	end
 	
 	LINK:Commit(function()
@@ -515,10 +523,10 @@ function DPP.RemoveConstLimit(class, group)
 		DPP.ConstrainsLimits[class] = DPP.ConstrainsLimits[class] or {}
 		DPP.ConstrainsLimits[class][group] = nil
 		
-		DPP.Query(string.format('DELETE FROM dpp_sboxlimits WHERE CLASS = %q AND UGROUP = %q', class, group))
+		DPP.Query(string.format('DELETE FROM dpp_constlimits WHERE CLASS = %q AND UGROUP = %q', class, group))
 	else
 		DPP.ConstrainsLimits[class] = nil
-		DPP.Query(string.format('DELETE FROM dpp_sboxlimits WHERE CLASS = %q', class))
+		DPP.Query(string.format('DELETE FROM dpp_constlimits WHERE CLASS = %q', class))
 	end
 	
 	net.Start('DPP.CListsInsert')

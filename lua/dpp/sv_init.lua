@@ -178,14 +178,17 @@ do
 			table.insert(AccessCache, ply)
 		end
 	end
-
-	timer.Create('DPP.DoEchoAccessCacheClear', 10, 0, function()
+	
+	local function Clear()
 		AccessCache = {}
 		
 		for k, ply in ipairs(player.GetAll()) do
 			DPP.HaveAccess(ply, 'seelogs', AccessCallback, ply)
 		end
-	end)
+	end
+
+	timer.Create('DPP.DoEchoAccessCacheClear', 10, 0, Clear)
+	Clear()
 end
 
 local function Think()
