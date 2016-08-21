@@ -294,7 +294,7 @@ function DPP.CanPlayerEnterVehicle(ply, ent)
 	if not DPP.GetConVar('enable_veh') then return true, 'Protection disabled' end
 	DPP.AssertArguments('DPP.CanPlayerEnterVehicle', {{ply, 'Player'}, {ent, 'AnyEntity'}})
 	if ent.IgnoreVehicleProtection then return true, 'Ignored vehicle protection' end
-	if not DPP.IsOwned(ent) then return true, 'Owned by world' end
+	if DPP.GetConVar('disable_veh_world') and not DPP.IsOwned(ent) then return true, 'Owned by world' end
 	
 	return DPP.CanTouch(ply, ent, 'vehicle')
 end
@@ -341,8 +341,8 @@ function DPP.CanProperty(ply, str, ent)
 end
 
 function DPP.PlayerUse(ply, ent)
-	if not DPP.GetConVar('enable_use') then return true end
-	if not DPP.IsOwned(ent) then return true end
+	if not DPP.GetConVar('enable_use') then return true, 'Protection disabled' end
+	if DPP.GetConVar('disable_use_world') and not DPP.IsOwned(ent) then return true, 'Owned by world' end
 	DPP.AssertArguments('DPP.PlayerUse', {{ply, 'Player'}, {ent, 'AnyEntity'}})
 	
 	if DPP.IsEntityBlockedUse(ent:GetClass(), ply) then
@@ -395,7 +395,7 @@ function DPP.CanPickupItem(ply, ent)
 	if DPP.IsRestrictedPickup(class, ply) then return false, 'Restricted' end
 	if DPP.IsEntityWhitelistedPickup(class) then return true, 'Excluded' end
 	
-	if not DPP.IsOwned(ent) then return true, 'Not owned' end
+	if DPP.GetConVar('disable_pickup_world') and not DPP.IsOwned(ent) then return true, 'Not owned' end
 	return DPP.CanTouch(ply, ent, 'pickup')
 end
 

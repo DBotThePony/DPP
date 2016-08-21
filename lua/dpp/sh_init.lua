@@ -340,7 +340,7 @@ DPP.Settings = {
 	
 	['disable_gravgun_world'] = {
 		type = 'bool',
-		value = '0',
+		value = '1',
 		desc = 'Disable "Gravgun" protection for world entities',
 	},
 	
@@ -350,10 +350,22 @@ DPP.Settings = {
 		desc = 'Enable "Vehicle" protection',
 	},
 	
+	['disable_veh_world'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Disable "Vehicle" protection for world entities',
+	},
+	
 	['enable_use'] = {
 		type = 'bool',
 		value = '1',
 		desc = 'Enable "Use" protection',
+	},
+	
+	['disable_use_world'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Disable "Use" protection for world entities',
 	},
 	
 	['enable_damage'] = {
@@ -362,16 +374,28 @@ DPP.Settings = {
 		desc = 'Enable "Damage" protection',
 	},
 	
+	['disable_damage_world'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Disable "Damage" protection for world entities',
+	},
+	
 	['enable_drive'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Enable "Drive" protection',
+		desc = 'Enable "Drive" (property menu->Drive) protection',
 	},
 	
 	['enable_pickup'] = {
 		type = 'bool',
 		value = '1',
 		desc = 'Enable "Pickups" protection',
+	},
+	
+	['disable_pickup_world'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Disable "Pickups" protection for world entities',
 	},
 	
 	--Misc
