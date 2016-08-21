@@ -478,7 +478,7 @@ function SettingsClass.ConVarSlider(Panel, var)
 	
 	local Slider = Panel:NumSlider(v.desc, nil, v.min or 0, v.max or 100, 1)
 	SettingsClass.ApplySliderStyle(Slider)
-	Slider:SetTooltip(v.desc)
+	Slider:SetTooltip(v.desc.. '\n\nConVar: dpp_' .. var)
 	Slider:SetValue(DPP.GetConVar(var))
 	Slider.OnValueChanged = function()
 		local val = tonumber(Slider:GetValue())
@@ -508,7 +508,7 @@ function SettingsClass.ConVarCheckbox(Panel, idx)
 	checkbox.Button.val = idx
 	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
 	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-	checkbox:SetTooltip(DPP.Settings[idx].desc)
+	checkbox:SetTooltip(DPP.Settings[idx].desc .. '\n\nConVar: dpp_' .. idx)
 	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 	SettingsClass.MakeCheckboxBetter(checkbox)
 end
