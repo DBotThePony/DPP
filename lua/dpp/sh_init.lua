@@ -786,7 +786,7 @@ DPP.CSettings = {
 	
 	['no_scrambling_text'] = {
 		type = 'bool',
-		value = '0',
+		value = '1',
 		desc = 'Disable scrambling text',
 	},
 	
