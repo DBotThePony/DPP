@@ -56,24 +56,24 @@ local entMeta = FindMetaTable('Entity')
 function entMeta:SetDPPVar(var, val)
 	var = var:lower()
 	local uid = self:EntIndex()
-	
+
 	if uid > 0 then
 		DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
 		if val == nil then val = DPP.NetworkVars[var].default end
 		DPP.NETWORK_DB[uid][var] = val
-		
+
 		net.Start('DPP.NetworkedVar')
 		net.WriteUInt(DPP.NetworkVars[var].NetworkID, 6)
 		net.WriteUInt(uid, 12) --4096 should be enough
 		DPP.NetworkVars[var].send(val)
 		net.Broadcast()
-		
+
 		self.__DPP_Vars_Save = DPP.NETWORK_DB[uid]
 	else
 		self.DPPVars = self.DPPVars or {}
 		self.DPPVars[var] = val
 	end
-	
+
 	hook.Run('DPP_EntityVarsChanges', self, var, val)
 end
 
@@ -84,25 +84,25 @@ local function SendTo(ply, tosend)
 		Clients[ply] = nil
 		return
 	end
-	
+
 	local uid = table.remove(tosend)
 	if not uid then
 		Clients[ply] = nil
 		return
 	end
-	
+
 	local data = DPP.NETWORK_DB[uid]
 	if not data then return end --???
-	
+
 	net.Start('DPP.NetworkedEntityVars')
 	net.WriteUInt(uid, 12) --4096 should be enough
 	net.WriteUInt(table.Count(data), 6) --Quite bigger than max number of vars
-	
+
 	for var, val in pairs(data) do
 		net.WriteUInt(DPP.NetworkVars[var].NetworkID, 6)
 		DPP.NetworkVars[var].send(val)
 	end
-	
+
 	net.Send(ply)
 end
 
@@ -127,27 +127,27 @@ local function NetworkedVarFull(len, ply, auto)
 	ply.DPP_NetowrkingFullLast = ply.DPP_NetowrkingFullLast or 0
 	if ply.DPP_NetowrkingFullLast > CurTime() then return false end
 	ply.DPP_NetowrkingFullLast = CurTime() + 60
-	
+
 	DPP.BroadcastLists(ply)
 	DPP.SendConVarsTo(ply)
-	
+
 	if not auto then
 		DPP.SimpleLog(ply, Gray, ' Requested full network update automatically')
 	end
-	
+
 	local reply = {}
-	
+
 	for uid, data in pairs(DPP.NETWORK_DB) do
 		table.insert(reply, uid)
 	end
-	
+
 	Clients[ply] = reply
 	return true
 end
 
 local function EntityRemoved(ent)
 	local euid = ent:EntIndex()
-	
+
 	for ply, tosend in pairs(Clients) do
 		for i, uid in pairs(tosend) do
 			if uid == euid then
@@ -156,7 +156,7 @@ local function EntityRemoved(ent)
 			end
 		end
 	end
-	
+
 	DPP.NETWORK_DB[euid] = nil
 	net.Start('DPP.NetworkedRemove')
 	net.WriteUInt(euid, 12) --4096 should be enough
@@ -165,9 +165,9 @@ end
 
 local function command(ply)
 	if not IsValid(ply) then DPP.Message('Are you serious?') return end
-	
+
 	local reply = NetworkedVarFull(nil, ply, true)
-	
+
 	if not reply then
 		DPP.Notify(ply, 'You must wait before requesting full network pocket again!')
 	else
@@ -191,24 +191,24 @@ end
 function DPP.NetworkConVarToClient(ply, var)
 	local val = DPP.GetConVar(var)
 	local data = DPP.Settings[var]
-	
+
 	net.Start('DPP.NetworkedConVar')
 	net.WriteUInt(data.NetworkID, 12)
-	
+
 	WriteEasy(data, val)
-	
+
 	net.Send(ply)
 end
 
 function DPP.SendConVarsTo(ply)
 	ply = ply or player.GetAll()
-	
+
 	net.Start('DPP.NetworkedConVarFull')
-	
+
 	for k, v in pairs(DPP.Settings) do
 		WriteEasy(v, DPP.GetConVar(k))
 	end
-	
+
 	net.Send(ply)
 end
 

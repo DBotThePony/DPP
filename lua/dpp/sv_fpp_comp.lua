@@ -25,7 +25,7 @@ function FPP.plyCanTouchEnt(ply, ent, type)
 	if not type then --We are ignoring type
 		return DPP.CanTouch(ply, ent)
 	end
-	
+
 	if type == 'Physgun' then
 		return DPP.CanPhysgun(ply, ent)
 	elseif type == 'Gravgun' then
@@ -37,7 +37,7 @@ function FPP.plyCanTouchEnt(ply, ent, type)
 	elseif type == 'EntityDamage' then
 		return DPP.CanDamage(ply, ent)
 	end
-		
+
 	return DPP.CanTouch(ply, ent)
 end
 

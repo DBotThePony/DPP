@@ -73,7 +73,7 @@ end
 
 local function StuckCheckDelay(ply, ent)
 	if not IsValid(ent) then return end
-	
+
 	timer.Simple(0, function()
 		if not IsValid(ent) then return end
 		for k, v in pairs(ents.FindInSphere(ent:GetPos(), 32)) do
@@ -88,15 +88,15 @@ local function LogConstraint(ply, ent)
 	if not DPP.GetConVar('log_constraints') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
 	local ent1, ent2 = DPP.GetConstrainedEntities(ent)
-	
+
 	if not IsValid(ent1) then
 		ent1 = '<unknown>'
 	end
-	
+
 	if not IsValid(ent2) then
 		ent2 = '<unknown>'
 	end
-	
+
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
 	logFunc(ply, SPACE, GRAY, ' created constraint ', SPACE2, color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
 end
@@ -106,15 +106,15 @@ local function LogConstraintTry(ply, ent)
 	if not DPP.GetConVar('log_constraints') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
 	local ent1, ent2 = DPP.GetConstrainedEntities(ent)
-	
+
 	if not IsValid(ent1) then
 		ent1 = '<unknown>'
 	end
-	
+
 	if not IsValid(ent2) then
 		ent2 = '<unknown>'
 	end
-	
+
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
 	logFunc(ply, SPACE, RED, ' tried ', GRAY, SPACE2, 'to create constraint ', color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
 end
@@ -129,7 +129,7 @@ local function CheckEntityLimit(ply, class)
 	if status then
 		DPP.Notify(ply, 'You hit ' .. class .. ' limit!', 1)
 	end
-	
+
 	return status
 end
 
@@ -137,17 +137,17 @@ local function CheckBlocked(ply, ent)
 	local Mod = ent:GetModel()
 	if not Mod then return end
 	local model = string.lower(Mod)
-	
+
 	if DPP.IsRestrictedModel(model, ply) then 
 		SafeRemoveEntity(ent)
-		
+
 		if ply then
 			DPP.Notify(ply, 'Model of that entity is restricted', 1)
 		end
-		
+
 		return false
 	end
-	
+
 	if DPP.IsModelBlocked(model, ply) then
 		SafeRemoveEntity(ent)
 	end
@@ -155,46 +155,46 @@ end
 
 local function CheckBlocked2(ply, model)
 	model = string.lower(model) --Fucking upper case
-	
+
 	if DPP.IsRestrictedModel(model, ply) then
 		if ply then
 			DPP.Notify(ply, 'Model of that entity is restricted', 1)
 		end
-		
+
 		return false
 	end
-	
+
 	if DPP.IsModelBlocked(model, ply) then
 		return false
 	end
-	
+
 	return true
 end
 
 function SpawnFunctions.PlayerSpawnedNPC(ply, ent, shouldHideLog)
 	if ent.DPP_SpawnTime  == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
-	
+
 	if DPP.IsRestrictedNPC(ent:GetClass(), ply) then 
 		LogTryPost(ply, 'NPC', ent)
 		DPP.Notify(ply, 'That entity is restricted', 1)
 		SafeRemoveEntity(ent)
 		return false
 	end
-	
+
 	if CheckEntityLimit(ply, ent:GetClass()) then 
 		LogTryPost(ply, 'NPC', ent)
 		SafeRemoveEntity(ent)
 		return false
 	end
-	
+
 	if DPP.GetConVar('check_stuck') then
 		StuckCheckDelay(ply, ent)
 	end
-	
+
 	Spawned(ply, ent)
 	if not shouldHideLog then LogSpawn(ply, ent, 'NPC') end
-	
+
 	DPP.CheckAntispamDelay(ply, ent)
 	DPP.CheckDroppedEntity(ply, ent)
 	CheckBlocked(ply, ent)
@@ -203,7 +203,7 @@ end
 function SpawnFunctions.PlayerSpawnedEffect(ply, model, ent, shouldHideLog)
 	Spawned(ply, ent)
 	if not shouldHideLog then LogSpawn(ply, ent, 'Effect') end
-	
+
 	DPP.CheckAntispamDelay(ply, ent)
 	CheckBlocked(ply, ent)
 end
@@ -240,84 +240,84 @@ SpawnFunctions.CheckBefore = CheckBefore
 
 local function undo_Finish(name)
 	local name, val = debug.getupvalue(DPP.oldUndoFinish, 1)
-	
+
 	if name == 'Current_Undo' and val then
 		local owner = val.Owner
 		if IsValid(owner) then
 			for k, v in pairs(val.Entities) do
 				if not IsValid(v) then continue end
 				if DPP.IsOwned(v) then continue end
-				
+
 				CheckBefore(owner, v, true) --HOLY FUCK
 			end
 		end
 	end
-	
+
 	return DPP.oldUndoFinish(name)
 end
 
 local function cleanup_Add(ply, type, ent)
 	if not ent then return end --Fuck this down
 	DPP.AssertArguments('cleanup.Add', {{ply, 'Player'}, {type, 'string'}, {ent, 'AnyEntity'}})
-	
+
 	if PENDING ~= ent then
 		if IsValid(PENDING_PLY) then DPP.CheckAntispam(PENDING_PLY, PENDING) end
 		PENDING = nil
 		PENDING_PLY = nil
 	end
-	
+
 	local check = true
-	
+
 	if DPP.DTypes[type] then
 		check = false
 	end
-	
+
 	if PENDING == ent then
 		if check then
 			if IsValid(PENDING_PLY) then DPP.CheckAntispam(PENDING_PLY, PENDING) end
 		end
-		
+
 		PENDING = nil
 		PENDING_PLY = nil
 	end
-	
+
 	if IsValid(ent) then
 		if not DPP.IsOwned(ent) then
 			CheckBefore(ply, ent)
 			PENDING = nil
 			PENDING_PLY = nil
 		end
-		
+
 		DPP.SetOwner(ent, ply)
 	end
-	
+
 	return DPP.oldCleanupAdd(ply, type, ent)
 end
 
 function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog, ignoreAntispam)
 	DPP.AssertArguments('PlayerSpawnedProp', {{ply, 'Player'}, {model, 'string'}, {ent, 'AnyEntity'}})
-	
+
 	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
-	
+
 	if CheckEntityLimit(ply, ent:GetClass()) then 
 		LogTryPost(ply, 'Prop', ent)
 		SafeRemoveEntity(ent)
 		return false
 	end
-	
+
 	Spawned(ply, ent)
 	if not ignoreAntispam then DPP.CheckSizesDelay(ent, ply) end
 	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, 'Prop') end return end
 	if DPP.GetConVar('check_stuck') then
 		StuckCheckDelay(ply, ent)
 	end
-	
+
 	if not shouldHideLog then LogSpawn(ply, ent, 'Prop') end
-	
+
 	PENDING = ent
 	PENDING_PLY = ply
-	
+
 	DPP.CheckDroppedEntity(ply, ent)
 	CheckBlocked(ply, ent)
 end
@@ -335,24 +335,24 @@ local ropesConstraints = {
 function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide, ignoreAntispam)
 	if not IsValid(ply) then return end
 	if not IsValid(ent) then return end
-	
+
 	DPP.AssertArguments('PlayerSpawnedConstraint', {{ply, 'Player'}, {ent, 'AnyEntity'}})
-	
+
 	Spawned(ply, ent)
-	
+
 	local type = DPP.GetContstrainType(ent)
-	
+
 	local spawned = true
 	if DPP.IsConstraintLimitReached(ply, type) then spawned = false end
-	
+
 	local ent1, ent2 = DPP.GetConstrainedEntities(ent)
 	local V1, V2 = IsValid(ent1), IsValid(ent2)
-	
+
 	if V1 and V2 then
 		if ent1:GetClass() ~= 'gmod_anchor' and ent2:GetClass() ~= 'gmod_anchor' then
 			local can1 = DPP.CanTool(ply, ent1, '') ~= false
 			local can2 = DPP.CanTool(ply, ent2,  '') ~= false
-			
+
 			if not can1 or not can2 then
 				spawned = false
 			end
@@ -366,7 +366,7 @@ function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide, ignoreAntispam)
 			spawned = false
 		end
 	end
-	
+
 	if spawned then
 		LogConstraint(ply, ent)
 	else
@@ -377,94 +377,94 @@ end
 
 function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog, ignoreAntispam)
 	DPP.AssertArguments('PlayerSpawnedRagdoll', {{ply, 'Player'}, {model, 'string'}, {ent, 'AnyEntity'}})
-	
+
 	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
-	
+
 	if CheckEntityLimit(ply, ent:GetClass()) then 
 		LogTryPost(ply, 'Ragdoll', ent)
 		SafeRemoveEntity(ent)
 		return false
 	end
-	
+
 	if DPP.GetConVar('check_stuck') then
 		StuckCheckDelay(ply, ent)
 	end
-	
+
 	Spawned(ply, ent)
 	if not ignoreAntispam then DPP.CheckSizesDelay(ent, ply) end
 	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, 'Ragdoll') end return end
 	if not shouldHideLog then LogSpawn(ply, ent, 'Ragdoll') end
-	
+
 	PENDING = ent
 	PENDING_PLY = ply
-	
+
 	CheckBlocked(ply, ent)
 end
 
 function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog, ignoreAntispam)
 	DPP.AssertArguments('PlayerSpawnedSENT', {{ply, 'Player'}, {ent, 'AnyEntity'}})
-	
+
 	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
-	
+
 	if DPP.IsRestrictedSENT(ent:GetClass(), ply) then 
 		LogTryPost(ply, 'SENT', ent)
 		DPP.Notify(ply, 'That entity is restricted', 1)
 		SafeRemoveEntity(ent)
 		return false
 	end
-	
+
 	if CheckEntityLimit(ply, ent:GetClass()) then 
 		LogTryPost(ply, 'SENT', ent)
 		SafeRemoveEntity(ent)
 		return false
 	end
-	
+
 	if DPP.GetConVar('check_stuck') then
 		StuckCheckDelay(ply, ent)
 	end
-	
+
 	Spawned(ply, ent)
 	if not ignoreAntispam then DPP.CheckSizesDelay(ent, ply) end
 	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, 'SENT') end return end
 	if not shouldHideLog then LogSpawn(ply, ent, 'SENT') end
-	
+
 	PENDING = ent
 	PENDING_PLY = ply
-	
+
 	CheckBlocked(ply, ent)
 end
 
 function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog, ignoreAntispam)
 	DPP.AssertArguments('PlayerSpawnedSWEP', {{ply, 'Player'}, {ent, 'AnyEntity'}})
-	
+
 	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
-	
+
 	if DPP.IsRestrictedSWEP(ent:GetClass(), ply) then 
 		LogTryPost(ply, 'SWEP', ent)
 		DPP.Notify(ply, 'That SWEP is restricted', 1)
 		SafeRemoveEntity(ent)
 		return false
 	end
-	
+
 	if CheckEntityLimit(ply, ent:GetClass()) then 
 		LogTryPost(ply, 'SWEP', ent)
 		SafeRemoveEntity(ent)
 		return false
 	end
-	
+
 	if DPP.GetConVar('check_stuck') then
 		StuckCheckDelay(ply, ent)
 	end
-	
+
 	Spawned(ply, ent)
 	if not shouldHideLog then LogSpawn(ply, ent, 'SWEP') end
-	
+
 	PENDING = ent
 	PENDING_PLY = ply
-	
+
 	CheckBlocked(ply, ent)
 end
 
@@ -473,7 +473,7 @@ function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog, ignoreAnti
 
 	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
-	
+
 	if DPP.IsRestrictedVehicle(ent:GetClass(), ply) then 
 		LogTryPost(ply, 'Vehicle', ent)
 		DPP.Notify(ply, 'That vehicle is restricted', 1)
@@ -486,41 +486,41 @@ function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog, ignoreAnti
 		SafeRemoveEntity(ent)
 		return false
 	end
-	
+
 	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, 'Vehicle') end return end
-	
+
 	if DPP.GetConVar('check_stuck') then
 		StuckCheckDelay(ply, ent)
 	end
-	
+
 	Spawned(ply, ent)
 	if not shouldHideLog then LogSpawn(ply, ent, 'Vehicle') end
-	
+
 	PENDING = ent
 	PENDING_PLY = ply
-	
+
 	CheckBlocked(ply, ent)
 end
 
 function SpawnFunctions.PlayerSpawnProp(ply, model)
 	DPP.AssertArguments('PlayerSpawnProp', {{ply, 'Player'}, {model, 'string'}})
-	
+
 	if DPP.IsModelBlocked(model, ply) then 
 		LogTry(ply, 'Prop', model)
 		return false 
 	end
-	
+
 	if CheckEntityLimit(ply, 'prop_physics') then 
 		LogTry(ply, 'Prop', model)
 		return false 
 	end
-	
+
 	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
 		LogTry(ply, 'Object/Generic', model)
 		DPP.Notify(ply, 'Entity is removed due to spam', 1)
 		return false 
 	end
-	
+
 	if not CheckBlocked2(ply, model) then 
 		LogTry(ply, 'Object/Generic', model)
 		return false 
@@ -529,18 +529,18 @@ end
 
 function SpawnFunctions.PlayerSpawnObject(ply, model)
 	DPP.AssertArguments('PlayerSpawnObject', {{ply, 'Player'}, {model, 'string'}})
-	
+
 	if DPP.IsModelBlocked(model, ply) then 
 		LogTry(ply, 'Object/Generic', model)
 		return false 
 	end
-	
+
 	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
 		LogTry(ply, 'Object/Generic', model)
 		DPP.Notify(ply, 'Entity is removed due to spam', 1)
 		return false 
 	end
-	
+
 	if not CheckBlocked2(ply, model) then 
 		LogTry(ply, 'Object/Generic', model)
 		return false 
@@ -549,18 +549,18 @@ end
 
 function SpawnFunctions.PlayerSpawnRagdoll(ply, model)
 	DPP.AssertArguments('PlayerSpawnRagdoll', {{ply, 'Player'}, {model, 'string'}})
-	
+
 	if DPP.IsModelBlocked(model, ply) then 
 		LogTry(ply, 'Ragdoll', model)
 		return false 
 	end
-	
+
 	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
 		LogTry(ply, 'Object/Generic', model)
 		DPP.Notify(ply, 'Entity is removed due to spam', 1)
 		return false 
 	end
-	
+
 	if not CheckBlocked2(ply, model) then 
 		LogTry(ply, 'Object/Generic', model)
 		return false 
@@ -569,28 +569,28 @@ end
 
 function SpawnFunctions.PlayerSpawnVehicle(ply, model, class)
 	DPP.AssertArguments('PlayerSpawnVehicle', {{ply, 'Player'}, {model, 'string'}, {class, 'string'}})
-	
+
 	if DPP.IsModelBlocked(model, ply) then 
 		LogTry(ply, 'Vehicle', model)
 		return false 
 	end
-	
+
 	if CheckEntityLimit(ply, class) then 
 		LogTry(ply, 'Vehicle', model)
 		return false 
 	end
-	
+
 	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
 		LogTry(ply, 'Vehicle', model)
 		DPP.Notify(ply, 'Entity is removed due to spam', 1)
 		return false 
 	end
-	
+
 	if not CheckBlocked2(ply, model) then 
 		LogTry(ply, 'Vehicle', model)
 		return false 
 	end
-	
+
 	if DPP.IsRestrictedVehicle(class, ply) then 
 		LogTry(ply, 'Vehicle', class)
 		DPP.Notify(ply, 'That vehicle is restricted', 1)
@@ -600,13 +600,13 @@ end
 
 function SpawnFunctions.PlayerSpawnSENT(ply, ent)
 	DPP.AssertArguments('PlayerSpawnSENT', {{ply, 'Player'}, {ent, 'string'}})
-	
+
 	if DPP.IsRestrictedSENT(ent, ply) then 
 		LogTry(ply, 'SENT', 'N/A', ent)
 		DPP.Notify(ply, 'That entity is restricted', 1)
 		return false 
 	end
-	
+
 	if CheckEntityLimit(ply, ent) then 
 		LogTry(ply, 'SENT', model)
 		return false 
@@ -615,13 +615,13 @@ end
 
 function SpawnFunctions.PlayerSpawnSWEP(ply, ent)
 	DPP.AssertArguments('PlayerSpawnSWEP', {{ply, 'Player'}, {ent, 'string'}})
-	
+
 	if DPP.IsRestrictedSWEP(ent, ply) then 
 		LogTry(ply, 'SWEP', 'N/A', ent)
 		DPP.Notify(ply, 'That swep is restricted', 1)
 		return false 
 	end
-	
+
 	if CheckEntityLimit(ply, ent) then 
 		LogTry(ply, 'SWEP', model)
 		return false 
@@ -630,7 +630,7 @@ end
 
 function SpawnFunctions.PlayerGiveSWEP(ply, class, tab)
 	DPP.AssertArguments('PlayerSpawnSWEP', {{ply, 'Player'}, {class, 'string'}})
-	
+
 	local can = SpawnFunctions.PlayerSpawnSWEP(ply, class)
 	if can == false then return false end
 	LogSpawnC(ply, class, 'SWEP', tab and (tab.Model or tab.WorldModel) or 'N/A')
@@ -638,13 +638,13 @@ end
 
 function SpawnFunctions.PlayerSpawnNPC(ply, ent)
 	DPP.AssertArguments('PlayerSpawnNPC', {{ply, 'Player'}, {ent, 'string'}})
-	
+
 	if DPP.IsRestrictedNPC(ent, ply) then 
 		LogTry(ply, 'NPC', 'N/A', ent)
 		DPP.Notify(ply, 'That entity is restricted', 1)
 		return false 
 	end
-	
+
 	if CheckEntityLimit(ply, ent) then 
 		LogTry(ply, 'NPC', model)
 		return false 
@@ -658,24 +658,24 @@ end
 local function EntityRemoved(ent)
 	if ent.IsConstraint and ent:IsConstraint() then
 		local ent1, ent2 = DPP.GetConstrainedEntities(ent)
-		
+
 		timer.Simple(0, function()
 			if IsValid(ent1) and IsValid(ent2) then
 				local o1 = DPP.GetOwner(ent1)
 				local o2 = DPP.GetOwner(ent2)
-				
+
 				if o1 ~= o2 or not DPP.IsSingleOwner(ent1, o2) or not DPP.IsSingleOwner(ent2, o1) then
 					DPP.RecalcConstraints(ent1)
 					DPP.RecalcConstraints(ent2)
 				end
 			end
-			
+
 			if IsValid(ent1) then
 				ent1.DPP_ConstrainedWith = ent1.DPP_ConstrainedWith or {}
 				ent1.DPP_ConstrainedWith[ent2] = nil
 				DPP.SendConstrainedWith(ent1)
 			end
-			
+
 			if IsValid(ent2) then
 				ent2.DPP_ConstrainedWith = ent2.DPP_ConstrainedWith or {}
 				ent2.DPP_ConstrainedWith[ent1] = nil
@@ -708,7 +708,7 @@ local PostEntityCreated
 local function OnEntityCreated(ent)
 	local Timestamp = CurTime()
 	Timestamps[ent] = Timestamp
-	
+
 	timer.Simple(0, function()
 		PostEntityCreated(ent, Timestamp)
 	end)
@@ -721,24 +721,24 @@ local function HaveValueLight(tab, val)
 	for k = 1, #tab do
 		if tab[k] == val then return true end
 	end
-	
+
 	return false
 end
 
 local function FindEntitiesRecursiveFunc(tab)
 	for k, v in pairs(tab) do
 		local t = type(v)
-		
+
 		if t ~= 'Player' and DPP.ENTITY_TYPES[t] and IsValid(v) then
 			if HaveValueLight(RECURSIVE_MEM, v) then continue end --Prevent recursion
 			table.insert(RECURSIVE_MEM, v)
 			local eTab = v:GetTable()
-			
+
 			if eTab then
 				FindEntitiesRecursiveFunc(eTab)
 			end
 		end
-		
+
 		if t == 'table' then
 			if MEM_TABLE_CACHE[v] then continue end --Prevent recursion
 			MEM_TABLE_CACHE[v] = true
@@ -758,93 +758,93 @@ end
 function PostEntityCreated(ent, Timestamp)
 	if not IsValid(ent) then return end
 	local Timestamp2 = CurTime()
-	
+
 	local spawn_checks_noaspam = DPP.GetConVar('spawn_checks_noaspam')
 	local iGhost = DPP.GetGhosted(ent)
 	local wasChecked = DPP.IsChekedByAntispam(ent)
 	local shouldRemove = false
-	
+
 	local function AntispamHit(ply)
 		if wasChecked then return end
-		
+
 		wasChecked = true
 		local status = DPP.CheckAntispam_NoEnt(ply, true, true)
-		
+
 		if status == DPP.ANTISPAM_INVALID then
 			if not shouldRemove then
 				DPP.Notify(ply, 'Prop is removed due to spam', 1)
 			end
-			
+
 			shouldRemove = true
 		elseif status == DPP.ANTISPAM_GHOSTED then
 			if not iGhost then
 				DPP.Notify(ply, 'Prop is ghosted due to spam', 0)
 			end
-			
+
 			iGhost = true
 		end
 	end
-	
+
 	if ent.IsConstraint and ent:IsConstraint() then
 		local ent1, ent2 = DPP.GetConstrainedEntities(ent)
-		
+
 		if IsValid(ent1) and IsValid(ent2) then
 			local o1, o2 = DPP.GetOwner(ent1), DPP.GetOwner(ent2)
-			
+
 			if DPP.GetConVar('advanced_spawn_checks') then
 				local t1 = Timestamps[ent1]
 				local t2 = Timestamps[ent2]
-				
+
 				if t1 == Timestamp and not IsValid(o1) and IsValid(o2) then --Because we are running on next frame
 					o1 = o2
 					if DPP.GetGhosted(ent2) then DPP.SetGhosted(ent1, true) end
 					CheckBefore(o2, ent1, false, spawn_checks_noaspam)
 				end
-				
+
 				if t2 == Timestamp and not IsValid(o2) and IsValid(o1) then
 					o2 = o1
 					if DPP.GetGhosted(ent1) then DPP.SetGhosted(ent2, true) end
 					CheckBefore(o1, ent2, false, spawn_checks_noaspam)
 				end
 			end
-			
+
 			if o1 ~= o2 or not DPP.IsSingleOwner(ent1, o2) or not DPP.IsSingleOwner(ent2, o1) then
 				DPP.RecalcConstraints(ent1) --Recalculating only for one entity, because second is constrained with first
 			end
-			
+
 			if o1 == o2 and not DPP.IsOwned(ent) and (IsValid(o1) or IsValid(o2)) then
 				SpawnFunctions.PlayerSpawnedConstraint(IsValid(o1) and o1 or o2, ent)
 			end
 		end
-		
+
 		if IsValid(ent1) then
 			ent1.DPP_ConstrainedWith = ent1.DPP_ConstrainedWith or {}
 			ent1.DPP_ConstrainedWith[ent2] = true
 			DPP.SendConstrainedWith(ent1)
 		end
-		
+
 		if IsValid(ent2) then
 			ent2.DPP_ConstrainedWith = ent2.DPP_ConstrainedWith or {}
 			ent2.DPP_ConstrainedWith[ent1] = true
 			DPP.SendConstrainedWith(ent2)
 		end
 	end
-	
+
 	if DPP.GetConVar('strict_spawn_checks') then
 		local get = DPP.GetOwner(ent)
-		
+
 		if IsValid(get) then
 			local Ents = FindEntitiesRecursive(ent:GetTable())
-			
+
 			for k, v in ipairs(Ents) do
 				if not IsValid(v) then continue end
 				if Timestamps[v] ~= Timestamp then continue end
 				if DPP.IsOwned(v) then continue end
 				if v.DPP_CHECK_HIT == Timestamp then continue end
 				v.DPP_CHECK_HIT = Timestamp
-				
+
 				AntispamHit(get)
-				
+
 				if not shouldRemove then
 					if iGhost then DPP.SetGhosted(v, true) end
 					CheckBefore(get, v, false, spawn_checks_noaspam)
@@ -854,51 +854,51 @@ function PostEntityCreated(ent, Timestamp)
 			end
 		end
 	end
-	
+
 	if shouldRemove then
 		SafeRemoveEntity(ent)
 		return
 	end
-	
+
 	if iGhost and not DPP.GetGhosted(ent) then
 		DPP.SetGhosted(ent, true)
 	end
-	
+
 	if DPP.GetConVar('experemental_spawn_checks') then
 		local nent
-		
+
 		if isentity(ent.EntOwner) then
 			nent = ent.SpawnedBy
 		end
-		
+
 		if isentity(ent.SpawnedBy) then
 			nent = ent.SpawnedBy
 		end
-		
+
 		if nent then
 			local owner = not nent:IsPlayer() and DPP.GetOwner(nent) or nent
-			
+
 			if isentity(nent) and not nent:IsPlayer() then
 				DPP.SetConstrainedBetween(ent, nent, true)
-				
+
 				DPP.SendConstrainedWith(ent)
 				DPP.SendConstrainedWith(nent)
 			end
-			
+
 			if IsValid(owner) and owner:IsPlayer() then
 				CheckBefore(owner, ent, false, spawn_checks_noaspam)
 				--DPP.SetOwner(ent, owner)
 			end
 		end
-		
+
 		if ent.GetPlayer and ent.SetPlayer ~= DPP.SetPlayerMeta then --Wee, entity have player tracking!
 			ent.__DPP_OldSetPlayer = ent.SetPlayer
-			
+
 			local owner = ent:GetPlayer()
 			if IsValid(owner) then
 				CheckBefore(owner, ent, false, spawn_checks_noaspam)
 			end
-			
+
 			ent.SetPlayer = DPP_ReplacedSetPlayer
 		end
 	end
@@ -909,15 +909,15 @@ hook.Add('EntityRemoved', 'DPP.EntityRemoved', EntityRemoved)
 
 function DPP.SetPlayerMeta(self, ply)
 	--Compability
-	
+
 	DPP.AssertArguments('SetPlayer', {{self, 'AnyEntity'}, {ply, 'Player'}})
-	
+
 	CheckBefore(ply, self)
-	
+
 	self:SetVar("Founder", ply)
 	self:SetVar("FounderIndex", ply:UniqueID())
 	self:SetNetworkedString("FounderName", ply:Nick())
-	
+
 	return DPP.SetOwner(self, ply)
 end
 
@@ -932,9 +932,9 @@ function DPP.OverrideE2()
 	if not Compiler then return end
 	DPP.Message('Detected E2, overriding.')
 	--Hello, Wiremod
-	
+
 	DPP.__oldCompilerFunc = DPP.__oldCompilerFunc or Compiler.GetFunction
-	
+
 	function Compiler:GetFunction(instr, Name, Args)
 		if self.DPly then
 			if DPP.IsRestrictedE2Function(Name, self.DPly) then
@@ -943,20 +943,20 @@ function DPP.OverrideE2()
 				return
 			end
 		end
-		
+
 		return DPP.__oldCompilerFunc(self, instr, Name, Args)
 	end
-	
+
 	function Compiler.Execute(...)
 		-- instantiate Compiler
 		local instance = setmetatable({}, Compiler)
-		
+
 		local Name, Ent = debug.getlocal(2, 1) --Getting our entity
-		
+
 		if IsValid(Ent) then
 			instance.DPly = DPP.GetOwner(Ent)
 		end
-		
+
 		-- and pcall the new instance's Process method.
 		return pcall(Compiler.Process, instance, ...)
 	end
@@ -965,13 +965,13 @@ end
 function DPP.OverrideGMODEntity()
 	local ent = scripted_ents.Get('base_gmodentity')
 	if not ent then return end
-	
+
 	DPP.Message('Detected base_gmodentity')
-	
+
 	ent.SetPlayer = DPP.SetPlayerMeta
 	ent.GetPlayer = DPP.GetPlayerMeta
 	scripted_ents.Register(ent, 'base_gmodentity')
-	
+
 	function entMeta:SetOwner(ent)
 		timer.Simple(0, function()
 			if not IsValid(self) then return end
@@ -1002,50 +1002,50 @@ local GRAY = Color(200, 200, 200)
 
 local function ReceiveProperty_DPP(len, ply)
 	if not IsValid(ply) then return end
-	
+
 	local name = net.ReadString()
 	if not name or name == '' then return end
-	
+
 	local ent = net.ReadEntity()
 	if not IsValid(ent) then return end
-	
+
 	local obj = properties.List[name]
 	if not obj then return end
 	if not isfunction(obj.Filter) then return end
 	if not isfunction(obj.Receive) then return end
-	
+
 	if DPP.CanProperty(ply, name, ent) == false then return end
 	if not obj:Filter(ent, ply) then return end
-	
+
 	local oldReadEntity = net.ReadEntity
-	
+
 	function net.ReadEntity()
 		net.ReadEntity = oldReadEntity
 		local oldEnt = oldReadEntity() --Call the old function to proceed message correctly
-		
+
 		if oldEnt ~= ent then
 			SimpleLog(RED, 'ATTENTION ', GRAY, string.format('I don\'t really know, is that hacks or not, but player opened property menu on %s, but server received that target entity is %s. ', tostring(ent), tostring(oldEnt)), 'Player ', ply, color_white, '<' .. ply:SteamID() .. '>')
 		end
 
 		return ent
 	end
-	
+
 	xpcall(obj.Receive, NetMessageErr, obj, len, ply)
-	
+
 	net.ReadEntity = oldReadEntity
 end
 
 function DPP.ReplaceFunctions()
 	DPP.Message('Overriding server functions.')
-	
+
 	DPP.OverrideGMODEntity()
 	DPP.OverrideE2()
-	
+
 	cleanup.Add = cleanup_Add
 	undo.Finish = undo_Finish
-	
+
 	DPP._OldPropertiesReceive = DPP._OldPropertiesReceive or net.Receivers.properties
-	
+
 	net.Receive("properties", ReceiveProperty)
 	net.Receive("properties_dpp", ReceiveProperty_DPP)
 end
@@ -1058,9 +1058,9 @@ function DPP.HandleTakeDamage(ent, dmg)
 	if ent:IsPlayer() then return end
 	local a = dmg:GetAttacker()
 	if not IsValid(a) then return end
-	
+
 	local reply
-	
+
 	if a:IsPlayer() then
 		reply = DPP.CanDamage(a, ent)
 	elseif a:IsNPC() then
@@ -1068,21 +1068,21 @@ function DPP.HandleTakeDamage(ent, dmg)
 		if not IsValid(owner) then return end
 		reply = DPP.CanDamage(owner, ent)
 	end
-	
+
 	if reply ~= false then return end
-	
+
 	dmg:SetDamage(0)
 	dmg:SetDamageForce(EmptyVector)
 	dmg:SetDamageBonus(0)
 	dmg:SetDamageType(0)
 	local isOnFire = ent:IsOnFire()
-	
+
 	timer.Simple(0.1, function()
 		if IsValid(ent) and not isOnFire then
 			ent:Extinguish() --Prevent burning weapons
 		end
 	end)
-	
+
 	return false
 end
 
@@ -1090,11 +1090,11 @@ hook.Add('EntityTakeDamage', 'DPP.Hooks', DPP.HandleTakeDamage, -2)
 
 function DPP.CheckDroppedStuck(ply, ent)
 	if not DPP.GetConVar('check_stuck') then return end
-	
+
 	--I think if entity have MOVETYPE_NONE it can not create lags because moving is not calculated
 	if ent:GetSolid() == SOLID_NONE then return end
 	if ent:GetMoveType() == MOVETYPE_NONE then return end
-	
+
 	for k, v in pairs(ents.FindInSphere(ent:GetPos(), 32)) do
 		if v:IsPlayer() then continue end
 		if DPP.GetGhosted(v) then continue end
@@ -1107,36 +1107,36 @@ hook.Add('PhysgunDrop', 'DPP.PreventPropStuck', DPP.CheckDroppedStuck)
 local function OnPhysgunReload(weapon, ply)
 	local ent = ply:GetEyeTrace().Entity
 	if not IsValid(ent) then return end
-	
+
 	if DPP.GetConVar('disable_unfreeze') then
 		DPP.Notify(ply, 'Physgun reload is disabled on this server', NOTIFY_ERROR)
 		return false
 	end
-	
+
 	ply.DPP_LastUnfreezeTry = ply.DPP_LastUnfreezeTry or 0
-	
+
 	if ply.DPP_LastUnfreezeTry > CurTime() then
 		DPP.Notify(ply, 'You must wait ' .. math.floor(ply.DPP_LastUnfreezeTry - CurTime()) .. ' seconds before trying to unfreeze again', NOTIFY_ERROR)
 		return false
 	end
-	
+
 	if DPP.GetConVar('unfreeze_antispam') then
 		ply.DPP_LastUnfreezeTry = CurTime() + DPP.GetConVar('unfreeze_antispam_delay')
 	end
-	
+
 	if not DPP.GetConVar('unfreeze_restrict') then return end
 	local num = DPP.GetConVar('unfreeze_restrict_num')
-	
+
 	local result = DPP.RecalcConstraints(ent)
 	if #result <= num then return end
-	
+
 	local i = 0
-	
+
 	for k, v in ipairs(result) do
 		if DPP.IsConstraint(v) then continue end
 		i = i + 1
 	end
-	
+
 	if i > num then
 		ply.DPP_LastUnfreezeTry = CurTime() + math.Clamp(i / 5, math.min(DPP.GetConVar('unfreeze_antispam_delay'), 5), 15)
 		DPP.Notify(ply, 'Unable to unfreeze: You are trying un freeze ' .. i .. ' entities (' .. num .. ' max)!', NOTIFY_ERROR)

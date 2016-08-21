@@ -46,7 +46,7 @@ end
 function entMeta:CPPIGetOwner()
 	local o = DPP.GetOwner(self)
 	if not IsValid(o) then return nil, nil end
-	
+
 	return o, o:UniqueID()
 end
 
@@ -54,7 +54,7 @@ if SERVER then
 	function entMeta:CPPISetOwner(ply)
 		DPP.SetOwner(self, ply)
 	end
-	
+
 	function entMeta:CPPISetOwnerUID(uid)
 		local ply = player.GetByUniqueID(uid)
 		if not ply then
@@ -122,7 +122,7 @@ end
 function CPPI.GetOwner(self)
 	local o = DPP.GetOwner(self)
 	if not IsValid(o) then return nil, nil end
-	
+
 	return o, o:UniqueID()
 end
 
@@ -130,7 +130,7 @@ if SERVER then
 	function CPPI.SetOwner(ply)
 		DPP.SetOwner(self, ply)
 	end
-	
+
 	function CPPI.SetOwnerUID(self, uid)
 		local ply = player.GetByUniqueID(uid)
 		if not ply then

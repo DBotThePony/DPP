@@ -21,14 +21,14 @@ function DPP.CheckDroppedEntity(ply, ent)
 	if not DPP.GetConVar('apropkill_enable') then return end
 	if not DPP.GetConVar('prevent_player_stuck') then return end
 	if ent:IsPlayer() then return end
-	
+
 	for k, v in pairs(player.GetAll()) do
 		if v == ply then continue end
 		if v:InVehicle() then continue end
 		if DPP.IsPlayerInEntity(v, ent) then
 			local can = hook.Run('DPP_A_StuckHit', ply, ent, v)
 			if can == false then continue end
-			
+
 			DPP.Notify(ply, 'Your prop is stuck in other player')
 			DPP.SetGhosted(ent, true)
 			break
@@ -39,12 +39,12 @@ end
 local function CanTool(ply, tr, mode)
 	--This hook must be runned after DPP protection module
 	if not IsValid(tr.Entity) then return end
-	
+
 	local can = hook.Run('DPP_A_StuckCheck', ply, tr.Entity)
 	if can == false then return end
-	
+
 	if not DPP.CanTool(ply, tr.Entity, mode) then return end
-	
+
 	DPP.CheckDroppedEntity(ply, tr.Entity)
 end
 
@@ -57,55 +57,55 @@ local function EntityTakeDamage(ent, dmg)
 	if not DPP.GetConVar('apropkill_enable') then return end
 	if not DPP.GetConVar('apropkill_damage') then return end
 	if not ent:IsPlayer() then return end
-	
+
 	local can = hook.Run('DPP_A_EntityTakeDamage', ent, dmg)
 	if can == false then return end
-	
+
 	local attacker = dmg:GetAttacker()
 	local inflictor = dmg:GetInflictor()
-	
+
 	if DPP.GetConVar('apropkill_vehicle') then
 		if IsValid(attacker) and attacker:IsVehicle() then
 			if attacker:GetSolid() ~= SOLID_NONE and (attacker:GetCollisionGroup() == COLLISION_GROUP_NONE or attacker:GetCollisionGroup() == COLLISION_GROUP_VEHICLE) then
 				attacker:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
 			end
 		end
-		
+
 		if IsValid(inflictor) and inflictor:IsVehicle() then
 			if inflictor:GetSolid() ~= SOLID_NONE and (inflictor:GetCollisionGroup() == COLLISION_GROUP_NONE or inflictor:GetCollisionGroup() == COLLISION_GROUP_VEHICLE) then
 				inflictor:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
 			end
 		end
 	end
-	
+
 	local aValid = IsValid(attacker)
 	local iValid = IsValid(inflictor)
-	
+
 	local Aclass = aValid and attacker:GetClass()
 	local Iclass = iValid and inflictor:GetClass()
-	
+
 	local cond = dmg:GetDamageType() == DMG_CRUSH and ((not Aclass or not WhitelistProps[Aclass]) and (not Iclass or not WhitelistProps[Iclass])) or 
 		(dmg:GetDamageType() == DMG_VEHICLE and DPP.GetConVar('apropkill_damage_vehicle')) or
 		(Aclass == 'prop_physics' or Aclass == 'prop_ragdoll' or Aclass == 'prop_physics_multiplayer') or
 		(Iclass == 'prop_physics' or Iclass == 'prop_ragdoll' or Iclass == 'prop_physics_multiplayer')
-	
+
 	if DPP.GetConVar('apropkill_damage_noworld') then
 		if not aValid and attacker ~= NULL and not dmg:IsFallDamage() then --Worldspawn, sometimes player getting hit from prop that's attacker and inflictor set to worldspawn
 			cond = true
 		end
-		
+
 		if aValid and not IsValid(DPP.GetOwner(attacker)) then --Logic or map entity
 			if not iValid or not IsValid(DPP.GetOwner(inflictor)) then
 				cond = false
 			end
 		end
 	end
-	
+
 	if not cond then return end
-	
+
 	local can = hook.Run('DPP_A_EntityTakeDamage_Hit', ent, dmg)
 	if can == false then return end
-	
+
 	dmg:SetDamage(0)
 	dmg:SetDamageForce(EmptyVector)
 	dmg:SetDamageType(DMG_GENERIC)
@@ -114,12 +114,12 @@ end
 local function PlayerSpawnedVehicle(ply, ent)
 	if not DPP.GetConVar('apropkill_enable') then return end
 	if not DPP.GetConVar('apropkill_vehicle') then return end
-	
+
 	local can = hook.Run('DPP_A_PlayerSpawnedVehicle', ply, ent)
 	if can == false then return end
-	
+
 	if ent:GetSolid() == SOLID_NONE then return end
-	
+
 	if ent:GetCollisionGroup() == COLLISION_GROUP_VEHICLE or ent:GetCollisionGroup() == COLLISION_GROUP_NONE then
 		ent:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
 	end
@@ -128,12 +128,12 @@ end
 local function PlayerEnteredVehicle(ply, ent)
 	if not DPP.GetConVar('apropkill_enable') then return end
 	if not DPP.GetConVar('apropkill_vehicle') then return end
-	
+
 	local can = hook.Run('DPP_A_PlayerEnteredVehicle', ply, ent)
 	if can == false then return end
-	
+
 	if ent:GetSolid() == SOLID_NONE then return end
-	
+
 	if ent:GetCollisionGroup() == COLLISION_GROUP_VEHICLE or ent:GetCollisionGroup() == COLLISION_GROUP_NONE then
 		ent:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
 	end
@@ -154,14 +154,14 @@ local Ignore = {
 local function PhysgunPickup(ply, ent)
 	if not DPP.GetConVar('apropkill_enable') then return end
 	if ent:IsPlayer() or ent:IsNPC() then return end
-	
+
 	local can = hook.Run('DPP_A_PhysgunPickup', ply, ent)
 	if can == false then return end
-	
+
 	if not DPP.CanPhysgun(ply, ent) then return end --Feck
-	
+
 	HoldingEntities[ent] = HoldingEntities[ent] or ent:GetCollisionGroup()
-	
+
 	if DPP.GetConVar('apropkill_nopush') then
 		if not DPP.GetConVar('apropkill_nopush_mode') then
 			if not table.HasValue(Ignore, HoldingEntities[ent]) then
@@ -177,21 +177,21 @@ local function PhysgunDrop(ply, ent)
 	if not DPP.GetConVar('apropkill_enable') then return end
 	if not IsValid(ent) then return end --Dropping deleted entity
 	if ent:IsPlayer() or ent:IsNPC() then return end
-	
+
 	local can = hook.Run('DPP_A_PhysgunDrop', ply, ent)
 	if can == false then return end
-	
+
 	if DPP.GetConVar('apropkill_nopush') then
 		if HoldingEntities[ent] then
 			ent:SetCollisionGroup(HoldingEntities[ent])
 		end
 	end
-	
+
 	HoldingEntities[ent] = nil
 	ent._DPP_PhysGunLastPos = nil
-	
+
 	local phys = ent:GetPhysicsObject()
-	
+
 	if IsValid(phys) then
 		if DPP.GetConVar('prevent_prop_throw') then
 			phys:SetVelocity(EmptyVector)
@@ -206,18 +206,18 @@ end
 
 local function Think()
 	if not DPP.GetConVar('apropkill_enable') then return end
-	
+
 	local CLAMP_VALUE = DPP.GetConVar('apropkill_clampspeed_val') * FrameTime() * 33
-	
+
 	for ent, collision in pairs(HoldingEntities) do
 		if not IsValid(ent) then
 			HoldingEntities[ent] = nil
 			continue
 		end
-		
+
 		if DPP.GetConVar('apropkill_nopush') then
 			local group = ent:GetCollisionGroup()
-			
+
 			if not DPP.GetConVar('apropkill_nopush_mode') then
 				if not table.HasValue(Ignore, group) and group ~= COLLISION_GROUP_PASSABLE_DOOR then
 					ent:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
@@ -228,23 +228,23 @@ local function Think()
 				end
 			end
 		end
-		
+
 		if DPP.GetConVar('apropkill_clampspeed') then
 			local phys = ent:GetPhysicsObject()
 			local spos = ent:GetPos()
-			
+
 			ent._DPP_PhysGunLastPos = ent._DPP_PhysGunLastPos or spos
-			
+
 			local Dist = spos:Distance(ent._DPP_PhysGunLastPos)
-			
+
 			if IsValid(phys) then
 				ent._DPP_PhysGunDropVelocity = phys:GetVelocity()
 			end
-			
+
 			if Dist > CLAMP_VALUE then
 				ent:SetPos(LerpVector(CLAMP_VALUE/Dist, ent._DPP_PhysGunLastPos, spos))
 			end
-			
+
 			ent._DPP_PhysGunLastPos = ent:GetPos()
 		end
 	end

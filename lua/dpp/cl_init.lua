@@ -57,9 +57,9 @@ end
 
 function DPP.ClientConVarChanged(var, old, new)
 	var = string.sub(var, 5)
-	
+
 	if DPP.CSettings[var].nosend then return end
-	
+
 	net.Start('DPP.ConVarChanged')
 	net.WriteString(var)
 	net.SendToServer()
@@ -68,7 +68,7 @@ end
 function DPP.RefreshFriends()
 	if not IsValid(LocalPlayer()) then return end
 	DPP.ActiveFriends = {}
-	
+
 	for k, v in pairs(DPP.ClientFriends) do
 		local ply = player.GetBySteamID(k)
 		if not ply then continue end
@@ -78,9 +78,9 @@ function DPP.RefreshFriends()
 		DPP.ActiveFriends[ply].nick = ply:Nick()
 		DPP.ClientFriends[k].nick = ply:Nick()
 	end
-	
+
 	LocalPlayer().DPP_Friends = DPP.ActiveFriends
-	
+
 	DPP.Message('Friendlist refreshed')
 	return DPP.ActiveFriends
 end
@@ -124,7 +124,7 @@ end
 function DPP.LoadFriends()
 	local FILE = 'dpp/friends.txt'
 	local content = file.Read(FILE, 'DATA')
-	
+
 	local out
 	if not content or content == '' then
 		out = {}
@@ -136,13 +136,13 @@ function DPP.LoadFriends()
 			file.Write(FILE, util.TableToJSON(out))
 		end
 	end
-	
+
 	DPP.ClientFriends = out
-	
+
 	for k, v in pairs(out) do
 		DPP.CheckFriendArgs(v)
 	end
-	
+
 	DPP.Message('Friendlist loaded...')
 	timer.Simple(0, DPP.RefreshFriends)
 end
@@ -166,9 +166,9 @@ end
 
 function DPP.AddFriend(ply, physgun, gravgun, toolgun, use, vehicle, damage, pickup)
 	if ply == LocalPlayer() then return end
-	
+
 	local steamid = ply:SteamID()
-	
+
 	if not istable(physgun) then
 		DPP.ClientFriends[steamid] = {
 			physgun = physgun,
@@ -184,28 +184,28 @@ function DPP.AddFriend(ply, physgun, gravgun, toolgun, use, vehicle, damage, pic
 		DPP.ClientFriends[steamid] = {
 			nick = ply:Nick(),
 		}
-		
+
 		table.Merge(DPP.ClientFriends[steamid], physgun)
 	end
-	
+
 	DPP.CheckFriendArgs(DPP.ClientFriends[steamid])
-	
+
 	DPP.Message('Friend added')
-	
+
 	DPP.RecalculateCPPIFriendTable(LocalPlayer())
 	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
 	DPP.SaveFriends()
 	DPP.SendFriends()
-	
+
 	hook.Run('DPP.FriendsChanged')
 end
 
 function DPP.AddFriendBySteamID(steamid, physgun, gravgun, toolgun, use, vehicle, damage, pickup)
 	steamid = string.upper(steamid)
-	
+
 	local ply = player.GetBySteamID(steamid)
 	local oldNick = DPP.ClientFriends[steamid] and DPP.ClientFriends[steamid].nick or ''
-	
+
 	if not istable(physgun) then
 		DPP.ClientFriends[steamid] = {
 			physgun = physgun,
@@ -221,19 +221,19 @@ function DPP.AddFriendBySteamID(steamid, physgun, gravgun, toolgun, use, vehicle
 		DPP.ClientFriends[steamid] = {
 			nick = ply and ply:Nick() or oldNick,
 		}
-		
+
 		table.Merge(DPP.ClientFriends[steamid], physgun)
 	end
-	
+
 	DPP.CheckFriendArgs(DPP.ClientFriends[steamid])
-	
+
 	DPP.Message('Friend added')
-	
+
 	DPP.RecalculateCPPIFriendTable(LocalPlayer())
 	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
 	DPP.SaveFriends()
 	DPP.SendFriends()
-	
+
 	hook.Run('DPP.FriendsChanged')
 end
 
@@ -244,15 +244,15 @@ function DPP.RemoveFriend(ply)
 		DPP.Message('There is no friend with id ' .. steamid .. '!')
 		return
 	end
-	
+
 	DPP.ClientFriends[steamid] = nil
 	DPP.Message('Friend with id ' .. steamid .. ' removed')
-	
+
 	DPP.RecalculateCPPIFriendTable(LocalPlayer())
 	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
 	DPP.SaveFriends()
 	DPP.SendFriends()
-	
+
 	hook.Run('DPP.FriendsChanged')
 end
 
@@ -262,24 +262,24 @@ function DPP.RemoveFriendBySteamID(steamid)
 		DPP.Message('There is no friend with id ' .. steamid .. '!')
 		return
 	end
-	
+
 	DPP.ClientFriends[steamid] = nil
 	DPP.Message('Friend with id ' .. steamid .. ' removed')
-	
+
 	DPP.RecalculateCPPIFriendTable(LocalPlayer())
 	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
 	DPP.SaveFriends()
 	DPP.SendFriends()
-	
+
 	hook.Run('DPP.FriendsChanged')
 end
 
 local function ArgBool(val)
 	if val == nil then return true end
-	
+
 	local n = tonumber(val)
 	if not n then return true end
-	
+
 	if n <= 0 then return false end
 	return true
 end
@@ -289,28 +289,28 @@ concommand.Add('dpp_addfriend', function(ply, cmd, args)
 		DPP.Message('Invalid argument')
 		return
 	end
-	
+
 	local ply = string.lower(args[1])
-	
+
 	if string.sub(ply, 1, 5) == 'steam' then
 		ply = string.upper(args[1])
 		DPP.AddFriendBySteamID(ply, ArgBool(args[2]), ArgBool(args[3]), ArgBool(args[4]), ArgBool(args[5]), ArgBool(args[6]), ArgBool(args[7]), ArgBool(args[8]))
 		return
 	end
-	
+
 	local found
-	
+
 	for k, v in pairs(player.GetAll()) do
 		if string.find(string.lower(v:Nick()), ply) then
 			found = v
 		end
 	end
-	
+
 	if not found then
 		DPP.Message('Invalid argument')
 		return
 	end
-	
+
 	DPP.AddFriend(found, ArgBool(args[2]), ArgBool(args[3]), ArgBool(args[4]), ArgBool(args[5]), ArgBool(args[6]), ArgBool(args[7]), ArgBool(args[8]))
 end)
 
@@ -319,28 +319,28 @@ concommand.Add('dpp_remfriend', function(ply, cmd, args)
 		DPP.Message('Invalid argument')
 		return
 	end
-	
+
 	local ply = string.lower(args[1])
-	
+
 	if string.sub(ply, 1, 5) == 'steam' then
 		ply = string.upper(args[1])
 		DPP.RemoveFriendBySteamID(ply)
 		return
 	end
-	
+
 	local found
-	
+
 	for k, v in pairs(player.GetAll()) do
 		if string.find(string.lower(v:Nick()), ply) then
 			found = v
 		end
 	end
-	
+
 	if not found then
 		DPP.Message('Invalid argument')
 		return
 	end
-	
+
 	DPP.RemoveFriend(found)
 end)
 
@@ -443,7 +443,7 @@ local Roboto = {
 DPP.Fonts = {
 	{id = DEFAULT_FONT, name = 'Roboto (DPP Default)'},
 	{id = 'DPP.Arial', name = 'Arial'},
-	
+
 	--Default fonts
 	{id = 'DebugFixed', name = 'Default: DebugFixed'},
 	{id = 'DebugFixedSmall', name = 'Default: DebugFixedSmall'},
@@ -461,7 +461,7 @@ DPP.Fonts = {
 	{id = 'TargetID', name = 'Default: TargetID'},
 	{id = 'TargetIDSmall', name = 'Default: TargetIDSmall'},
 	{id = 'BudgetLabel', name = 'Default: BudgetLabel'},
-	
+
 	{id = 'DPP.Terminal', name = 'Terminal (Windows Only)'},
 	{id = 'DPP.Time', name = 'Time (Windows Only)'},
 	{id = 'DPP.System', name = 'System (Windows Only)'},
@@ -480,7 +480,7 @@ for k, v in pairs(Roboto) do
 		weight = 500,
 		extended = true,
 	}
-	
+
 	table.insert(DPP.Fonts, {id = 'DPP.' .. k, name = v})
 end
 
@@ -489,10 +489,10 @@ DPP.FontsDataSmall = {}
 for k, v in pairs(DPP.FontsData) do
 	DPP.FontsDataSmall[k] = table.Copy(v)
 	DPP.FontsDataSmall[k].size = DPP.FontsDataSmall[k].size - 4
-	
+
 	surface.CreateFont(k, v)
 	surface.CreateFont(k .. '_small', DPP.FontsDataSmall[k])
-	
+
 	for i, data in ipairs(DPP.Fonts) do
 		if data.id == k then
 			data.sid = k .. '_small'
@@ -502,13 +502,13 @@ end
 
 function DPP.GetFont(name)
 	local var = DPP.PlayerConVar(LocalPlayer(), 'font')
-	
+
 	local Smaller = DPP.LocalConVar('smaller_fonts')
-	
+
 	if not DPP.Fonts[var] then
 		return not Smaller and DEFAULT_FONT or DEFAULT_FONT_SMALL
 	end
-	
+
 	if not name then
 		local d = DPP.Fonts[var]
 		return not Smaller and d.id or d.sid
@@ -523,29 +523,29 @@ local X, Y = 0, ScrH() / 2
 local function PostDrawHUDDefault(x, y)
 	x = x or X
 	y = y or Y
-	
+
 	local Green = Color(DISPLAY_TOUCH_CAN_R:GetInt(), DISPLAY_TOUCH_CAN_G:GetInt(), DISPLAY_TOUCH_CAN_B:GetInt(), DISPLAY_TOUCH_CAN_A:GetInt())
 	local Red = Color(DISPLAY_TOUCH_CANNOT_R:GetInt(), DISPLAY_TOUCH_CANNOT_G:GetInt(), DISPLAY_TOUCH_CANNOT_B:GetInt(), DISPLAY_TOUCH_CANNOT_A:GetInt())
-	
+
 	local ent = LocalPlayer():GetEyeTrace().Entity
 	if not IsValid(ent) then return end
-	
+
 	local curWeapon = LocalPlayer():GetActiveWeapon()
-	
+
 	local CanTouch, reason
-	
+
 	local name = DPP.GetOwnerName(ent)
-	
+
 	local Owned
 	local Owne
 	local Nick, UID, SteamID
 	local disconnected = false
-	
+
 	if not ent:IsPlayer() then
 		Owned = DPP.IsOwned(ent)
 		Owner = DPP.GetOwner(ent)
 		disconnected = false
-		
+
 		if Owned and not IsValid(Owner) then
 			Nick, UID, SteamID = DPP.GetOwnerDetails(ent)
 			name = Nick
@@ -556,62 +556,62 @@ local function PostDrawHUDDefault(x, y)
 		Owner = ent
 		name = ent:Nick()
 	end
-	
+
 	local f = DPP.LocalConVar('display_owner')
-	
+
 	if not f then
 		name = ''
 	end
-	
+
 	if DPP.LocalConVar('display_entityclass') then
 		if f then
 			name = name .. '\n'
 			f = false
 		end
-		
+
 		name = name .. ent:GetClass()
 	end
-	
+
 	if DPP.LocalConVar('display_entityclass2') then
 		if f then
 			name = name .. '\n'
 			f = false
 		end
-		
+
 		name = name .. '<' .. tostring(ent) .. '>'
 	end
-	
+
 	if DPP.LocalConVar('display_entityname') then
 		local str = ent:IsPlayer() and ent:Nick() or ent:IsWeapon() and ent:GetPrintName() or ent.PrintName or ''
-		
+
 		if str ~= '' then
 			name = name .. '\n' .. str
 		end
 	end
-	
+
 	local DisplayReason = DPP.LocalConVar('display_reason')
-	
+
 	if IsValid(curWeapon) and DPP.GetConVar('enable') then
 		local class = curWeapon:GetClass()
 		local hit = false
-		
+
 		if class == 'gmod_tool' then
 			local mode = curWeapon:GetMode()
 			if not mode then return 0, 0 end --Eh
 			local CanTouch1, reason = DPP.CanTool(LocalPlayer(), ent, mode)
 			CanTouch = CanTouch1 ~= false
-			
+
 			if reason and DisplayReason then
 				name = name .. '\n' .. reason
 			end
-			
+
 			hit = true
 		end
-		
+
 		if class == 'weapon_physgun' then
 			CanTouch, reason = DPP.CanPhysgun(LocalPlayer(), ent)
 			CanTouch = CanTouch ~= false
-			
+
 			if DPP.GetConVar('enable_physgun') then
 				if status and DisplayReason then
 					name = name .. '\nPhysgun blocked'
@@ -619,19 +619,19 @@ local function PostDrawHUDDefault(x, y)
 			else
 				CanTouch = true
 			end
-			
+
 			if reason and DisplayReason then
 				name = name .. '\n' .. reason
 			end
-			
+
 			hit = true
 		end
-		
+
 		if class == 'weapon_physcannon' then
 			CanTouch, reason = DPP.CanGravgun(LocalPlayer(), ent)
-			
+
 			CanTouch = CanTouch ~= false
-			
+
 			if DPP.GetConVar('enable_gravgun') then
 				if status and DisplayReason then
 					name = name .. '\nGravgun blocked'
@@ -639,14 +639,14 @@ local function PostDrawHUDDefault(x, y)
 			else
 				CanTouch = true
 			end
-			
+
 			if reason and DisplayReason then
 				name = name .. '\n' .. reason
 			end
-			
+
 			hit = true
 		end
-		
+
 		if not hit then
 			if ent:IsPlayer() then
 				CanTouch = true
@@ -661,21 +661,21 @@ local function PostDrawHUDDefault(x, y)
 			CanTouch = DPP.CanTouch(LocalPlayer(), ent)
 		end
 	end
-	
+
 	local CanDamage, dreason = DPP.CanDamage(LocalPlayer(), ent)
-	
+
 	if dreason and dreason ~= reason and DisplayReason then
 		name = name .. '\n' .. dreason
 	end
-	
+
 	if DPP.LocalConVar('display_disconnected') and disconnected then
 		name = name .. '\nDisconnected Player'
 	end
-	
+
 	if DPP.LocalConVar('display_grabs') and DPP.IsUpForGrabs(ent) then
 		name = name .. '\nUp for grabs!'
 	end
-	
+
 	local get = DPP.GetFont()
 	surface.SetFont(get)
 	local W, H = surface.GetTextSize(name)
@@ -683,36 +683,36 @@ local function PostDrawHUDDefault(x, y)
 	surface.DrawRect(x, y, W + 8, H + 4)
 
 	draw.DrawText(name, get, x + 4, y + 3, CanTouch and Green or Red)
-	
+
 	return W, H
 end
 
 local function HUDPaintSimple(x, y)
 	x = x or X
 	y = y or Y
-	
+
 	local Green = Color(DISPLAY_TOUCH_CAN_R:GetInt(), DISPLAY_TOUCH_CAN_G:GetInt(), DISPLAY_TOUCH_CAN_B:GetInt(), DISPLAY_TOUCH_CAN_A:GetInt())
 	local Red = Color(DISPLAY_TOUCH_CANNOT_R:GetInt(), DISPLAY_TOUCH_CANNOT_G:GetInt(), DISPLAY_TOUCH_CANNOT_B:GetInt(), DISPLAY_TOUCH_CANNOT_A:GetInt())
-	
+
 	local ent = LocalPlayer():GetEyeTrace().Entity
 	if not IsValid(ent) then return end
-	
+
 	local curWeapon = LocalPlayer():GetActiveWeapon()
-	
+
 	local CanTouch, reason
-	
+
 	local name = DPP.GetOwnerName(ent)
-	
+
 	local Owned
 	local Owne
 	local Nick, UID, SteamID
 	local disconnected = false
-	
+
 	if not ent:IsPlayer() then
 		Owned = DPP.IsOwned(ent)
 		Owner = DPP.GetOwner(ent)
 		disconnected = false
-		
+
 		if Owned and not IsValid(Owner) then
 			Nick, UID, SteamID = DPP.GetOwnerDetails(ent)
 			name = Nick
@@ -723,34 +723,34 @@ local function HUDPaintSimple(x, y)
 		Owner = ent
 		name = ent:Nick()
 	end
-	
+
 	if IsValid(curWeapon) and DPP.GetConVar('enable') then
 		local class = curWeapon:GetClass()
 		local hit = false
-		
+
 		if class == 'gmod_tool' then
 			local mode = curWeapon:GetMode()
 			if not mode then return 0, 0 end --Eh
 			local CanTouch1, reason = DPP.CanTool(LocalPlayer(), ent, mode)
 			CanTouch = CanTouch1 ~= false
-			
+
 			hit = true
 		end
-		
+
 		if class == 'weapon_physgun' then
 			CanTouch, reason = DPP.CanPhysgun(LocalPlayer(), ent)
 			CanTouch = CanTouch ~= false
-			
+
 			hit = true
 		end
-		
+
 		if class == 'weapon_physcannon' then
 			local status = DPP.IsEntityBlockedGravgun(ent:GetClass(), LocalPlayer())
 			CanTouch, reason = DPP.CanGravgun(LocalPlayer(), ent) ~= false and not status
-			
+
 			hit = true
 		end
-		
+
 		if not hit then
 			if ent:IsPlayer() then
 				CanTouch = true
@@ -765,15 +765,15 @@ local function HUDPaintSimple(x, y)
 			CanTouch = DPP.CanTouch(LocalPlayer(), ent)
 		end
 	end
-	
+
 	if disconnected then
 		name = name .. '\nDisconnected Player'
 	end
-	
+
 	if DPP.IsUpForGrabs(ent) then
 		name = name .. '\nUp for grabs!'
 	end
-	
+
 	local get = DPP.GetFont()
 	surface.SetFont(get)
 	local W, H = surface.GetTextSize(name)
@@ -781,7 +781,7 @@ local function HUDPaintSimple(x, y)
 	surface.DrawRect(x, y, W + 8, H + 4)
 
 	draw.DrawText(name, get, x + 4, y + 3, CanTouch and Green or Red)
-	
+
 	return W, H
 end
 
@@ -791,61 +791,61 @@ local NearToolgunLastW = 0
 local function DrawNearWeapon(ShiftX)
 	ShiftX = ShiftX or (-NearWeaponLastW * 0.1 - 10)
 	local model = LocalPlayer():GetViewModel(0)
-	
+
 	local attach = model:LookupAttachment('muzzle')
-	
+
 	if not attach or attach == 0 then return end
-	
+
 	local Data = model:GetAttachment(attach)
 	local Ang = Data.Ang
 	local Pos = Data.Pos
-	
+
 	Ang:RotateAroundAxis(Ang:Up(), 90)
 	Ang:RotateAroundAxis(Ang:Forward(), -90)
 	Ang:RotateAroundAxis(Ang:Up(), -180)
-	
+
 	local Add = Vector(ShiftX, 10, 0)
 	Add:Rotate(Ang)
-	
+
 	cam.Start3D()
 	cam.Start3D2D(Pos + Add, Ang, 0.1)
-	
+
 	if not DPP.PlayerConVar(nil, 'simple_hud') then
 		NearWeaponLastW = PostDrawHUDDefault(0, 0) or NearWeaponLastW
 	else
 		NearWeaponLastW = HUDPaintSimple(0, 0) or NearWeaponLastW
 	end
-	
+
 	cam.End3D2D()
 	cam.End3D()
 end
 
 local function DrawNearToolgun()
 	local model = LocalPlayer():GetViewModel(0)
-	
+
 	local attach = model:LookupAttachment('muzzle')
-	
+
 	if not attach or attach == 0 then return end
-	
+
 	local Data = model:GetAttachment(attach)
 	local Ang = Data.Ang
 	local Pos = Data.Pos
-	
+
 	Ang:RotateAroundAxis(Ang:Up(), 90)
 	Ang:RotateAroundAxis(Ang:Forward(), -90)
-	
+
 	local Add = Vector(-NearToolgunLastW * 0.1 + 5, 0, -30)
 	Add:Rotate(Ang)
-	
+
 	cam.Start3D()
 	cam.Start3D2D(Pos + Add, Ang, 0.1)
-	
+
 	if not DPP.PlayerConVar(nil, 'simple_hud') then
 		NearToolgunLastW = PostDrawHUDDefault(0, 0) or NearToolgunLastW
 	else
 		NearToolgunLastW = HUDPaintSimple(0, 0) or NearToolgunLastW
 	end
-	
+
 	cam.End3D2D()
 	cam.End3D()
 end
@@ -853,26 +853,26 @@ end
 local function HUDPaint()
 	local can = hook.Run('CanDrawDPPHUD')
 	if can == false then return end
-	
+
 	if DPP.PlayerConVar(nil, 'hide_hud') then return end
 	if LocalPlayer():InVehicle() and DPP.PlayerConVar(nil, 'no_hud_in_vehicle') then return end
-	
+
 	local AWeapon = LocalPlayer():GetActiveWeapon()
-	
+
 	if IsValid(AWeapon) then
 		if not DPP.PlayerConVar(nil, 'no_physgun_display') and (AWeapon:GetClass() == 'weapon_physgun' or AWeapon:GetClass() == 'weapon_physcannon') then
 			DrawNearWeapon()
 			return
 		end
-		
+
 		if not DPP.PlayerConVar(nil, 'no_toolgun_display') and AWeapon:GetClass() == 'gmod_tool' then
 			DrawNearToolgun()
 			return
 		end
 	end
-	
+
 	local x, y = ScrW() * POSITION_X:GetFloat() / 100, ScrH() * POSITION_Y:GetFloat() / 100
-	
+
 	if not DPP.PlayerConVar(nil, 'simple_hud') then
 		PostDrawHUDDefault(x, y)
 	else
@@ -893,10 +893,10 @@ function DPP.Notify(message, type)
 		end
 		LastSound = CurTime() + 0.1
 	end
-	
+
 	if istable(message) then
 		DPP.Message(unpack(message))
-	
+
 		local str = ''
 		for k, v in pairs(message) do
 			if isstring(v) then str = str .. v end
@@ -919,7 +919,7 @@ end)
 
 net.Receive('DPP.PlayerList', function()
 	DPP.PlayerList = net.ReadTable()
-	
+
 	hook.Run('DPP.PlayerListChanged', DPP.PlayerList)
 	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Player list changed, reloading') end
 end)
@@ -927,7 +927,7 @@ end)
 net.Receive('DPP.ConstrainedTable', function()
 	local Ents = net.ReadTable()
 	local Owners = net.ReadTable()
-	
+
 	for k, v in pairs(Ents) do
 		if IsValid(v) then
 			v._DPP_Constrained = Owners
@@ -956,7 +956,7 @@ net.Receive('DPP.ReceiveFriendList', function()
 	local ply = net.ReadEntity()
 	if ply == LocalPlayer() then return end
 	ply.DPP_Friends = net.ReadTable()
-	
+
 	DPP.RecalculateCPPIFriendTable(ply)
 	hook.Run('CPPIFriendsChanged', ply, DPP.GetFriendTableCPPI(ply))
 end)
@@ -965,34 +965,34 @@ local SelectedEntity
 
 local function PropMenu(ent, tr)
 	local menu = DermaMenu()
-	
+
 	local ply = LocalPlayer()
-	
+
 	for k, v in SortedPairsByMemberValue(properties.List, "Order") do
 		if not isfunction(v.Filter) then continue end
-		
+
 		if not v:Filter(ent, ply) then continue end
-		
+
 		if DPP.CanProperty(ply, k, ent) == false then continue end
-		
+
 		local option = DPP.PropertyMenuAddOption(v, menu, ent, ply, tr)
 		SelectedEntity = ent
 		if isfunction(v.OnCreate) then v:OnCreate(menu, option) end
 	end
-	
+
 	menu:Open()
 end
 
 function DPP.ReplacePropertyFuncs()
 	if not properties then return end
 	DPP.Message('Overriding property functions')
-	
+
 	local Name, Value = debug.getupvalue(properties.OpenEntityMenu, 1)
-	
+
 	if Name == 'AddOption' and isfunction(Value) then
 		DPP.PropertyMenuAddOption = Value
 	end
-	
+
 	if DPP.PropertyMenuAddOption then
 		DPP._OldPropertiesOpenEntityMenu = DPP._OldPropertiesOpenEntityMenu or properties.OpenEntityMenu
 		properties.OpenEntityMenu = function(...)
@@ -1002,7 +1002,7 @@ function DPP.ReplacePropertyFuncs()
 				DPP._OldPropertiesOpenEntityMenu(...)
 			end
 		end
-		
+
 		local Name, Value = debug.getupvalue(properties.Add, 1)
 		if Name == 'meta' and istable(Value) then
 			DPP.__oldPropertyMsgStart = DPP.__oldPropertyMsgStart or Value.MsgStart
@@ -1010,7 +1010,7 @@ function DPP.ReplacePropertyFuncs()
 				if DPP.GetConVar('strict_property') then
 					local ent = SelectedEntity
 					if not IsValid(ent) then return end
-					
+
 					net.Start("properties_dpp")
 					net.WriteString(self.InternalName)
 					net.WriteEntity(ent)
@@ -1019,7 +1019,7 @@ function DPP.ReplacePropertyFuncs()
 				end
 			end
 		end
-		
+
 		DPP.Message('Overrided property menu successfully')
 	else
 		DPP.Message('Failed to override property menu')

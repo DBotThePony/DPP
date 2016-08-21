@@ -32,7 +32,7 @@ DPP.NetworkVars = {
 				net.WriteUInt(val:EntIndex(), 8)
 			end
 		end,
-		
+
 		receive = function()
 			if net.ReadBool() then
 				return Entity(net.ReadUInt(8))
@@ -40,52 +40,52 @@ DPP.NetworkVars = {
 				return NULL
 			end
 		end,
-		
+
 		type = 'Entity',
 		default = NULL,
 	},
-	
+
 	['isowned'] = {
 		send = function(val) net.WriteBool(val) end,
 		receive = function() return net.ReadBool() end,
 		type = 'boolean',
 		default = false,
 	},
-	
+
 	['ownerstring'] = {
 		send = function(val) net.WriteString(val) end,
 		receive = function() return net.ReadString() end,
 		type = 'string',
 		default = '',
 	},
-	
+
 	['ownersteamid'] = {
 		send = net.WriteString,
 		receive = net.ReadString,
 		type = 'string',
 		default = '',
 	},
-	
+
 	['owneruid'] = {
 		send = function(val) net.WriteUInt(tonumber(val), 32) end,
 		receive = function() return tostring(net.ReadUInt(32)) end,
 		type = 'string', --Actually needs to be number
 		default = '',
 	},
-	
+
 	['isghosted'] = {
 		send = net.WriteBool,
 		receive = net.ReadBool,
 		type = 'boolean',
 	},
-	
+
 	['isupforgraps'] = {
 		send = net.WriteBool,
 		receive = net.ReadBool,
 		type = 'boolean',
 		default = false,
 	},
-	
+
 	['isshared'] = {
 		send = net.WriteBool,
 		receive = net.ReadBool,
@@ -103,7 +103,7 @@ for k, v in pairs(DPP.NetworkVars) do
 	v.ID = k
 	v.NetworkID = nextId
 	nextId = nextId + 1
-	
+
 	DPP.NetworkVars[k] = nil
 	DPP.NetworkVars[nk] = v
 end
@@ -118,9 +118,9 @@ function DPP.RegisterNetworkVar(id, send, receive, type, default)
 		ID = id,
 		NetworkID = nextId,
 	}
-	
+
 	nextId = nextId + 1
-	
+
 	DPP.Assert(nextId < 64, 'Maximal of DPP networked vars reached!', 1, true)
 end
 
@@ -129,10 +129,10 @@ local entMeta = FindMetaTable('Entity')
 function entMeta:DPPVar(var, ifNothing)
 	var = var:lower()
 	local uid = self:EntIndex()
-	
+
 	if uid > 0 then
 		local data = DPP.NETWORK_DB[uid]
-		
+
 		if not data or data[var] == nil then
 			if ifNothing ~= nil then
 				return ifNothing
@@ -140,11 +140,11 @@ function entMeta:DPPVar(var, ifNothing)
 				return DPP.NetworkVars[var].default
 			end
 		end
-		
+
 		return data[var]
 	else
 		self.DPPVars = self.DPPVars or {}
-		
+
 		if self.DPPVars[var] == nil then
 			if ifNothing ~= nil then
 				return ifNothing
@@ -152,7 +152,7 @@ function entMeta:DPPVar(var, ifNothing)
 				return DPP.NetworkVars[var].default
 			end
 		end
-		
+
 		return self.DPPVars[var]
 	end
 end
@@ -160,15 +160,15 @@ end
 local function OnEntityCreated(ent)
 	local uid = ent:EntIndex()
 	if uid <= 0 then return end
-	
+
 	timer.Simple(0, function()
 		timer.Simple(0, function() --Skip two frames
 			if not ent.__DPP_Vars_Save then return end
 			DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
 			local data = DPP.NETWORK_DB[uid]
-			
+
 			local rep = ent.__DPP_Vars_Save --Store
-			
+
 			for k, v in pairs(rep) do
 				if data[k] ~= nil then continue end
 				if not DPP.NetworkVars[k:lower()] then continue end --Old network variable
@@ -180,7 +180,7 @@ end
 
 function DPP.WriteStringList(tab)
 	net.WriteUInt(#tab, 16)
-	
+
 	for k, v in ipairs(tab) do
 		net.WriteString(v)
 	end
@@ -188,13 +188,13 @@ end
 
 function DPP.ReadStringList()
 	local count = net.ReadUInt(16)
-	
+
 	local reply = {}
-	
+
 	for i = 1, count do
 		table.insert(reply, net.ReadString())
 	end
-	
+
 	return reply
 end
 

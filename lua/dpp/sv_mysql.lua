@@ -22,11 +22,11 @@ local LINK = DMySQL3.Connect('dpp')
 
 local function FindSuperAdmins()
 	local reply = {}
-	
+
 	for k, v in ipairs(player.GetAll()) do
 		if v:IsSuperAdmin() then table.insert(reply, v) end
 	end
-	
+
 	return reply
 end
 
@@ -34,7 +34,7 @@ local function SQError(err)
 	DPP.Message('SQL QUERY FAILED!: ' .. err)
 	DPP.Message('PLEASE SEND THIS ERROR MESSAGE TO DBot')
 	DPP.Message('Usually SQL errors should never happen')
-	
+
 	local f = FindSuperAdmins()
 	DPP.Notify(f, 'DPP SQL QUERY FAILED!: ' .. err .. '\nPLEASE SEND THIS ERROR MESSAGE TO DBot\nUsually SQL errors should never happen', NOTIFY_ERROR)
 end
@@ -53,10 +53,10 @@ end
 
 function DPP.QueryStack(tab)
 	LINK:Begin()
-	
+
 	for k, v in ipairs(tab) do
 		LINK:Add(v)
 	end
-	
+
 	LINK:Commit()
 end

@@ -19,11 +19,11 @@ DPP.NetworkSendFuncs = {}
 
 local function Repack(tab)
 	local reply = {}
-	
+
 	for k, v in pairs(tab) do
 		table.insert(reply, k)
 	end
-	
+
 	return reply
 end
 
@@ -34,7 +34,7 @@ for k, v in pairs(DPP.BlockedEntities) do
 		DPP.WriteStringList(Repack(v))
 		net.Send(plys)
 	end
-	
+
 	table.insert(DPP.NetworkSendFuncs, sendfunc)
 end
 
@@ -45,19 +45,19 @@ for k, v in pairs(DPP.WhitelistedEntities) do
 		DPP.WriteStringList(Repack(v))
 		net.Send(plys)
 	end
-	
+
 	table.insert(DPP.NetworkSendFuncs, sendfunc)
 end
 
 local function WriteGenericLimits(tab)
 	local count = table.Count(tab)
-	
+
 	net.WriteUInt(count, 16)
-	
+
 	for k, v in pairs(tab) do
 		net.WriteString(k)
 		net.WriteUInt(table.Count(v), 8)
-		
+
 		for group, value in pairs(v) do
 			net.WriteString(group)
 			net.WriteUInt(tonumber(value), 16) --to be safe
@@ -69,25 +69,25 @@ for k, v in pairs(DPP.RestrictedTypes) do
 	local function sendfunc(plys)
 		net.Start('DPP.RLists')
 		net.WriteString(k)
-		
+
 		local count = table.Count(v)
-		
+
 		net.WriteUInt(count, 16)
-		
+
 		for class, data in pairs(v) do
 			net.WriteString(class)
 			net.WriteUInt(#data.groups, 8)
-			
+
 			for k, group in ipairs(data.groups) do
 				net.WriteString(group)
 			end
-			
+
 			net.WriteBool(data.iswhite)
 		end
-		
+
 		net.Send(plys)
 	end
-	
+
 	table.insert(DPP.NetworkSendFuncs, sendfunc)
 end
 
@@ -97,42 +97,42 @@ do
 		DPP.WriteStringList(Repack(DPP.BlockedModels))
 		net.Send(plys)
 	end
-	
+
 	table.insert(DPP.NetworkSendFuncs, sendfunc)
-	
+
 	function sendfunc(plys)
 		net.Start('DPP.LLists')
 		WriteGenericLimits(DPP.EntsLimits)
 		net.Send(plys)
 	end
-	
+
 	table.insert(DPP.NetworkSendFuncs, sendfunc)
-	
+
 	function sendfunc(plys)
 		net.Start('DPP.SLists')
 		WriteGenericLimits(DPP.SBoxLimits)
 		net.Send(plys)
 	end
-	
+
 	table.insert(DPP.NetworkSendFuncs, sendfunc)
-	
+
 	function sendfunc(plys)
 		net.Start('DPP.CLists')
 		WriteGenericLimits(DPP.ConstrainsLimits)
 		net.Send(plys)
 	end
-	
+
 	table.insert(DPP.NetworkSendFuncs, sendfunc)
 end
 
 function DPP.BroadcastLists(plys)
 	local isBroadcast = plys == nil
 	plys = plys or player.GetAll()
-	
+
 	if istable(plys) then
 		for i, func in ipairs(DPP.NetworkSendFuncs) do
 			local str = 'DPP.SendQueue' .. (isBroadcast and i or (i .. '.' .. tostring(plys)))
-			
+
 			timer.Create(str, i * .3, 1, function()
 				func(plys)
 			end)

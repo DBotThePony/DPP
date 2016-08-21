@@ -39,23 +39,23 @@ concommand.Add('dpp_importurs', function(ply, cmd, args)
 	if not URS then DPP.Notify(ply, 'There is no URS installed! Nothing to import.') return end
 	local R = URS.restrictions
 	if not R or table.Count(R) < 1 then DPP.Notify(ply, 'Nothing to import.') return end
-	
+
 	local isTest = not tobool(args[1])
-	
+
 	local Props = R.prop
 	local Ragdolls = R.ragdoll
-	
+
 	local imported = 0
-	
+
 	for k, v in pairs(URS_Import) do
 		local tab = R[k]
 		if not tab then continue end
-		
+
 		for class, groups in pairs(tab) do
 			if not istable(groups) then continue end
 			if type(class) ~= 'string' then continue end
 			if table.Count(groups) == 0 then continue end
-			
+
 			if not isTest then
 				DPP['Restrict' .. v](class, groups, false)
 			else
@@ -64,13 +64,13 @@ concommand.Add('dpp_importurs', function(ply, cmd, args)
 			imported = imported + 1
 		end
 	end
-	
+
 	if Props then
 		for model, groups in pairs(Props) do
 			if not istable(groups) then continue end
 			if not isstring(model) then continue end
 			if table.Count(groups) == 0 then continue end
-			
+
 			if not isTest then
 				DPP.RestrictModel(model, groups, false)
 			else
@@ -79,13 +79,13 @@ concommand.Add('dpp_importurs', function(ply, cmd, args)
 			imported = imported + 1
 		end
 	end
-	
+
 	if Ragdolls then
 		for model, groups in pairs(Ragdolls) do
 			if not istable(groups) then continue end
 			if not isstring(model) then continue end
 			if table.Count(groups) == 0 then continue end
-			
+
 			if not isTest then
 				DPP.RestrictModel(model, groups, false)
 			else
@@ -94,7 +94,7 @@ concommand.Add('dpp_importurs', function(ply, cmd, args)
 			imported = imported + 1
 		end
 	end
-	
+
 	if not isTest then
 		DPP.SimpleLog(IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' Imported Restrictions from URS. Total items imported: ' .. imported)
 	else
@@ -113,28 +113,28 @@ local FPP_Blocked = {
 
 concommand.Add('dpp_importfpp', function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsSuperAdmin() then return end
-	
+
 	FakePrint(ply, '[DPP] NOTE: DPP imports FPP lists from database, where DPP is running on!')
-	
+
 	local isTest = not tobool(args[1])
-	
+
 	DPP.Query('SELECT * FROM fpp_blockedmodels1', function(data)
 		if not data then return end
-		
+
 		local count = 0
-		
+
 		for k, row in pairs(data) do
 			local model = row.model
-			
+
 			count = count + 1
-			
+
 			if isTest then
 				FakePrint(ply, string.format('[DPP] Block model: %s', model))
 			else
 				DPP.AddBlockedModel(model)
 			end
 		end
-		
+
 		if isTest then
 			FakePrint(ply, '[DPP] ----------------- End of model list test. Total: ' .. count)
 			FakePrint(ply, '[DPP] Note: This is a test, to commit changes type dpp_importfpp 1')
@@ -142,25 +142,25 @@ concommand.Add('dpp_importfpp', function(ply, cmd, args)
 			DPP.SimpleLog(IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' Imported FPP blocked models. Total items imported: ' .. count)
 		end
 	end)
-	
+
 	DPP.Query('SELECT * FROM fpp_blocked1', function(data)
 		if not data then return end
-		
+
 		local count = 0
-		
+
 		for k, row in pairs(data) do
 			local Type = FPP_Blocked[row.var]
 			if not Type then continue end
-			
+
 			count = count + 1
-			
+
 			if isTest then
 				FakePrint(ply, string.format('[DPP] Block entity %s from %s touch', row.setting, Type))
 			else
 				DPP['AddBlockedEntity' .. Type](row.setting)
 			end
 		end
-		
+
 		if isTest then
 			FakePrint(ply, '[DPP] ----------------- End of entity list test Total: ' .. count)
 			FakePrint(ply, '[DPP] Note: This is a test, to commit changes type dpp_importfpp 1')
@@ -168,34 +168,34 @@ concommand.Add('dpp_importfpp', function(ply, cmd, args)
 			DPP.SimpleLog(IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' Imported FPP blocked entities. Total items imported: ' .. count)
 		end
 	end)
-	
+
 	DPP.Query('SELECT * FROM fpp_tooladminonly', function(data)
 		if not data then return end
-		
+
 		local count = 0
-		
+
 		for k, row in pairs(data) do
 			local tool = row.toolname
 			local status = row.adminonly
-			
+
 			if tonumber(status) == 0 then continue end
-			
+
 			local admins
 			if tonumber(status) == 1 then
 				admins = {'admin', 'superadmin'}
 			elseif tonumber(status) == 2 then
 				admins = {'superadmin'}
 			end
-			
+
 			count = count + 1
-			
+
 			if isTest then
 				FakePrint(ply, string.format('[DPP] Restrict tool %s from %s', tool, table.concat(admins, ',')))
 			else
 				DPP.RestrictTool(tool, admins, true)
 			end
 		end
-		
+
 		if isTest then
 			FakePrint(ply, '[DPP] ----------------- End of tool list test Total: ' .. count)
 			FakePrint(ply, '[DPP] Note: This is a test, to commit changes type dpp_importfpp 1')
@@ -207,11 +207,11 @@ end)
 
 local function KillAPAnti()
 	if not APA then return end
-	
+
 	if not DPP.GetConVar('apanti_disable') then return end
 	if not DPP.GetConVar('apropkill_enable') then return end
 	if not DPP.GetConVar('apropkill_nopush') then return end
-	
+
 	DPP.Message('----------------------------------------')
 	DPP.Message('APAnti has been detected!')
 	DPP.Message('Forcing bugging CVars to be disabled')
@@ -220,7 +220,7 @@ local function KillAPAnti()
 	DPP.Message('disable Anti prop push in DPP, or set')
 	DPP.Message('dpp_apanti_disable to 0 at your own risk')
 	DPP.Message('----------------------------------------')
-	
+
 	RunConsoleCommand('apa_GhostPickup', '0')
 	RunConsoleCommand('apa_GhostSpawn', '0')
 	RunConsoleCommand('apa_GhostFreeze', '0')

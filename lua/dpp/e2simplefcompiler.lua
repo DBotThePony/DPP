@@ -49,34 +49,34 @@ for k, v in pairs(DPP.BlockTypes) do
 	table.insert(output1, '	if not IsValid(this) then return 0 end')
 	table.insert(output1, '	return DPP.IsEntityBlocked' .. v .. '(class, this) and 1 or 0')
 	table.insert(output1, 'end\n')
-	
+
 	table.insert(output1, 'e2function number dppIsBlocked' .. v .. '(string class)')
 	table.insert(output1, '	if not IsValid(self.player) then return 0 end')
 	table.insert(output1, '	return DPP.IsEntityBlocked' .. v .. '(class, self.player) and 1 or 0')
 	table.insert(output1, 'end\n')
-	
+
 	table.insert(output1, 'e2function number dppIsEvenBlocked' .. v .. '(string class)')
 	table.insert(output1, '	return DPP.IsEvenBlocked' .. v .. '(class) and 1 or 0')
 	table.insert(output1, 'end\n')
-	
+
 	--Entity
 	table.insert(output1, 'e2function number entity:dppIsBlocked' .. v .. '(entity class)')
 	table.insert(output1, '	if not IsValid(this) then return 0 end')
 	table.insert(output1, '	if not IsValid(class) then return 0 end')
 	table.insert(output1, '	return DPP.IsEntityBlocked' .. v .. '(class:GetClass(), this) and 1 or 0')
 	table.insert(output1, 'end\n')
-	
+
 	table.insert(output1, 'e2function number dppIsBlocked' .. v .. '(entity class)')
 	table.insert(output1, '	if not IsValid(self.player) then return 0 end')
 	table.insert(output1, '	if not IsValid(class) then return 0 end')
 	table.insert(output1, '	return DPP.IsEntityBlocked' .. v .. '(class:GetClass(), self.player) and 1 or 0')
 	table.insert(output1, 'end\n')
-	
+
 	table.insert(output1, 'e2function number dppIsEvenBlocked' .. v .. '(entity class)')
 	table.insert(output1, '	if not IsValid(class) then return 0 end')
 	table.insert(output1, '	return DPP.IsEvenBlocked' .. v .. '(class:GetClass()) and 1 or 0')
 	table.insert(output1, 'end\n')
-	
+
 	--Entity network ID
 	table.insert(output1, 'e2function number entity:dppIsBlocked' .. v .. '(number id)')
 	table.insert(output1, '	local class = Entity(id)')
@@ -84,14 +84,14 @@ for k, v in pairs(DPP.BlockTypes) do
 	table.insert(output1, '	if not IsValid(class) then return 0 end')
 	table.insert(output1, '	return DPP.IsEntityBlocked' .. v .. '(class:GetClass(), this) and 1 or 0')
 	table.insert(output1, 'end\n')
-	
+
 	table.insert(output1, 'e2function number dppIsBlocked' .. v .. '(number id)')
 	table.insert(output1, '	local class = Entity(id)')
 	table.insert(output1, '	if not IsValid(self.player) then return 0 end')
 	table.insert(output1, '	if not IsValid(class) then return 0 end')
 	table.insert(output1, '	return DPP.IsEntityBlocked' .. v .. '(class:GetClass(), self.player) and 1 or 0')
 	table.insert(output1, 'end\n')
-	
+
 	table.insert(output1, 'e2function number dppIsEvenBlocked' .. v .. '(number id)')
 	table.insert(output1, '	local class = Entity(id)')
 	table.insert(output1, '	if not IsValid(class) then return 0 end')
@@ -105,34 +105,34 @@ for k, v in pairs(DPP.RestrictTypes) do
 	table.insert(output2, '	if not IsValid(this) then return 0 end')
 	table.insert(output2, '	return DPP.IsRestricted' .. v .. '(class, this) and 1 or 0')
 	table.insert(output2, 'end\n')
-	
+
 	table.insert(output2, 'e2function number dppIsRestricted' .. v .. '(string class)')
 	table.insert(output2, '	if not IsValid(self.player) then return 0 end')
 	table.insert(output2, '	return DPP.IsRestricted' .. v .. '(class, self.player) and 1 or 0')
 	table.insert(output2, 'end\n')
-	
+
 	table.insert(output2, 'e2function number dppIsEvenRestricted' .. v .. '(string class)')
 	table.insert(output2, '	return DPP.IsEvenRestricted' .. v .. '(class) and 1 or 0')
 	table.insert(output2, 'end\n')
-	
+
 	--Entity
 	table.insert(output2, 'e2function number entity:dppIsRestricted' .. v .. '(entity class)')
 	table.insert(output2, '	if not IsValid(class) then return 0 end')
 	table.insert(output2, '	if not IsValid(this) then return 0 end')
 	table.insert(output2, '	return DPP.IsRestricted' .. v .. '(class:GetClass(), this) and 1 or 0')
 	table.insert(output2, 'end\n')
-	
+
 	table.insert(output2, 'e2function number dppIsRestricted' .. v .. '(entity class)')
 	table.insert(output2, '	if not IsValid(class) then return 0 end')
 	table.insert(output2, '	if not IsValid(self.player) then return 0 end')
 	table.insert(output2, '	return DPP.IsRestricted' .. v .. '(class:GetClass(), self.player) and 1 or 0')
 	table.insert(output2, 'end\n')
-	
+
 	table.insert(output2, 'e2function number dppIsEvenRestricted' .. v .. '(entity class)')
 	table.insert(output2, '	if not IsValid(class) then return 0 end')
 	table.insert(output2, '	return DPP.IsEvenRestricted' .. v .. '(class:GetClass()) and 1 or 0')
 	table.insert(output2, 'end\n')
-	
+
 	--Entity network ID
 	table.insert(output2, 'e2function number entity:dppIsRestricted' .. v .. '(number id)')
 	table.insert(output2, '	local class = Entity(id)')
@@ -140,14 +140,14 @@ for k, v in pairs(DPP.RestrictTypes) do
 	table.insert(output2, '	if not IsValid(class) then return 0 end')
 	table.insert(output2, '	return DPP.IsRestricted' .. v .. '(class:GetClass(), this) and 1 or 0')
 	table.insert(output2, 'end\n')
-	
+
 	table.insert(output2, 'e2function number dppIsRestricted' .. v .. '(number id)')
 	table.insert(output2, '	local class = Entity(id)')
 	table.insert(output2, '	if not IsValid(self.player) then return 0 end')
 	table.insert(output2, '	if not IsValid(class) then return 0 end')
 	table.insert(output2, '	return DPP.IsRestricted' .. v .. '(class:GetClass(), self.player) and 1 or 0')
 	table.insert(output2, 'end\n')
-	
+
 	table.insert(output2, 'e2function number dppIsEvenRestricted' .. v .. '(number id)')
 	table.insert(output2, '	local class = Entity(id)')
 	table.insert(output2, '	if not IsValid(class) then return 0 end')
@@ -160,29 +160,29 @@ for k, v in pairs(DPP.WhitelistTypes) do
 	table.insert(output3, 'e2function number dppIsExcluded' .. v .. '(string class)')
 	table.insert(output3, '	return DPP.IsEntityWhitelisted' .. v .. '(class) and 1 or 0')
 	table.insert(output3, 'end\n')
-	
+
 	table.insert(output3, 'e2function number dppIsEvenExcluded' .. v .. '(string class)')
 	table.insert(output3, '	return DPP.IsEvenWhitelisted' .. v .. '(class) and 1 or 0')
 	table.insert(output3, 'end\n')
-	
+
 	--Entity
 	table.insert(output3, 'e2function number dppIsExcluded' .. v .. '(entity class)')
 	table.insert(output3, '	if not IsValid(class) then return 0 end')
 	table.insert(output3, '	return DPP.IsEntityWhitelisted' .. v .. '(class:GetClass()) and 1 or 0')
 	table.insert(output3, 'end\n')
-	
+
 	table.insert(output3, 'e2function number dppIsEvenExcluded' .. v .. '(entity class)')
 	table.insert(output3, '	if not IsValid(class) then return 0 end')
 	table.insert(output3, '	return DPP.IsEvenWhitelisted' .. v .. '(class:GetClass()) and 1 or 0')
 	table.insert(output3, 'end\n')
-	
+
 	--Entity network ID
 	table.insert(output3, 'e2function number dppIsExcluded' .. v .. '(number id)')
 	table.insert(output3, '	local class = Entity(id)')
 	table.insert(output3, '	if not IsValid(class) then return 0 end')
 	table.insert(output3, '	return DPP.IsEntityWhitelisted' .. v .. '(class:GetClass()) and 1 or 0')
 	table.insert(output3, 'end\n')
-	
+
 	table.insert(output3, 'e2function number dppIsEvenExcluded' .. v .. '(number id)')
 	table.insert(output3, '	local class = Entity(id)')
 	table.insert(output3, '	if not IsValid(class) then return 0 end')

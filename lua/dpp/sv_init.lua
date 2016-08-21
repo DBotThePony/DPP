@@ -50,7 +50,7 @@ function DPP.ConVarChanged(var, old, new)
 	if not DPP.IGNORE_CVAR_SAVE then
 		DPP.SaveCVars()
 	end
-	
+
 	local can = hook.Run('DPP_SuppressConVarBroadcast', var, old, new)
 	if can ~= true then DPP.NetworkConVarToClient(player.GetAll(), var:sub(5)) end
 	hook.Run('DPP_ConVarChanges', var, old, new)
@@ -62,7 +62,7 @@ function DPP.RefreshPropList()
 			DPP.PropListing[k] = nil
 			continue
 		end
-		
+
 		if not DPP.IsOwned(k) then
 			DPP.PropListing[k] = nil
 			continue
@@ -87,7 +87,7 @@ function DPP.GetConstrainedEntities(ent)
 		local a, b = ent:GetConstrainedEntities()
 		if a or b then return a, b end
 	end
-	
+
 	return ent.Ent1 or NULL, ent.Ent2 or NULL
 end
 
@@ -104,11 +104,11 @@ local ConstraintTypes = {
 
 function DPP.GetContstrainType(ent)
 	local class = ent:GetClass()
-	
+
 	if class == 'gmod_winch_controller' then
 		return ent.type == TYPE_NORMAL and 'winch' or 'muscule'
 	end
-	
+
 	return ConstraintTypes[class] or '<unknown>'
 end
 
@@ -116,14 +116,14 @@ function DPP.SetOwner(ent, ply)
 	--if ent:IsConstraint() then return end --Constraint can't have an owner
 	local old = DPP.GetOwner(ent)
 	ent:SetDPPVar('Owner', ply)
-	
+
 	local isConst = DPP.IsConstraint(ent)
-	
+
 	if IsValid(ply) then
 		ply.DPP_Ents = ply.DPP_Ents or {}
-		
+
 		ply.DPP_Ents[ent] = true
-		
+
 		ent:SetDPPVar('IsOwned', true)
 		ent:SetDPPVar('OwnerString', ply:Nick())
 		ent:SetDPPVar('OwnerUID', ply:UniqueID())
@@ -140,12 +140,12 @@ function DPP.SetOwner(ent, ply)
 		DPP.PropListing[ent] = nil
 		DPP.ConstraintsListing[ent] = nil
 	end
-	
+
 	if IsValid(old) then
 		old.DPP_Ents = old.DPP_Ents or {}
 		old.DPP_Ents[ent] = nil
 	end
-	
+
 	--Running AssignOwnership after we done default behaviour
 	hook.Run('DPP.AssignOwnership', ply, ent)
 end
@@ -178,10 +178,10 @@ do
 			table.insert(AccessCache, ply)
 		end
 	end
-	
+
 	local function Clear()
 		AccessCache = {}
-		
+
 		for k, ply in ipairs(player.GetAll()) do
 			DPP.HaveAccess(ply, 'seelogs', AccessCallback, ply)
 		end
@@ -195,17 +195,17 @@ local function Think()
 	for k, v in pairs(Queued) do
 		DPP.Message(unpack(v))
 		local admins = {}
-		
+
 		for k, v in ipairs(AccessCache) do
 			table.insert(admins, v)
 		end
-		
+
 		net.Start('DPP.Log')
 		net.WriteTable(v)
 		net.Send(admins)
-		
+
 		Queued[k] = nil
-		
+
 		break
 	end
 end
@@ -214,7 +214,7 @@ hook.Add('Think', 'DPP.NetEchoThink', Think)
 
 function DPP.DoEcho(...)
 	local repack = DPP.Format(...)
-	
+
 	if not DLog then
 		table.insert(Queued, repack)
 	else
@@ -225,7 +225,7 @@ end
 function DPP.NotifyLog(t)
 	t = DPP.Format(unpack(t))
 	DPP.Notify(player.GetAll(), t)
-	
+
 	if not DLog then
 		DPP.Message(t)
 		DPP.LogIntoFile(unpack(t))
@@ -239,40 +239,40 @@ local CurrentPatch
 
 local function ConcatSafe(tab)
 	local str = ''
-	
+
 	for k, v in ipairs(tab) do
 		if type(v) == 'string' then str = str .. v end
 	end
-	
+
 	return str
 end
 
 function DPP.LogIntoFile(...)
 	if not DPP.GetConVar('log_file') then return end
-	
+
 	if not File then
 		File = file.Open('dpp/' .. os.date('%d_%m_%y') .. '.txt', 'ab', 'DATA')
 	end
-	
+
 	local str = ''
-	
+
 	for k, v in ipairs{...} do
 		if type(v) == 'Player' then
 			str = str .. ConcatSafe(DPP.FormatPlayer(v))
 		end
-		
+
 		if type(v) == 'string' then
 			str = str .. v
 		end
-		
+
 		if type(v) == 'table' then
 			if v.type == 'Spacing' then
 				str = str .. string.rep(' ', v.length - #str)
 			end
-			
+
 			if v.type == 'UIDPlayer' then
 				local ply = player.GetByUniqueID(v.uid)
-				
+
 				if ply then
 					str = str .. ConcatSafe(DPP.FormatPlayer(ply))
 				else
@@ -281,7 +281,7 @@ function DPP.LogIntoFile(...)
 			end
 		end
 	end
-	
+
 	File:Write(str .. '\n')
 end
 
@@ -292,17 +292,17 @@ end
 
 function DPP.RefreshLogFile()
 	local neededPath = 'dpp/log_' .. os.date('%d_%m_%y') .. '.txt'
-	
+
 	if neededPath ~= CurrentPatch then
 		if File then
 			File:Flush()
 			File:Close()
 		end
-		
+
 		CurrentPatch = neededPath
 		File = file.Open(neededPath, 'ab', 'DATA')
 	end
-	
+
 	if not File then return end
 	File:Flush()
 end
@@ -316,11 +316,11 @@ function DPP.PlayerInitialSpawn(ply)
 		DPP.FindPlayerProps(ply)
 		net.Start('DPP.ReloadFiendList')
 		net.Broadcast()
-		
+
 		--Still would call twice rebuilding player list on client
 		net.Start('DPP.RefreshPlayerList')
 		net.Broadcast()
-		
+
 		DPP.RecalculatePlayerList()
 		DPP.SendPlayerList()
 	end)
@@ -337,83 +337,83 @@ function DPP.PlayerDisconnected(ply)
 			end
 		end
 	end
-	
+
 	local clear, clearAdmin, isAdmin = DPP.GetConVar('clear_disconnected'), DPP.GetConVar('clear_disconnected_admin'), ply:IsAdmin()
 	local grab, grabAdmin = DPP.GetConVar('grabs_disconnected'), DPP.GetConVar('grabs_disconnected_admin')
-	
+
 	local uid = ply:UniqueID()
 	local name = ply:Nick()
-	
+
 	local props = DPP.GetPropsByUID(uid)
 	if #props == 0 then return end
-	
+
 	local userFallback = ply:DPPVar('fallback')
-	
+
 	if IsValid(userFallback) then
 		for k, v in ipairs(props) do
 			DPP.SetOwner(v, userFallback)
 		end
-		
+
 		DPP.SimpleLog(Gray, 'Transfering props ownership from ', ply, Gray, ' to ', userFallback)
 		DPP.Notify(userFallback, DPP.Format('All ', ply, Gray, ' props now belong to you.'))
 		DPP.TransferUndoTo(ply, userFallback)
 	end
-	
+
 	timer.Simple(2, function()
 		net.Start('DPP.RefreshPlayerList')
 		net.Broadcast()
-		
+
 		for k, v in pairs(DPP.GetPropsByUID(uid)) do
 			DPP.RecalcConstraints(v)
 		end
 	end)
 
 	if IsValid(userFallback) then return end
-	
+
 	if clear then
 		if isAdmin and clearAdmin or not isAdmin then
 			timer.Create('DPP.ClearPlayer.' .. uid, DPP.GetConVar('clear_timer'), 1, function()
 				local ply = player.GetByUniqueID(uid)
 				if ply then return end
-				
+
 				for k, v in pairs(DPP.GetPropsByUID(uid)) do
 					SafeRemoveEntity(v)
 				end
-				
+
 				if not DPP.GetConVar('no_clear_messages') then
 					DPP.Notify(player.GetAll(), name .. '\'s props has been cleaned up', 2)
 				end
-				
+
 				DPP.Message(name .. '\'s props has been cleaned up')
-				
+
 				DPP.RecalculatePlayerList()
 				DPP.SendPlayerList()
 			end)
 		end
 	end
-	
+
 	if grab then
 		if isAdmin and grabAdmin or not isAdmin then
 			timer.Create('DPP.GrabsPlayer.' .. uid, DPP.GetConVar('grabs_timer'), 1, function()
 				local ply = player.GetByUniqueID(uid)
 				if ply then return end
-				
+
 				for k, v in pairs(DPP.GetPropsByUID(uid)) do
 					DPP.SetUpForGrabs(v, true)
 				end
-				
+
 				if not DPP.GetConVar('no_clear_messages') then
 					DPP.Notify(player.GetAll(), name .. '\'s props is now up for grabs!')
 				end
-				
+
 				DPP.Message(name .. '\'s props is now up for grabs!')
-				
+
 				DPP.RecalculatePlayerList()
 				DPP.SendPlayerList()
 			end)
 		end
 	end
-	
+
 	if DPP.GetConVar('freeze_on_disconnect') then
 		DPP.FreezePlayerEntities(ply)
 	end
@@ -423,7 +423,7 @@ net.Receive('DPP.ReloadFiendList', function(len, ply)
 	ply.DPP_Friends = net.ReadTable()
 	DPP.RecalculateCPPIFriendTable(ply)
 	hook.Run('CPPIFriendsChanged', ply, DPP.GetFriendTableCPPI(ply))
-	
+
 	net.Start('DPP.ReceiveFriendList')
 	net.WriteEntity(ply)
 	net.WriteTable(ply.DPP_Friends)
@@ -442,10 +442,10 @@ end
 
 local function SetVarProceed(ply, cmd, args)
 	local status, notify, notifyLevel = DPP.SetVarCommandRaw(ply, cmd, args)
-	
+
 	if status then return end
 	if not notify then return end
-	
+
 	if IsValid(ply) then
 		DPP.Notify(ply, notify, notifyLevel)
 	else
