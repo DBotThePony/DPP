@@ -31,24 +31,24 @@ local Funcs = {
 			if not IsValid(ent) then return false end
 			if DPP.GetOwner(ent) ~= ply then return false end
 			owner = owner or NULL
-			
+
 			DPP.DeleteEntityUndo(ent)
 			DPP.SetOwner(ent, owner)
-			
+
 			if IsValid(owner) and owner:IsPlayer() then
 				undo.Create('TransferedProp')
 				undo.SetPlayer(owner)
 				undo.AddEntity(ent)
 				undo.Finish()
 			end
-			
+
 			DPP.SimpleLog(ply, Gray, ' transfered ownership of ', ent, Gray, ' to ', IsValid(owner) and owner or 'world', Gray, ' using Expression2 Advanced')
 			return true
 		end,
 		body = 'EXPADV.DPP_setOwner(Context.player, @value 1, @value 2)',
 		help = 'Sets DPP entity owner if gate owner owned that entity. Returns true if successful, false otherwise'
 	},
-	
+
 	{
 		name = 'setOwner',
 		args = 'e:',
@@ -66,7 +66,7 @@ local Funcs = {
 		body = 'EXPADV.DPP_setOwner2(Context.player, @value 1)',
 		help = 'Sets DPP entity owner to world if gate owner owned that entity. Returns true if successful, false otherwise'
 	},
-	
+
 	{
 		name = 'isGhosted',
 		args = 'e:',
@@ -76,7 +76,7 @@ local Funcs = {
 		end,
 		help = 'Returns whatever entity is ghosted with DPP'
 	},
-	
+
 	{
 		name = 'isOwnedByLocalPlayer',
 		args = 'e:',
@@ -86,7 +86,7 @@ local Funcs = {
 		end,
 		help = 'Returns whatever entity is owned by gate owner. In most cases this is equal to entity().owner() == owner()'
 	},
-	
+
 	{
 		name = 'isSingleOwner',
 		args = 'e:',
@@ -96,7 +96,7 @@ local Funcs = {
 		end,
 		help = 'Returns whatever entity have only one owner (not constrained)'
 	},
-	
+
 	{
 		name = 'isUpForGrabs',
 		args = 'e:',
@@ -106,7 +106,7 @@ local Funcs = {
 		end,
 		help = 'Returns whatever entity is up for grabs'
 	},
-	
+
 	{
 		name = 'isShared',
 		args = 'e:',
@@ -116,7 +116,7 @@ local Funcs = {
 		end,
 		help = 'Returns whatever entity is shared'
 	},
-	
+
 	{
 		name = 'getOwner',
 		args = 'e:',
@@ -126,7 +126,7 @@ local Funcs = {
 		end,
 		help = 'Returns DPP owner of entity. In most cases equals to entity().owner()'
 	},
-	
+
 	{
 		name = 'getEntityOwner',
 		args = 'e',
@@ -136,7 +136,7 @@ local Funcs = {
 		end,
 		help = 'Returns DPP owner of entity. In most cases equals to entity().owner()'
 	},
-	
+
 	{
 		name = 'getEntityOwner',
 		args = 'n',
@@ -147,7 +147,7 @@ local Funcs = {
 		end,
 		help = 'Returns DPP owner of entity. In most cases equals to entity().owner()'
 	},
-	
+
 	{
 		name = 'isOwned',
 		args = 'e:',
@@ -157,7 +157,7 @@ local Funcs = {
 		end,
 		help = 'Is entity owned by someone (even by disconnected player)'
 	},
-	
+
 	{
 		name = 'isSharedType',
 		args = 'e:s',
@@ -168,7 +168,7 @@ local Funcs = {
 		body = 'EXPADV.DPP_isSharedType(Context, @value 1, @value 2)',
 		help = 'Returns whatever entity is shared with given type'
 	},
-	
+
 	{
 		name = 'isModelBlocked',
 		args = 's',
@@ -178,7 +178,7 @@ local Funcs = {
 		end,
 		help = 'Returns whatever model is blocked from gate owner'
 	},
-	
+
 	{
 		name = 'isModelEvenBlocked',
 		args = 's',
@@ -188,7 +188,7 @@ local Funcs = {
 		end,
 		help = 'Returns whatever model is blocked (ignores convars and etc.)'
 	},
-	
+
 	{
 		name = 'isModelBlocked',
 		args = 'ply:s',
@@ -200,7 +200,7 @@ local Funcs = {
 		end,
 		help = 'Returns whatever model is blocked from given player'
 	},
-	
+
 	{
 		name = 'dppIsModelBlocked',
 		args = 's',
@@ -210,7 +210,7 @@ local Funcs = {
 		end,
 		help = 'Returns whatever model is blocked from gate owner'
 	},
-	
+
 	{
 		name = 'dppIsModelEvenBlocked',
 		args = 's',
@@ -220,7 +220,7 @@ local Funcs = {
 		end,
 		help = 'Returns whatever model is blocked (ignores convars and etc.)'
 	},
-	
+
 	{
 		name = 'dppIsModelBlocked',
 		args = 'ply:s',
@@ -232,7 +232,7 @@ local Funcs = {
 		argstr = ', @value 1, @value 2',
 		help = 'Returns whatever model is blocked from given player'
 	},
-	
+
 	{
 		name = 'entityHasLimit',
 		args = 's',
@@ -243,7 +243,7 @@ local Funcs = {
 		end,
 		help = 'Returns whatever entity class have limit'
 	},
-	
+
 	{
 		name = 'entityHasLimit',
 		args = 'e',
@@ -254,7 +254,7 @@ local Funcs = {
 		end,
 		help = 'Returns whatever entity class have limit'
 	},
-	
+
 	{
 		name = 'sboxLimitExists',
 		args = 's',
@@ -265,7 +265,7 @@ local Funcs = {
 		end,
 		help = 'Returns whatever sandbox custom limit exists'
 	},
-	
+
 	{
 		name = 'getEntityLimit',
 		args = 's',
@@ -276,7 +276,7 @@ local Funcs = {
 		end,
 		help = 'Returns entity limit for gate owner'
 	},
-	
+
 	{
 		name = 'getEntityLimit',
 		args = 'e',
@@ -287,7 +287,7 @@ local Funcs = {
 		end,
 		help = 'Returns entity limit for gate owner'
 	},
-	
+
 	{
 		name = 'getEntityLimit',
 		args = 'ply:s',
@@ -298,7 +298,7 @@ local Funcs = {
 		end,
 		help = 'Returns entity limit for given player'
 	},
-	
+
 	{
 		name = 'getEntityLimit',
 		args = 'ply:e',
@@ -309,7 +309,7 @@ local Funcs = {
 		end,
 		help = 'Returns entity limit for given player'
 	},
-	
+
 	{
 		name = 'getSBoxLimit',
 		args = 's',
@@ -320,7 +320,7 @@ local Funcs = {
 		end,
 		help = 'Returns sbox limit for gate owner'
 	},
-	
+
 	{
 		name = 'getSBoxLimit',
 		args = 'ply:s',
@@ -355,13 +355,13 @@ for k, func in ipairs(funcs) do
 		myfunc = CompileString([[return function(Context, ent)
 			if not IsValid(ent) then return false end
 			local can = DPP.]] .. func .. [[(Context.player, ent)
-			
+
 			if can == nil then can = true end --WHAT
 			return can
 		end]], 'DPP')(),
 		help = 'Returns whatever gate owner can touch entity with given module'
 	})
-	
+
 	table.insert(Funcs, {
 		name = 'dpp' .. func,
 		args = 'ply:e',
@@ -370,7 +370,7 @@ for k, func in ipairs(funcs) do
 		myfunc = CompileString([[return function(Context, ply, ent)
 			if not IsValid(ent) then return false end
 			local can = DPP.]] .. func .. [[(ply, ent)
-			
+
 			if can == nil then can = true end --WHAT
 			return can
 		end]], 'DPP')(),
@@ -475,7 +475,7 @@ table.insert(Funcs, {
 
 for k, v in pairs(DPP.BlockTypes) do
 	--Strings
-	
+
 	table.insert(Funcs, {
 		name = 'dppIsBlacklisted' .. v,
 		args = 's',
@@ -486,7 +486,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		end,
 		help = 'Returns whatever entity class is in ' .. v .. ' blacklist for gate owner'
 	})
-	
+
 	table.insert(Funcs, {
 		name = 'dppIsEvenBlacklisted' .. v,
 		args = 's',
@@ -496,7 +496,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		end,
 		help = 'Returns whatever entity class is in ' .. v .. ' blacklist (ignores convars that disables, etc.)'
 	})
-	
+
 	table.insert(Funcs, {
 		name = 'dppIsBlacklisted' .. v,
 		args = 'ply:s',
@@ -508,7 +508,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		argstr = ', @value 1, @value 2',
 		help = 'Returns whatever entity class is in ' .. v .. ' blacklist for given player'
 	})
-	
+
 	--Entities
 	table.insert(Funcs, {
 		name = 'dppIsBlacklisted' .. v,
@@ -520,7 +520,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		end,
 		help = 'Returns whatever entity class is in ' .. v .. ' blacklist for gate owner'
 	})
-	
+
 	table.insert(Funcs, {
 		name = 'dppIsEvenBlacklisted' .. v,
 		args = 'e',
@@ -531,7 +531,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		end,
 		help = 'Returns whatever entity class is in ' .. v .. ' blacklist (ignores convars that disables, etc.)'
 	})
-	
+
 	table.insert(Funcs, {
 		name = 'dppIsBlacklisted' .. v,
 		args = 'ply:e',
@@ -557,7 +557,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 		end,
 		help = 'Returns whatever entity class is in ' .. v .. ' exclude list'
 	})
-	
+
 	table.insert(Funcs, {
 		name = 'dppIsEvenExcluded' .. v,
 		args = 's',
@@ -567,7 +567,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 		end,
 		help = 'Returns whatever entity class is in ' .. v .. ' exclude list (ignores convars that disables, etc.)'
 	})
-	
+
 	--Entities
 	table.insert(Funcs, {
 		name = 'dppIsExcluded' .. v,
@@ -579,7 +579,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 		end,
 		help = 'Returns whatever entity class is in ' .. v .. ' exclude list'
 	})
-	
+
 	table.insert(Funcs, {
 		name = 'dppIsEvenExcluded' .. v,
 		args = 'e',
@@ -594,7 +594,7 @@ end
 
 for k, v in pairs(DPP.RestrictTypes) do
 	--Strings
-	
+
 	table.insert(Funcs, {
 		name = 'dppIsRestricted' .. v,
 		args = 's',
@@ -605,7 +605,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		end,
 		help = 'Returns whatever entity class is in ' .. v .. ' restrict list for gate owner'
 	})
-	
+
 	table.insert(Funcs, {
 		name = 'dppIsEvenRestricted' .. v,
 		args = 's',
@@ -615,7 +615,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		end,
 		help = 'Returns whatever entity class is in ' .. v .. ' restrict list (ignores convars that disables, etc.)'
 	})
-	
+
 	table.insert(Funcs, {
 		name = 'dppIsRestricted' .. v,
 		args = 'ply:s',
@@ -627,7 +627,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		argstr = ', @value 1, @value 2',
 		help = 'Returns whatever entity class is in ' .. v .. ' restrict list for given player'
 	})
-	
+
 	--Entities
 	table.insert(Funcs, {
 		name = 'dppIsRestricted' .. v,
@@ -639,7 +639,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		end,
 		help = 'Returns whatever entity class is in ' .. v .. ' restrict list for gate owner'
 	})
-	
+
 	table.insert(Funcs, {
 		name = 'dppIsEvenRestricted' .. v,
 		args = 'e',
@@ -650,7 +650,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		end,
 		help = 'Returns whatever entity class is in ' .. v .. ' restrict list (ignores convars that disables, etc.)'
 	})
-	
+
 	table.insert(Funcs, {
 		name = 'dppIsRestricted' .. v,
 		args = 'ply:e',
@@ -672,7 +672,7 @@ local funcNameTest = {}
 for k, data in ipairs(Funcs) do
 	data.origin = data.origin or 'shared'
 	data.myfuncname = data.myfuncname or data.name
-	
+
 	if funcNameTest[data.myfuncname] then error('Oops! Function name ' .. data.myfuncname .. ' is not unique!') end
 	funcNameTest[data.myfuncname] = true
 end
@@ -682,9 +682,9 @@ funcNameTest = nil
 for k, data in ipairs(Funcs) do
 	data.argstr = data.argstr or ', @value 1'
 	data.body = data.body or ('(EXPADV.DPP_' .. data.myfuncname .. '(Context' .. data.argstr .. ') or false)')
-	
+
 	EXPADV['DPP_' .. data.myfuncname] = data.myfunc
-	
+
 	if data.origin == 'shared' then
 		EXPADV.SharedOperators()
 	elseif data.origin == 'server' then
@@ -692,7 +692,7 @@ for k, data in ipairs(Funcs) do
 	else
 		EXPADV.ClientOperators()
 	end
-	
+
 	Component:AddInlineFunction(data.name, data.args, data.returns, data.body)
 	Component:AddFunctionHelper(data.name, data.args, data.help)
 end
