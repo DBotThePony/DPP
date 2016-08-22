@@ -27,23 +27,27 @@ local function Repack(tab)
 	return reply
 end
 
-for k, v in pairs(DPP.BlockedEntities) do
+do
 	local function sendfunc(plys)
-		net.Start('DPP.Lists')
-		net.WriteString(k)
-		DPP.WriteStringList(Repack(v))
-		net.Send(plys)
+		for k, v in pairs(DPP.BlockedEntities) do
+			net.Start('DPP.Lists')
+			net.WriteString(k)
+			DPP.WriteStringList(Repack(v))
+			net.Send(plys)
+		end
 	end
 
 	table.insert(DPP.NetworkSendFuncs, sendfunc)
 end
 
-for k, v in pairs(DPP.WhitelistedEntities) do
+do
 	local function sendfunc(plys)
-		net.Start('DPP.WLists')
-		net.WriteString(k)
-		DPP.WriteStringList(Repack(v))
-		net.Send(plys)
+		for k, v in pairs(DPP.WhitelistedEntities) do
+			net.Start('DPP.WLists')
+			net.WriteString(k)
+			DPP.WriteStringList(Repack(v))
+			net.Send(plys)
+		end
 	end
 
 	table.insert(DPP.NetworkSendFuncs, sendfunc)
@@ -65,27 +69,27 @@ local function WriteGenericLimits(tab)
 	end
 end
 
-for k, v in pairs(DPP.RestrictedTypes) do
+do
 	local function sendfunc(plys)
-		net.Start('DPP.RLists')
-		net.WriteString(k)
+		for k, v in pairs(DPP.RestrictedTypes) do
+			net.Start('DPP.RLists')
+			net.WriteString(k)
 
-		local count = table.Count(v)
+			net.WriteUInt(table.Count(v), 16)
 
-		net.WriteUInt(count, 16)
+			for class, data in pairs(v) do
+				net.WriteString(class)
+				net.WriteUInt(#data.groups, 8)
 
-		for class, data in pairs(v) do
-			net.WriteString(class)
-			net.WriteUInt(#data.groups, 8)
+				for k, group in ipairs(data.groups) do
+					net.WriteString(group)
+				end
 
-			for k, group in ipairs(data.groups) do
-				net.WriteString(group)
+				net.WriteBool(data.iswhite)
 			end
 
-			net.WriteBool(data.iswhite)
+			net.Send(plys)
 		end
-
-		net.Send(plys)
 	end
 
 	table.insert(DPP.NetworkSendFuncs, sendfunc)

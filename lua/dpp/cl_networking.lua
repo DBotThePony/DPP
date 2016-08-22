@@ -199,9 +199,9 @@ DPP.ClientReceiveFuncs = {
 
 	RLists = function()
 		local str = net.ReadString()
-		DPP.BlockedEntities[str] = ReadRestrictions()
+		DPP.RestrictedTypes[str] = ReadRestrictions()
 
-		hook.Run('DPP.BlockedEntitiesReloaded', str, DPP.BlockedEntities[str])
+		hook.Run('DPP.BlockedEntitiesReloaded', str, DPP.RestrictedTypes[str])
 		if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Restrict list "' .. str .. '" received from server, reloading') end
 	end,
 
