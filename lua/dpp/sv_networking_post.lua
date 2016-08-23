@@ -17,7 +17,7 @@ limitations under the License.
 
 DPP.NetworkSendFuncs = {}
 
-local function Repack(tab)
+function DPP.NetRepack(tab)
 	local reply = {}
 
 	for k, v in pairs(tab) do
@@ -27,29 +27,29 @@ local function Repack(tab)
 	return reply
 end
 
-do
-	local function sendfunc(plys)
-		for k, v in pairs(DPP.BlockedEntities) do
-			net.Start('DPP.Lists')
-			net.WriteString(k)
-			DPP.WriteStringList(Repack(v))
-			net.Send(plys)
-		end
-	end
+for k, v in pairs(DPP.BlockedEntities) do
+	local sendfunc = CompileString([[return function(plys)
+		net.Start('DPP.Lists')
+		local k = ']] .. k .. [['
+		net.WriteString(k)
+		local v = DPP.BlockedEntities[k]
+		DPP.WriteStringList(DPP.NetRepack(v))
+		net.Send(plys)
+	end]], 'DPP/sv_networking_post.lua:DPP.BlockedEntities' .. k)()
 
 	table.insert(DPP.NetworkSendFuncs, sendfunc)
 end
 
-do
-	local function sendfunc(plys)
-		for k, v in pairs(DPP.WhitelistedEntities) do
-			net.Start('DPP.WLists')
-			net.WriteString(k)
-			DPP.WriteStringList(Repack(v))
-			net.Send(plys)
-		end
-	end
-
+for k, v in pairs(DPP.WhitelistedEntities) do
+	local sendfunc = CompileString([[return function(plys)
+		net.Start('DPP.WLists')
+		local k = ']] .. k .. [['
+		net.WriteString(k)
+		local v = DPP.WhitelistedEntities[k]
+		DPP.WriteStringList(DPP.NetRepack(v))
+		net.Send(plys)
+	end]], 'DPP/sv_networking_post.lua:DPP.WhitelistedEntities' .. k)()
+	
 	table.insert(DPP.NetworkSendFuncs, sendfunc)
 end
 
@@ -69,28 +69,29 @@ local function WriteGenericLimits(tab)
 	end
 end
 
-do
-	local function sendfunc(plys)
-		for k, v in pairs(DPP.RestrictedTypes) do
-			net.Start('DPP.RLists')
-			net.WriteString(k)
+for k, v in pairs(DPP.RestrictedTypes) do
+	local sendfunc = CompileString([[return function(plys)
+		net.Start('DPP.RLists')
+		
+		local k = ']] .. k .. [['
+		local v = DPP.RestrictedTypes[k]
+		net.WriteString(k)
 
-			net.WriteUInt(table.Count(v), 16)
+		net.WriteUInt(table.Count(v), 16)
 
-			for class, data in pairs(v) do
-				net.WriteString(class)
-				net.WriteUInt(#data.groups, 8)
+		for class, data in pairs(v) do
+			net.WriteString(class)
+			net.WriteUInt(#data.groups, 8)
 
-				for k, group in ipairs(data.groups) do
-					net.WriteString(group)
-				end
-
-				net.WriteBool(data.iswhite)
+			for k, group in ipairs(data.groups) do
+				net.WriteString(group)
 			end
 
-			net.Send(plys)
+			net.WriteBool(data.iswhite)
 		end
-	end
+
+		net.Send(plys)
+	end]], 'DPP/sv_networking_post.lua:DPP.RestrictedTypes' .. k)()
 
 	table.insert(DPP.NetworkSendFuncs, sendfunc)
 end
@@ -98,7 +99,7 @@ end
 do
 	local function sendfunc(plys)
 		net.Start('DPP.ModelLists')
-		DPP.WriteStringList(Repack(DPP.BlockedModels))
+		DPP.WriteStringList(DPP.NetRepack(DPP.BlockedModels))
 		net.Send(plys)
 	end
 
