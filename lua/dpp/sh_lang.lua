@@ -251,6 +251,21 @@ entities.
 	log_constraint_between = ' between %s and %s',
 	log_unknown = '<unknown>',
 	
+	log_not_avaliable = 'N/A',
+	log_npc = '(NPC)',
+	log_effect = '(Effect)',
+	log_prop = '(Prop)',
+	log_ragdoll = '(Ragdoll)',
+	log_sent = '(SENT)',
+	log_swep = '(SWEP)',
+	log_vehicle = '(Vehicle)',
+	log_obj = '(Object/Generic)',
+	
+	log_tried_t = 'to use tool ',
+	log_tool_used = ' used/tried to use tool ',
+	log_tool_on = ' on ',
+	log_tool_on_f = '%s on %s',
+	
 	--Commands
 	com_decals = ' cleared decals',
 	com_no_target = 'No valid target found',
@@ -325,6 +340,12 @@ entities.
 	
 	--Misc messages
 	prop_stuck_in_player = 'Your prop is stuck in other player',
+	net_must_wait = 'You must wait before requesting full network pocket again!',
+	net_manual = ' requested full network update manually',
+	net_auto = ' requested full network update automatically',
+	net_error_1 = 'Oh no! Something went terribly wrong! i am unable to send data to client. The error message follows:',
+	net_error_2 = 'If you thinks this is DPP problem, report on BitBucket and tell how did you got this.',
+	accepted = 'Accepted',
 	
 	--Tool menu
 	menu_server = 'Server Variables',
@@ -778,6 +799,21 @@ local ru = {
 	log_constraint_between = ' между %s и %s',
 	log_unknown = '<неизвестно>',
 	
+	log_tried_t = 'использовать инструмент  ',
+	log_tool_used = ' использовал/попытался использовать инструмент ',
+	log_tool_on = ' на ',
+	log_tool_on_f = '%s на %s',
+	
+	log_not_avaliable = 'Н/Д',
+	log_npc = '(NPC)',
+	log_effect = '(Эффект)',
+	log_prop = '(Проп)',
+	log_ragdoll = '(Рэгдолл)',
+	log_sent = '(Энтити)',
+	log_swep = '(Оружие)',
+	log_vehicle = '(Транспорт)',
+	log_obj = '(Объект/Общее)',
+	
 	--Commands
 	com_decals = ' очистил декали',
 	com_no_target = 'Не найдено подходящей цели',
@@ -852,6 +888,12 @@ local ru = {
 	
 	--Misc messages
 	prop_stuck_in_player = 'Ваш проп застрял в другом игроке',
+	net_must_wait = 'Вы должны подождать прежде чем запрашивать полный пакет обновления сети снова!',
+	net_manual = ' запросил полное обновления сети вручную',
+	net_auto = ' запросил полное обновления сети автоматически',
+	net_error_1 = 'О нет! Что-то пошло совсем не так! Я не могу отправить данные клиенту. Ошибка:',
+	net_error_2 = 'Если вы думаете, что это ошибка в DPP, дайте мне знать, оставив тикет на баг трекере DPP на BitBucket, и, пожалуйста, расскажите как вы получили данную ошибку.',
+	accepted = 'Accepted',
 	
 	--Tool menu
 	menu_server = 'Серверные переенные',

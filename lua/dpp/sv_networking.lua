@@ -111,10 +111,10 @@ end
 local RED = Color(200, 100, 100)
 
 local function NetworkError(Message)
-	DPP.SimpleLog(RED, 'Oh no! Something went terribly wrong! i am unable to send data to client. The error message follows:')
+	DPP.SimpleLog(RED, 'PHRASE:net_error_1')
 	DPP.SimpleLog(RED, Message)
 	DPP.SimpleLog(RED, debug.traceback())
-	DPP.SimpleLog(RED, 'If you thinks this is DPP problem, report on BitBucket and tell how did you got this.')
+	DPP.SimpleLog(RED, 'PHRASE:net_error_2')
 end
 
 local function SendTimer()
@@ -134,7 +134,7 @@ local function NetworkedVarFull(len, ply, auto)
 	DPP.SendConVarsTo(ply)
 
 	if not auto then
-		DPP.SimpleLog(ply, Gray, ' Requested full network update automatically')
+		DPP.SimpleLog(ply, Gray, 'PHRASE:net_auto')
 	end
 
 	local reply = {}
@@ -171,10 +171,10 @@ local function command(ply)
 	local reply = NetworkedVarFull(nil, ply, true)
 
 	if not reply then
-		DPP.Notify(ply, 'You must wait before requesting full network pocket again!')
+		DPP.Notify(ply, 'PHRASE:net_must_wait')
 	else
-		DPP.Notify(ply, 'Accepted.')
-		DPP.SimpleLog(ply, Gray, ' Requested full network update manually')
+		DPP.Notify(ply, 'PHRASE:accepted')
+		DPP.SimpleLog(ply, Gray, 'PHRASE:net_manual')
 	end
 end
 

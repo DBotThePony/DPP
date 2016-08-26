@@ -125,7 +125,7 @@ function DPP.ToolgunTouch(ply, tr, mode)
 			if not DPP.GetConVar('no_tool_log') and not DPP.GetConVar('no_tool_fail_log') and ply._DPP_LastToolgunLog < CurTime() then
 				ply._DPP_LastToolgunLog = CurTime() + 0.2
 				local logFunc = not DPP.GetConVar('no_tool_log_echo') and DPP.SimpleLog or DPP.LogIntoFile
-				logFunc(ply, DPP.SpawnFunctions.SPACE, RED, ' tried ', GRAY, 'to use tool ', DPP.SpawnFunctions.SPACE2, string.format('%s on %s', mode, tostring(tr.Entity)))
+				logFunc(ply, DPP.SpawnFunctions.SPACE, RED, 'PHRASE:log_tried', GRAY, 'PHRASE:log_tried_t', DPP.SpawnFunctions.SPACE2, 'PHRASE:log_tool_on_f||' .. mode .. '||' .. tostring(tr.Entity))
 			end
 		end
 
@@ -139,7 +139,7 @@ function DPP.ToolgunTouch(ply, tr, mode)
 		if not DPP.GetConVar('no_tool_log') and ply._DPP_LastToolgunLog < CurTime() then 
 			ply._DPP_LastToolgunLog = CurTime() + 0.2
 			local logFunc = not DPP.GetConVar('no_tool_log_echo') and DPP.SimpleLog or DPP.LogIntoFile
-			logFunc(ply, DPP.SpawnFunctions.SPACE, GRAY, ' used/tried to use tool ', DPP.SpawnFunctions.SPACE2, color_white, mode, GRAY, ' on ', tostring(tr.Entity)) 
+			logFunc(ply, DPP.SpawnFunctions.SPACE, GRAY, 'PHRASE:log_tool_used', DPP.SpawnFunctions.SPACE2, color_white, mode, GRAY, 'PHRASE:log_tool_on', tostring(tr.Entity)) 
 		end
 	end
 end

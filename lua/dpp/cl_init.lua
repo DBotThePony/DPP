@@ -880,22 +880,6 @@ local function HUDPaint()
 	end
 end
 
-local LangCVar
-local LastLanguage
-
---We can send language only at it's change, but for safety - always send language
-local function UpdateLang()
-	LangCVar = LangCVar or GetConVar('gmod_language')
-	DPP.CURRENT_LANG = LangCVar:GetString():lower()
-	if LastLanguage ~= DPP.CURRENT_LANG then hook.Call('DPP.LanguageChanged') end
-	LastLanguage = DPP.CURRENT_LANG
-	net.Start('DPP.UpdateLang')
-	net.WriteString(DPP.CURRENT_LANG)
-	net.SendToServer()
-end
-
-timer.Create('DPP.UpdateLang', 5, 0, UpdateLang)
-
 local LastSound = 0
 
 function DPP.Notify(message, type)
