@@ -241,7 +241,7 @@ DPP.Commands = {
 
 		DPP.UnFreezeByUID(uid)
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' PHRASE:com_unfreezed_all ', {type = 'UIDPlayer', uid = uid}, Gray, 'PHRASE:com_ply_ents'}
+		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, 'PHRASE:com_unfreezed_all', {type = 'UIDPlayer', uid = uid}, Gray, 'PHRASE:com_ply_ents'}
 
 		return true
 	end,
@@ -254,7 +254,7 @@ DPP.Commands = {
 			if not found then return false, {'PHRASE:com_invalid_ply_userid'}, NOTIFY_ERROR end
 			DPP.UnFreezePlayerEntities(found)
 
-			DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' PHRASE:com_unfreezed_all ', found, Gray, 'PHRASE:com_ply_ents'}
+			DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, 'PHRASE:com_unfreezed_all', found, Gray, 'PHRASE:com_ply_ents'}
 			return true
 		end
 
@@ -268,7 +268,7 @@ DPP.Commands = {
 		if not found then return false, {'PHRASE:com_no_target'}, NOTIFY_ERROR end
 		DPP.UnFreezePlayerEntities(found)
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' PHRASE:com_unfreezed_all ', found, Gray, 'PHRASE:com_ply_ents'}
+		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, 'PHRASE:com_unfreezed_all', found, Gray, 'PHRASE:com_ply_ents'}
 
 		return true
 	end,
@@ -330,7 +330,7 @@ DPP.Commands = {
 		if not found or found == ply then return false, {'PHRASE:com_no_target'}, NOTIFY_ERROR end
 
 		DPP.SimpleLog(ply, Gray, 'PHRASE:com_target', found, Gray, 'PHRASE:com_owning_fallback')
-		DPP.Notify(ply, DPP.Format('PHRASE:com_success', found, Gray, ' PHRASE:com_owning_fallback_m'))
+		DPP.Notify(ply, DPP.Format('PHRASE:com_success', found, Gray, 'PHRASE:com_owning_fallback_m'))
 
 		ply:SetDPPVar('fallback', found)
 
