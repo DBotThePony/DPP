@@ -477,9 +477,9 @@ SettingsClass.ClientVars2 = {
 function SettingsClass.ConVarSlider(Panel, var)
 	local v = DPP.Settings[var]
 
-	local Slider = Panel:NumSlider(v.desc, nil, v.min or 0, v.max or 100, 1)
+	local Slider = Panel:NumSlider(P('cvar_' .. var), nil, v.min or 0, v.max or 100, 1)
 	SettingsClass.ApplySliderStyle(Slider)
-	Slider:SetTooltip(P('scvar_base', v.desc, var))
+	Slider:SetTooltip(P('scvar_base', P('cvar_' .. var), var))
 	Slider:SetValue(DPP.GetConVar(var))
 	Slider.OnValueChanged = function()
 		local val = tonumber(Slider:GetValue())
@@ -503,13 +503,13 @@ end
 
 function SettingsClass.ConVarCheckbox(Panel, idx)
 	local val = tobool(DPP.GetConVar(idx))
-	local checkbox = Panel:CheckBox(DPP.Settings[idx].desc)
+	local checkbox = Panel:CheckBox(P('cvar_' .. idx))
 	checkbox:SetChecked(val)
 	checkbox.Button.LastVal = val
 	checkbox.Button.val = idx
 	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
 	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-	checkbox:SetTooltip(P('scvar_base', DPP.Settings[idx].desc, idx))
+	checkbox:SetTooltip(P('scvar_base', P('cvar_' .. idx), idx))
 	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 	SettingsClass.MakeCheckboxBetter(checkbox)
 end
@@ -542,7 +542,7 @@ local function BuildSVarPanel(Panel)
 
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
-	local TopText = 'DPP was created by DBot\nNOTE "Main Power Switch" disables blacklists \nand protection modules, but not restrictions.'
+	local TopText = P('main_note')
 	Lab:SetText(TopText)
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SizeToContents()
@@ -556,7 +556,7 @@ local function BuildSVarPanel(Panel)
 	ConVarSlider(Panel, 'grabs_timer')
 
 	ConVarCheckbox(Panel, 'strict_property')
-	local Text = 'ATTENTION: THIS REPLACES PROCESSING OF PROPERTY NET MESSAGE\nAND ENABLES STRICT CHECKS FOR ENTITIES\nSOME NON-DEFAULT PROPERTIES MAY BREAK\nIT WILL DISALLOW TO USE PROPERTIES\nEVEN IF THEY "TALK" THAT THEY ARE ALLOWED\nTO BE USE ON THAT ENTITY.\nUSE WITH CAUTION\n(this may cover possible exploits with non-default properties)'
+	local Text = P('strict_property_note')
 	local lab = Label(Text)
 	Panel:AddItem(lab)
 	lab:SetTextColor(SettingsClass.TextColor)
@@ -2392,14 +2392,7 @@ local function About(Panel)
 		gui.OpenURL('https://github.com/roboderpy/dpp')
 	end
 	SettingsClass.ApplyButtonStyle(Button)
-
-	local Lab = vgui.Create('DLabel', Panel)
-	Panel:AddItem(Lab)
-	Lab:SetText(P('about_bug'))
-	Lab:SetTextColor(SettingsClass.TextColor)
-	Lab:SizeToContents()
-	Lab:SetTooltip(TopText)
-
+	
 	local Button = Panel:Button('BitBucket')
 	Button.DoClick = function()
 		gui.OpenURL('https://bitbucket.org/DBotThePony/dpp')
