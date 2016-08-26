@@ -257,7 +257,7 @@ function DPP.LogIntoFile(...)
 
 	local str = ''
 
-	for k, v in ipairs{...} do
+	for k, v in ipairs(DPP.PreprocessPhrases(...)) do
 		if type(v) == 'Player' then
 			str = str .. ConcatSafe(DPP.FormatPlayer(v))
 		end

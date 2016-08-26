@@ -200,6 +200,41 @@ entities.
 	npc_restricted = 'NPC is restricted',
 	entity_restricted = 'Entity is restricted',
 	entity_limit_hit = 'You hit %q limit!',
+	
+	--Serverside functions
+	ghosted_big = 'Prop is ghosted because it is too big.',
+	prop_autoban = 'Prop is too big for ya.',
+	stuck_hit = 'It seems that this prop is stuck in another.',
+	grabs_hit = 'You now own this prop',
+	
+	--Report
+	report_summary = '------------ SUMMARY',
+	report_owners = '------------ OWNERS',
+	report_spawned = ' have %s entities spawned!',
+	report_spawned_h = '------------ SPANWED ENTITIES ------------',
+	report_allents = '------------ ALL ENTITIES ------------',
+	report_allpos = '------------ ALL POSITIONS',
+	report_allclass = '------------ ALL CLASSES',
+	report_solidpos = '------------ SOLID POSITIONS',
+	report_solidclass = '------------ SOLID CLASSES',
+	report_misc = '------------ MISC',
+	report_generated = '------------ REPORT GENERATED IN %s ms',
+	report_envshake = 'ATTENTION! There are %s env_shake entities! Did we have entity use leak?',
+	report_nodata = '<no data>',
+	report_near = 'Near %s, there are ',
+	report_have = ' have ',
+	report_espawned = ' entities spawned!',
+	report_entitites = ' entities!',
+	
+	report_1 = 'Total Entities on server:',
+	report_2 = 'Total owned entities:',
+	report_3 = 'Total unowned entities:',
+	report_4 = 'Total non-solid entities:',
+	report_5 = 'Total entities spawned by map:',
+	report_6 = 'Total entities with physics:',
+	report_7 = 'Total entities that can move:',
+	report_8 = 'Total entities that is moving:',
+	report_9 = 'Entities skipped:',
 }
 
 local ru = {

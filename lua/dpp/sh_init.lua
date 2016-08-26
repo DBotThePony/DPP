@@ -1044,9 +1044,9 @@ end
 
 function DPP.Message(first, ...)
 	if istable(first) and not first.a then
-		MsgC(Color(0, 200, 0), '[DPP] ', Color(200, 200, 200), unpack(first))
+		MsgC(Color(0, 200, 0), '[DPP] ', Color(200, 200, 200), unpack(DPP.PreprocessPhrases(unpack(first))))
 	else
-		MsgC(Color(0, 200, 0), '[DPP] ', Color(200, 200, 200), first, ...)
+		MsgC(Color(0, 200, 0), '[DPP] ', Color(200, 200, 200), unpack(DPP.PreprocessPhrases(first, ...)))
 	end
 
 	MsgC('\n')
@@ -1319,8 +1319,30 @@ function DPP.PhraseByLang(lang, id, ...)
 	return string.format(phrase, ...)
 end
 
+function DPP.PhraseByLangSafe(lang, id, ...)
+	DPP.Phrases[lang] = DPP.Phrases[lang] or {}
+	local phrase = DPP.Phrases[lang][id] or DPP.Phrases.en[id]
+	if not phrase then return '%' .. id .. '%' end
+	local status, result = pcall(string.format, phrase, ...)
+	
+	if status then
+		return result
+	else
+		return '%' .. id .. '%'
+	end
+end
+
 function DPP.GetPhrase(id, ...)
 	return DPP.PhraseByLang(DPP.CURRENT_LANG, id, ...)
+end
+
+function DPP.GetPhraseSafe(id, ...)
+	return DPP.PhraseByLangSafe(DPP.CURRENT_LANG, id, ...)
+end
+
+function DPP.PhraseExists(id)
+	local phrase = DPP.Phrases[DPP.CURRENT_LANG][id] or DPP.Phrases.en[id]
+	return phrase and true or false
 end
 
 local GetPhrase = DPP.GetPhrase
@@ -1647,6 +1669,29 @@ function DPP.Format(...)
 		end
 	end
 
+	return repack
+end
+
+function DPP.PreprocessPhrases(...)
+	local repack = {}
+	
+	for k, v in ipairs{...} do
+		if type(v) ~= 'string' or v:sub(1, 7) ~= 'PHRASE:' then
+			table.insert(repack, v)
+			continue
+		end
+		
+		local raw = v:sub(8)
+		local args = string.Explode('||', raw)
+		local id = table.remove(args, 1)
+		
+		if DPP.PhraseExists(id) then
+			table.insert(repack, DPP.GetPhraseSafe(id, unpack(args)))
+		else
+			table.insert(repack, '<INVALID PHRASE - ' .. id .. '>')
+		end
+	end
+	
 	return repack
 end
 

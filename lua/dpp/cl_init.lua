@@ -927,7 +927,7 @@ net.Receive('DPP.ReloadFiendList', function()
 end)
 
 net.Receive('DPP.Notify', function()
-	DPP.Notify(net.ReadTable(), net.ReadUInt(6))
+	DPP.Notify(DPP.PreprocessPhrases(unpack(net.ReadTable())), net.ReadUInt(6))
 end)
 
 net.Receive('DPP.PlayerList', function()

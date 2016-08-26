@@ -140,7 +140,7 @@ function DPP.CheckSizes(ent, ply)
 		if not IsValid(ent) then return end
 		DPP.SetGhosted(ent, true)
 		if ply and IsValid(ply) then
-			DPP.Notify(ply, 'Prop is ghosted because it is too big.')
+			DPP.Notify(ply, DPP.PPhrase(ply, 'ghosted_big'))
 		end
 	end)
 
@@ -167,7 +167,7 @@ function DPP.CheckAutoBlock(ent, ply)
 	SafeRemoveEntity(ent)
 	DPP.ManipulateCommands.addblockedmodel(Entity(0), nil, {model})
 	if ply and IsValid(ply) then
-		DPP.Notify(ply, 'Prop is too big for ya.')
+		DPP.Notify(ply, DPP.PPhrase(ply, 'prop_autoban'))
 	end
 
 	return false
@@ -240,7 +240,7 @@ function DPP.CheckStuck(ply, ent1, ent2)
 	DPP.SetGhosted(ent1, true)
 	DPP.SetGhosted(ent2, true)
 	if IsValid(ply) then
-		DPP.Notify(ply, 'It seems that this prop is stuck in another.')
+		DPP.Notify(ply, DPP.PPhrase(ply, 'stuck_hit'))
 	end
 
 	return true
@@ -279,7 +279,7 @@ function DPP.CheckUpForGrabs(ent, ply)
 	DPP.DeleteEntityUndo(ent)
 	DPP.SetOwner(ent, ply) 
 	DPP.SetUpForGrabs(ent, false) 
-	DPP.Notify(ply, 'You now own this prop')
+	DPP.Notify(ply, DPP.PPhrase(ply, 'grabs_hit'))
 	undo.Create('Owned_Prop')
 	undo.AddEntity(ent)
 	undo.SetPlayer(ply)
@@ -1066,121 +1066,121 @@ function DPP.ReportEntitiesPrint()
 
 	DPP.SimpleLog(color_white, '--------------------------------')
 
-	DPP.SimpleLog(color_white, '------------ SUMMARY')
-	StringColorWrap('Total Entities on server: ' .. data.count)
-	StringColorWrap('Total owned entities: ' .. data.iowned)
-	StringColorWrap('Total unowned entities: ' .. data.unowned)
-	StringColorWrap('Total non-solid entities: ' .. data.nosolid)
-	StringColorWrap('Total entities spawned by map: ' .. data.sbymap)
-	StringColorWrap('Total entities with physics: ' .. data.iphys)
-	StringColorWrap('Total entities that can move: ' .. data.active)
-	StringColorWrap('Total entities that is moving: ' .. data.vactive)
-	StringColorWrap('Entities skipped: ' .. data.skipped)
+	DPP.SimpleLog(color_white, 'PHRASE:report_summary')
+	StringColorWrap('PHRASE:report_1', ' ' .. data.count)
+	StringColorWrap('PHRASE:report_2', ' ' .. data.iowned)
+	StringColorWrap('PHRASE:report_3', ' ' .. data.unowned)
+	StringColorWrap('PHRASE:report_4', ' ' .. data.nosolid)
+	StringColorWrap('PHRASE:report_5', ' ' .. data.sbymap)
+	StringColorWrap('PHRASE:report_6', ' ' .. data.iphys)
+	StringColorWrap('PHRASE:report_7', ' ' .. data.active)
+	StringColorWrap('PHRASE:report_8', ' ' .. data.vactive)
+	StringColorWrap('PHRASE:report_9', ' ' .. data.skipped)
 
-	DPP.SimpleLog(color_white, '------------ OWNERS')
+	DPP.SimpleLog(color_white, 'PHRASE:report_owners')
 	local hit = false
 
 	for k, v in pairs(data.owners) do
 		hit = true
-		StringColorWrap(k, CurColor(), ' have ' .. #v .. ' entities spawned!')
+		StringColorWrap(k, CurColor(), 'PHRASE:report_spawned||' .. #v)
 	end
 
 	if not hit then
-		StringColorWrap('<no data>')
+		StringColorWrap('PHRASE:report_nodata')
 	end
 
-	DPP.SimpleLog(color_white, '------------ ALL ENTITIES ------------')
-	DPP.SimpleLog(color_white, '------------ ALL POSITIONS')
+	DPP.SimpleLog(color_white, 'PHRASE:report_allents')
+	DPP.SimpleLog(color_white, 'PHRASE:report_allpos')
 	for i = 1, 4 do
 		local row = data.positions2[i]
-		if not row then StringColorWrap('<no data>') break end
+		if not row then StringColorWrap('PHRASE:report_nodata') break end
 
 		local spos = string.Explode(' ', row[1])
 		local rpos = tonumber(spos[1]) * 100 .. ' ' .. tonumber(spos[2]) * 100 .. ' ' .. tonumber(spos[3]) * 100
 
-		StringColorWrap('Near ' .. rpos .. ', there are ', NumColor, row[2], CurColor(), ' entities!')
+		StringColorWrap('PHRASE:report_near||' .. rpos, NumColor, row[2], CurColor(), 'PHRASE:report_entitites')
 	end
 
-	DPP.SimpleLog(color_white, '------------ SOLID POSITIONS')
+	DPP.SimpleLog(color_white, 'PHRASE:report_solidpos')
 	for i = 1, 4 do
 		local row = data.positions_solid2[i]
-		if not row then StringColorWrap('<no data>') break end
+		if not row then StringColorWrap('PHRASE:report_nodata') break end
 
 		local spos = string.Explode(' ', row[1])
 		local rpos = tonumber(spos[1]) * 100 .. ' ' .. tonumber(spos[2]) * 100 .. ' ' .. tonumber(spos[3]) * 100
 
-		StringColorWrap('Near ' .. rpos .. ', there are ', NumColor, row[2], CurColor(), ' entities!')
+		StringColorWrap('PHRASE:report_near||' .. rpos, NumColor, row[2], CurColor(), 'PHRASE:report_entitites')
 	end
 
-	DPP.SimpleLog(color_white, '------------ ALL CLASSES')
+	DPP.SimpleLog(color_white, 'PHRASE:report_allclass')
 	for i = 1, 4 do
 		local row = data.classes2[i]
-		if not row then StringColorWrap('<no data>') break end
+		if not row then StringColorWrap('PHRASE:report_nodata') break end
 
-		StringColorWrap('Class ', ClassColor, row[1], CurColor(), ' have ', NumColor, row[2], CurColor(), ' entities spawned!')
+		StringColorWrap('Class ', ClassColor, row[1], CurColor(), 'PHRASE:report_have', NumColor, row[2], CurColor(), 'PHRASE:report_espawned')
 	end
 
-	DPP.SimpleLog(color_white, '------------ SOLID CLASSES')
+	DPP.SimpleLog(color_white, 'PHRASE:report_solidclass')
 	for i = 1, 4 do
 		local row = data.classes_solid2[i]
-		if not row then StringColorWrap('<no data>') break end
+		if not row then StringColorWrap('PHRASE:report_nodata') break end
 
-		StringColorWrap('Class ', ClassColor, row[1], CurColor(), ' have ', NumColor, row[2], CurColor(), ' entities spawned!')
+		StringColorWrap('Class ', ClassColor, row[1], CurColor(), 'PHRASE:report_have', NumColor, row[2], CurColor(), 'PHRASE:report_espawned')
 	end
 
-	DPP.SimpleLog(color_white, '------------ SPANWED ENTITIES ------------')
-	DPP.SimpleLog(color_white, '------------ ALL POSITIONS')
+	DPP.SimpleLog(color_white, 'PHRASE:report_spawned_h')
+	DPP.SimpleLog(color_white, 'PHRASE:report_allpos')
 
 	for i = 1, 4 do
 		local row = data.spositions2[i]
-		if not row then StringColorWrap('<no data>') break end
+		if not row then StringColorWrap('PHRASE:report_nodata') break end
 
 		local spos = string.Explode(' ', row[1])
 		local rpos = tonumber(spos[1]) * 100 .. ' ' .. tonumber(spos[2]) * 100 .. ' ' .. tonumber(spos[3]) * 100
 
-		StringColorWrap('Near ' .. rpos .. ', there are ', NumColor, row[2], CurColor(), ' entities!')
+		StringColorWrap('PHRASE:report_near||' .. rpos, NumColor, row[2], CurColor(), 'PHRASE:report_entitites')
 	end
 
-	DPP.SimpleLog(color_white, '------------ SOLID POSITIONS')
+	DPP.SimpleLog(color_white, 'PHRASE:report_solidpos')
 	for i = 1, 4 do
 		local row = data.spositions_solid2[i]
-		if not row then StringColorWrap('<no data>') break end
+		if not row then StringColorWrap('PHRASE:report_nodata') break end
 
 		local spos = string.Explode(' ', row[1])
 		local rpos = tonumber(spos[1]) * 100 .. ' ' .. tonumber(spos[2]) * 100 .. ' ' .. tonumber(spos[3]) * 100
 
-		StringColorWrap('Near ' .. rpos .. ', there are ', NumColor, row[2], CurColor(), ' entities!')
+		StringColorWrap('PHRASE:report_near||' .. rpos, NumColor, row[2], CurColor(), 'PHRASE:report_entitites')
 	end
 
-	DPP.SimpleLog(color_white, '------------ ALL CLASSES')
+	DPP.SimpleLog(color_white, 'PHRASE:report_allclass')
 	for i = 1, 4 do
 		local row = data.sclasses2[i]
-		if not row then StringColorWrap('<no data>') break end
+		if not row then StringColorWrap('PHRASE:report_nodata') break end
 
-		StringColorWrap('Class ', ClassColor, row[1], CurColor(), ' have ', NumColor, row[2], CurColor(), ' entities spawned!')
+		StringColorWrap('Class ', ClassColor, row[1], CurColor(), 'PHRASE:report_have', NumColor, row[2], CurColor(), 'PHRASE:report_espawned')
 	end
 
-	DPP.SimpleLog(color_white, '------------ SOLID CLASSES')
+	DPP.SimpleLog(color_white, 'PHRASE:report_solidclass')
 	for i = 1, 4 do
 		local row = data.sclasses_solid2[i]
-		if not row then StringColorWrap('<no data>') break end
+		if not row then StringColorWrap('PHRASE:report_nodata') break end
 
-		StringColorWrap('Class ', ClassColor, row[1], CurColor(), ' have ', NumColor, row[2], CurColor(), ' entities spawned!')
+		StringColorWrap('PHRASE:Class', ClassColor, ' ' .. row[1], CurColor(), 'PHRASE:report_have', NumColor, row[2], CurColor(), 'PHRASE:report_espawned')
 	end
 
-	DPP.SimpleLog(color_white, '------------ MISC')
+	DPP.SimpleLog(color_white, 'PHRASE:report_misc')
 
 	data.classes.env_shake = data.classes.env_shake or 0
 	data.classes.npc_barnacle_tongue_tip = data.classes.npc_barnacle_tongue_tip or 0
 
 	if data.classes.env_shake > 100 then
-		StringColorWrap('ATTENTION! There are ' .. data.classes.env_shake .. ' env_shake entities! Did we have entity use leak?')
+		StringColorWrap('PHRASE:report_envshake||' .. data.classes.env_shake)
 	end
 
 	if data.classes.npc_barnacle_tongue_tip > 0 then
 		StringColorWrap('There are ' .. data.classes.npc_barnacle_tongue_tip .. ' "barnacle tips" (tongue info entities).')
 	end
 
-	DPP.SimpleLog(color_white, '------------ REPORT GENERATED IN ' .. math.floor(nt * 100) / 100 .. 'ms')
+	DPP.SimpleLog(color_white, 'PHRASE:report_generated||' .. math.floor(nt * 100) / 100)
 	DPP.SimpleLog(color_white, '--------------------------------')
 end
