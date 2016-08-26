@@ -163,6 +163,8 @@ entities.
 	not_valid = 'Entity is not valid',
 	props_cleared = "%s's props has been cleaned up",
 	props_up_for_grabs = "%s's props is now up for grabs!",
+	disconnected_player = 'Disconnected Player',
+	up_for_grabs = 'Up for grabs!',
 	
 	--Hooks messages
 	owned_by_world = 'Owned by world',
@@ -297,6 +299,63 @@ entities.
 	com_to = ' to ',
 	com_cvar_set_1 = ' set convar ',
 	look_into_console = 'Look into console',
+	
+	--Client commands
+	no_friend_with_steamid = 'There is no friend with id %s!',
+	friend_removed = 'Friend %s removed',
+	friend_added = 'Friend added',
+	friends_saved = 'Friend list saved...',
+	friends_loaded = 'Friend list loaded...',
+	friends_refreshed = 'Friend list refreshed',
+	friends_sended = 'Sending friend list to server',
+	
+	--Property menus
+	property_cleanup = 'Cleanup props of owner',
+	property_share = 'Share this prop',
+	property_transferworld = 'Transfer ownership to world',
+	property_transferworld = 'Transfer ownership to player...',
+	property_roptions = 'DPP Restrict options',
+	
+	--Misc messages
+	prop_stuck_in_player = 'Your prop is stuck in other player',
+	
+	--Tool menu
+	menu_server = 'Server Variables',
+	menu_server2 = 'Secondary Server Variables',
+	menu_propkill = 'Anti-Propkill',
+	menu_client = 'Client options',
+	menu_antispam = 'Antispam options',
+	menu_elimits = 'Entity limits',
+	menu_slimits = 'Sandbox limits',
+	menu_climits = 'Constraints limits',
+	menu_mblacklist = 'Model blacklist',
+	menu_friends = 'Friends',
+	menu_players = 'Player Controls',
+	menu_pcontrols = 'Player protection controls',
+	menu_about = 'About',
+	menu_fallback = 'Fallback and transfer',
+	menu_blacklist = '%s blacklist',
+	menu_exclude = '%s exclude list',
+	menu_restricts = '%s Restrictions',
+	
+	menu_tool = 'Tool',
+	menu_physgun = 'Physgun',
+	menu_use = 'Use',
+	menu_damage = 'Damage',
+	menu_gravgun = 'Gravgun',
+	menu_pickup = 'Pickup',
+	menu_toolworld = 'Toolgun World',
+	menu_toolmode = 'Toolgun Mode',
+	menu_sent = 'SENT',
+	menu_vehicle = 'Vehicle',
+	menu_swep = 'SWEP',
+	menu_model = 'Model',
+	menu_npc = 'NPC',
+	menu_property = 'Property',
+	menu_propertyt = 'Property Class',
+	menu_pickup = 'Pickups',
+	menu_e2function = 'E2 Functions',
+	menu_e2afunction = 'E2 Advanced Functions',
 }
 
 local ru = {
@@ -607,6 +666,10 @@ local ru = {
 	protection_disabled = 'Защита отключена',
 	World = 'Мир',
 	not_valid = 'Энтити не является правильным',
+	props_cleared = "%s's пропы были удалены",
+	props_up_for_grabs = "%s's пропы теперь могут быт присвоены!",
+	disconnected_player = 'Отключившийся игрок',
+	up_for_grabs = 'Можно присвоить!',
 	
 	--Hooks messages
 	owned_by_world = 'Нет владельца',
@@ -741,6 +804,61 @@ local ru = {
 	com_to = ' <цели/ему/к/на> ',
 	com_cvar_set_1 = ' установил переменную ',
 	look_into_console = 'Посмотрите в свою консоль разработчика',
+	
+	--Client commands
+	no_friend_with_steamid = 'Нет друзей с ID %s!',
+	friend_removed = 'Друг %s удалён',
+	friend_added = 'Друг добавлен',
+	friends_saved = 'Список друзей сохранён...',
+	friends_loaded = 'Список друзей загружен...',
+	friends_refreshed = 'Список друзей обновлён',
+	friends_sended = 'Список друзей отправлен на сервер',
+	
+	--Property menus
+	property_cleanup = 'Очистить энтити у владельца',
+	property_share = 'Зашарить',
+	property_transferworld = 'Передать права на проп миру',
+	property_transferworld = 'Передать права на проп игроку...',
+	
+	--Misc messages
+	prop_stuck_in_player = 'Ваш проп застрял в другом игроке',
+	
+	--Tool menu
+	menu_server = 'Серверные переенные',
+	menu_server2 = 'Вторичные серверные переменные',
+	menu_propkill = 'Анти-Пропкил',
+	menu_client = 'Клиентские настройки',
+	menu_antispam = 'Настройки антиспама',
+	menu_elimits = 'Лимиты энтити',
+	menu_slimits = 'Лимиты Сандбокса',
+	menu_climits = 'Лимиты соединений',
+	menu_mblacklist = 'Чёрный лист моделей',
+	menu_friends = 'Друзья',
+	menu_players = 'Управление игроками',
+	menu_pcontrols = 'Управление защитой игрокв',
+	menu_about = 'О DPP',
+	menu_fallback = 'Наследство и передача',
+	menu_blacklist = '%q чёрный лист',
+	menu_exclude = '%q лист исключений',
+	menu_restricts = '%q ограничения',
+	
+	menu_tool = 'Инструменты',
+	menu_physgun = 'Физган',
+	menu_use = 'Использование',
+	menu_damage = 'Урон',
+	menu_gravgun = 'Гравипушка',
+	menu_pickup = 'Подбирыемые',
+	menu_toolworld = 'Инструмент на мире',
+	menu_toolmode = 'Режимы Инструментов',
+	menu_sent = 'Энтити',
+	menu_vehicle = 'Транспорт',
+	menu_swep = 'Оружие',
+	menu_model = 'Модель',
+	menu_npc = 'NPC',
+	menu_property = 'Свойство',
+	menu_propertyt = 'Класс свойства',
+	menu_e2function = 'E2 Функции',
+	menu_e2afunction = 'E2 Advanced Функции',
 }
 
 DPP.RegisterPhraseList('en', en)

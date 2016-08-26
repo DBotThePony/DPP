@@ -759,7 +759,7 @@ DPP.RestrictTypes = {
 	e2afunction = 'E2AFunction',
 }
 
-DPP.CURRENT_LANG = 'en'
+DPP.CURRENT_LANG = DPP.CURRENT_LANG or 'en'
 DPP.Phrases = DPP.Phrases or {}
 DPP.Phrases.en = DPP.Phrases.en or {}
 DPP.Phrases.ru = DPP.Phrases.ru or {}

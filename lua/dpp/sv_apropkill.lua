@@ -29,7 +29,7 @@ function DPP.CheckDroppedEntity(ply, ent)
 			local can = hook.Run('DPP_A_StuckHit', ply, ent, v)
 			if can == false then continue end
 
-			DPP.Notify(ply, 'Your prop is stuck in other player')
+			DPP.Notify(ply, 'PHRASE:prop_stuck_in_player')
 			DPP.SetGhosted(ent, true)
 			break
 		end

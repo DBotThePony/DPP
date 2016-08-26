@@ -2421,31 +2421,31 @@ local function About(Panel)
 end
 
 local function PopulateToolMenu()
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.SVars', 'Server Variables', '', '', BuildSVarPanel)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Players', 'Player Controls', '', '', BuildPlayerList)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Misc', 'Secondary Server Variables', '', '', BuildMiscVarsPanel)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.APropKill', 'Anti-PropKill', '', '', BuildAPropKillVarsPanel)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.CVars', 'Client Variables', '', '', BuildCVarPanel)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.APanel', 'Antispam Settings', '', '', BuildAntispamPanel)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Limits', 'Entity Limits', '', '', BuildLimitsList)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.SLimits', 'Sandbox Limits', '', '', BuildSLimitsList)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.CLimits', 'Constraints Limits', '', '', BuildCLimitsList)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP Blacklists', 'DPP.ModelList', 'Model blacklist', '', '', BuildModelsList)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Friends', 'Friends', '', '', BuildFriendsPanel)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.PPPanel', 'Player Protection Controls', '', '', BuildPlayerProtectionPanel)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.About', 'About', '', '', About)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Fallback', 'Fallback and Transfer', '', '', BuildFallbackList)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.SVars', DPP.GetPhrase('menu_server'), '', '', BuildSVarPanel)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Players', DPP.GetPhrase('menu_players'), '', '', BuildPlayerList)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Misc', DPP.GetPhrase('menu_server2'), '', '', BuildMiscVarsPanel)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.APropKill', DPP.GetPhrase('menu_propkill'), '', '', BuildAPropKillVarsPanel)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.CVars', DPP.GetPhrase('menu_client'), '', '', BuildCVarPanel)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.APanel', DPP.GetPhrase('menu_antispam'), '', '', BuildAntispamPanel)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Limits', DPP.GetPhrase('menu_elimits'), '', '', BuildLimitsList)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.SLimits', DPP.GetPhrase('menu_slimits'), '', '', BuildSLimitsList)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.CLimits', DPP.GetPhrase('menu_climits'), '', '', BuildCLimitsList)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP Blacklists', 'DPP.ModelList', DPP.GetPhrase('menu_mblacklist'), '', '', BuildModelsList)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Friends', DPP.GetPhrase('menu_friends'), '', '', BuildFriendsPanel)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.PPPanel', DPP.GetPhrase('menu_pcontrols'), '', '', BuildPlayerProtectionPanel)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.About', DPP.GetPhrase('menu_about'), '', '', About)
+	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Fallback', DPP.GetPhrase('menu_fallback'), '', '', BuildFallbackList)
 
 	for k, v in pairs(DPP.BlockTypes) do
-		spawnmenu.AddToolMenuOption('Utilities', 'DPP Blacklists', 'DPP.' .. k, v .. ' blacklist', '', '', PanelsFunctions[k])
+		spawnmenu.AddToolMenuOption('Utilities', 'DPP Blacklists', 'DPP.' .. k, DPP.GetPhrase('menu_blacklist', P('menu_' .. k)), '', '', PanelsFunctions[k])
 	end
 
 	for k, v in pairs(DPP.WhitelistTypes) do
-		spawnmenu.AddToolMenuOption('Utilities', 'DPP Exclude lists', 'DPP.' .. k .. '_whitelist', v .. ' exclude list', '', '', WhitelistFunctions[k])
+		spawnmenu.AddToolMenuOption('Utilities', 'DPP Exclude lists', 'DPP.' .. k .. '_whitelist', DPP.GetPhrase('menu_exclude', P('menu_' .. k)), '', '', WhitelistFunctions[k])
 	end
 
 	for k, v in pairs(DPP.RestrictTypes) do
-		spawnmenu.AddToolMenuOption('Utilities', 'DPP Restrictions', 'DPP.restrict' .. k, v .. ' Restrictions', '', '', PanelsFunctions2[k])
+		spawnmenu.AddToolMenuOption('Utilities', 'DPP Restrictions', 'DPP.restrict' .. k, DPP.GetPhrase('menu_restricts', P('menu_' .. k)), '', '', PanelsFunctions2[k])
 	end
 end
 
@@ -2556,6 +2556,8 @@ local AccessCacheCheck = {
 	'transfertoplayer',
 }
 
+local RefrenceTable = {}
+
 local function InitializeCache()
 	for k, v in pairs(AccessCacheCheck) do
 		AccessCache[v] = false
@@ -2581,6 +2583,7 @@ local BlockedPropetries = {}
 
 local BlockProperties = {
 	MenuLabel = 'DPP Restrict options',
+	PHRASE = 'property_roptions',
 	Order = 2700,
 	MenuIcon = SettingsClass.BlockIcon,
 
@@ -2619,6 +2622,7 @@ local CleanupPlayer = {
 	MenuLabel = 'Cleanup props of owner',
 	Order = 2400,
 	MenuIcon = 'icon16/brick_delete.png',
+	PHRASE = 'property_cleanup',
 
 	Filter = function(self, ent, ply)
 		if not IsValid(ent) then return false end
@@ -2637,6 +2641,7 @@ local ShareMenu = {
 	MenuLabel = 'Share this prop',
 	Order = 2400,
 	MenuIcon = SettingsClass.EditIcon,
+	PHRASE = 'property_share',
 
 	Filter = function(self, ent, ply)
 		if not IsValid(ent) then return false end
@@ -2653,6 +2658,7 @@ local transfertoworld = {
 	MenuLabel = 'Transfer ownership to world',
 	Order = 2700,
 	MenuIcon = 'icon16/world.png',
+	PHRASE = 'property_transferworld',
 
 	MenuOpen = function(self, menu, ent, tr)
 		local SubMenu = menu:AddSubMenu()
@@ -2675,6 +2681,7 @@ local transfertoplayer = {
 	MenuLabel = 'Transfer ownership to player...',
 	Order = 2700,
 	MenuIcon = 'icon16/user.png',
+	PHRASE = 'property_transferworld',
 
 	MenuOpen = function(self, menu, ent, tr)
 		local SubMenu = menu:AddSubMenu()
@@ -2697,6 +2704,12 @@ local transfertoplayer = {
 
 	end,
 }
+
+table.insert(RefrenceTable, transfertoworld)
+table.insert(RefrenceTable, transfertoplayer)
+table.insert(RefrenceTable, ShareMenu)
+table.insert(RefrenceTable, CleanupPlayer)
+table.insert(RefrenceTable, BlockProperties)
 
 properties.Add('dpp.transfertoworld', transfertoworld)
 properties.Add('dpp.transfertoplayer', transfertoplayer)
@@ -3040,4 +3053,19 @@ do
 	table.insert(AccessCacheCheck, 'unrestrict' .. k)
 end
 
+for k, v in ipairs(BlockedPropetries) do
+	table.insert(RefrenceTable, v)
+end
+
+local function UpdatePhrases()
+	for k, v in ipairs(RefrenceTable) do
+		if v.PHRASE then
+			v.MenuLabel = DPP.GetPhrase(v.PHRASE)
+		end
+	end
+end
+
+hook.Add('DPP.LanguageChanged', 'DPP.PropertyMenus', UpdatePhrases)
+
 InitializeCache()
+timer.Simple(0, UpdatePhrases)

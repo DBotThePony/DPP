@@ -81,7 +81,7 @@ function DPP.RefreshFriends()
 
 	LocalPlayer().DPP_Friends = DPP.ActiveFriends
 
-	DPP.Message('Friendlist refreshed')
+	DPP.Message(DPP.GetPhrase('friends_refreshed'))
 	return DPP.ActiveFriends
 end
 
@@ -143,7 +143,7 @@ function DPP.LoadFriends()
 		DPP.CheckFriendArgs(v)
 	end
 
-	DPP.Message('Friendlist loaded...')
+	DPP.Message(DPP.GetPhrase('friends_loaded'))
 	timer.Simple(0, DPP.RefreshFriends)
 end
 
@@ -153,12 +153,12 @@ function DPP.SaveFriends()
 	local FILE = 'dpp/friends.txt'
 	local contents = util.TableToJSON(DPP.ClientFriends, true)
 	file.Write(FILE, contents)
-	DPP.Message('Friendlist saved...')
+	DPP.Message(DPP.GetPhrase('friends_saved'))
 end
 
 function DPP.SendFriends()
 	DPP.RefreshFriends()
-	DPP.Message('Sending Friendlist to server')
+	DPP.Message(DPP.GetPhrase('friends_sended'))
 	net.Start('DPP.ReloadFiendList')
 	net.WriteTable(DPP.ActiveFriends)
 	net.SendToServer()
@@ -190,7 +190,7 @@ function DPP.AddFriend(ply, physgun, gravgun, toolgun, use, vehicle, damage, pic
 
 	DPP.CheckFriendArgs(DPP.ClientFriends[steamid])
 
-	DPP.Message('Friend added')
+	DPP.Message(DPP.GetPhrase('friend_added'))
 
 	DPP.RecalculateCPPIFriendTable(LocalPlayer())
 	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
@@ -227,7 +227,7 @@ function DPP.AddFriendBySteamID(steamid, physgun, gravgun, toolgun, use, vehicle
 
 	DPP.CheckFriendArgs(DPP.ClientFriends[steamid])
 
-	DPP.Message('Friend added')
+	DPP.Message(DPP.GetPhrase('friend_added'))
 
 	DPP.RecalculateCPPIFriendTable(LocalPlayer())
 	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
@@ -241,12 +241,12 @@ function DPP.RemoveFriend(ply)
 	if ply == LocalPlayer() then return end
 	local steamid = ply:SteamID()
 	if not DPP.ClientFriends[steamid] then
-		DPP.Message('There is no friend with id ' .. steamid .. '!')
+		DPP.Message(DPP.GetPhrase('no_friend_with_steamid', steamid))
 		return
 	end
 
 	DPP.ClientFriends[steamid] = nil
-	DPP.Message('Friend with id ' .. steamid .. ' removed')
+	DPP.Message(DPP.GetPhrase('friend_removed', steamid))
 
 	DPP.RecalculateCPPIFriendTable(LocalPlayer())
 	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
@@ -259,12 +259,12 @@ end
 function DPP.RemoveFriendBySteamID(steamid)
 	if ply == LocalPlayer() then return end
 	if not DPP.ClientFriends[steamid] then
-		DPP.Message('There is no friend with id ' .. steamid .. '!')
+		DPP.Message(DPP.GetPhrase('no_friend_with_steamid', steamid))
 		return
 	end
 
 	DPP.ClientFriends[steamid] = nil
-	DPP.Message('Friend with id ' .. steamid .. ' removed')
+	DPP.Message(DPP.GetPhrase('friend_removed', steamid))
 
 	DPP.RecalculateCPPIFriendTable(LocalPlayer())
 	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
@@ -286,7 +286,7 @@ end
 
 concommand.Add('dpp_addfriend', function(ply, cmd, args)
 	if not args[1] then
-		DPP.Message('Invalid argument')
+		DPP.Message(DPP.GetPhrase('com_invalid_target'))
 		return
 	end
 
@@ -307,7 +307,7 @@ concommand.Add('dpp_addfriend', function(ply, cmd, args)
 	end
 
 	if not found then
-		DPP.Message('Invalid argument')
+		DPP.Message(DPP.GetPhrase('com_no_target'))
 		return
 	end
 
@@ -316,7 +316,7 @@ end)
 
 concommand.Add('dpp_remfriend', function(ply, cmd, args)
 	if not args[1] then
-		DPP.Message('Invalid argument')
+		DPP.Message(DPP.GetPhrase('com_invalid_target'))
 		return
 	end
 
@@ -337,7 +337,7 @@ concommand.Add('dpp_remfriend', function(ply, cmd, args)
 	end
 
 	if not found then
-		DPP.Message('Invalid argument')
+		DPP.Message(DPP.GetPhrase('com_no_target'))
 		return
 	end
 
@@ -614,7 +614,7 @@ local function PostDrawHUDDefault(x, y)
 
 			if DPP.GetConVar('enable_physgun') then
 				if status and DisplayReason then
-					name = name .. '\nPhysgun blocked'
+					name = name .. '\n' .. reason
 				end
 			else
 				CanTouch = true
@@ -634,7 +634,7 @@ local function PostDrawHUDDefault(x, y)
 
 			if DPP.GetConVar('enable_gravgun') then
 				if status and DisplayReason then
-					name = name .. '\nGravgun blocked'
+					name = name .. '\n' .. reason
 				end
 			else
 				CanTouch = true
@@ -669,11 +669,11 @@ local function PostDrawHUDDefault(x, y)
 	end
 
 	if DPP.LocalConVar('display_disconnected') and disconnected then
-		name = name .. '\nDisconnected Player'
+		name = name .. '\n' .. DPP.GetPhrase('disconnected_player')
 	end
 
 	if DPP.LocalConVar('display_grabs') and DPP.IsUpForGrabs(ent) then
-		name = name .. '\nUp for grabs!'
+		name = name .. '\n' .. DPP.GetPhrase('up_for_grabs')
 	end
 
 	local get = DPP.GetFont()
@@ -767,11 +767,11 @@ local function HUDPaintSimple(x, y)
 	end
 
 	if disconnected then
-		name = name .. '\nDisconnected Player'
+		name = name .. '\n' .. DPP.GetPhrase('disconnected_player')
 	end
 
 	if DPP.IsUpForGrabs(ent) then
-		name = name .. '\nUp for grabs!'
+		name = name .. '\n' .. DPP.GetPhrase('up_for_grabs')
 	end
 
 	local get = DPP.GetFont()
@@ -881,11 +881,14 @@ local function HUDPaint()
 end
 
 local LangCVar
+local LastLanguage
 
 --We can send language only at it's change, but for safety - always send language
 local function UpdateLang()
 	LangCVar = LangCVar or GetConVar('gmod_language')
 	DPP.CURRENT_LANG = LangCVar:GetString():lower()
+	if LastLanguage ~= DPP.CURRENT_LANG then hook.Call('DPP.LanguageChanged') end
+	LastLanguage = DPP.CURRENT_LANG
 	net.Start('DPP.UpdateLang')
 	net.WriteString(DPP.CURRENT_LANG)
 	net.SendToServer()
