@@ -2720,6 +2720,7 @@ properties.Add('dpp.blockingmenu', BlockProperties)
 table.insert(BlockedPropetries, {
 	MenuLabel = 'Add to DPP Blocked Models',
 	MenuIcon = SettingsClass.BlockIcon,
+	PHRASE = 'property_add_blocked_models',
 
 	Filter = function(self, ent, ply)
 		if DPP.PlayerConVar(_, 'no_block_options') then return end
@@ -2737,7 +2738,8 @@ table.insert(BlockedPropetries, {
 table.insert(BlockedPropetries, {
 	MenuLabel = 'Remove from DPP Blocked Models',
 	MenuIcon = SettingsClass.UnblockIcon,
-
+	PHRASE = 'property_remove_blocked_models',
+	
 	Filter = function(self, ent, ply)
 		if DPP.PlayerConVar(_, 'no_block_options') then return false end
 		if not IsValid(ent) then return false end
@@ -2755,6 +2757,8 @@ for k, v in pairs(DPP.BlockTypes) do
 	table.insert(BlockedPropetries, {
 		MenuLabel = 'Add to DPP ' .. v .. ' blacklist',
 		MenuIcon = SettingsClass.BlockIcon,
+		PHRASE = 'property_add_blacklist',
+		PHRASE_ARG = 'menu_' .. k,
 
 		Filter = function(self, ent, ply)
 			if not Access('addblockedentity' .. k) then return end
@@ -2771,6 +2775,8 @@ for k, v in pairs(DPP.BlockTypes) do
 	table.insert(BlockedPropetries, {
 		MenuLabel = 'Remove from DPP ' .. v .. ' blacklist',
 		MenuIcon = SettingsClass.UnblockIcon,
+		PHRASE = 'property_remove_blacklist',
+		PHRASE_ARG = 'menu_' .. k,
 
 		Filter = function(self, ent, ply)
 			if not Access('removeblockedentity' .. k) then return end
@@ -2860,8 +2866,10 @@ for k, v in pairs(DPP.RestrictTypes) do
 	end
 
 	table.insert(BlockedPropetries, {
-		MenuLabel = 'Add to DPP ' .. v .. ' restrict black/white list',
+		MenuLabel = 'Add to DPP ' .. v .. ' restrict list',
 		MenuIcon = SettingsClass.BlockIcon,
+		PHRASE = 'property_add_restrict',
+		PHRASE_ARG = 'menu_' .. k,
 
 		Filter = function(self, ent, ply)
 			if not Access('restrict' .. k) then return end
@@ -2878,8 +2886,10 @@ for k, v in pairs(DPP.RestrictTypes) do
 	})
 
 	table.insert(BlockedPropetries, {
-		MenuLabel = 'Remove from DPP ' .. v .. ' restrict black/white list',
+		MenuLabel = 'Remove from DPP ' .. v .. ' restrict list',
 		MenuIcon = SettingsClass.UnblockIcon,
+		PHRASE = 'property_remove_restrict',
+		PHRASE_ARG = 'menu_' .. k,
 
 		Filter = function(self, ent, ply)
 			if not Access('unrestrict' .. k) then return end
@@ -2898,6 +2908,8 @@ for k, v in pairs(DPP.RestrictTypes) do
 	table.insert(BlockedPropetries, {
 		MenuLabel = 'Modify DPP ' .. v .. ' restriction...',
 		MenuIcon = 'icon16/pencil.png',
+		PHRASE = 'property_modify_restrict',
+		PHRASE_ARG = 'menu_' .. k,
 
 		Filter = function(self, ent, ply)
 			if not Access('restrict' .. k) then return end
@@ -2993,9 +3005,11 @@ do
 	end
 
 	table.insert(BlockedPropetries, {
-		MenuLabel = 'Add to DPP ' .. v .. ' restrict black/whitelist',
+		MenuLabel = 'Add to DPP ' .. v .. ' restrict list',
 		Order = 2520,
 		MenuIcon = SettingsClass.BlockIcon,
+		PHRASE = 'property_add_restrict',
+		PHRASE_ARG = 'menu_' .. k,
 
 		Filter = function(self, ent, ply)
 			if not Access('restrict' .. k) then return end
@@ -3012,9 +3026,11 @@ do
 	})
 
 	table.insert(BlockedPropetries, {
-		MenuLabel = 'Remove from DPP ' .. v .. ' restrict black/whitelist',
+		MenuLabel = 'Remove from DPP ' .. v .. ' restrict list',
 		Order = 2520,
 		MenuIcon = SettingsClass.UnblockIcon,
+		PHRASE = 'property_remove_restrict',
+		PHRASE_ARG = 'menu_' .. k,
 
 		Filter = function(self, ent, ply)
 			if not Access('unrestrict' .. k) then return end
@@ -3060,7 +3076,7 @@ end
 local function UpdatePhrases()
 	for k, v in ipairs(RefrenceTable) do
 		if v.PHRASE then
-			v.MenuLabel = DPP.GetPhrase(v.PHRASE)
+			v.MenuLabel = DPP.GetPhrase(v.PHRASE, v.PHRASE_ARG and DPP.GetPhrase(v.PHRASE_ARG) or '')
 		end
 	end
 end

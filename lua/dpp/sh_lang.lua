@@ -315,6 +315,13 @@ entities.
 	property_transferworld = 'Transfer ownership to world',
 	property_transferworld = 'Transfer ownership to player...',
 	property_roptions = 'DPP Restrict options',
+	property_add_blocked_models = 'Add to DPP Blocked Models',
+	property_remove_blocked_models = 'Remove from DPP Blocked Models',
+	property_add_blacklist = 'Add to %q DPP blacklist',
+	property_remove_blacklist = 'Remove from %q DPP blacklist',
+	property_add_restrict = 'Add to %q DPP restrict list',
+	property_remove_restrict = 'Remove from %q DPP restrict list',
+	property_modify_restrict = 'Modify DPP %q restriction...',
 	
 	--Misc messages
 	prop_stuck_in_player = 'Your prop is stuck in other player',
@@ -819,6 +826,14 @@ local ru = {
 	property_share = 'Зашарить',
 	property_transferworld = 'Передать права на проп миру',
 	property_transferworld = 'Передать права на проп игроку...',
+	property_roptions = 'Опции запрета DPP',
+	property_add_blocked_models = 'Добавить в запрещённые модели',
+	property_remove_blocked_models = 'Удалить из запрещённых моделей',
+	property_add_blacklist = 'Добавить в %q DPP чёрный лист',
+	property_remove_blacklist = 'Удалить из %q DPP чёрного листа',
+	property_add_restrict = 'Добавить в %q DPP лист ограничений',
+	property_remove_restrict = 'Удалить из %q DPP листа ограничений',
+	property_modify_restrict = 'Изменить DPP %q ограничение...',
 	
 	--Misc messages
 	prop_stuck_in_player = 'Ваш проп застрял в другом игроке',
