@@ -21,11 +21,11 @@ local RED = Color(255, 0, 0)
 function DPP.CanDamage(ply, ent, ignoreEnt)
 	if not DPP.GetConVar('enable_damage') then return true end
 	if DPP.IsEntityBlockedDamage(ent:GetClass()) then 
-		return false, 'Damage blocked'
+		return false, DPP.GetPhrase('damage_blocked')
 	end
 
 	if DPP.IsEntityWhitelistedDamage(ent:GetClass()) then
-		return true, 'Damage allowed (Excluded)'
+		return true, DPP.GetPhrase('entity_excluded_d')
 	end
 
 	local type = DPP.GetEntityType(ent)
@@ -36,9 +36,9 @@ function DPP.CanDamage(ply, ent, ignoreEnt)
 	local ads = DPP.GetConVar('allow_damage_sent')
 	local adn = DPP.GetConVar('allow_damage_npc')
 
-	if type == 'vehicle' and adv then return true, 'Damage allowed' end
-	if type == 'sent' and DPP.IsOwned(ent) and ads then return true, 'Damage allowed' end
-	if type == 'npc' and adn then return true, 'Damage allowed' end
+	if type == 'vehicle' and adv then return true, DPP.GetPhrase('damage_allowed') end
+	if type == 'sent' and DPP.IsOwned(ent) and ads then return true, DPP.GetPhrase('damage_allowed') end
+	if type == 'npc' and adn then return true, DPP.GetPhrase('damage_allowed') end
 
 	ignoreEnt = ignoreEnt or {}
 
@@ -111,14 +111,15 @@ function DPP.ToolgunTouch(ply, tr, mode)
 		end
 
 		if Should and CTime + val ~= ply._DPP_LastToolgunUse then
-			if ply._DPP_LastToolgunUse > CTime then return false end
+			if ply._DPP_LastToolgunUse > CTime then return false, DPP.GetPhrase('toolgun_antispam') end
 			ply._DPP_LastToolgunUse = CTime + val
 		end
 	end
 
 	if SERVER then DPP.CheckUpForGrabs(tr.Entity, ply) end
-
-	if DPP.CanTool(ply, tr.Entity, mode) == false then 
+	
+	local CAN, Reason = DPP.CanTool(ply, tr.Entity, mode)
+	if CAN == false then 
 		if SERVER then
 			ply._DPP_LastToolgunLog = ply._DPP_LastToolgunLog or 0
 			if not DPP.GetConVar('no_tool_log') and not DPP.GetConVar('no_tool_fail_log') and ply._DPP_LastToolgunLog < CurTime() then
@@ -128,7 +129,7 @@ function DPP.ToolgunTouch(ply, tr, mode)
 			end
 		end
 
-		return false 
+		return false, Reason
 	end
 
 	if SERVER then
@@ -163,11 +164,11 @@ function DPP.CanPhysgun(ply, ent)
 	if not DPP.GetConVar('enable_physgun') then return true end
 
 	if DPP.IsEntityBlockedPhysgun(ent:GetClass(), ply) then 
-		return false, 'Entity is blacklisted'
+		return false, DPP.GetPhrase('physgun_blocked')
 	end
 
 	if DPP.IsEntityWhitelistedPhysgun(ent:GetClass()) then
-		return true, 'Entity is excluded'
+		return true, DPP.GetPhrase('entity_excluded')
 	end
 
 	return DPP.CanTouch(ply, ent, 'physgun')
@@ -186,11 +187,11 @@ function DPP.CanGravgun(ply, ent)
 	if not DPP.GetConVar('enable_gravgun') then return true end
 
 	if DPP.IsEntityBlockedGravgun(ent:GetClass(), ply) then
-		return false
+		return false, DPP.GetPhrase('gravgun_blocked')
 	end
 
 	if DPP.IsEntityWhitelistedGravgun(ent:GetClass()) then
-		return true, 'Entity is excluded'
+		return true, DPP.GetPhrase('entity_excluded')
 	end
 
 	if DPP.GetConVar('disable_gravgun_world') and not DPP.IsOwned(ent) then
@@ -234,37 +235,37 @@ local ropeModes = {
 }
 
 function DPP.CanTool(ply, ent, mode)
-	if not DPP.GetConVar('enable_tool') then return end
+	if not DPP.GetConVar('enable_tool') then return true, DPP.GetPhrase('protection_disabled') end
 	DPP.AssertArguments('DPP.CanTool', {{ply, 'Player'}, {ent, 'AnyEntity'}, {mode, 'string'}})
 
 	if DPP.IsRestrictedTool(mode, ply) then 
-		return false, 'Restricted Tool' 
+		return false, DPP.GetPhrase('restricted_tool')
 	end
 
 	if not IsValid(ent) then 
 		if DPP.GetConVar('no_rope_world') then
 			if (mode and ropeModes[mode]) and not (not DPP.GetConVar('no_rope_world_weld') and mode == 'weld') then
-				return false, 'No rope world'
+				return false, DPP.GetPhrase('no_rope_world')
 			end
 		end
 
 		if mode and DPP.IsEntityBlockedToolgunWorld(mode, ply) then
-			return false, 'Toolgun on world is blocked'
+			return false, DPP.GetPhrase('toolmode_blocked_world')
 		end
 
 		return true
 	end
 
 	if DPP.IsEntityBlockedTool(ent:GetClass(), ply) then
-		return false, 'Toolgun blocked'
+		return false, DPP.GetPhrase('toolgun_blocked')
 	end
 
 	if mode ~= 'remover' and DPP.IsEntityWhitelistedTool(ent:GetClass()) then
-		return true, 'Entity is excluded'
+		return true, DPP.GetPhrase('entity_excluded')
 	end
 
 	if mode and DPP.IsEntityWhitelistedToolMode(mode) then
-		return true, 'Tool mode is excluded'
+		return true, DPP.GetPhrase('toolmode_excluded')
 	end
 
 	if ent:IsPlayer() then
@@ -272,9 +273,9 @@ function DPP.CanTool(ply, ent, mode)
 		local can2 = DPP.GetConVar('toolgun_player_admin')
 
 		if ply:IsAdmin() then
-			if can2 then return false, 'Cannot toolgun player' end
+			if can2 then return false, DPP.GetPhrase('no_toolgun_player') end
 		else
-			if can1 then return false, 'Cannot toolgun player' end
+			if can1 then return false, DPP.GetPhrase('no_toolgun_player') end
 		end
 	end
 
@@ -291,10 +292,10 @@ function DPP.CanPlayerEnterVehicleTouch(ply, ent)
 end
 
 function DPP.CanPlayerEnterVehicle(ply, ent)
-	if not DPP.GetConVar('enable_veh') then return true, 'Protection disabled' end
+	if not DPP.GetConVar('enable_veh') then return true, DPP.GetPhrase('protection_disabled') end
 	DPP.AssertArguments('DPP.CanPlayerEnterVehicle', {{ply, 'Player'}, {ent, 'AnyEntity'}})
-	if ent.IgnoreVehicleProtection then return true, 'Ignored vehicle protection' end
-	if DPP.GetConVar('disable_veh_world') and not DPP.IsOwned(ent) then return true, 'Owned by world' end
+	if ent.IgnoreVehicleProtection then return true, DPP.GetPhrase('vehicle_protection_ignored') end
+	if DPP.GetConVar('disable_veh_world') and not DPP.IsOwned(ent) then return true, DPP.GetPhrase('owned_by_world') end
 
 	return DPP.CanTouch(ply, ent, 'vehicle')
 end
@@ -309,48 +310,47 @@ function DPP.CanEditVariableTouch(ent, ply, key, val, editor)
 end
 
 function DPP.CanEditVariable(ent, ply, key, val, editor)
-	if not DPP.GetConVar('enable_tool') then return true, 'Protection disabled' end
+	if not DPP.GetConVar('enable_tool') then return true, DPP.GetPhrase('protection_disabled') end
 	DPP.AssertArguments('DPP.CanEditVariable', {{ent, 'AnyEntity'}, {ply, 'Player'}})
 	return DPP.CanTool(ply, ent, '')
 end
 
 function DPP.CanProperty(ply, str, ent)
-	if string.sub(str, 1, 4) == 'dpp.' then return true end
-	if not DPP.GetConVar('enable_tool') then return true end
+	if string.sub(str, 1, 4) == 'dpp.' then return true, DPP.GetPhrase('dpp_property') end
+	if not DPP.GetConVar('enable_tool') then return true, DPP.GetPhrase('protection_disabled') end
 	DPP.AssertArguments('DPP.CanProperty', {{ply, 'Player'}, {str, 'string'}, {ent, 'AnyEntity'}})
 
 	--Make check before
 	if DPP.IsEntityBlockedTool(ent:GetClass(), ply) then
-		return false
+		return false, DPP.GetPhrase('toolgun_blocked')
 	end
 
 	if DPP.IsRestrictedProperty(str, ply) then 
-		return false 
+		return false, DPP.GetPhrase('property_restricted')
 	end
 
 	if DPP.IsEntityWhitelistedPropertyType(str) then
-		return true
+		return true, DPP.GetPhrase('property_excluded')
 	end
 
 	if str ~= 'remover' and DPP.IsEntityWhitelistedProperty(ent:GetClass()) then
-		return true
+		return true, DPP.GetPhrase('entity_excluded')
 	end
 
-	local reply = DPP.CanTool(ply, ent, '')
-	if not reply then return false end
+	return DPP.CanTool(ply, ent, str)
 end
 
 function DPP.PlayerUse(ply, ent)
-	if not DPP.GetConVar('enable_use') then return true, 'Protection disabled' end
-	if DPP.GetConVar('disable_use_world') and not DPP.IsOwned(ent) then return true, 'Owned by world' end
+	if not DPP.GetConVar('enable_use') then return true, DPP.GetPhrase('protection_disabled') end
+	if DPP.GetConVar('disable_use_world') and not DPP.IsOwned(ent) then return true, DPP.GetPhrase('owned_by_world') end
 	DPP.AssertArguments('DPP.PlayerUse', {{ply, 'Player'}, {ent, 'AnyEntity'}})
 
 	if DPP.IsEntityBlockedUse(ent:GetClass(), ply) then
-		return false
+		return false, DPP.GetPhrase('use_blocked')
 	end
 
 	if DPP.IsEntityWhitelistedUse(ent:GetClass()) then
-		return true
+		return true, DPP.GetPhrase('entity_excluded')
 	end
 
 	return DPP.CanTouch(ply, ent, 'use')
@@ -366,26 +366,26 @@ function DPP.CanDriveTouch(ply, ent)
 end
 
 function DPP.CanDrive(ply, ent)
-	if not DPP.GetConVar('enable_drive') then return true, 'Protection disabled' end
+	if not DPP.GetConVar('enable_drive') then return true, DPP.GetPhrase('protection_disabled') end
 	DPP.AssertArguments('DPP.CanDrive', {{ply, 'Player'}, {ent, 'AnyEntity'}})
 	return DPP.CanPhysgun(ply, ent)
 end
 
-DPP.CanDrive = DPP.Wrap(DPP.CanDrive, true, 'Protection disabled')
-DPP.CanDamage = DPP.Wrap(DPP.CanDamage, true, 'Protection disabled')
-DPP.CanPhysgun = DPP.Wrap(DPP.CanPhysgun, true, 'Protection disabled')
-DPP.CanProperty = DPP.Wrap(DPP.CanProperty, true, 'Protection disabled')
-DPP.CanGravgun = DPP.Wrap(DPP.CanGravgun, true, 'Protection disabled')
-DPP.CanGravgunPunt = DPP.Wrap(DPP.CanGravgunPunt, true, 'Protection disabled')
-DPP.OnPhysgunReload = DPP.Wrap(DPP.OnPhysgunReload, true, 'Protection disabled')
-DPP.CanTool = DPP.Wrap(DPP.CanTool, true, 'Protection disabled')
-DPP.CanEditVariable = DPP.Wrap(DPP.CanEditVariable, true, 'Protection disabled')
-DPP.CanPlayerEnterVehicle = DPP.Wrap(DPP.CanPlayerEnterVehicle, true, 'Protection disabled')
-DPP.PlayerUse = DPP.Wrap(DPP.PlayerUse, true, 'Protection disabled')
+DPP.CanDrive = DPP.Wrap(DPP.CanDrive, true, 'protection_disabled')
+DPP.CanDamage = DPP.Wrap(DPP.CanDamage, true, 'protection_disabled')
+DPP.CanPhysgun = DPP.Wrap(DPP.CanPhysgun, true, 'protection_disabled')
+DPP.CanProperty = DPP.Wrap(DPP.CanProperty, true, 'protection_disabled')
+DPP.CanGravgun = DPP.Wrap(DPP.CanGravgun, true, 'protection_disabled')
+DPP.CanGravgunPunt = DPP.Wrap(DPP.CanGravgunPunt, true, 'protection_disabled')
+DPP.OnPhysgunReload = DPP.Wrap(DPP.OnPhysgunReload, true, 'protection_disabled')
+DPP.CanTool = DPP.Wrap(DPP.CanTool, true, 'protection_disabled')
+DPP.CanEditVariable = DPP.Wrap(DPP.CanEditVariable, true, 'protection_disabled')
+DPP.CanPlayerEnterVehicle = DPP.Wrap(DPP.CanPlayerEnterVehicle, true, 'protection_disabled')
+DPP.PlayerUse = DPP.Wrap(DPP.PlayerUse, true, 'protection_disabled')
 
 function DPP.CanPickupItem(ply, ent)
-	if not DPP.GetConVar('enable') then return true, 'Protection disabled' end
-	if not DPP.GetConVar('enable_pickup') then return true, 'Protection disabled' end
+	if not DPP.GetConVar('enable') then return true, DPP.GetPhrase('protection_disabled') end
+	if not DPP.GetConVar('enable_pickup') then return true, DPP.GetPhrase('protection_disabled') end
 
 	DPP.AssertArguments('DPP.CanPickupItem', {{ply, 'Player'}, {ent, 'AnyEntity'}})
 

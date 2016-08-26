@@ -1012,9 +1012,10 @@ else
 end
 
 if CLIENT then
-	DPP.NetworkedConVarsDB = {}
+	DPP.NetworkedConVarsDB = DPP.NetworkedConVarsDB or {}
 
 	for k, v in pairs(DPP.Settings) do
+		if DPP.NetworkedConVarsDB[k] ~= nil then continue end --Lua Refresh
 		if v.bool then
 			DPP.NetworkedConVarsDB[k] = v.value == '1'
 		elseif v.int then
@@ -1053,7 +1054,7 @@ end
 
 function DPP.Wrap(func, retval, arg)
 	return function(...)
-		if not DPP.GetConVar('enable') then return retval, arg end
+		if not DPP.GetConVar('enable') then return retval, (type(arg) == 'string' and DPP.GetPhrase(arg) or arg) end
 		return func(...)
 	end
 end
@@ -1322,6 +1323,8 @@ function DPP.GetPhrase(id, ...)
 	return DPP.PhraseByLang(DPP.CURRENT_LANG, id, ...)
 end
 
+local GetPhrase = DPP.GetPhrase
+
 DPP.GetPhraseByLang = DPP.PhraseByLang
 
 function DPP.RegisterPhrase(lang, id, str)
@@ -1422,15 +1425,15 @@ timer.Create('DPP.ClearPlayersTouchAccess', 1, 0, function()
 end)
 
 function DPP.CanTouch(ply, ent, mode)
-	if not DPP.GetConVar('enable') then return true, 'Protection disabled' end
-	if not IsValid(ply) then return true, 'World' end
-	if not IsValid(ent) then return false, 'Entity is not valid' end
-	if ent:IsPlayer() then return end
+	if not IsValid(ply) then return true, GetPhrase('World') end
+	if not IsValid(ent) then return false, GetPhrase('not_valid') end
+	if not DPP.GetConVar('enable') then return true, GetPhrase('protection_disabled') end
+	if ent:IsPlayer() then return nil end
 
 	local model = ent:GetModel()
 	if model then
 		if DPP.IsModelBlocked(model) then
-			return false, 'Model is blacklisted'
+			return false, GetPhrase('model_is_blacklisted')
 		end
 	end
 
@@ -1478,9 +1481,9 @@ function DPP.CanTouch(ply, ent, mode)
 			if owner == dString then
 				if isShared then
 					if mode then
-						reason = 'Shared ' .. (mode and string.gsub(mode, '^.', string.upper) or '')
+						reason = GetPhrase('is_shared', mode:gsub('^.', string.upper))
 					else
-						reason = 'Shared'
+						reason = GetPhrase('is_shared_e')
 					end
 
 					continue
@@ -1488,7 +1491,7 @@ function DPP.CanTouch(ply, ent, mode)
 					continue
 				else
 					can = false
-					reason = 'Not a friend of owner/constrained'
+					reason = GetPhrase('not_a_owner_pp')
 					break
 				end
 			end
@@ -1500,7 +1503,7 @@ function DPP.CanTouch(ply, ent, mode)
 					continue
 				else
 					can = false
-					reason = 'Not a friend of owner/constrained'
+					reason = GetPhrase('not_a_owner_pp')
 					break
 				end
 			end
@@ -1513,7 +1516,7 @@ function DPP.CanTouch(ply, ent, mode)
 		if owner == ply then
 			if DPP.PlayerConVar(ply, 'no_touch') then 
 				can = false 
-				reason = 'dpp_no_touch is TRUE!'
+				reason = GetPhrase('dpp_no_touch_true')
 				break 
 			end
 
@@ -1523,19 +1526,19 @@ function DPP.CanTouch(ply, ent, mode)
 		if not IsValid(owner) then
 			if not DPP.CanTouchWorld(ply, ent) then
 				can = false 
-				reason = 'Belong/Constrained to world'
+				reason = GetPhrase('world_pp')
 				break
 			end
 
 			if DPP.PlayerConVar(ply, 'no_touch_world', false) then
 				can = false 
-				reason = 'dpp_no_touch_world 1'
+				reason = GetPhrase('dpp_no_touch_world')
 				break
 			end
 		else
 			if mode and DPP.ProtectionModes[mode] and owner:IsPlayer() then
 				if DPP.IsProtectionDisabledFor(owner, mode) then
-					reason = 'Owner disabled ' .. mode .. ' protection'
+					reason = GetPhrase('protection_disabled_owner', mode)
 				end
 			end
 
@@ -1544,7 +1547,7 @@ function DPP.CanTouch(ply, ent, mode)
 
 				if DPP.PlayerConVar(ply, 'no_touch_other', false) then
 					can = false
-					reason = 'dpp_no_touch_other 1'
+					reason = GetPhrase('dpp_no_touch_other')
 					break
 				end
 
@@ -1552,14 +1555,14 @@ function DPP.CanTouch(ply, ent, mode)
 					continue
 				elseif not friend then
 					can = false
-					reason = 'Not a friend of owner/constrained'
+					reason = GetPhrase('not_a_owner_pp')
 					break
 				end
 			else
 				if mode then
-					reason = 'Shared ' .. (mode and string.gsub(mode, '^.', string.upper) or '')
+					reason = GetPhrase('is_shared', mode:gsub('^.', string.upper))
 				else
-					reason = 'Shared'
+					reason = GetPhrase('is_shared_e')
 				end
 			end
 		end

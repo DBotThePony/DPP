@@ -146,9 +146,45 @@ entities.
 	add_property = 'Add Property',
 	remove_property = 'Remove Property',
 	tool_exclude = '\nNOTE FOR TOOLGUN: "remover" still can\'t be used\non whitelisted entities.',
+	
+	--Core messages
+	model_is_blacklisted = 'Model is blacklisted',
+	is_shared = 'Shared %s',
+	is_shared_e = 'Shared',
+	not_a_owner_pp = 'Not a friend of owner/constrained',
+	world_pp = 'Belong/Constrained to world',
+	dpp_no_touch_true = 'dpp_no_touch is TRUE!',
+	dpp_no_touch_world = 'dpp_no_touch_world is TRUE!',
+	protection_disabled_owner = 'Owner disabled %s protection',
+	dpp_no_touch_other = 'dpp_no_touch_other is TRUE!',
+	protection_disabled = 'Protection disabled',
+	World = 'World',
+	not_valid = 'Entity is not valid',
+	
+	--Hooks messages
+	owned_by_world = 'Owned by world',
+	no_toolgun_player = 'Cannot toolgun player',
+	entity_excluded = 'Entity is excluded',
+	entity_excluded_d = 'Damage allowed (excluded)',
+	toolmode_excluded = 'Tool mode is excluded',
+	toolmode_blocked_world = 'Toolgun mode on world is blocked',
+	toolgun_blocked = 'Toolgun blocked',
+	no_rope_world = 'No rope world',
+	restricted_tool = 'Restricted Tool',
+	vehicle_protection_ignored = 'Ignored vehicle protection',
+	dpp_property = 'DPP Property',
+	property_restricted = 'Property restricted',
+	property_excluded = 'Property excluded',
+	use_blocked = 'Use blocked',
+	gravgun_blocked = 'Gravity gun blocked',
+	physgun_blocked = 'Physgun blocked',
+	toolgun_antispam = 'Toolgun spam',
+	damage_allowed = 'Damage allowed',
+	damage_blocked = 'Damage blocked',
 }
 
 local ru = {
+	--Added in phrases testing
 	scvar_base = '%s\n\nКонсольная переменная: dpp_%s',
 	model = 'Модель',
 	add_model = 'Добавить модель',
@@ -159,6 +195,7 @@ local ru = {
 	discard = 'Отмена',
 	modifying = 'Изменение %s',
 	
+	--Console Variables
 	cvar_disable_veh_world = 'Disable "Vehicle" protection for world entities',
 	cvar_antispam_ghost = 'Ghost thresold',
 	cvar_blacklist_physgun_white = 'Physgun blacklist is a white list.',
@@ -316,6 +353,7 @@ local ru = {
 	cvar_freeze_on_disconnect = 'Freeze player entities on disconnect',
 	cvar_unfreeze_restrict_num = 'Maximum entities that are allowed to be unfreezed at once',
 	
+	--Options
 	sharing = 'Шаринг %s',
 	unshare = 'Снять все галочки и применить',
 	
@@ -439,6 +477,41 @@ local ru = {
 	add_property = 'Добавить свойство',
 	remove_property = 'Убрать свойство',
 	tool_exclude = '\nПРИМЕЧАНИЕ: "remover" всё равно не может быть использован\nна энтити в данном листе',
+	
+	--Core messages
+	model_is_blacklisted = 'Модель в чёрном списке',
+	is_shared = 'Зашарено в режиме %q',
+	is_shared_e = 'Зашарено',
+	not_a_owner_pp = 'Не является владельцом/соединено',
+	world_pp = 'Принадлежит/Привязано к миру',
+	dpp_no_touch_true = 'dpp_no_touch = TRUE!',
+	dpp_no_touch_world = 'dpp_no_touch_world = TRUE!',
+	protection_disabled_owner = 'Владелец отключил %q защиту',
+	dpp_no_touch_other = 'dpp_no_touch_other = TRUE!',
+	protection_disabled = 'Защита отключена',
+	World = 'Мир',
+	not_valid = 'Энтити не является правильным',
+	
+	--Hooks messages
+	owned_by_world = 'Нет владельца',
+	no_toolgun_player = 'Нельзя использовать на игроке',
+	entity_excluded = 'Энтити исключено по списку',
+	entity_excluded_d = 'Урон разрешён (исключено)',
+	toolmode_excluded = 'Режим в списке исключений',
+	toolmode_blocked_world = 'Режим в чёрном списке "по миру"',
+	toolgun_blocked = 'Инструмент заблокирован',
+	no_rope_world = 'Нет верёвок по миру',
+	restricted_tool = 'Ограниченный инструмент',
+	vehicle_protection_ignored = 'Защита игнорируется',
+	dpp_property = 'DPP свойство',
+	property_restricted = 'Свойство ограничено',
+	property_excluded = 'Свойство в списке исключений',
+	use_blocked = 'Использование заблокировано',
+	gravgun_blocked = 'Гравипушка заблокирована',
+	physgun_blocked = 'Физпушка заблокирована',
+	toolgun_antispam = 'Спам инструментом',
+	damage_allowed = 'Урон разрешён',
+	damage_blocked = 'Урон заблокирован',
 }
 
 DPP.RegisterPhraseList('en', en)
