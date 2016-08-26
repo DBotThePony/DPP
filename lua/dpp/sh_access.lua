@@ -17,15 +17,18 @@ limitations under the License.
 
 local CAMIFailed = false
 DPP.Access = DPP.Access or {}
+DPP.CAMIPrivTable = DPP.CAMIPrivTable or {}
 
-function DPP.RegisterAccess(id, default)
+function DPP.RegisterAccess(id, default, desc, phraseid)
 	DPP.Access[id] = default
 
 	if not CAMI or CAMIFailed then return end
 
-	CAMI.RegisterPrivilege{
+	DPP.CAMIPrivTable[id] = CAMI.RegisterPrivilege{
 		Name = 'dpp_' .. id,
 		MinAccess = default,
+		Description = desc,
+		DPP_PHRASEID = phraseid,
 	}
 end
 
@@ -139,25 +142,74 @@ local default = {
 	removeconstlimit = 'superadmin',
 }
 
+local default_desc = {
+	--Core access
+	touchother = 'Whatever player can touch other players props',
+	seelogs = 'Whatever player can see logs',
+	setvar = 'Whatever player can change DPP convars',
+
+	--Usual Commands
+	cleardecals = 'Can clear decals',
+	toggleplayerprotect = 'Can disable or enable protection for players',
+	cleardisconnected = 'Can clear all disconnected player props',
+	clearmap = 'Can clean up map',
+	clearbyuid = 'Can freeze player entities',
+	freezeall = 'Can freeze all entities',
+	clearplayer = 'Can remove other player entities',
+	clearself = 'Can clear his own entities',
+	transfertoworld = 'Can transfer ownership to world',
+	transfertoworld_constrained = 'Can transfer ownership to world with constrained',
+	freezeplayer = 'Can freeze player entities',
+	freezebyuid = 'Can freeze player entities using UniqueID',
+	unfreezebyuid = 'Can unfreeze player entities',
+	unfreezeplayer = 'Can unfreeze player entities using UniqueID',
+	share = 'Can share props',
+	fallbackto = 'Can set fallback',
+	removefallbackto = 'Can remove fallback',
+	transfertoplayer = 'Can transfer props to other players',
+	transfertoplayer_all = 'Can transfer all props to other players',
+	entcheck = 'Can request entity report',
+
+	--Database manipulate commands
+	addblockedmodel = 'Can add blocked model',
+	removeblockedmodel = 'Can remove blocked model',
+	addentitylimit = 'Can add entity limit',
+	removeentitylimit = 'Can remove entity limit',
+	addsboxlimit = 'Can add sandbox limit',
+	addconstlimit = 'Can add constraints limit',
+	removesboxlimit = 'Can remove sandbox limit',
+	removeconstlimit = 'Can remove constraints limit',
+}
+
 for k, v in pairs(DPP.BlockTypes) do
 	default['addblockedentity' .. k] = 'superadmin'
 	default['removeblockedentity' .. k] = 'superadmin'
+	default_desc['addblockedentity' .. k] = 'Can add entities to ' .. k .. ' blacklist'
+	default_desc['removeblockedentity' .. k] = 'Can remove entities from ' .. k .. ' blacklist'
 end
 
 for k, v in pairs(DPP.WhitelistTypes) do
 	default['addwhitelistedentity' .. k] = 'superadmin'
 	default['removewhitelistedentity' .. k] = 'superadmin'
+	default_desc['addwhitelistedentity' .. k] = 'Can add entities to ' .. k .. ' exclude list'
+	default_desc['removewhitelistedentity' .. k] = 'Can remove entities from ' .. k .. ' exclude list'
 end
 
 for k, v in pairs(DPP.RestrictTypes) do
 	default['restrict' .. k] = 'superadmin'
 	default['unrestrict' .. k] = 'superadmin'
+	default_desc['restrict' .. k] = 'Can add entities to ' .. k .. ' restrict list'
+	default_desc['unrestrict' .. k] = 'Can remove entities from ' .. k .. ' restrict list'
 end
 
 function DPP.RegisterRights()
+	for k, v in pairs(default_desc) do
+		DPP.RegisterPhrase('en', 'priv_' .. k, v)
+	end
+	
 	for k, v in pairs(default) do
 		local trace, reason
-		local status = xpcall(DPP.RegisterAccess, function(err) reason = err trace = debug.traceback() end, k, v)
+		local status = xpcall(DPP.RegisterAccess, function(err) reason = err trace = debug.traceback() end, k, v, default_desc[k], 'priv_' .. k)
 
 		if not status and SERVER then
 			CAMIFailed = true
@@ -167,5 +219,11 @@ function DPP.RegisterRights()
 	end
 end
 
-timer.Simple(0, DPP.RegisterRights)
+hook.Add('DPP.LanguageChanged', 'DPP.Access', function()
+	for k, v in pairs(DPP.CAMIPrivTable) do
+		if not v.DPP_PHRASEID then continue end
+		v.Description = DPP.GetPhrase(v.DPP_PHRASEID)
+	end
+end)
 
+timer.Simple(0, DPP.RegisterRights)

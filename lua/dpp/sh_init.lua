@@ -1360,6 +1360,28 @@ function DPP.RegisterPhraseList(lang, array)
 	end
 end
 
+--For quickly looking for missing phrases
+function DPP.MissingPhrases(lang)
+	DPP.Phrases[lang] = DPP.Phrases[lang] or {}
+	local reply = {}
+	
+	for k, v in pairs(DPP.Phrases.en) do
+		if not DPP.Phrases[lang][k] then
+			reply[k] = v
+		end
+	end
+	
+	return reply
+end
+
+function DPP.PrintMissingPhrases(lang)
+	local reply = DPP.MissingPhrases(lang)
+	
+	for k, v in SortedPairs(reply) do
+		print(k .. ' = \'' .. v .. '\',')
+	end
+end
+
 for k, v in pairs(DPP.Settings) do
 	DPP.RegisterPhrase('en', 'cvar_' .. k, v.desc)
 end
