@@ -539,6 +539,7 @@ local function BuildSVarPanel(Panel)
 	Panel:Clear()
 	Panel:Dock(FILL)
 	SettingsClass.SetupBackColor(Panel)
+	SettingsClass.ServerVarsPanel = Panel
 
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
@@ -601,6 +602,7 @@ local function BuildCVarPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
 	SettingsClass.SetupBackColor(Panel)
+	SettingsClass.CVarsPanel = Panel
 
 	SettingsClass.ApplyButtonStyle(Panel:Button(P('remove_my_ents'), 'dpp_clearself'))
 
@@ -682,6 +684,7 @@ local function BuildMiscVarsPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
 	SettingsClass.SetupBackColor(Panel)
+	SettingsClass.MiscVarsPanel = Panel
 
 	for a, b in pairs(MiscConVars) do
 		local class = DPP.Settings[b]
@@ -697,6 +700,7 @@ local function BuildAPropKillVarsPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
 	SettingsClass.SetupBackColor(Panel)
+	DPP.SettingsClass.APropKillVarsPanel = Panel
 
 	for a, b in pairs(APropKillVars) do
 		local class = DPP.Settings[b]
@@ -712,6 +716,7 @@ local function BuildAntispamPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
 	SettingsClass.SetupBackColor(Panel)
+	SettingsClass.AntispamPanel = Panel
 
 	SettingsClass.ConVarCheckbox(Panel, 'check_sizes')
 	SettingsClass.ConVarCheckbox(Panel, 'stuck_ignore_frozen')
@@ -2359,6 +2364,7 @@ local function About(Panel)
 	Panel:Clear()
 
 	SettingsClass.SetupBackColor(Panel)
+	SettingsClass.AboutPanel = Panel
 
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
@@ -2527,6 +2533,39 @@ hook.Add('DPP.BlockedModelListReloaded', 'DPP.Menu', function(s1)
 end)
 
 hook.Add('PopulateToolMenu', 'DPP.Menu', PopulateToolMenu)
+
+hook.Add('DPP.LanguageChanged', 'DPP.Menu', function()
+	BuildAntispamPanel(SettingsClass.AntispamPanel)
+	BuildCVarPanel(SettingsClass.CVarsPanel)
+	BuildAPropKillVarsPanel(SettingsClass.APropKillVarsPanel)
+	BuildMiscVarsPanel(SettingsClass.MiscVarsPanel)
+	BuildSVarPanel(SettingsClass.ServerVarsPanel)
+	BuildPlayerList(SettingsClass.PlayerPanel)
+	BuildModelsList(DPP.SettingsClass.ModelPanel)
+	BuildFriendsPanel(DPP.SettingsClass.FriendPanel)
+	BuildSLimitsList(DPP.SettingsClass.SLimitsPanel)
+	BuildLimitsList(DPP.SettingsClass.LimitsPanel)
+	BuildCLimitsList(DPP.SettingsClass.CLimitsPanel)
+	BuildPlayerProtectionPanel(DPP.SettingsClass.PPPanel)
+	About(DPP.SettingsClass.AboutPanel)
+	BuildFallbackList(DPP.SettingsClass.FallbackPanel)
+	
+	if IsValid(SettingsClass.ModelsGUI) then
+		SettingsClass.BuildModelsListGUI()
+	end
+
+	for k, v in pairs(PanelsFunctions2) do
+		PanelsFunctions2[k](DPP.SettingsClass.ValidPanels2[k])
+	end
+	
+	for k, v in pairs(WhitelistFunctions) do
+		WhitelistFunctions[k](DPP.SettingsClass.ValidPanels3[k])
+	end
+	
+	for k, v in pairs(PanelsFunctions) do
+		PanelsFunctions[k](DPP.SettingsClass.ValidPanels[k])
+	end
+end)
 
 net.Receive('DPP.RefreshPlayerList', function()
 	BuildFriendsPanel(DPP.SettingsClass.FriendPanel)
