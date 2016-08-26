@@ -43,28 +43,28 @@ local function LogSpawn(ply, ent, type)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	logFunc(ply, SPACE, GRAY, ' spawned ', color_white, SPACE2, ent:GetClass(), GRAY, string.format(' <%s | %s> (%s)', tostring(ent), ent:GetModel(), type or 'N/A'))
+	logFunc(ply, SPACE, GRAY, 'PHRASE:log_spawned', color_white, SPACE2, ent:GetClass(), GRAY, string.format(' <%s | %s> (%s)', tostring(ent), ent:GetModel(), type or 'N/A'))
 end
 
 local function LogSpawnC(ply, class, type, model)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[class] then return end
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	logFunc(ply, SPACE, GRAY, ' spawned ', color_white, SPACE2, class, GRAY, string.format(' <%s | %s> (%s)', class, model or 'N/A', type or 'N/A'))
+	logFunc(ply, SPACE, GRAY, 'PHRASE:log_spawned', color_white, SPACE2, class, GRAY, string.format(' <%s | %s> (%s)', class, model or 'N/A', type or 'N/A'))
 end
 
 local function LogTry(ply, type, model, class)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[class] then return end
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	logFunc(ply, SPACE, RED, ' tried ', GRAY, 'to spawn', SPACE2, string.format(' %s <%s | %s> (%s)', class or 'N/A', class or 'N/A', model or 'N/A', type or 'N/A'))
+	logFunc(ply, SPACE, RED, 'PHRASE:log_tried', GRAY, 'PHRASE:log_to_spawn', SPACE2, string.format(' %s <%s | %s> (%s)', class or 'N/A', class or 'N/A', model or 'N/A', type or 'N/A'))
 end
 
 local function LogTryPost(ply, type, ent)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	logFunc(ply, SPACE, RED, ' tried ', GRAY, 'to spawn', SPACE2, string.format(' %s <%s | %s> (%s)', ent:GetClass(), tostring(ent), ent:GetModel(), type or 'N/A'))
+	logFunc(ply, SPACE, RED, 'PHRASE:log_tried', GRAY, 'PHRASE:log_to_spawn', SPACE2, string.format(' %s <%s | %s> (%s)', ent:GetClass(), tostring(ent), ent:GetModel(), type or 'N/A'))
 end
 
 --god
@@ -99,7 +99,7 @@ local function LogConstraint(ply, ent)
 	end
 
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	logFunc(ply, SPACE, GRAY, ' created constraint ', SPACE2, color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
+	logFunc(ply, SPACE, GRAY, 'PHRASE:log_created_constraint', SPACE2, color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, 'PHRASE:log_constraint_between||' .. tostring(ent1) .. '||' .. tostring(ent2))
 end
 
 local function LogConstraintTry(ply, ent)
@@ -109,15 +109,15 @@ local function LogConstraintTry(ply, ent)
 	local ent1, ent2 = DPP.GetConstrainedEntities(ent)
 
 	if not IsValid(ent1) then
-		ent1 = '<unknown>'
+		ent1 = 'PHRASE:log_unknown'
 	end
 
 	if not IsValid(ent2) then
-		ent2 = '<unknown>'
+		ent2 = 'PHRASE:log_unknown'
 	end
 
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	logFunc(ply, SPACE, RED, ' tried ', GRAY, SPACE2, 'to create constraint ', color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, string.format(' between %s and %s', tostring(ent1), tostring(ent2)))
+	logFunc(ply, SPACE, RED, 'PHRASE:log_tried', GRAY, SPACE2, 'PHRASE:log_tried_c', color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, 'PHRASE:log_constraint_between||' .. tostring(ent1) .. '||' .. tostring(ent2))
 end
 
 local function CheckEntityLimit(ply, class)
@@ -939,7 +939,7 @@ function DPP.OverrideE2()
 	function Compiler:GetFunction(instr, Name, Args)
 		if self.DPly then
 			if DPP.IsRestrictedE2Function(Name, self.DPly) then
-				SimpleLog(team.GetColor(self.DPly:Team()), self.DPly:Nick(), color_white, '<' .. self.DPly:SteamID() .. '>', RED, ' tried ', GRAY, string.format('to use E2 function %s', Name))
+				SimpleLog(team.GetColor(self.DPly:Team()), self.DPly:Nick(), color_white, '<' .. self.DPly:SteamID() .. '>', RED, 'PHRASE:log_tried', GRAY, 'PHRASE:log_tried_f||' .. Name)
 				self:Error(DPP.PPhrase(self.DPly, 'e2_func_restricted', name), instr)
 				return
 			end

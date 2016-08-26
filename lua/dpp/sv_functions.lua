@@ -1117,7 +1117,7 @@ function DPP.ReportEntitiesPrint()
 		local row = data.classes2[i]
 		if not row then StringColorWrap('PHRASE:report_nodata') break end
 
-		StringColorWrap('Class ', ClassColor, row[1], CurColor(), 'PHRASE:report_have', NumColor, row[2], CurColor(), 'PHRASE:report_espawned')
+		StringColorWrap('PHRASE:Class', ClassColor, row[1], CurColor(), 'PHRASE:report_have', NumColor, row[2], CurColor(), 'PHRASE:report_espawned')
 	end
 
 	DPP.SimpleLog(color_white, 'PHRASE:report_solidclass')
@@ -1125,7 +1125,7 @@ function DPP.ReportEntitiesPrint()
 		local row = data.classes_solid2[i]
 		if not row then StringColorWrap('PHRASE:report_nodata') break end
 
-		StringColorWrap('Class ', ClassColor, row[1], CurColor(), 'PHRASE:report_have', NumColor, row[2], CurColor(), 'PHRASE:report_espawned')
+		StringColorWrap('PHRASE:Class', ClassColor, row[1], CurColor(), 'PHRASE:report_have', NumColor, row[2], CurColor(), 'PHRASE:report_espawned')
 	end
 
 	DPP.SimpleLog(color_white, 'PHRASE:report_spawned_h')
@@ -1157,7 +1157,7 @@ function DPP.ReportEntitiesPrint()
 		local row = data.sclasses2[i]
 		if not row then StringColorWrap('PHRASE:report_nodata') break end
 
-		StringColorWrap('Class ', ClassColor, row[1], CurColor(), 'PHRASE:report_have', NumColor, row[2], CurColor(), 'PHRASE:report_espawned')
+		StringColorWrap('PHRASE:Class', ClassColor, row[1], CurColor(), 'PHRASE:report_have', NumColor, row[2], CurColor(), 'PHRASE:report_espawned')
 	end
 
 	DPP.SimpleLog(color_white, 'PHRASE:report_solidclass')

@@ -355,8 +355,8 @@ function DPP.PlayerDisconnected(ply)
 			DPP.SetOwner(v, userFallback)
 		end
 
-		DPP.SimpleLog(Gray, 'Transfering props ownership from ', ply, Gray, ' to ', userFallback)
-		DPP.Notify(userFallback, DPP.Format('All ', ply, Gray, ' props now belong to you.'))
+		DPP.SimpleLog(Gray, 'PHRASE:com_fallback_triggered', ply, Gray, 'PHRASE:com_to', userFallback)
+		DPP.Notify(userFallback, DPP.Format('PHRASE:com_fallback_triggered_1', ply, Gray, 'PHRASE:com_fallback_triggered_2'))
 		DPP.TransferUndoTo(ply, userFallback)
 	end
 
@@ -382,10 +382,10 @@ function DPP.PlayerDisconnected(ply)
 				end
 
 				if not DPP.GetConVar('no_clear_messages') then
-					DPP.Notify(player.GetAll(), name .. '\'s props has been cleaned up', 2)
+					DPP.Notify(player.GetAll(), 'PHRASE:props_cleared||' .. name, 2)
 				end
 
-				DPP.Message(name .. '\'s props has been cleaned up')
+				DPP.Message('PHRASE:props_cleared||' .. name)
 
 				DPP.RecalculatePlayerList()
 				DPP.SendPlayerList()
@@ -404,10 +404,10 @@ function DPP.PlayerDisconnected(ply)
 				end
 
 				if not DPP.GetConVar('no_clear_messages') then
-					DPP.Notify(player.GetAll(), name .. '\'s props is now up for grabs!')
+					DPP.Notify(player.GetAll(), 'PHRASE:props_up_for_grabs||' .. name)
 				end
 
-				DPP.Message(name .. '\'s props is now up for grabs!')
+				DPP.Message('PHRASE:props_up_for_grabs||' .. name)
 
 				DPP.RecalculatePlayerList()
 				DPP.SendPlayerList()
@@ -428,12 +428,12 @@ end
 DPP.PPhrase = DPP.PlayerPhrase
 
 DPP.SetVarCommandRaw = function(ply, cmd, args)
-	if not args[1] then return false, {'Invalid server variable'}, NOTIFY_ERROR end
+	if not args[1] then return false, {'PHRASE:com_invalid_cvar'}, NOTIFY_ERROR end
 	args[1] = args[1]:lower()
-	if not DPP.Settings[args[1]] then return false, {'Invalid server variable'}, NOTIFY_ERROR end
-	if not args[2] then return false, {'Invalid value'}, NOTIFY_ERROR end
+	if not DPP.Settings[args[1]] then return false, {'PHRASE:com_invalid_cvar'}, NOTIFY_ERROR end
+	if not args[2] then return false, {'PHRASE:com_invalid_cvar_v'}, NOTIFY_ERROR end
 	RunConsoleCommand('dpp_' .. args[1], args[2])
-	DPP.SimpleLog(IsValid(ply) and ply or 'Console', Gray, ' set convar ', color_white, args[1], Gray, ' to ', color_white, args[2])
+	DPP.SimpleLog(IsValid(ply) and ply or 'Console', Gray, 'PHRASE:com_cvar_set_1', color_white, args[1], Gray, 'PHRASE:com_to', color_white, args[2])
 	return true
 end
 
