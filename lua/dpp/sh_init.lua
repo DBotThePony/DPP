@@ -581,7 +581,7 @@ DPP.Settings = {
 	['check_stuck'] = {
 		type = 'bool',
 		value = '1',
-		desc = ' Prevent props from getting stuck in each other',
+		desc = 'Prevent props from getting stuck in each other',
 	},
 
 	['stuck_ignore_frozen'] = {
