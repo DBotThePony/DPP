@@ -51,6 +51,8 @@ util.AddNetworkString('DPP.NetworkedEntityVars')
 util.AddNetworkString('DPP.NetworkedVarFull')
 util.AddNetworkString('DPP.NetworkedRemove')
 
+util.AddNetworkString('DPP.UpdateLang')
+
 local entMeta = FindMetaTable('Entity')
 
 function entMeta:SetDPPVar(var, val)

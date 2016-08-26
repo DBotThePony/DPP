@@ -22,6 +22,7 @@ AddCSLuaFile('sh_cppi.lua')
 AddCSLuaFile('sh_functions.lua')
 AddCSLuaFile('sh_access.lua')
 AddCSLuaFile('sh_hooks.lua')
+AddCSLuaFile('sh_lang.lua')
 AddCSLuaFile('sh_networking.lua')
 AddCSLuaFile('cl_networking.lua')
 AddCSLuaFile('cl_init.lua')
@@ -419,16 +420,10 @@ function DPP.PlayerDisconnected(ply)
 	end
 end
 
-net.Receive('DPP.ReloadFiendList', function(len, ply)
-	ply.DPP_Friends = net.ReadTable()
-	DPP.RecalculateCPPIFriendTable(ply)
-	hook.Run('CPPIFriendsChanged', ply, DPP.GetFriendTableCPPI(ply))
-
-	net.Start('DPP.ReceiveFriendList')
-	net.WriteEntity(ply)
-	net.WriteTable(ply.DPP_Friends)
-	net.Broadcast()
-end)
+function DPP.PlayerPhrase(ply, id, ...)
+	ply._DPP_CURRENT_LANG = ply._DPP_CURRENT_LANG or 'en'
+	return DPP.PhraseByLang(ply._DPP_CURRENT_LANG, id, ...)
+end
 
 DPP.SetVarCommandRaw = function(ply, cmd, args)
 	if not args[1] then return false, {'Invalid server variable'}, NOTIFY_ERROR end
@@ -457,6 +452,17 @@ DPP.SetVarCommand = function(ply, cmd, args)
 	DPP.CheckAccess(ply, 'setvar', SetVarProceed, ply, cmd, args)
 end
 
+net.Receive('DPP.ReloadFiendList', function(len, ply)
+	ply.DPP_Friends = net.ReadTable()
+	DPP.RecalculateCPPIFriendTable(ply)
+	hook.Run('CPPIFriendsChanged', ply, DPP.GetFriendTableCPPI(ply))
+
+	net.Start('DPP.ReceiveFriendList')
+	net.WriteEntity(ply)
+	net.WriteTable(ply.DPP_Friends)
+	net.Broadcast()
+end)
+
 net.Receive('DPP.SetConVar', function(len, ply)
 	local c = net.ReadString()
 	local new = net.ReadString()
@@ -472,6 +478,10 @@ net.Receive('DPP.ConVarChanged', function(len, ply)
 	local var = net.ReadString()
 	if not DPP.CSettings[var] then return end
 	DPP.PlayerConVar(ply, var) --Enough to rebroadcast cvar
+end)
+
+net.Receive('DPP.UpdateLang', function(len, ply)
+	ply._DPP_CURRENT_LANG = net.ReadString()
 end)
 
 include('sv_hooks.lua')

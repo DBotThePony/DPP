@@ -880,6 +880,19 @@ local function HUDPaint()
 	end
 end
 
+local LangCVar
+
+--We can send language only at it's change, but for safety - always send language
+local function UpdateLang()
+	LangCVar = LangCVar or GetConVar('gmod_language')
+	DPP.CURRENT_LANG = LangCVar:GetString():lower()
+	net.Start('DPP.UpdateLang')
+	net.WriteString(DPP.CURRENT_LANG)
+	net.SendToServer()
+end
+
+timer.Create('DPP.UpdateLang', 5, 0, UpdateLang)
+
 local LastSound = 0
 
 function DPP.Notify(message, type)

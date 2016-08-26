@@ -18,6 +18,7 @@ limitations under the License.
 DPP.SettingsClass = DPP.SettingsClass or {}
 
 local SettingsClass = DPP.SettingsClass
+local P = DPP.GetPhrase
 local FUNCTIONS = {}
 DPP.SettingsClass.FUNCTIONS = FUNCTIONS
 
@@ -54,7 +55,7 @@ function DPP.OpenFriendEditMenu(steamid)
 	local height = 50
 
 	local frame = vgui.Create('DFrame')
-	frame:SetTitle('Modifying ' .. steamid)
+	frame:SetTitle(P('modifying', steamid))
 	SettingsClass.ApplyFrameStyle(frame)
 
 	local groups = DPP.GetGroups()
@@ -79,7 +80,7 @@ function DPP.OpenFriendEditMenu(steamid)
 
 	local apply = frame:Add('DButton')
 	apply:Dock(BOTTOM)
-	apply:SetText('Apply')
+	apply:SetText(P('apply'))
 	SettingsClass.ApplyButtonStyle(apply)
 
 	function apply.DoClick()
@@ -95,7 +96,7 @@ function DPP.OpenFriendEditMenu(steamid)
 
 	local discard = frame:Add('DButton')
 	discard:Dock(BOTTOM)
-	discard:SetText('Discard')
+	discard:SetText(P('discard'))
 	SettingsClass.ApplyButtonStyle(discard)
 
 	function discard.DoClick()
@@ -115,7 +116,7 @@ function DPP.OpenShareMenu(ent)
 	local height = 50
 
 	local frame = vgui.Create('DFrame')
-	frame:SetTitle('Share of ' .. tostring(ent))
+	frame:SetTitle(P('sharing', tostring(ent)))
 	SettingsClass.ApplyFrameStyle(frame)
 
 	local groups = DPP.GetGroups()
@@ -139,7 +140,7 @@ function DPP.OpenShareMenu(ent)
 
 	local apply = frame:Add('DButton')
 	apply:Dock(BOTTOM)
-	apply:SetText('Apply')
+	apply:SetText(P('apply'))
 	SettingsClass.ApplyButtonStyle(apply)
 
 	function apply.DoClick()
@@ -155,7 +156,7 @@ function DPP.OpenShareMenu(ent)
 
 	local discard = frame:Add('DButton')
 	discard:Dock(BOTTOM)
-	discard:SetText('Discard')
+	discard:SetText(P('discard'))
 	SettingsClass.ApplyButtonStyle(discard)
 
 	function discard.DoClick()
@@ -164,7 +165,7 @@ function DPP.OpenShareMenu(ent)
 
 	local unselectall = frame:Add('DButton')
 	unselectall:Dock(BOTTOM)
-	unselectall:SetText('Unshare')
+	unselectall:SetText(P('unshare'))
 	SettingsClass.ApplyButtonStyle(unselectall)
 
 	function unselectall.DoClick()
@@ -478,7 +479,7 @@ function SettingsClass.ConVarSlider(Panel, var)
 
 	local Slider = Panel:NumSlider(v.desc, nil, v.min or 0, v.max or 100, 1)
 	SettingsClass.ApplySliderStyle(Slider)
-	Slider:SetTooltip(v.desc.. '\n\nConVar: dpp_' .. var)
+	Slider:SetTooltip(P('scvar_base', v.desc, var))
 	Slider:SetValue(DPP.GetConVar(var))
 	Slider.OnValueChanged = function()
 		local val = tonumber(Slider:GetValue())
@@ -508,7 +509,7 @@ function SettingsClass.ConVarCheckbox(Panel, idx)
 	checkbox.Button.val = idx
 	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
 	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
-	checkbox:SetTooltip(DPP.Settings[idx].desc .. '\n\nConVar: dpp_' .. idx)
+	checkbox:SetTooltip(P('scvar_base', DPP.Settings[idx].desc, idx))
 	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 	SettingsClass.MakeCheckboxBetter(checkbox)
 end
@@ -589,7 +590,7 @@ function SettingsClass.ClientConVarCheckbox(Panel, idx)
 	checkbox.Button.val = idx
 	checkbox.Button.DoClick = FUNCTIONS.CCheckBoxDoClick
 	checkbox.Button.Think = FUNCTIONS.CCheckBoxThink
-	checkbox:SetTooltip(v.desc)
+	checkbox:SetTooltip(P('scvar_base', v.desc, idx))
 	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 	SettingsClass.MakeCheckboxBetter(checkbox)
 
@@ -601,7 +602,7 @@ local function BuildCVarPanel(Panel)
 	Panel:Clear()
 	SettingsClass.SetupBackColor(Panel)
 
-	SettingsClass.ApplyButtonStyle(Panel:Button('Remove my entities', 'dpp_clearself'))
+	SettingsClass.ApplyButtonStyle(Panel:Button(P('remove_my_ents'), 'dpp_clearself'))
 
 	for k, v in pairs(ClientVars) do
 		if not DPP.CSettings[v].bool then continue end
@@ -621,7 +622,7 @@ local function BuildCVarPanel(Panel)
 	Lab:SetTextColor(SettingsClass.TextColor)
 
 	local lab = vgui.Create('DLabel', Panel)
-	local text = 'Display customization'
+	local text = P('display_customization')
 	Panel:AddItem(lab)
 	lab:SetText(text)
 	lab:SetTextColor(SettingsClass.TextColor)
@@ -634,7 +635,7 @@ local function BuildCVarPanel(Panel)
 	end
 
 	local lab = vgui.Create('DLabel', Panel)
-	local text = 'Display colors customization'
+	local text = P('display_customization_colors')
 	Panel:AddItem(lab)
 	lab:SetText(text)
 	lab:SetTextColor(SettingsClass.TextColor)
@@ -660,17 +661,17 @@ local function BuildCVarPanel(Panel)
 		end
 	end
 
-	local Slider = Panel:NumSlider('X coordinate (percent) on screen for owner display', nil, 0, 100)
+	local Slider = Panel:NumSlider(P('display_x'), nil, 0, 100)
 	SettingsClass.ApplySliderStyle(Slider)
-	Slider:SetTooltip('X coordinate (percent) on screen for owner display')
+	Slider:SetTooltip(P('display_x'))
 	Slider:SetValue(POSITION_X:GetFloat())
 	Slider.OnValueChanged = function()
 		RunConsoleCommand('dpp_position_x', Slider:GetValue())
 	end
 
-	local Slider = Panel:NumSlider('Y coordinate (percent) on screen for owner display', nil, 0, 100)
+	local Slider = Panel:NumSlider(P('display_y'), nil, 0, 100)
 	SettingsClass.ApplySliderStyle(Slider)
-	Slider:SetTooltip('Y coordinate (percent) on screen for owner display')
+	Slider:SetTooltip(P('display_y'))
 	Slider:SetValue(POSITION_Y:GetFloat())
 	Slider.OnValueChanged = function()
 		RunConsoleCommand('dpp_position_y', Slider:GetValue())
@@ -733,14 +734,14 @@ local function BuildPlayerList(Panel)
 
 	DPP.SettingsClass.PlayerPanel = Panel
 
-	SettingsClass.ApplyButtonStyle(Panel:Button('Clear decals', 'dpp_cleardecals'))
-	SettingsClass.ApplyButtonStyle(Panel:Button('Report all entities', 'dpp_entcheck'))
+	SettingsClass.ApplyButtonStyle(Panel:Button(P('clear_decals'), 'dpp_cleardecals'))
+	SettingsClass.ApplyButtonStyle(Panel:Button(P('report_ents'), 'dpp_entcheck'))
 	local lab = Label('')
 	Panel:AddItem(lab)
-	SettingsClass.ApplyButtonStyle(Panel:Button('Delete all player entities', 'dpp_clearmap'))
-	SettingsClass.ApplyButtonStyle(Panel:Button('Freeze all player entities', 'dpp_freezeall'))
-	SettingsClass.ApplyButtonStyle(Panel:Button('Freeze all physics objects', 'dpp_freezephys'))
-	SettingsClass.ApplyButtonStyle(Panel:Button('Delete disconnected player entities', 'dpp_cleardisconnected'))
+	SettingsClass.ApplyButtonStyle(Panel:Button(P('delete_ents'), 'dpp_clearmap'))
+	SettingsClass.ApplyButtonStyle(Panel:Button(P('freeze_all'), 'dpp_freezeall'))
+	SettingsClass.ApplyButtonStyle(Panel:Button(P('freeze_all_phys'), 'dpp_freezephys'))
+	SettingsClass.ApplyButtonStyle(Panel:Button(P('delete_disconnected'), 'dpp_cleardisconnected'))
 
 	for k, v in pairs(DPP.GetPlayerList()) do
 		local pnl = vgui.Create('EditablePanel')
@@ -755,21 +756,21 @@ local function BuildPlayerList(Panel)
 		local Button = vgui.Create('DButton', pnl)
 		Button:Dock(RIGHT)
 		Button:SetWidth(48)
-		Button:SetText('UF')
+		Button:SetText(P('action_unfreeze'))
 		Button:SetConsoleCommand('dpp_unfreezebyuid', v.UID)
 		SettingsClass.ApplyButtonStyle(Button)
 
 		local Button = vgui.Create('DButton', pnl)
 		Button:Dock(RIGHT)
 		Button:SetWidth(48)
-		Button:SetText('F')
+		Button:SetText(P('action_freeze'))
 		Button:SetConsoleCommand('dpp_freezebyuid', v.UID)
 		SettingsClass.ApplyButtonStyle(Button)
 
 		local Button = vgui.Create('DButton', pnl)
 		Button:Dock(RIGHT)
 		Button:SetWidth(48)
-		Button:SetText('D')
+		Button:SetText(P('action_delete'))
 		Button:SetConsoleCommand('dpp_clearbyuid', v.UID)
 		SettingsClass.ApplyButtonStyle(Button)
 	end
@@ -782,9 +783,9 @@ SettingsClass.FallbackLabelChange = function(self, ent, var, val)
 	local Text
 
 	if IsValid(val) then
-		Text = 'Current selected player: ' .. val:Nick() .. '\nSteamID: ' .. val:SteamID()
+		Text = P('fallback_select', val:Nick(), val:SteamID())
 	else
-		Text = 'Current selected player: None\n'
+		Text = P('fallback_select_none')
 	end
 
 	self:SetText(Text)
@@ -801,7 +802,7 @@ local function BuildFallbackList(Panel)
 
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
-	local Text = 'This page is "owning fallback"\nWhen you disconnect from server, DPP will assign\nownership of your props to selected player.'
+	local Text = P('owning_fallback')
 	Lab:SetText(Text)
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SizeToContents()
@@ -809,7 +810,7 @@ local function BuildFallbackList(Panel)
 
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
-	local Text = 'Current selected player: None\n'
+	local Text = P('fallback_select_none')
 	Lab:SetText(Text)
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SizeToContents()
@@ -819,7 +820,7 @@ local function BuildFallbackList(Panel)
 	local Selected = ply:DPPVar('fallback')
 
 	if IsValid(Selected) then
-		Text = 'Current selected player: ' .. Selected:Nick() .. '\nSteamID: ' .. Selected:SteamID()
+		Text = P('fallback_select', Selected:Nick(), Selected:SteamID())
 		Lab:SetText(Text)
 		Lab:SetTooltip(Text)
 		Lab:SizeToContents()
@@ -836,7 +837,7 @@ local function BuildFallbackList(Panel)
 	local lab = Label('')
 	Panel:AddItem(lab)
 
-	local Button = Panel:Button('Remove Fallback', 'dpp_removefallbackto')
+	local Button = Panel:Button(P('owning_fallback_r'), 'dpp_removefallbackto')
 	SettingsClass.ApplyButtonStyle(Button)
 
 	local lab = Label('!!!DANGER!!!')
@@ -876,7 +877,7 @@ local function BuildPlayerProtectionPanel(Panel)
 
 		for mode, b in pairs(DPP.ProtectionModes) do
 			local ID = 'disable_' .. mode .. '_protection'
-			local desc = 'Disable "' .. mode .. '" protection for ' .. v:Nick()
+			local desc = P('disable_protection_for', mode, v:Nick())
 			local checkbox = Panel:CheckBox(desc)
 			checkbox.Button.val = ID
 			checkbox.Button.Ply = v
@@ -957,11 +958,11 @@ end
 function SettingsClass.ModelClick(self)
 	local menu = vgui.Create('DMenu')
 
-	menu:AddOption('Copy model path to clipboard', function()
+	menu:AddOption(P('clipboard', P('model_path')), function()
 		SetClipboardText(self.MyModel)
 	end):SetIcon(table.Random(SettingsClass.TagIcons))
 
-	menu:AddOption('Unblock', function()
+	menu:AddOption(P('Unblock'), function()
 		RunConsoleCommand('dpp_removeblockedmodel', self.MyModel)
 	end):SetIcon(SettingsClass.UnblockIcon)
 
@@ -971,7 +972,7 @@ end
 function SettingsClass.InitializeModelsListGUI()
 	local Panel = vgui.Create('DFrame')
 	SettingsClass.ModelsGUI = Panel
-	Panel:SetTitle('Model Blacklist')
+	Panel:SetTitle(P('model_blacklist'))
 	Panel:SetSize(ScrW() - 100, ScrH() - 100)
 	Panel:Center()
 	Panel:MakePopup()
@@ -983,7 +984,7 @@ function SettingsClass.InitializeModelsListGUI()
 	local lab = top:Add('DLabel')
 	lab:Dock(FILL)
 	lab:DockMargin(5, 5, 5, 5)
-	lab:SetText([[Model Blacklist. To open menu of model, click on it.]])
+	lab:SetText(P('model_blacklist_2'))
 
 	local bottom = Panel:Add('EditablePanel')
 	bottom:Dock(BOTTOM)
@@ -1003,13 +1004,13 @@ function SettingsClass.InitializeModelsListGUI()
 	local lab = bottom:Add('DLabel')
 	lab:Dock(LEFT)
 	lab:DockMargin(5, 5, 5, 5)
-	lab:SetText([[Resizeable]])
+	lab:SetText(P('Resizeable'))
 	lab:SizeToContents()
 
 	local lab = bottom:Add('DLabel')
 	lab:Dock(LEFT)
 	lab:DockMargin(5, 5, 5, 5)
-	lab:SetText([[Click here to reset window size.]])
+	lab:SetText(P('click_reset'))
 	lab:SetMouseInputEnabled(true)
 	lab:SetCursor('hand')
 	lab:SizeToContents()
@@ -1096,7 +1097,7 @@ local function BuildModelsList(Panel)
 	Panel:AddItem(list)
 
 	list:SetHeight(600)
-	list:AddColumn('Model')
+	list:AddColumn(P('model'))
 
 	local L = DPP.BlockedModels
 
@@ -1108,36 +1109,36 @@ local function BuildModelsList(Panel)
 		local val = self:GetLine(line):GetValue(1)
 		local menu = vgui.Create('DMenu')
 
-		menu:AddOption('Copy model to clipboard', function()
+		menu:AddOption(P('clipboard', P('model')), function()
 			SetClipboardText(val)
 		end):SetIcon(table.Random(SettingsClass.TagIcons))
 
-		menu:AddOption('Remove from blacklist', function()
+		menu:AddOption(P('remove_from_blacklist'), function()
 			RunConsoleCommand('dpp_removeblockedmodel', val)
 		end):SetIcon(SettingsClass.RemoveIcon)
 
 		menu:Open()
 	end
 
-	local Apply = Panel:Button('Open visual list')
+	local Apply = Panel:Button(P('visual_list'))
 	Apply.DoClick = SettingsClass.BuildModelsListGUI
 	SettingsClass.ApplyButtonStyle(Apply)
 
 	local entry = vgui.Create('DTextEntry', Panel)
 	Panel:AddItem(entry)
-	local Apply = Panel:Button('Add model')
+	local Apply = Panel:Button(P('add_model'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_addblockedmodel', entry:GetText())
 	end
 	SettingsClass.ApplyButtonStyle(Apply)
 
-	local Apply = Panel:Button('Remove model')
+	local Apply = Panel:Button(P('remove_model'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_removeblockedmodel', entry:GetText())
 	end
 	SettingsClass.ApplyButtonStyle(Apply)
 
-	local Apply = Panel:Button('Add model of entity that you are looking at')
+	local Apply = Panel:Button(P('action_looking_at', P('add_model')))
 	Apply.DoClick = function()
 		local ent = LocalPlayer():GetEyeTrace().Entity
 		if not IsValid(ent) then return end
@@ -1145,7 +1146,7 @@ local function BuildModelsList(Panel)
 	end
 	SettingsClass.ApplyButtonStyle(Apply)
 
-	local Apply = Panel:Button('Remove model of entity that you are looking at')
+	local Apply = Panel:Button(P('action_looking_at', P('remove_model')))
 	Apply.DoClick = function()
 		local ent = LocalPlayer():GetEyeTrace().Entity
 		if not IsValid(ent) then return end
@@ -1164,7 +1165,7 @@ local function OpenLimitEditPanel(class)
 	local height = 50
 
 	local frame = vgui.Create('DFrame')
-	frame:SetTitle('Modifying ' .. class)
+	frame:SetTitle(P('modifying', class))
 	SettingsClass.ApplyFrameStyle(frame)
 
 	local groups = DPP.GetGroups()
@@ -1186,7 +1187,7 @@ local function OpenLimitEditPanel(class)
 
 	local apply = frame:Add('DButton')
 	apply:Dock(BOTTOM)
-	apply:SetText('Apply')
+	apply:SetText(P('apply'))
 	SettingsClass.ApplyButtonStyle(apply)
 
 	function apply.DoClick()
@@ -1209,7 +1210,7 @@ local function OpenLimitEditPanel(class)
 
 	local discard = frame:Add('DButton')
 	discard:Dock(BOTTOM)
-	discard:SetText('Discard')
+	discard:SetText(P('discard'))
 	SettingsClass.ApplyButtonStyle(discard)
 
 	function discard.DoClick()
@@ -1231,16 +1232,16 @@ local function BuildLimitsList(Panel)
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
 	Lab:SetTextColor(SettingsClass.TextColor)
-	Lab:SetText('NOTE: This just prevents the player from spawning\n entities with the given class if the player spawned\n the given amount of entities within this class.\nThat means it DOES NOT allow groups to spawn\n unlimited amounts of entities within that\n type. For that use the Sandbox limits\n instead.')
+	Lab:SetText(P('entity_limit_note'))
 	Lab:SizeToContents()
 
 	local list = vgui.Create('DListView', Panel)
 	Panel:AddItem(list)
 
 	list:SetHeight(600)
-	list:AddColumn('Class')
-	list:AddColumn('Group')
-	list:AddColumn('Limit')
+	list:AddColumn(P('Class'))
+	list:AddColumn(P('Group'))
+	list:AddColumn(P('Limit'))
 
 	local L = DPP.EntsLimits
 
@@ -1256,7 +1257,7 @@ local function BuildLimitsList(Panel)
 		local limit = self:GetLine(line):GetValue(3)
 
 		local menu = vgui.Create('DMenu')
-		menu:AddOption('Copy class to clipboard', function()
+		menu:AddOption(P('clipboard', P('Class')), function()
 			SetClipboardText(val)
 		end):SetIcon(table.Random(SettingsClass.TagIcons))
 
@@ -1273,19 +1274,19 @@ local function BuildLimitsList(Panel)
 
 	local entry = vgui.Create('DTextEntry', Panel)
 	Panel:AddItem(entry)
-	local Apply = Panel:Button('Add/Edit limit')
+	local Apply = Panel:Button(P('edit_limit'))
 	Apply.DoClick = function()
 		OpenLimitEditPanel(entry:GetText())
 	end
 	SettingsClass.ApplyButtonStyle(Apply)
 
-	local Apply = Panel:Button('Remove limit')
+	local Apply = Panel:Button(P('remove_limit'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_removeentitylimit', entry:GetText())
 	end
 	SettingsClass.ApplyButtonStyle(Apply)
 
-	local Apply = Panel:Button('Add a limit for the entity you\'re looking at')
+	local Apply = Panel:Button(P('action_looking_at', P('edit_limit')))
 	Apply.DoClick = function()
 		local ent = LocalPlayer():GetEyeTrace().Entity
 		if not IsValid(ent) then return end
@@ -1293,7 +1294,7 @@ local function BuildLimitsList(Panel)
 	end
 	SettingsClass.ApplyButtonStyle(Apply)
 
-	local Apply = Panel:Button('Remove the limit for the entity you\'re looking at')
+	local Apply = Panel:Button(P('action_looking_at', P('remove_limit')))
 	Apply.DoClick = function()
 		local ent = LocalPlayer():GetEyeTrace().Entity
 		if not IsValid(ent) then return end
@@ -1322,12 +1323,12 @@ local function OpenSLimitEditPanel(class)
 	local height = 90
 
 	local frame = vgui.Create('DFrame')
-	frame:SetTitle('Modifying ' .. class)
+	frame:SetTitle(P('modifying', class))
 	SettingsClass.ApplyFrameStyle(frame)
 
 	local lab = frame:Add('DLabel')
 	lab:SetTextColor(SettingsClass.TextColor)
-	lab:SetText('Unlimited: -1\n0 - removes limit from db\nAny values higher than 0 is a limit')
+	lab:SetText(P('limit_tip'))
 	lab:Dock(TOP)
 	lab:SizeToContents()
 
@@ -1350,7 +1351,7 @@ local function OpenSLimitEditPanel(class)
 
 	local apply = frame:Add('DButton')
 	apply:Dock(BOTTOM)
-	apply:SetText('Apply')
+	apply:SetText(P('apply'))
 	SettingsClass.ApplyButtonStyle(apply)
 
 	function apply.DoClick()
@@ -1373,7 +1374,7 @@ local function OpenSLimitEditPanel(class)
 
 	local discard = frame:Add('DButton')
 	discard:Dock(BOTTOM)
-	discard:SetText('Discard')
+	discard:SetText(P('discard'))
 	SettingsClass.ApplyButtonStyle(discard)
 
 	function discard.DoClick()
@@ -1392,12 +1393,12 @@ local function OpenCLimitEditPanel(class)
 	local height = 90
 
 	local frame = vgui.Create('DFrame')
-	frame:SetTitle('Modifying ' .. class)
+	frame:SetTitle(P('modifying', class))
 	SettingsClass.ApplyFrameStyle(frame)
 
 	local lab = frame:Add('DLabel')
 	lab:SetTextColor(SettingsClass.TextColor)
-	lab:SetText('Unlimited: -1\n0 - removes limit from db\nAny values higher than 0 is a limit')
+	lab:SetText(P('limit_tip'))
 	lab:Dock(TOP)
 	lab:SizeToContents()
 
@@ -1420,7 +1421,7 @@ local function OpenCLimitEditPanel(class)
 
 	local apply = frame:Add('DButton')
 	apply:Dock(BOTTOM)
-	apply:SetText('Apply')
+	apply:SetText(P('apply'))
 	SettingsClass.ApplyButtonStyle(apply)
 
 	function apply.DoClick()
@@ -1443,7 +1444,7 @@ local function OpenCLimitEditPanel(class)
 
 	local discard = frame:Add('DButton')
 	discard:Dock(BOTTOM)
-	discard:SetText('Discard')
+	discard:SetText(P('discard'))
 	SettingsClass.ApplyButtonStyle(discard)
 
 	function discard.DoClick()
@@ -1464,7 +1465,7 @@ local function BuildSLimitsList(Panel)
 
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
-	local t = 'WHAT THIS DOES:\nIt\'s the console variable sbox_max<...> overrides for user groups.\nTo add values, you must know the console variable you\'re changing.\nExample: Modifying prop limits would be "props" (sbox_maxprops).\nA value of -1 is unlimited, and 0 leaves the limit unmodified.'
+	local t = P('sbox_limit_note')
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SetText(t)
 	Lab:SizeToContents()
@@ -1474,9 +1475,9 @@ local function BuildSLimitsList(Panel)
 	Panel:AddItem(list)
 
 	list:SetHeight(600)
-	list:AddColumn('sbox_max...')
-	list:AddColumn('Group')
-	list:AddColumn('Limit')
+	list:AddColumn(P('sbox_max'))
+	list:AddColumn(P('Group'))
+	list:AddColumn(P('Limit'))
 
 	local L = DPP.SBoxLimits
 
@@ -1493,19 +1494,19 @@ local function BuildSLimitsList(Panel)
 
 		local menu = vgui.Create('DMenu')
 
-		menu:AddOption('Copy cvar name to clipboard', function()
+		menu:AddOption(P('clipboard', P('cvar_name')), function()
 			SetClipboardText('sbox_max' .. val)
 		end):SetIcon(table.Random(SettingsClass.TagIcons))
 
-		menu:AddOption('Edit limit...', function()
+		menu:AddOption(P('edit_limit_e'), function()
 			OpenSLimitEditPanel(val)
 		end):SetIcon(SettingsClass.EditIcon)
 
-		menu:AddOption('Remove this limit', function()
+		menu:AddOption(P('remove_limit'), function()
 			RunConsoleCommand('dpp_removesboxlimit', val, group)
 		end):SetIcon(SettingsClass.RemoveIcon)
 
-		menu:AddOption('Remove this limit for all groups', function()
+		menu:AddOption(P('remove_limit_all'), function()
 			RemoveAllSLimits(val)
 		end):SetIcon(SettingsClass.RemoveAllIcon)
 
@@ -1514,7 +1515,7 @@ local function BuildSLimitsList(Panel)
 
 	local entry = vgui.Create('DTextEntry', Panel)
 	Panel:AddItem(entry)
-	local Apply = Panel:Button('Add/Edit/Remove limit')
+	local Apply = Panel:Button(P('edit_limit_a'))
 	Apply.DoClick = function()
 		OpenSLimitEditPanel(entry:GetText())
 	end
@@ -1531,7 +1532,7 @@ local function BuildCLimitsList(Panel)
 
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
-	local t = 'You can see type of constraints in DPP logs\nATTENTION: Because of nature of rope constraints\nDPP thinks that keyframe_rope is a "vrope"\nconstraint because rope (and related) constraints\n creating keyframe_rope too to show visual rope.'
+	local t = P('constraints_limit_tip')
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SetText(t)
 	Lab:SizeToContents()
@@ -1541,9 +1542,9 @@ local function BuildCLimitsList(Panel)
 	Panel:AddItem(list)
 
 	list:SetHeight(600)
-	list:AddColumn('Class')
-	list:AddColumn('Group')
-	list:AddColumn('Limit')
+	list:AddColumn(P('Class'))
+	list:AddColumn(P('Group'))
+	list:AddColumn(P('Limit'))
 
 	local L = DPP.ConstrainsLimits
 
@@ -1560,19 +1561,19 @@ local function BuildCLimitsList(Panel)
 
 		local menu = vgui.Create('DMenu')
 
-		menu:AddOption('Copy class to clipboard', function()
+		menu:AddOption(P('clipboard', P('Class')), function()
 			SetClipboardText(val)
 		end):SetIcon(table.Random(SettingsClass.TagIcons))
 
-		menu:AddOption('Edit limit...', function()
+		menu:AddOption(P('edit_limit_e'), function()
 			OpenCLimitEditPanel(val)
 		end):SetIcon(SettingsClass.EditIcon)
 
-		menu:AddOption('Remove this limit', function()
+		menu:AddOption(P('remove_limit'), function()
 			RunConsoleCommand('dpp_removeconstlimit', val, group)
 		end):SetIcon(SettingsClass.RemoveIcon)
 
-		menu:AddOption('Remove this limit for all groups', function()
+		menu:AddOption(P('remove_limit_all'), function()
 			RemoveAllCLimits(val)
 		end):SetIcon(SettingsClass.RemoveAllIcon)
 
@@ -1581,7 +1582,7 @@ local function BuildCLimitsList(Panel)
 
 	local entry = vgui.Create('DTextEntry', Panel)
 	Panel:AddItem(entry)
-	local Apply = Panel:Button('Add/Edit/Remove limit')
+	local Apply = Panel:Button(P('edit_limit_a'))
 	Apply.DoClick = function()
 		OpenCLimitEditPanel(entry:GetText())
 	end
@@ -1645,7 +1646,7 @@ function CustomBlockMenus.toolworld(Panel)
 	Panel:AddItem(list)
 
 	list:SetHeight(600)
-	list:AddColumn('Entity')
+	list:AddColumn(P('Entity'))
 
 	local L = DPP.BlockedEntities[k]
 	local New = {}
@@ -1663,11 +1664,11 @@ function CustomBlockMenus.toolworld(Panel)
 		local val = self:GetLine(line):GetValue(1)
 		local menu = vgui.Create('DMenu')
 
-		menu:AddOption('Copy tool mode to clipboard', function()
+		menu:AddOption(P('clipboard', P('tool_mode')), function()
 			SetClipboardText(val)
 		end):SetIcon(table.Random(SettingsClass.TagIcons))
 
-		menu:AddOption('Remove from blacklist', function()
+		menu:AddOption(P('remove_from_blacklist'), function()
 			RunConsoleCommand('dpp_removeblockedentity' .. k, val)
 		end):SetIcon(SettingsClass.RemoveIcon)
 
@@ -1676,13 +1677,13 @@ function CustomBlockMenus.toolworld(Panel)
 
 	local entry = vgui.Create('DTextEntry', Panel)
 	Panel:AddItem(entry)
-	local Apply = Panel:Button('Add tool mode')
+	local Apply = Panel:Button(P('add_tool_mode'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_addblockedentity' .. k, entry:GetText())
 	end
 	SettingsClass.ApplyButtonStyle(Apply)
 
-	local Apply = Panel:Button('Remove tool mode')
+	local Apply = Panel:Button(P('remove_tool_mode'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_removeblockedentity' .. k, entry:GetText())
 	end
@@ -1715,7 +1716,7 @@ do
 		frame:SetSize(600, 600)
 		frame:Center()
 		frame:MakePopup()
-		frame:SetTitle('DPP Property Types Edit')
+		frame:SetTitle(P('DPP Property Types Edit'))
 		SettingsClass.ApplyFrameStyle(frame)
 
 		local ScrollPanel = frame:Add('DScrollPanel')
@@ -1748,7 +1749,7 @@ do
 
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
-		apply:SetText('Apply')
+		apply:SetText(P('apply'))
 		SettingsClass.ApplyButtonStyle(apply)
 
 		function apply.DoClick()
@@ -1758,7 +1759,7 @@ do
 
 		local discard = frame:Add('DButton')
 		discard:Dock(BOTTOM)
-		discard:SetText('Discard')
+		discard:SetText(P('discard'))
 		SettingsClass.ApplyButtonStyle(discard)
 
 		function discard.DoClick()
@@ -1776,16 +1777,7 @@ function CustomWhiteMenus.propertyt(Panel)
 	SettingsClass.SetupBackColor(Panel)
 	ValidPanels3[k] = Panel
 
-	local toptext = [[
-This list defines property types that is allowed to be 
-used on ANY entity. For example, if you add "remover" 
-there,  anyone can remove any entity using property menus. 
-To see all property classes, type use button below.
-REMEMBER: Blacklists are ALWAYS have higher priority
-than other lists! That means excluded property
-modes can NOT be used on blacklisted toolgun
-entities.
-]]
+	local toptext = P('property_exclude_tip')
 
 	local Lab = Label(toptext)
 	Lab:SizeToContents()
@@ -1793,7 +1785,7 @@ entities.
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SetTooltip(toptext)
 
-	local Button = Panel:Button('Open properties list...')
+	local Button = Panel:Button(P('properties_list'))
 	Button.DoClick = DPP.BuildPropertiesMenu
 	SettingsClass.ApplyButtonStyle(Button)
 
@@ -1801,7 +1793,7 @@ entities.
 	Panel:AddItem(list)
 
 	list:SetHeight(600)
-	list:AddColumn('Property Class')
+	list:AddColumn(P('property_class'))
 
 	local L = DPP.WhitelistedEntities[k]
 	local New = {}
@@ -1819,11 +1811,11 @@ entities.
 		local val = self:GetLine(line):GetValue(1)
 		local menu = vgui.Create('DMenu')
 
-		menu:AddOption('Copy property class to clipboard', function()
+		menu:AddOption(P('clipboard', P('property_class')), function()
 			SetClipboardText(val)
 		end):SetIcon(table.Random(SettingsClass.TagIcons))
 
-		menu:AddOption('Remove from exclude list', function()
+		menu:AddOption(P('remove_property'), function()
 			RunConsoleCommand('dpp_removewhitelistedentity' .. k, val)
 		end):SetIcon(SettingsClass.RemoveIcon)
 
@@ -1832,13 +1824,13 @@ entities.
 
 	local entry = vgui.Create('DTextEntry', Panel)
 	Panel:AddItem(entry)
-	local Apply = Panel:Button('Add Property')
+	local Apply = Panel:Button(P('add_property'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_addwhitelistedentity' .. k, entry:GetText())
 	end
 	SettingsClass.ApplyButtonStyle(Apply)
 
-	local Apply = Panel:Button('Remove Property')
+	local Apply = Panel:Button(P('remove_property'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_removewhitelistedentity' .. k, entry:GetText())
 	end
@@ -1856,14 +1848,7 @@ function CustomWhiteMenus.toolmode(Panel)
 	SettingsClass.SetupBackColor(Panel)
 	ValidPanels3[k] = Panel
 
-	local toptext = [[
-This list defines toolgun modes that is allowed to be 
-used on ANY entity. For example, if you add "remover" 
-there, anyone can remove any entity using remover toolgun.
-REMEMBER: Blacklists are ALWAYS have higher priority
-than other lists! That means excluded tool modes
-can NOT be used on blacklisted from toolgun entities.
-]]
+	local toptext = P('toolmode_exclude_tip')
 
 	local Lab = Label(toptext)
 	Lab:SizeToContents()
@@ -1875,7 +1860,7 @@ can NOT be used on blacklisted from toolgun entities.
 	Panel:AddItem(list)
 
 	list:SetHeight(600)
-	list:AddColumn('Tool mode')
+	list:AddColumn(P('tool_mode'))
 
 	local L = DPP.WhitelistedEntities[k]
 	local New = {}
@@ -1893,11 +1878,11 @@ can NOT be used on blacklisted from toolgun entities.
 		local val = self:GetLine(line):GetValue(1)
 		local menu = vgui.Create('DMenu')
 
-		menu:AddOption('Copy tool mode to clipboard', function()
+		menu:AddOption(P('clipboard', P('tool_mode')), function()
 			SetClipboardText(val)
 		end):SetIcon(table.Random(SettingsClass.TagIcons))
 
-		menu:AddOption('Remove from exclude list', function()
+		menu:AddOption(P('remove_exclude'), function()
 			RunConsoleCommand('dpp_removewhitelistedentity' .. k, val)
 		end):SetIcon(SettingsClass.RemoveIcon)
 
@@ -1906,13 +1891,13 @@ can NOT be used on blacklisted from toolgun entities.
 
 	local entry = vgui.Create('DTextEntry', Panel)
 	Panel:AddItem(entry)
-	local Apply = Panel:Button('Add tool mode')
+	local Apply = Panel:Button(P('add_tool_mode'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_addwhitelistedentity' .. k, entry:GetText())
 	end
 	SettingsClass.ApplyButtonStyle(Apply)
 
-	local Apply = Panel:Button('Remove tool mode')
+	local Apply = Panel:Button(P('remove_tool_mode'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_removewhitelistedentity' .. k, entry:GetText())
 	end
@@ -1937,7 +1922,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		Panel:AddItem(list)
 
 		list:SetHeight(600)
-		list:AddColumn('Entity')
+		list:AddColumn(P('Entity'))
 
 		local L = DPP.BlockedEntities[k]
 		local New = {}
@@ -1955,19 +1940,19 @@ for k, v in pairs(DPP.BlockTypes) do
 			local val = self:GetLine(line):GetValue(1)
 			local menu = vgui.Create('DMenu')
 
-			menu:AddOption('Copy class to clipboard', function()
+			menu:AddOption(P('clipboard', P('Class')), function()
 				SetClipboardText(val)
 			end):SetIcon(table.Random(SettingsClass.TagIcons))
 
-			menu:AddOption('Remove from blacklist', function()
+			menu:AddOption(P('remove_from_blacklist'), function()
 				RunConsoleCommand('dpp_removeblockedentity' .. k, val)
 			end):SetIcon(SettingsClass.RemoveIcon)
 
-			menu:AddOption('Add that entity from ALL blacklists', function()
+			menu:AddOption(P('add_to_all_blacklists'), function()
 				ADD_ALL(val)
 			end):SetIcon(SettingsClass.AddAllIcon)
 
-			menu:AddOption('Remove that entity from ALL blacklists', function()
+			menu:AddOption(P('remove_from_all_blacklists'), function()
 				REMOVE_ALL(val)
 			end):SetIcon(SettingsClass.RemoveAllIcon)
 
@@ -1976,31 +1961,31 @@ for k, v in pairs(DPP.BlockTypes) do
 
 		local entry = vgui.Create('DTextEntry', Panel)
 		Panel:AddItem(entry)
-		local Apply = Panel:Button('Add entity')
+		local Apply = Panel:Button(P('add_entity'))
 		Apply.DoClick = function()
 			RunConsoleCommand('dpp_addblockedentity' .. k, entry:GetText())
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 
-		local Apply = Panel:Button('Remove entity')
+		local Apply = Panel:Button(P('remove_entity'))
 		Apply.DoClick = function()
 			RunConsoleCommand('dpp_removeblockedentity' .. k, entry:GetText())
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 
-		local Apply = Panel:Button('Add this entity to ALL blacklists')
+		local Apply = Panel:Button(P('add_to_all_blacklists_this'))
 		Apply.DoClick = function()
 			ADD_ALL(entry:GetText())
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 
-		local Apply = Panel:Button('Remove this entity from ALL blacklists')
+		local Apply = Panel:Button(P('remove_from_all_blacklists_this'))
 		Apply.DoClick = function()
 			REMOVE_ALL(entry:GetText())
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 
-		local Apply = Panel:Button('Add the entity you\'re looking at to the blacklist')
+		local Apply = Panel:Button(P('add_blacklist_looking_at'))
 		Apply.DoClick = function()
 			local ent = LocalPlayer():GetEyeTrace().Entity
 			if not IsValid(ent) then return end
@@ -2008,7 +1993,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 
-		local Apply = Panel:Button('Remove the entity you\'re looking at from the blacklist')
+		local Apply = Panel:Button(P('remove_blacklist_looking_at'))
 		Apply.DoClick = function()
 			local ent = LocalPlayer():GetEyeTrace().Entity
 			if not IsValid(ent) then return end
@@ -2016,7 +2001,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 
-		local Apply = Panel:Button('Add the entity you\'re looking at to ALL blacklists')
+		local Apply = Panel:Button(P('add_blacklist_looking_at_all'))
 		Apply.DoClick = function()
 			local ent = LocalPlayer():GetEyeTrace().Entity
 			if not IsValid(ent) then return end
@@ -2024,7 +2009,7 @@ for k, v in pairs(DPP.BlockTypes) do
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 
-		local Apply = Panel:Button('Remove the entity you\'re looking at from ALL blacklists')
+		local Apply = Panel:Button(P('remove_blacklist_looking_at_all'))
 		Apply.DoClick = function()
 			local ent = LocalPlayer():GetEyeTrace().Entity
 			if not IsValid(ent) then return end
@@ -2051,21 +2036,10 @@ for k, v in pairs(DPP.WhitelistTypes) do
 		SettingsClass.SetupBackColor(Panel)
 		ValidPanels3[k] = Panel
 
-		local toptext = [[
-Entities what listed there will have
-"]] .. v .. [[" protection disabled. It means that
-ANYONE able to touch that entitiy despite of it's owner
-REMEMBER: Blacklists are ALWAYS have higher priority
-than other lists! That means blacklist will override
-any whitelist!
-]]
-
-		if k == 'property' then
-			toptext = toptext .. '\nNOTE FOR PROPERTY: "remover" property still\ncan\'t be used on whitelisted entities.'
-		end
+		local toptext = P('exclude_tip', k, k, k) --KKK :\
 
 		if k == 'tool' then
-			toptext = toptext .. '\nNOTE FOR TOOLGUN: "remover" still can\'t be used\non whitelisted entities.'
+			toptext = toptext .. P('tool_exclude')
 		end
 
 		local Lab = Label(toptext)
@@ -2078,7 +2052,7 @@ any whitelist!
 		Panel:AddItem(list)
 
 		list:SetHeight(600)
-		list:AddColumn('Entity')
+		list:AddColumn(P('Entity'))
 
 		local L = DPP.WhitelistedEntities[k]
 		local New = {}
@@ -2096,19 +2070,19 @@ any whitelist!
 			local val = self:GetLine(line):GetValue(1)
 			local menu = vgui.Create('DMenu')
 
-			menu:AddOption('Copy class to clipboard', function()
+			menu:AddOption(P('clipboard', P('Class')), function()
 				SetClipboardText(val)
 			end):SetIcon(table.Random(SettingsClass.TagIcons))
 
-			menu:AddOption('Remove from whitelist', function()
+			menu:AddOption(P('remove_exclude'), function()
 				RunConsoleCommand('dpp_removewhitelistedentity' .. k, val)
 			end):SetIcon(SettingsClass.RemoveIcon)
 
-			menu:AddOption('Add that entity to ALL exclude lists', function()
+			menu:AddOption(P('add_exclude_all'), function()
 				ADD_ALL_W(val)
 			end):SetIcon(SettingsClass.AddAllIcon)
 
-			menu:AddOption('Remove that entity from ALL exclude lists', function()
+			menu:AddOption(P('remove_exclude_all'), function()
 				REMOVE_ALL_W(val)
 			end):SetIcon(SettingsClass.RemoveAllIcon)
 
@@ -2117,31 +2091,31 @@ any whitelist!
 
 		local entry = vgui.Create('DTextEntry', Panel)
 		Panel:AddItem(entry)
-		local Apply = Panel:Button('Add entity')
+		local Apply = Panel:Button(P('add_entity'))
 		Apply.DoClick = function()
 			RunConsoleCommand('dpp_addwhitelistedentity' .. k, entry:GetText())
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 
-		local Apply = Panel:Button('Remove entity')
+		local Apply = Panel:Button(P('remove_entity'))
 		Apply.DoClick = function()
 			RunConsoleCommand('dpp_removewhitelistedentity' .. k, entry:GetText())
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 
-		local Apply = Panel:Button('Add this entity to ALL exclude lists')
+		local Apply = Panel:Button(P('add_exclude_all'))
 		Apply.DoClick = function()
 			ADD_ALL_W(entry:GetText())
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 
-		local Apply = Panel:Button('Remove this entity from ALL exclude lists')
+		local Apply = Panel:Button(P('remove_exclude_all'))
 		Apply.DoClick = function()
 			REMOVE_ALL_W(entry:GetText())
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 
-		local Apply = Panel:Button('Add the entity you\'re looking at to the exclude lists')
+		local Apply = Panel:Button(P('add_exclude_looking_at'))
 		Apply.DoClick = function()
 			local ent = LocalPlayer():GetEyeTrace().Entity
 			if not IsValid(ent) then return end
@@ -2149,7 +2123,7 @@ any whitelist!
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 
-		local Apply = Panel:Button('Remove the entity you\'re looking at to the exclude lists')
+		local Apply = Panel:Button(P('add_exclude_looking_at_all'))
 		Apply.DoClick = function()
 			local ent = LocalPlayer():GetEyeTrace().Entity
 			if not IsValid(ent) then return end
@@ -2157,7 +2131,7 @@ any whitelist!
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 
-		local Apply = Panel:Button('Add the entity you\'re looking at to ALL exclude lists')
+		local Apply = Panel:Button(P('remove_exclude_looking_at'))
 		Apply.DoClick = function()
 			local ent = LocalPlayer():GetEyeTrace().Entity
 			if not IsValid(ent) then return end
@@ -2165,7 +2139,7 @@ any whitelist!
 		end
 		SettingsClass.ApplyButtonStyle(Apply)
 
-		local Apply = Panel:Button('Remove the entity you\'re looking at to ALL exclude lists')
+		local Apply = Panel:Button(P('remove_exclude_looking_at_all'))
 		Apply.DoClick = function()
 			local ent = LocalPlayer():GetEyeTrace().Entity
 			if not IsValid(ent) then return end
@@ -2178,9 +2152,7 @@ any whitelist!
 end
 
 local function SORTER(a, b)
-	local a = a.class
-	local b = b.class
-	return a < b
+	return a.class < b.class
 end
 
 for k, v in pairs(DPP.RestrictTypes) do
@@ -2193,7 +2165,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		local height = 50
 
 		local frame = vgui.Create('DFrame')
-		frame:SetTitle('Modifying ' .. class)
+		frame:SetTitle(P('modifying', class))
 		SettingsClass.ApplyFrameStyle(frame)
 
 		local groups = DPP.GetGroups()
@@ -2215,7 +2187,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		height = height + 30
 		local iswhite = frame:Add('DCheckBoxLabel')
 		iswhite:Dock(TOP)
-		iswhite:SetText('Is White List')
+		iswhite:SetText(P('is_white'))
 		iswhite:SetChecked(t.iswhite)
 
 		SettingsClass.MakeCheckboxBetter(iswhite)
@@ -2223,7 +2195,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
-		apply:SetText('Apply')
+		apply:SetText(P('apply'))
 		SettingsClass.ApplyButtonStyle(apply)
 
 		function apply.DoClick()
@@ -2241,7 +2213,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 		local discard = frame:Add('DButton')
 		discard:Dock(BOTTOM)
-		discard:SetText('Discard')
+		discard:SetText(P('discard'))
 		SettingsClass.ApplyButtonStyle(discard)
 
 		function discard.DoClick()
@@ -2265,9 +2237,9 @@ for k, v in pairs(DPP.RestrictTypes) do
 		Panel:AddItem(list)
 
 		list:SetHeight(600)
-		list:AddColumn('Class')
-		list:AddColumn('Groups')
-		list:AddColumn('Is Whitelist')
+		list:AddColumn(P('Class'))
+		list:AddColumn(P('Groups'))
+		list:AddColumn(P('is_white'))
 
 		local L = DPP.RestrictedTypes[k]
 		local New = {}
@@ -2288,15 +2260,15 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 			local menu = vgui.Create('DMenu')
 
-			menu:AddOption('Copy class to clipboard', function()
+			menu:AddOption(P('clipboard', P('Class')), function()
 				SetClipboardText(class)
 			end):SetIcon(table.Random(SettingsClass.TagIcons))
 
-			menu:AddOption('Remove from list', function()
+			menu:AddOption(P('remove_from_restrict_list'), function()
 				RunConsoleCommand('dpp_unrestrict' .. k, class)
 			end):SetIcon(SettingsClass.RemoveIcon)
 
-			menu:AddOption('Modify...', function()
+			menu:AddOption(P('modify_r'), function()
 				OpenModifyPanel(class)
 			end):SetIcon(SettingsClass.EditIcon)
 
@@ -2306,7 +2278,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		local entry = vgui.Create('DTextEntry', Panel)
 		Panel:AddItem(entry)
 
-		local Apply = Panel:Button('Add...')
+		local Apply = Panel:Button(P('add_r'))
 		Apply.DoClick = function()
 			OpenModifyPanel(entry:GetText(), true)
 		end
@@ -2329,8 +2301,8 @@ local function BuildFriendsPanel(Panel)
 	Panel:AddItem(list)
 
 	list:SetHeight(300)
-	list:AddColumn('Nick')
-	list:AddColumn('SteamID')
+	list:AddColumn(P('nick'))
+	list:AddColumn(P('steamid'))
 
 	for k, v in pairs(DPP.GetLocalFriends()) do
 		list:AddLine(v.nick, k)
@@ -2341,19 +2313,19 @@ local function BuildFriendsPanel(Panel)
 		local steamid = self:GetLine(line):GetValue(2)
 		local menu = vgui.Create('DMenu')
 
-		menu:AddOption('Copy Name to clipboard', function()
+		menu:AddOption(P('clipboard', P('nick')), function()
 			SetClipboardText(name)
 		end):SetIcon(table.Random(SettingsClass.TagIcons))
 
-		menu:AddOption('Copy SteamID to clipboard', function()
+		menu:AddOption(P('clipboard', P('steamid')), function()
 			SetClipboardText(steamid)
 		end):SetIcon(table.Random(SettingsClass.TagIcons))
 
-		menu:AddOption('Edit...', function()
+		menu:AddOption(P('edit_r'), function()
 			DPP.OpenFriendEditMenu(steamid)
 		end):SetIcon(SettingsClass.EditIcon)
 
-		menu:AddOption('Remove from friends', function()
+		menu:AddOption(P('remove_friend'), function()
 			DPP.RemoveFriendBySteamID(steamid)
 		end):SetIcon(SettingsClass.RemoveIcon)
 
@@ -2366,7 +2338,7 @@ local function BuildFriendsPanel(Panel)
 	for k, v in pairs(plys) do
 		if v == LocalPlayer() then continue end
 		if active[v] then continue end
-		local b = Panel:Button('Add ' .. v:Nick() .. ' to friends list')
+		local b = Panel:Button(P('add_friend', v:Nick()))
 		SettingsClass.ApplyButtonStyle(b)
 		b.DoClick = function()
 			DPP.OpenFriendEditMenu(v:SteamID())
@@ -2375,7 +2347,7 @@ local function BuildFriendsPanel(Panel)
 
 	local entry = vgui.Create('DTextEntry', Panel)
 	Panel:AddItem(entry)
-	local Apply = Panel:Button('Add by SteamID')
+	local Apply = Panel:Button(P('add_steamid'))
 	Apply.DoClick = function()
 		DPP.OpenFriendEditMenu(entry:GetText())
 	end
@@ -2390,14 +2362,14 @@ local function About(Panel)
 
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
-	Lab:SetText('DPP was created by DBot\nI tried to make it situable for all kinds of servers\nthat needs protect from minges')
+	Lab:SetText(P('about_header'))
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SizeToContents()
 	Lab:SetTooltip(TopText)
 
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
-	Lab:SetText('Can we have a free like please?\nPlease?! or i will cry ;n;')
+	Lab:SetText(P('about_thumbup'))
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SizeToContents()
 	Lab:SetTooltip(TopText)
@@ -2410,27 +2382,40 @@ local function About(Panel)
 
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
-	Lab:SetText('Can we have a free star please?\nPlease?! or i will cry ;n;')
+	Lab:SetText(P('about_star'))
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SizeToContents()
 	Lab:SetTooltip(TopText)
 
 	local Button = Panel:Button('Github')
 	Button.DoClick = function()
-		gui.OpenURL('https://github.com/00875/dpp')
+		gui.OpenURL('https://github.com/roboderpy/dpp')
 	end
 	SettingsClass.ApplyButtonStyle(Button)
 
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
-	Lab:SetText('Can we have a free bug report please?\nPlease?!')
+	Lab:SetText(P('about_bug'))
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SizeToContents()
 	Lab:SetTooltip(TopText)
 
-	local Button = Panel:Button('DPP issues page')
+	local Button = Panel:Button('BitBucket')
 	Button.DoClick = function()
-		gui.OpenURL('https://github.com/00875/dpp/issues')
+		gui.OpenURL('https://bitbucket.org/DBotThePony/dpp')
+	end
+	SettingsClass.ApplyButtonStyle(Button)
+
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	Lab:SetText(P('about_bug'))
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SizeToContents()
+	Lab:SetTooltip(TopText)
+
+	local Button = Panel:Button(P('about_issues'))
+	Button.DoClick = function()
+		gui.OpenURL('https://bitbucket.org/DBotThePony/dpp/issues?status=new&status=open')
 	end
 	SettingsClass.ApplyButtonStyle(Button)
 end
@@ -2822,7 +2807,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		height = height + 30
 		local iswhite = frame:Add('DCheckBoxLabel')
 		iswhite:Dock(TOP)
-		iswhite:SetText('Is White List')
+		iswhite:SetText(P('is_white'))
 		iswhite:SetChecked(t.iswhite)
 
 		SettingsClass.MakeCheckboxBetter(iswhite)
@@ -2830,7 +2815,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
-		apply:SetText('Apply')
+		apply:SetText(P('apply'))
 		SettingsClass.ApplyButtonStyle(apply)
 
 		function apply.DoClick()
@@ -2848,7 +2833,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 		local discard = frame:Add('DButton')
 		discard:Dock(BOTTOM)
-		discard:SetText('Discard')
+		discard:SetText(P('discard'))
 		SettingsClass.ApplyButtonStyle(discard)
 
 		function discard.DoClick()
@@ -2933,7 +2918,7 @@ do
 		local height = 50
 
 		local frame = vgui.Create('DFrame')
-		frame:SetTitle('Modifying ' .. class)
+		frame:SetTitle(P('modifying', class))
 		SettingsClass.ApplyFrameStyle(frame)
 
 		local groups = DPP.GetGroups()
@@ -2955,7 +2940,7 @@ do
 		height = height + 30
 		local iswhite = frame:Add('DCheckBoxLabel')
 		iswhite:Dock(TOP)
-		iswhite:SetText('Is White List')
+		iswhite:SetText(P('is_white'))
 		iswhite:SetChecked(t.iswhite)
 
 		SettingsClass.MakeCheckboxBetter(iswhite)
@@ -2963,7 +2948,7 @@ do
 
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
-		apply:SetText('Apply')
+		apply:SetText(P('apply'))
 		SettingsClass.ApplyButtonStyle(apply)
 
 		function apply.DoClick()
@@ -2981,7 +2966,7 @@ do
 
 		local discard = frame:Add('DButton')
 		discard:Dock(BOTTOM)
-		discard:SetText('Discard')
+		discard:SetText(P('discard'))
 		SettingsClass.ApplyButtonStyle(discard)
 
 		function discard.DoClick()

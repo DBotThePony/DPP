@@ -759,6 +759,11 @@ DPP.RestrictTypes = {
 	e2afunction = 'E2AFunction',
 }
 
+DPP.CURRENT_LANG = 'en'
+DPP.Phrases = DPP.Phrases or {}
+DPP.Phrases.en = DPP.Phrases.en or {}
+DPP.Phrases.ru = DPP.Phrases.ru or {}
+
 DPP.CSettings = {
 	['no_touch'] = {
 		type = 'bool',
@@ -1305,6 +1310,36 @@ function DPP.GetConstLimit(class, group)
 		return DPP_NO_LIMIT
 	end
 end
+
+function DPP.PhraseByLang(lang, id, ...)
+	DPP.Phrases[lang] = DPP.Phrases[lang] or {}
+	local phrase = DPP.Phrases[lang][id] or DPP.Phrases.en[id]
+	if not phrase then error('Invalid phrase: ' .. id) end
+	return string.format(phrase, ...)
+end
+
+function DPP.GetPhrase(id, ...)
+	return DPP.PhraseByLang(DPP.CURRENT_LANG, id, ...)
+end
+
+DPP.GetPhraseByLang = DPP.PhraseByLang
+
+function DPP.RegisterPhrase(lang, id, str)
+	DPP.Phrases[lang] = DPP.Phrases[lang] or {}
+	DPP.Phrases[lang][id] = str
+end
+
+function DPP.RegisterPhraseList(lang, array)
+	for k, v in pairs(array) do
+		DPP.RegisterPhrase(lang, k, v)
+	end
+end
+
+for k, v in pairs(DPP.Settings) do
+	DPP.RegisterPhrase('en', 'cvar_' .. k, v.desc)
+end
+
+include('sh_lang.lua')
 
 if SERVER then
 	for k, v in pairs(DPP.Settings) do
