@@ -128,7 +128,7 @@ local function CheckEntityLimit(ply, class)
 	local count = #DPP.FindEntitiesByClass(ply,	class)
 	local status = count + 1 > limit
 	if status then
-		DPP.Notify(ply, 'You hit ' .. class .. ' limit!', 1)
+		DPP.Notify(ply, DPP.PPhrase('entity_limit_hit', class), 1)
 	end
 
 	return status
@@ -143,7 +143,7 @@ local function CheckBlocked(ply, ent)
 		SafeRemoveEntity(ent)
 
 		if ply then
-			DPP.Notify(ply, 'Model of that entity is restricted', 1)
+			DPP.Notify(ply, DPP.PPhrase(ply, 'model_restricted'), 1)
 		end
 
 		return false
@@ -159,7 +159,7 @@ local function CheckBlocked2(ply, model)
 
 	if DPP.IsRestrictedModel(model, ply) then
 		if ply then
-			DPP.Notify(ply, 'Model of that entity is restricted', 1)
+			DPP.Notify(ply, DPP.PPhrase(ply, 'model_restricted'), 1)
 		end
 
 		return false
@@ -411,7 +411,7 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog, ignoreAntispa
 
 	if DPP.IsRestrictedSENT(ent:GetClass(), ply) then 
 		LogTryPost(ply, 'SENT', ent)
-		DPP.Notify(ply, 'That entity is restricted', 1)
+		DPP.Notify(ply, DPP.PPhrase(ply, 'entity_restricted'), 1)
 		SafeRemoveEntity(ent)
 		return false
 	end
@@ -445,7 +445,7 @@ function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog, ignoreAntispa
 
 	if DPP.IsRestrictedSWEP(ent:GetClass(), ply) then 
 		LogTryPost(ply, 'SWEP', ent)
-		DPP.Notify(ply, 'That SWEP is restricted', 1)
+		DPP.Notify(ply, DPP.PPhrase(ply, 'weapon_restricted'), 1)
 		SafeRemoveEntity(ent)
 		return false
 	end
@@ -477,7 +477,7 @@ function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog, ignoreAnti
 
 	if DPP.IsRestrictedVehicle(ent:GetClass(), ply) then 
 		LogTryPost(ply, 'Vehicle', ent)
-		DPP.Notify(ply, 'That vehicle is restricted', 1)
+		DPP.Notify(ply, DPP.PPhrase(ply, 'vehicle_restricted'), 1)
 		SafeRemoveEntity(ent)
 		return false
 	end
@@ -518,7 +518,7 @@ function SpawnFunctions.PlayerSpawnProp(ply, model)
 
 	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
 		LogTry(ply, 'Object/Generic', model)
-		DPP.Notify(ply, 'Entity is removed due to spam', 1)
+		DPP.Notify(ply, DPP.PPhrase(ply, 'spam_removed'), 1)
 		return false 
 	end
 
@@ -538,7 +538,7 @@ function SpawnFunctions.PlayerSpawnObject(ply, model)
 
 	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
 		LogTry(ply, 'Object/Generic', model)
-		DPP.Notify(ply, 'Entity is removed due to spam', 1)
+		DPP.Notify(ply, DPP.PPhrase(ply, 'spam_removed'), 1)
 		return false 
 	end
 
@@ -558,7 +558,7 @@ function SpawnFunctions.PlayerSpawnRagdoll(ply, model)
 
 	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
 		LogTry(ply, 'Object/Generic', model)
-		DPP.Notify(ply, 'Entity is removed due to spam', 1)
+		DPP.Notify(ply, DPP.PPhrase(ply, 'spam_removed'), 1)
 		return false 
 	end
 
@@ -583,7 +583,7 @@ function SpawnFunctions.PlayerSpawnVehicle(ply, model, class)
 
 	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
 		LogTry(ply, 'Vehicle', model)
-		DPP.Notify(ply, 'Entity is removed due to spam', 1)
+		DPP.Notify(ply, DPP.PPhrase('spam_removed'), 1)
 		return false 
 	end
 
@@ -594,7 +594,7 @@ function SpawnFunctions.PlayerSpawnVehicle(ply, model, class)
 
 	if DPP.IsRestrictedVehicle(class, ply) then 
 		LogTry(ply, 'Vehicle', class)
-		DPP.Notify(ply, 'That vehicle is restricted', 1)
+		DPP.Notify(ply, DPP.PPhrase(ply, 'vehicle_restricted'), 1)
 		return false 
 	end
 end
@@ -604,7 +604,7 @@ function SpawnFunctions.PlayerSpawnSENT(ply, ent)
 
 	if DPP.IsRestrictedSENT(ent, ply) then 
 		LogTry(ply, 'SENT', 'N/A', ent)
-		DPP.Notify(ply, 'That entity is restricted', 1)
+		DPP.Notify(ply, DPP.PPhrase(ply, 'entity_restricted'), 1)
 		return false 
 	end
 
@@ -619,7 +619,7 @@ function SpawnFunctions.PlayerSpawnSWEP(ply, ent)
 
 	if DPP.IsRestrictedSWEP(ent, ply) then 
 		LogTry(ply, 'SWEP', 'N/A', ent)
-		DPP.Notify(ply, 'That swep is restricted', 1)
+		DPP.Notify(ply, DPP.PPhrase(ply, 'weapon_restricted'), 1)
 		return false 
 	end
 
@@ -642,7 +642,7 @@ function SpawnFunctions.PlayerSpawnNPC(ply, ent)
 
 	if DPP.IsRestrictedNPC(ent, ply) then 
 		LogTry(ply, 'NPC', 'N/A', ent)
-		DPP.Notify(ply, 'That entity is restricted', 1)
+		DPP.Notify(ply, DPP.PPhrase(ply, 'npc_restricted'), 1)
 		return false 
 	end
 
@@ -773,13 +773,13 @@ function PostEntityCreated(ent, Timestamp)
 
 		if status == DPP.ANTISPAM_INVALID then
 			if not shouldRemove then
-				DPP.Notify(ply, 'Prop is removed due to spam', 1)
+				DPP.Notify(ply, DPP.PPhrase(ply, 'spam_removed'), 1)
 			end
 
 			shouldRemove = true
 		elseif status == DPP.ANTISPAM_GHOSTED then
 			if not iGhost then
-				DPP.Notify(ply, 'Prop is ghosted due to spam', 0)
+				DPP.Notify(ply, DPP.PPhrase(ply, 'spam_ghosted'), 0)
 			end
 
 			iGhost = true
@@ -940,7 +940,7 @@ function DPP.OverrideE2()
 		if self.DPly then
 			if DPP.IsRestrictedE2Function(Name, self.DPly) then
 				SimpleLog(team.GetColor(self.DPly:Team()), self.DPly:Nick(), color_white, '<' .. self.DPly:SteamID() .. '>', RED, ' tried ', GRAY, string.format('to use E2 function %s', Name))
-				self:Error('DPP: Restricted Function: ' .. Name, instr)
+				self:Error(DPP.PPhrase(self.DPly, 'e2_func_restricted', name), instr)
 				return
 			end
 		end
@@ -1110,14 +1110,14 @@ local function OnPhysgunReload(weapon, ply)
 	if not IsValid(ent) then return end
 
 	if DPP.GetConVar('disable_unfreeze') then
-		DPP.Notify(ply, 'Physgun reload is disabled on this server', NOTIFY_ERROR)
+		DPP.Notify(ply, DPP.PPhrase(ply, 'physgun_reload_disabled'), NOTIFY_ERROR)
 		return false
 	end
 
 	ply.DPP_LastUnfreezeTry = ply.DPP_LastUnfreezeTry or 0
 
 	if ply.DPP_LastUnfreezeTry > CurTime() then
-		DPP.Notify(ply, 'You must wait ' .. math.floor(ply.DPP_LastUnfreezeTry - CurTime()) .. ' seconds before trying to unfreeze again', NOTIFY_ERROR)
+		DPP.Notify(ply, DPP.PPhrase(ply, 'physgun_reload_wait', math.floor(ply.DPP_LastUnfreezeTry - CurTime())), NOTIFY_ERROR)
 		return false
 	end
 
@@ -1140,7 +1140,7 @@ local function OnPhysgunReload(weapon, ply)
 
 	if i > num then
 		ply.DPP_LastUnfreezeTry = CurTime() + math.Clamp(i / 5, math.min(DPP.GetConVar('unfreeze_antispam_delay'), 5), 15)
-		DPP.Notify(ply, 'Unable to unfreeze: You are trying un freeze ' .. i .. ' entities (' .. num .. ' max)!', NOTIFY_ERROR)
+		DPP.Notify(ply, DPP.PPhrase(ply, 'unable_to_unfreeze', i, num), NOTIFY_ERROR)
 		return false
 	end
 end

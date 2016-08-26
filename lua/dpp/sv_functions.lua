@@ -558,14 +558,14 @@ function DPP.CheckAntispam(ply, ent, force)
 		if can == false then return DPP.ANTISPAM_VALID end
 
 		SafeRemoveEntity(ent)
-		DPP.Notify(ply, 'Prop is removed due to spam', 1)
+		DPP.Notify(ply, DPP.PPhrase(ply, 'spam_removed'), 1)
 		return DPP.ANTISPAM_INVALID
 	elseif reply == DPP.ANTISPAM_GHOSTED then
 		local can = hook.Run('DPP_AntiSpamEnt_Hit', ply, ent, DPP.ANTISPAM_GHOSTED)
 		if can == false then return DPP.ANTISPAM_VALID end
 
 		DPP.SetGhosted(ent, true)
-		DPP.Notify(ply, 'Prop is ghosted due to spam', 0)
+		DPP.Notify(ply, DPP.PPhrase(ply, 'spam_ghosted'), 0)
 		return DPP.ANTISPAM_GHOSTED
 	end
 end

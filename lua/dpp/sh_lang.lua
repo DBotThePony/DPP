@@ -181,6 +181,25 @@ entities.
 	toolgun_antispam = 'Toolgun spam',
 	damage_allowed = 'Damage allowed',
 	damage_blocked = 'Damage blocked',
+	
+	e2adv_func_restricted_s = '(SERVERSIDE) DPP: Restricted Function: %s()',
+	e2adv_func_restricted = 'DPP: Restricted Function: %s()',
+	
+	--Server hooks messages
+	unable_to_unfreeze = 'Unable to unfreeze: You are trying un freeze %s entities (%s max)!',
+	physgun_reload_disabled = 'Physgun reload is disabled on this server',
+	physgun_reload_wait = 'You must wait %s seconds before trying to unfreeze again',
+	
+	e2_func_restricted = 'DPP: Restricted Function: %s()',
+	spam_removed = 'Prop is removed due to spam',
+	spam_ghosted = 'Prop is ghosted due to spam',
+	
+	vehicle_restricted = 'Vehicle is restricted',
+	model_restricted = 'Model is restricted',
+	weapon_restricted = 'Weapon is restricted',
+	npc_restricted = 'NPC is restricted',
+	entity_restricted = 'Entity is restricted',
+	entity_limit_hit = 'You hit %q limit!',
 }
 
 local ru = {
@@ -512,6 +531,9 @@ local ru = {
 	toolgun_antispam = 'Спам инструментом',
 	damage_allowed = 'Урон разрешён',
 	damage_blocked = 'Урон заблокирован',
+	
+	e2adv_func_restricted_s = '(СЕРВЕРНАЯ СТОРОНА) DPP: Функция ограничена: %s()',
+	e2adv_func_restricted = 'DPP: Функция ограничена: %s()',
 }
 
 DPP.RegisterPhraseList('en', en)

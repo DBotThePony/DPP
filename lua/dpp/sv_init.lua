@@ -425,6 +425,8 @@ function DPP.PlayerPhrase(ply, id, ...)
 	return DPP.PhraseByLang(ply._DPP_CURRENT_LANG, id, ...)
 end
 
+DPP.PPhrase = DPP.PlayerPhrase
+
 DPP.SetVarCommandRaw = function(ply, cmd, args)
 	if not args[1] then return false, {'Invalid server variable'}, NOTIFY_ERROR end
 	args[1] = args[1]:lower()

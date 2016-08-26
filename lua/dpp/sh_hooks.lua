@@ -448,10 +448,10 @@ function DPP.OverrideE2Adv()
 		if self.DPly then
 			if DPP.IsRestrictedE2AFunction(Variable, self.DPly) then
 				if SERVER then
-					DPP.Notify(self.DPly, "(SERVERSIDE) DPP: Restricted Function: " .. Variable .. "()", 1)
+					DPP.Notify(self.DPly, DPP.PlayerPhrase('e2adv_func_restricted_s', Variable), 1)
 				end
 
-				self:TraceError(Trace, "DPP: Restricted Function: %s()", Variable)
+				self:TraceError(Trace, DPP.GetPhrase('e2adv_func_restricted', Variable))
 			end
 		end
 
