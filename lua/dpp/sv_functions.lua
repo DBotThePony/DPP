@@ -165,7 +165,7 @@ function DPP.CheckAutoBlock(ent, ply)
 	if can == false then return true end
 
 	SafeRemoveEntity(ent)
-	DPP.ManipulateCommands.addblockedmodel(Entity(0), nil, {model})
+	DPP.ManipulateCommands.addblockedmodel(Entity(0), '', {model})
 	if ply and IsValid(ply) then
 		DPP.Notify(ply, DPP.PPhrase(ply, 'prop_autoban'))
 	end
