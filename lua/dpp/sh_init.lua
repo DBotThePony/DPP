@@ -1312,6 +1312,11 @@ function DPP.GetConstLimit(class, group)
 	end
 end
 
+--Yes, gmod_language is shared
+local LangCVar
+local LastLanguage
+local LangSetup = false
+
 function DPP.PhraseByLang(lang, id, ...)
 	DPP.Phrases[lang] = DPP.Phrases[lang] or {}
 	local phrase = DPP.Phrases[lang][id] or DPP.Phrases.en[id]
@@ -1333,10 +1338,12 @@ function DPP.PhraseByLangSafe(lang, id, ...)
 end
 
 function DPP.GetPhrase(id, ...)
+	if not LangSetup then DPP.UpdateLang() end
 	return DPP.PhraseByLang(DPP.CURRENT_LANG, id, ...)
 end
 
 function DPP.GetPhraseSafe(id, ...)
+	if not LangSetup then DPP.UpdateLang() end
 	return DPP.PhraseByLangSafe(DPP.CURRENT_LANG, id, ...)
 end
 
@@ -1385,6 +1392,23 @@ end
 for k, v in pairs(DPP.Settings) do
 	DPP.RegisterPhrase('en', 'cvar_' .. k, v.desc)
 end
+
+--We can send language only at it's change, but for safety - always send language
+function DPP.UpdateLang()
+	LangSetup = true
+	LangCVar = LangCVar or GetConVar('gmod_language')
+	DPP.CURRENT_LANG = LangCVar:GetString():lower()
+	if LastLanguage ~= DPP.CURRENT_LANG then hook.Call('DPP.LanguageChanged') end
+	LastLanguage = DPP.CURRENT_LANG
+	
+	if CLIENT then
+		net.Start('DPP.UpdateLang')
+		net.WriteString(DPP.CURRENT_LANG)
+		net.SendToServer()
+	end
+end
+
+timer.Create('DPP.UpdateLang', 5, 0, DPP.UpdateLang)
 
 include('sh_lang.lua')
 
@@ -1718,26 +1742,6 @@ function DPP.PreprocessPhrases(...)
 end
 
 DPP.AssignConVarNetworkIDs()
-
---Yes, gmod_language is shared
-local LangCVar
-local LastLanguage
-
---We can send language only at it's change, but for safety - always send language
-local function UpdateLang()
-	LangCVar = LangCVar or GetConVar('gmod_language')
-	DPP.CURRENT_LANG = LangCVar:GetString():lower()
-	if LastLanguage ~= DPP.CURRENT_LANG then hook.Call('DPP.LanguageChanged') end
-	LastLanguage = DPP.CURRENT_LANG
-	
-	if CLIENT then
-		net.Start('DPP.UpdateLang')
-		net.WriteString(DPP.CURRENT_LANG)
-		net.SendToServer()
-	end
-end
-
-timer.Create('DPP.UpdateLang', 5, 0, UpdateLang)
 
 include('sh_access.lua')
 include('sh_hooks.lua')
