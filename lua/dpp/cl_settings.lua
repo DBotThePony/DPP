@@ -2713,7 +2713,7 @@ local transfertoplayer = {
 	MenuLabel = 'Transfer ownership to player...',
 	Order = 2700,
 	MenuIcon = 'icon16/user.png',
-	PHRASE = 'property_transferworld',
+	PHRASE = 'property_transferplayer',
 
 	MenuOpen = function(self, menu, ent, tr)
 		local SubMenu = menu:AddSubMenu()

@@ -328,7 +328,7 @@ entities.
 	property_cleanup = 'Cleanup props of owner',
 	property_share = 'Share this prop',
 	property_transferworld = 'Transfer ownership to world',
-	property_transferworld = 'Transfer ownership to player...',
+	property_transferplayer = 'Transfer ownership to player...',
 	property_roptions = 'DPP Restrict options',
 	property_add_blocked_models = 'Add to DPP Blocked Models',
 	property_remove_blocked_models = 'Remove from DPP Blocked Models',
