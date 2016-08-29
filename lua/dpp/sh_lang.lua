@@ -1031,6 +1031,11 @@ local ru = {
 	priv_unrestrictswep = 'Может убирать оружия из листа ограничений',
 	priv_unrestricttool = 'Может убирать режимы инструментов из листа ограничений',
 	priv_unrestrictvehicle = 'Может убирать транспорт из листа ограничений',
+	
+	givechance_error = 'ВНИМАНИЕ! ЭНТИТИ БРОСИЛО ИСКЛЮЧЕНИЕ. ',
+	givechance_Entity = 'Энтити ',
+	givechance_desc = ' БРОСИЛО СЛЕДУЮЩЕЕ ИСКЛЮЧЕНИЕ ВО ВРЕМЯ ВЫЗОВА %q: ',
+	givechance_returned = 'Энтити управляет своей защитой',
 }
 
 DPP.RegisterPhraseList('en', en)
