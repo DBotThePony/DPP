@@ -18,6 +18,25 @@ limitations under the License.
 local GRAY = Color(200, 200, 200)
 local RED = Color(255, 0, 0)
 
+local function GiveEntityChance(ent, funcToCall, ...)
+	local func = ent[funcToCall]
+	
+	if type(func) ~= 'function' then
+		if type(func) == 'boolean' then return func end
+		return nil
+	end
+	
+	local stuff = {pcall(func, ...)}
+	local status = table.remove(stuff, 1)
+	
+	if not status then
+		DPP.DoEcho(RED, 'PHRASE:givechance_error', GRAY, 'PHRASE:givechance_Entity', color_white, tostring(ent), GRAY, 'PHRASE:givechance_desc||' .. funcToCall, color_white, stuff[1])
+		return nil
+	end
+	
+	return unpack(stuff, 1, #stuff)
+end
+
 function DPP.CanDamage(ply, ent, ignoreEnt)
 	if not DPP.GetConVar('enable_damage') then return true end
 	if DPP.IsEntityBlockedDamage(ent:GetClass()) then 
@@ -27,6 +46,9 @@ function DPP.CanDamage(ply, ent, ignoreEnt)
 	if DPP.IsEntityWhitelistedDamage(ent:GetClass()) then
 		return true, DPP.GetPhrase('entity_excluded_d')
 	end
+	
+	local can = GiveEntityChance(ent, 'CanDamage', ply)
+	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
 
 	local type = DPP.GetEntityType(ent)
 	DPP.UpdateConstrainedWith(ent)
@@ -53,7 +75,7 @@ function DPP.CanDamage(ply, ent, ignoreEnt)
 			return true, Reason
 		end
 	end
-
+	
 	return DPP.CanTouch(ply, ent, 'damage')
 end
 
@@ -171,6 +193,12 @@ function DPP.CanPhysgun(ply, ent)
 		return true, DPP.GetPhrase('entity_excluded')
 	end
 
+	local can = GiveEntityChance(ent, 'PhysgunPickup', ply)
+	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
+
+	local can = GiveEntityChance(ent, 'CanPhysgun', ply) --DPP Owned method
+	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
+
 	return DPP.CanTouch(ply, ent, 'physgun')
 end
 
@@ -198,11 +226,27 @@ function DPP.CanGravgun(ply, ent)
 		return true
 	end
 
+	local can = GiveEntityChance(ent, 'GravGunPickupAllowed', ply)
+	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
+
+	local can = GiveEntityChance(ent, 'CanGravgun', ply) --DPP Owned method
+	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
+
+	local can = GiveEntityChance(ent, 'GravGunPickup', ply) --FPP like
+	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
+
 	return DPP.CanTouch(ply, ent, 'gravgun')
 end
 
 function DPP.CanGravgunPunt(ply, ent)
 	if DPP.GetConVar('player_cant_punt') then return false end
+	
+	local can = GiveEntityChance(ent, 'CanGravgunPunt', ply)
+	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
+	
+	local can = GiveEntityChance(ent, 'GravGunPunt', ply) --FPP like
+	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
+	
 	return DPP.CanGravgun(ply, ent)
 end
 
@@ -212,6 +256,9 @@ function DPP.OnPhysgunReload(phys, ply, ignoreConnected, ent)
 
 	local can, reason = DPP.CanTouch(ply, ent, 'physgun')
 	if not can then return can, reason end
+	
+	local can = GiveEntityChance(ent, 'OnPhysgunReload', ply)
+	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
 
 	if SERVER then
 		if not ignoreConnected then
@@ -278,6 +325,9 @@ function DPP.CanTool(ply, ent, mode)
 			if can1 then return false, DPP.GetPhrase('no_toolgun_player') end
 		end
 	end
+	
+	local can = GiveEntityChance(ent, 'CanTool', ply, mode)
+	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
 
 	return DPP.CanTouch(ply, ent, 'toolgun')
 end
@@ -296,6 +346,9 @@ function DPP.CanPlayerEnterVehicle(ply, ent)
 	DPP.AssertArguments('DPP.CanPlayerEnterVehicle', {{ply, 'Player'}, {ent, 'AnyEntity'}})
 	if ent.IgnoreVehicleProtection then return true, DPP.GetPhrase('vehicle_protection_ignored') end
 	if DPP.GetConVar('disable_veh_world') and not DPP.IsOwned(ent) then return true, DPP.GetPhrase('owned_by_world') end
+	
+	local can = GiveEntityChance(ent, 'CanPlayerEnterVehicle', ply)
+	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
 
 	return DPP.CanTouch(ply, ent, 'vehicle')
 end
@@ -312,6 +365,10 @@ end
 function DPP.CanEditVariable(ent, ply, key, val, editor)
 	if not DPP.GetConVar('enable_tool') then return true, DPP.GetPhrase('protection_disabled') end
 	DPP.AssertArguments('DPP.CanEditVariable', {{ent, 'AnyEntity'}, {ply, 'Player'}})
+	
+	local can = GiveEntityChance(ent, 'CanEditVariable', ply)
+	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
+	
 	return DPP.CanTool(ply, ent, '')
 end
 
@@ -336,6 +393,9 @@ function DPP.CanProperty(ply, str, ent)
 	if str ~= 'remover' and DPP.IsEntityWhitelistedProperty(ent:GetClass()) then
 		return true, DPP.GetPhrase('entity_excluded')
 	end
+	
+	local can = GiveEntityChance(ent, 'CanProperty', ply, str)
+	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
 
 	return DPP.CanTool(ply, ent, str)
 end
@@ -352,6 +412,9 @@ function DPP.PlayerUse(ply, ent)
 	if DPP.IsEntityWhitelistedUse(ent:GetClass()) then
 		return true, DPP.GetPhrase('entity_excluded')
 	end
+	
+	local can = GiveEntityChance(ent, 'PlayerUse', ply)
+	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
 
 	return DPP.CanTouch(ply, ent, 'use')
 end

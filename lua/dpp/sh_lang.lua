@@ -396,6 +396,11 @@ EVEN IF THEY "TALK" THAT THEY ARE ALLOWED
 TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 (this may cover possible exploits with non-default properties)
 ]],
+
+	givechance_error = 'ATTENTION! ENTITY THROW EXCEPTION. ',
+	givechance_Entity = 'Entity ',
+	givechance_desc = ' THROW NEXT EXCPETION WHILE CALLING %q FUNCTION: ',
+	givechance_returned = 'Entity controls protection by itself',
 }
 
 local ru = {
