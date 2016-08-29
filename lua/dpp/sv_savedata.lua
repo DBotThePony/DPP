@@ -682,6 +682,8 @@ DPP.ManipulateCommands.removeconstlimit = function(ply, cmd, args)
 end
 
 function DPP.SaveCVars()
+	DPP.Message('PHRASE:saving_cvars')
+	
 	local t = {}
 
 	for k, v in pairs(DPP.Settings) do

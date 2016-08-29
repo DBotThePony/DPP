@@ -346,6 +346,7 @@ entities.
 	net_error_1 = 'Oh no! Something went terribly wrong! i am unable to send data to client. The error message follows:',
 	net_error_2 = 'If you thinks this is DPP problem, report on BitBucket and tell how did you got this.',
 	accepted = 'Accepted',
+	saving_cvars = 'Saving console variables into database...',
 	
 	--Tool menu
 	menu_server = 'Server Variables',
@@ -899,6 +900,7 @@ local ru = {
 	net_error_1 = 'О нет! Что-то пошло совсем не так! Я не могу отправить данные клиенту. Ошибка:',
 	net_error_2 = 'Если вы думаете, что это ошибка в DPP, дайте мне знать, оставив тикет на баг трекере DPP на BitBucket, и, пожалуйста, расскажите как вы получили данную ошибку.',
 	accepted = 'Принято',
+	saving_cvars = 'Сохраняю значения переменных сервера в базу данных...',
 	
 	--Tool menu
 	menu_server = 'Серверные переенные',

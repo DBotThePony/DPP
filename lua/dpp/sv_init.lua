@@ -49,7 +49,7 @@ end
 
 function DPP.ConVarChanged(var, old, new)
 	if not DPP.IGNORE_CVAR_SAVE then
-		DPP.SaveCVars()
+		timer.Create('DPP.SaveCVars', 1, 1, DPP.SaveCVars)
 	end
 
 	local can = hook.Run('DPP_SuppressConVarBroadcast', var, old, new)
