@@ -1648,7 +1648,7 @@ function DPP.FormatPlayer(ply)
 	local t = {}
 
 	table.insert(t, team.GetColor(ply:Team()))
-	table.insert(t, ply:Nick())
+	table.insert(t, 'NPHRASE:' .. ply:Nick())
 	table.insert(t, color_white)
 	table.insert(t, '<' .. ply:SteamID() .. '>')
 
@@ -1722,7 +1722,17 @@ function DPP.PreprocessPhrases(...)
 	local repack = {}
 	
 	for k, v in ipairs{...} do
-		if type(v) ~= 'string' or v:sub(1, 7) ~= 'PHRASE:' then
+		if type(v) ~= 'string' then
+			table.insert(repack, v)
+			continue
+		end
+		
+		if v:sub(1, 8) == 'NPHRASE:' then
+			table.insert(repack, v:sub(9))
+			continue
+		end
+		
+		if v:sub(1, 7) ~= 'PHRASE:' then
 			table.insert(repack, v)
 			continue
 		end
