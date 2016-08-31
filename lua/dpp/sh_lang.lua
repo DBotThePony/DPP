@@ -404,6 +404,7 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	givechance_returned = 'Entity controls protection by itself',
 	
 	Console = 'Server',
+	request_net_update = 'Request DPP network refresh',
 	
 	--Manipulation commands
 	saveload_added = ' added ',
@@ -1077,6 +1078,7 @@ local ru = {
 	givechance_returned = 'Энтити управляет своей защитой',
 	
 	Console = 'Сервер',
+	request_net_update = 'Запросить обновление сети DPP',
 	
 	--Manipulation commands
 	saveload_added = ' добавил ',

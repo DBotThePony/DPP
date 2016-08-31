@@ -128,7 +128,7 @@ local Gray = Color(200, 200, 200)
 local function NetworkedVarFull(len, ply, auto)
 	ply.DPP_NetowrkingFullLast = ply.DPP_NetowrkingFullLast or 0
 	if ply.DPP_NetowrkingFullLast > CurTime() then return false end
-	ply.DPP_NetowrkingFullLast = CurTime() + 60
+	ply.DPP_NetowrkingFullLast = CurTime() + 10
 
 	DPP.BroadcastLists(ply)
 	DPP.SendConVarsTo(ply)
