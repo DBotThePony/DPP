@@ -1083,7 +1083,7 @@ function SettingsClass.BuildModelsListGUI()
 	canvas.Icons = {}
 	canvas:Clear()
 
-	for k, v in pairs(DPP.BlockedModels) do
+	for k, v in SortedPairs(DPP.BlockedModels) do
 		local icon = canvas:Add('SpawnIcon')
 		icon:SetModel(k)
 		icon:SetSize(SettingsClass.ModelsWidth, SettingsClass.ModelsHeight)
@@ -1109,7 +1109,7 @@ local function BuildModelsList(Panel)
 
 	local L = DPP.BlockedModels
 
-	for k, v in pairs(L) do
+	for k, v in SortedPairs(L) do
 		list:AddLine(k)
 	end
 
