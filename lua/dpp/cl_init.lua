@@ -914,7 +914,7 @@ net.Receive('DPP.ReloadFiendList', function()
 end)
 
 net.Receive('DPP.Notify', function()
-	DPP.Notify(DPP.PreprocessPhrases(unpack(net.ReadTable())), net.ReadUInt(6))
+	DPP.Notify(DPP.PreprocessPhrases(unpack(DPP.ReadMessageTable())), net.ReadUInt(6))
 end)
 
 net.Receive('DPP.PlayerList', function()
@@ -936,7 +936,7 @@ net.Receive('DPP.ConstrainedTable', function()
 end)
 
 net.Receive('DPP.Log', function()
-	DPP.Message(unpack(net.ReadTable()))
+	DPP.Message(unpack(DPP.ReadMessageTable()))
 end)
 
 net.Receive('DPP.SendConstrainedWith', function()

@@ -39,7 +39,7 @@ resource.AddWorkshop('659044893')
 function DPP.Notify(ply, message, type)
 	if istable(ply) or IsValid(ply) then
 		net.Start('DPP.Notify')
-		net.WriteTable(istable(message) and message or {message})
+		DPP.WriteMessageTable(istable(message) and message or {message})
 		net.WriteUInt(type or 0, 6)
 		net.Send(ply)
 	else
@@ -202,7 +202,7 @@ local function Think()
 		end
 
 		net.Start('DPP.Log')
-		net.WriteTable(v)
+		DPP.WriteMessageTable(v)
 		net.Send(admins)
 
 		Queued[k] = nil

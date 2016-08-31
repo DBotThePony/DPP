@@ -207,6 +207,75 @@ function DPP.AssignConVarNetworkIDs()
 	end
 end
 
+function DPP.WriteVarchar(str)
+	local len = math.Clamp(#str, 0, 255)
+	net.WriteUInt(len, 8)
+	
+	for k, v in ipairs{string.byte(str, 1, len)} do
+		net.WriteUInt(v, 8)
+	end
+end
+
+function DPP.ReadVarchar()
+	local len = net.ReadUInt(8)
+	
+	local str = ''
+	
+	for i = 1, len do
+		str = str .. string.char(net.ReadUInt(8))
+	end
+	
+	return str
+end
+
+DPP_NETTYPE_NUMBER = 1
+DPP_NETTYPE_STRING = 2
+DPP_NETTYPE_COLOR = 3
+DPP_NETTYPE_BOOL = 4
+
+function DPP.WriteMessageTable(tab)
+	net.WriteUInt(#tab, 8)
+	
+	for k, v in ipairs(tab) do
+		local T = type(v)
+		
+		if T == 'string' then
+			net.WriteUInt(DPP_NETTYPE_STRING, 6)
+			DPP.WriteVarchar(v)
+		elseif T == 'number' then
+			net.WriteUInt(DPP_NETTYPE_NUMBER, 6)
+			net.WriteInt(v, 32)
+		elseif T == 'boolean' then
+			net.WriteUInt(DPP_NETTYPE_BOOL, 6)
+			net.WriteBool(v)
+		elseif T == 'table' and v.a and v.r and v.g and v.b then
+			net.WriteUInt(DPP_NETTYPE_COLOR, 6)
+			net.WriteColor(v)
+		end
+	end
+end
+
+function DPP.ReadMessageTable()
+	local len = net.ReadUInt(8)
+	local reply = {}
+	
+	for i = 1, len do
+		local T = net.ReadUInt(6)
+		
+		if T == DPP_NETTYPE_STRING then
+			table.insert(reply, DPP.ReadVarchar())
+		elseif T == DPP_NETTYPE_NUMBER then
+			table.insert(reply, net.ReadInt(32))
+		elseif T == DPP_NETTYPE_BOOL then
+			table.insert(reply, net.ReadBool())
+		elseif T == DPP_NETTYPE_COLOR then
+			table.insert(reply, net.ReadColor())
+		end
+	end
+	
+	return reply
+end
+
 hook.Add('OnEntityCreated', 'DPP.Networking', OnEntityCreated)
 
 if CLIENT then
