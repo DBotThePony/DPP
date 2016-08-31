@@ -158,16 +158,16 @@ DPP.Commands = {
 		local id = args[1]
 		if not id then return false, {'PHRASE:com_invalid_eid', ' (#1)'}, NOTIFY_ERROR end
 		local num = tonumber(id)
-		if not num then return false, {'PHRASE:com_invalid_eid', '(#1)'}, NOTIFY_ERROR end
+		if not num then return false, {'PHRASE:com_invalid_eid', ' (#1)'}, NOTIFY_ERROR end
 		local ent = Entity(num)
-		if not IsValid(ent) then return false, {'PHRASE:not_valid', '(#2)'}, NOTIFY_ERROR end
+		if not IsValid(ent) then return false, {'PHRASE:not_valid', ' (#2)'}, NOTIFY_ERROR end
 
 		DPP.SetOwner(ent, NULL)
 		DPP.DeleteEntityUndo(ent)
 		DPP.RecalcConstraints(ent)
 
 		DPP.SimpleLog(ply, Gray, 'PHRASE:com_transfer', ent, Gray, 'PHRASE:com_transfer_world')
-		DPP.Notify(ply, DPP.Format(DPP.PPhrase('com_transfer_s'))) --Format?
+		DPP.Notify(ply, DPP.PPhrase('com_transfer_s'))
 
 		return true
 	end,
@@ -178,7 +178,7 @@ DPP.Commands = {
 		local num = tonumber(id)
 		if not num then return false, {'PHRASE:com_invalid_eid', ' (#1)'}, NOTIFY_ERROR end
 		local ent = Entity(num)
-		if not IsValid(ent) then return false, {'PHRASE:not_valid', '(#2)'}, NOTIFY_ERROR end
+		if not IsValid(ent) then return false, {'PHRASE:not_valid', ' (#2)'}, NOTIFY_ERROR end
 
 		local Entities = DPP.GetAllConnectedEntities(ent)
 
@@ -377,7 +377,7 @@ DPP.Commands = {
 		undo.AddEntity(ent)
 		undo.Finish()
 
-		DPP.SimpleLog(ply, Gray, 'PHRASE:com_transfer', ent, Gray, 'PHRASE:com_to', found)
+		DPP.SimpleLog(ply, Gray, 'PHRASE:com_transfer', color_white, ent, Gray, 'PHRASE:com_to', found)
 		DPP.Notify(ply, DPP.Format('PHRASE:com_owning_transfer', found))
 
 		return true
