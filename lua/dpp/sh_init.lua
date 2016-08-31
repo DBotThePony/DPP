@@ -715,12 +715,11 @@ DPP.Settings = {
 		desc = 'Check AABB size too'
 	},
 
-
 	['prop_auto_ban_minsmaxs'] = {
 		type = 'int',
-		value = '300',
+		value = '350',
 		min = 1,
-		max = 600,
+		max = 1000,
 		desc = 'Maximal distance between props maximals and minimals vectors (AABB size)'
 	},
 }
