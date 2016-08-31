@@ -227,7 +227,7 @@ DPP.ManipulateCommands = {
 		args[1] = args[1]:lower():Trim()
 		if not DPP.BlockedModels[args[1]] then return false, {'PHRASE:saveload_model_already_n'} end
 		DPP.RemoveBlockedModel(args[1])
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_removed', args[1], 'PHRASE:saveload_bmodels'}
+		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_removed', args[1], 'PHRASE:saveload_from', 'PHRASE:saveload_bmodels'}
 	end,
 }
 
