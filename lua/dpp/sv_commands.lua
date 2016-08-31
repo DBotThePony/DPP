@@ -42,7 +42,7 @@ DPP.Commands = {
 			v:ConCommand('r_cleardecals')
 			v:SendLua('game.RemoveRagdolls()')
 		end
-		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, 'PHRASE:com_decals'}
+		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_decals'}
 	end,
 
 	toggleplayerprotect = function(ply, cmd, args)
@@ -58,7 +58,7 @@ DPP.Commands = {
 		if not DPP.ProtectionModes[mode] then return false, {'PHRASE:com_invalid_pmode'}, NOTIFY_ERROR end
 
 		DPP.SetProtectionDisabled(target, mode, status)
-		local f = {IsValid(ply) and ply or 'Console', Gray, (status and ' disabled ' or ' enabled '), 'protection mode ' .. mode .. ' for ', target}
+		local f = {IsValid(ply) and ply or 'PHRASE:Console', Gray, (status and ' disabled ' or ' enabled '), 'protection mode ' .. mode .. ' for ', target}
 		DPP.DoEcho(f)
 
 		return true
@@ -66,7 +66,7 @@ DPP.Commands = {
 
 	cleardisconnected = function(ply, cmd, args)
 		DPP.ClearDisconnectedProps()
-		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, 'PHRASE:com_cleared_disconnected'}
+		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_cleared_disconnected'}
 
 		return true
 	end,
@@ -79,7 +79,7 @@ DPP.Commands = {
 		DPP.RecalculatePlayerList()
 		DPP.SendPlayerList()
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, 'PHRASE:com_cleared_map'}
+		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_cleared_map'}
 
 		return true
 	end,
@@ -90,7 +90,7 @@ DPP.Commands = {
 
 		DPP.ClearByUID(uid)
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, 'PHRASE:com_cleared_ply_1', {type = 'UIDPlayer', uid = uid}, Gray, 'PHRASE:com_cleared_ply_2'}
+		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_cleared_ply_1', {type = 'UIDPlayer', uid = uid}, Gray, 'PHRASE:com_cleared_ply_2'}
 
 		return true
 	end,
@@ -103,7 +103,7 @@ DPP.Commands = {
 			end
 		end
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, 'PHRASE:com_freezed_players'}
+		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_freezed_players'}
 
 		return true
 	end,
@@ -111,7 +111,7 @@ DPP.Commands = {
 	freezephys = function(ply, cmd, args)
 		local i = DPP.FreezeAllPhysObjects()
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, 'PHRASE:com_freezed||' .. i}
+		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_freezed||' .. i}
 
 		return true
 	end,
@@ -124,7 +124,7 @@ DPP.Commands = {
 			if not found then return false, {'PHRASE:com_invalid_ply_userid'}, NOTIFY_ERROR end
 			DPP.ClearPlayerEntities(found)
 
-			DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, ' cleared all ', found, Gray, 'PHRASE:com_ply_ents'}
+			DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, ' cleared all ', found, Gray, 'PHRASE:com_ply_ents'}
 			return
 		end
 
@@ -138,7 +138,7 @@ DPP.Commands = {
 		if not found then return false, {'PHRASE:com_invalid_target'}, NOTIFY_ERROR end
 		DPP.ClearPlayerEntities(found)
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, 'PHRASE:com_cleared_ply_1', found, Gray, 'PHRASE:com_cleared_ply_2'}
+		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_cleared_ply_1', found, Gray, 'PHRASE:com_cleared_ply_2'}
 
 		return true
 	end,
@@ -204,7 +204,7 @@ DPP.Commands = {
 			if not found then return false, {'PHRASE:com_invalid_ply_userid'}, NOTIFY_ERROR end
 			DPP.FreezePlayerEntities(found)
 
-			DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, 'PHRASE:com_freezed_all', found, Gray, 'PHRASE:com_ply_ents'}
+			DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_freezed_all', found, Gray, 'PHRASE:com_ply_ents'}
 			return true
 		end
 
@@ -218,7 +218,7 @@ DPP.Commands = {
 		if not found then return false, {'PHRASE:com_no_target'}, NOTIFY_ERROR end
 		DPP.FreezePlayerEntities(found)
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, 'PHRASE:com_freezed_all', found, Gray, 'PHRASE:com_ply_ents'}
+		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_freezed_all', found, Gray, 'PHRASE:com_ply_ents'}
 
 		return true
 	end,
@@ -229,7 +229,7 @@ DPP.Commands = {
 		if not tonumber(args[1]) then return false, {'PHRASE:com_invalid_uid'}, NOTIFY_ERROR end
 		DPP.FreezeByUID(uid)
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, 'PHRASE:com_freezed_all', {type = 'UIDPlayer', uid = uid}, Gray, 'PHRASE:com_ply_ents'}
+		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_freezed_all', {type = 'UIDPlayer', uid = uid}, Gray, 'PHRASE:com_ply_ents'}
 
 		return true
 	end,
@@ -241,7 +241,7 @@ DPP.Commands = {
 
 		DPP.UnFreezeByUID(uid)
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, 'PHRASE:com_unfreezed_all', {type = 'UIDPlayer', uid = uid}, Gray, 'PHRASE:com_ply_ents'}
+		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_unfreezed_all', {type = 'UIDPlayer', uid = uid}, Gray, 'PHRASE:com_ply_ents'}
 
 		return true
 	end,
@@ -254,7 +254,7 @@ DPP.Commands = {
 			if not found then return false, {'PHRASE:com_invalid_ply_userid'}, NOTIFY_ERROR end
 			DPP.UnFreezePlayerEntities(found)
 
-			DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, 'PHRASE:com_unfreezed_all', found, Gray, 'PHRASE:com_ply_ents'}
+			DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_unfreezed_all', found, Gray, 'PHRASE:com_ply_ents'}
 			return true
 		end
 
@@ -268,7 +268,7 @@ DPP.Commands = {
 		if not found then return false, {'PHRASE:com_no_target'}, NOTIFY_ERROR end
 		DPP.UnFreezePlayerEntities(found)
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'Console', Gray, 'PHRASE:com_unfreezed_all', found, Gray, 'PHRASE:com_ply_ents'}
+		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_unfreezed_all', found, Gray, 'PHRASE:com_ply_ents'}
 
 		return true
 	end,
@@ -300,7 +300,7 @@ DPP.Commands = {
 			DPP.Notify(ply, 'PHRASE:look_into_console')
 		end
 
-		DPP.SimpleLog(IsValid(ply) and ply or 'Console', Gray, 'PHRASE:com_report_req')
+		DPP.SimpleLog(IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_report_req')
 		DPP.ReportEntitiesPrint()
 
 		return true

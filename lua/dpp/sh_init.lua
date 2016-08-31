@@ -1393,6 +1393,14 @@ for k, v in pairs(DPP.Settings) do
 	DPP.RegisterPhrase('en', 'cvar_' .. k, v.desc)
 end
 
+for k, v in pairs(DPP.BlockTypes) do
+	DPP.RegisterPhrase('en', 'block_' .. k, v)
+end
+
+for k, v in pairs(DPP.WhitelistTypes) do
+	DPP.RegisterPhrase('en', 'exclude_' .. k, v)
+end
+
 --We can send language only at it's change, but for safety - always send language
 function DPP.UpdateLang()
 	LangSetup = true
@@ -1706,7 +1714,7 @@ function DPP.Format(...)
 		end
 
 		if Type == 'string' then
-			if v == 'Console' then
+			if v == 'Console' or v == 'PHRASE:Console' then
 				table.insert(repack, ConsoleColor)
 				table.insert(repack, v)
 			else

@@ -1027,3 +1027,7 @@ function DPP.ReplacePropertyFuncs()
 end
 
 hook.Add('HUDPaint', 'DPP.Hooks', HUDPaint)
+
+concommand.Add('dpp_printmissingphrases', function(_, _, args)
+	DPP.PrintMissingPhrases(args[1] or DPP.CURRENT_LANG)
+end)
