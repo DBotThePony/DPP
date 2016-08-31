@@ -708,6 +708,21 @@ DPP.Settings = {
 		max = 10000,
 		desc = 'Size limit'
 	},
+
+	['prop_auto_ban_check_aabb'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Check AABB size too'
+	},
+
+
+	['prop_auto_ban_minsmaxs'] = {
+		type = 'int',
+		value = '300',
+		min = 1,
+		max = 600,
+		desc = 'Maximal distance between props maximals and minimals vectors (AABB size)'
+	},
 }
 
 DPP.BlockedEntities = DPP.BlockedEntities or {}

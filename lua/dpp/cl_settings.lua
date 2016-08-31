@@ -530,6 +530,8 @@ local APropKillVars = {
 	'apropkill_clampspeed_val',
 	'prop_auto_ban',
 	'prop_auto_ban_size',
+	'prop_auto_ban_check_aabb',
+	'prop_auto_ban_minsmaxs',
 }
 
 local PlacedCVars = {}

@@ -158,8 +158,13 @@ function DPP.CheckAutoBlock(ent, ply)
 	if not IsValid(phys) then return true end
 	local size = phys:GetVolume()
 	if not size then return true end
+	
+	local mins, maxs = phys:GetAABB()
 
-	if size / 1000 < DPP.GetConVar('prop_auto_ban_size') then return true end
+	local cond = size / 1000 < DPP.GetConVar('prop_auto_ban_size') and
+		(not DPP.GetConVar('prop_auto_ban_check_aabb') or DPP.GetConVar('prop_auto_ban_minsmaxs') >= mins:Distance(maxs))
+	
+	if cond then return true end
 
 	local can = hook.Run('DPP_G_AutoBlockHit', ent, ply)
 	if can == false then return true end
