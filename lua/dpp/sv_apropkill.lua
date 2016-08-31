@@ -25,14 +25,16 @@ function DPP.CheckDroppedEntity(ply, ent)
 	for k, v in pairs(player.GetAll()) do
 		if v == ply then continue end
 		if v:InVehicle() then continue end
-		if DPP.IsPlayerInEntity(v, ent) then
-			local can = hook.Run('DPP_A_StuckHit', ply, ent, v)
-			if can == false then continue end
+		if not DPP.IsPlayerInEntity(v, ent) then continue end
+		local can = hook.Run('DPP_A_StuckHit', ply, ent, v)
+		if can == false then continue end
 
+		timer.Simple(0, function()
 			DPP.Notify(ply, 'PHRASE:prop_stuck_in_player')
 			DPP.SetGhosted(ent, true)
-			break
-		end
+		end)
+
+		break
 	end
 end
 
