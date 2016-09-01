@@ -2407,7 +2407,14 @@ end
 vgui.Register('DPP_Avatar', PANEL, 'EditablePanel') --Panel from DScoreBoard/2
 
 local function SortPlayerListFriends(a, b)
-	return a:GetFriendStatus() == 'friend'
+	local isFA = a:GetFriendStatus() == 'friend'
+	local isFB = b:GetFriendStatus() == 'friend'
+	
+	if isFA and isFB then return false end
+	if isFA and not isFB then return true end
+	if not isFA and isFB then return false end
+	if not isFA and not isFB then return false end
+	return false
 end
 
 local function BuildFriendsPanel(Panel)
