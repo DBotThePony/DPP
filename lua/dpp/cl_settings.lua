@@ -2417,6 +2417,21 @@ local function SortPlayerListFriends(a, b)
 	return false
 end
 
+function SettingsClass.FriendListRowDataLayout(self, parent)
+	self:ApplySchemeSettings()
+	local width, height = self:GetSize()
+	
+	local Nick = self.Columns[1]
+	local SteamID = self.Columns[2]
+	
+	local nwidth = parent:ColumnWidth(1)
+	Nick:SetPos(20, 0)
+	Nick:SetSize(nwidth - 20, height)
+	
+	SteamID:SetPos(nwidth, 0)
+	SteamID:SetSize(parent:ColumnWidth(2), height)
+end
+
 local function BuildFriendsPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
@@ -2427,12 +2442,20 @@ local function BuildFriendsPanel(Panel)
 	local list = vgui.Create('DListView', Panel)
 	Panel:AddItem(list)
 
-	list:SetHeight(300)
+	list:SetHeight(600)
 	list:AddColumn(P('nick'))
 	list:AddColumn(P('steamid'))
 
 	for k, v in pairs(DPP.GetLocalFriends()) do
-		list:AddLine(v.nick, k)
+		local Line = list:AddLine(v.nick, k)
+		Line.DataLayout = SettingsClass.FriendListRowDataLayout
+		
+		local Avatar = Line:Add('DPP_Avatar')
+		Avatar:Dock(LEFT)
+		Avatar:SetSize(16, 16)
+		Avatar:SetSteamID(k, 16)
+		
+		Line:SetTooltip(P('menu_player_list_tip', v.nick, k, util.SteamIDTo64(k)))
 	end
 
 	list.OnRowRightClick = function(self, line)
@@ -2447,6 +2470,10 @@ local function BuildFriendsPanel(Panel)
 		menu:AddOption(P('clipboard', P('steamid')), function()
 			SetClipboardText(steamid)
 		end):SetIcon(table.Random(SettingsClass.TagIcons))
+
+		menu:AddOption(P('open', P('steam_profile')), function()
+			SetClipboardText(steamid)
+		end):SetIcon('icon16/user.png')
 
 		menu:AddOption(P('edit_r'), function()
 			DPP.OpenFriendEditMenu(steamid)
