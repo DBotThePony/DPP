@@ -391,6 +391,8 @@ entities.
 	menu_exclude_lists = 'Exclude lists',
 	menu_restrictions = 'Restrictions',
 	
+	menu_player_tip = 'Player nickname: %s\nPlayer SteamID: %s\nPlayer SteamID64: %s\nIs your friend: %s',
+	
 	--Some texts
 	main_note = 'DPP was created by DBot\nNOTE "Main Power Switch" disables blacklists \nand protection modules, but not restrictions.',
 	strict_property_note = [[
@@ -986,6 +988,8 @@ local ru = {
 	menu_blacklists = 'Чёрные листы',
 	menu_exclude_lists = 'Листы исключений',
 	menu_restrictions = 'Ограничения',
+	
+	menu_player_tip = 'Имя игрока: %s\nSteamID игрока: %s\nSteamID64 игрока: %s\nЯвляется ли вашим другом: %s',
 	
 	--Some texts
 	main_note = 'DPP создан DBot\nВНИМАНИЕ - "Главный рубильник" отключает черные листы\nи защитные модули, но не ограничения.',

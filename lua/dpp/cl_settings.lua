@@ -2298,6 +2298,118 @@ for k, v in pairs(DPP.RestrictTypes) do
 	end
 end
 
+local PANEL = {}
+
+function PANEL:AvatarHide()
+	self.havatar:SetVisible(false)
+	self.havatar:KillFocus()
+	self.havatar:SetMouseInputEnabled(false)
+	self.havatar:SetKeyboardInputEnabled(false)
+	self.havatar.hover = false
+end
+
+function PANEL:OnMousePressed(key)
+	self.hover = true
+	self.havatar:SetVisible(true)
+	self.havatar:MakePopup()
+	self.havatar:SetMouseInputEnabled(false)
+	self.havatar:SetKeyboardInputEnabled(false)
+	
+	if IsValid(self.ply) and self.ply:IsBot() then return end
+	
+	if key == MOUSE_LEFT then
+		if IsValid(self.ply) then
+			gui.OpenURL('https://steamcommunity.com/profiles/' .. self.ply:SteamID64() .. '/')
+		elseif self.steamid64 and self.steamid64 ~= '0' then
+			gui.OpenURL('https://steamcommunity.com/profiles/' .. self.steamid64 .. '/')
+		end
+	end
+end
+
+function PANEL:Init()
+	self:SetCursor('hand')
+	
+	local avatar = self:Add('AvatarImage')
+	self.avatar = avatar
+	avatar:Dock(FILL)
+	
+	local havatar = vgui.Create('AvatarImage')
+	self.havatar = havatar
+	havatar:SetVisible(false)
+	havatar:SetSize(184, 184)
+	
+	hook.Add('OnSpawnMenuClose', self, self.AvatarHide)
+	
+	self:SetMouseInputEnabled(true)
+	avatar:SetMouseInputEnabled(false)
+	avatar:SetKeyboardInputEnabled(false)
+	havatar:SetMouseInputEnabled(false)
+	havatar:SetKeyboardInputEnabled(false)
+end
+
+function PANEL:Think()
+	if not IsValid(self.ply) and not self.steamid then return end
+	local x, y = gui.MousePos()
+	
+	local hover = self:IsHovered()
+	
+	local w, h = ScrW(), ScrH()
+	
+	if x + 204 >= w then
+		x = x - 214
+	end
+	
+	if y + 204 >= h then
+		y = y - 214
+	end
+	
+	if hover then
+		if not self.hover then
+			self.hover = true
+			self.havatar:SetVisible(true)
+			self.havatar:MakePopup()
+			self.havatar:SetMouseInputEnabled(false)
+			self.havatar:SetKeyboardInputEnabled(false)
+		end
+		
+		self.havatar:SetPos(x + 20, y + 10)
+	else
+		if self.hover then
+			self.havatar:SetVisible(false)
+			self.havatar:KillFocus()
+			self.hover = false
+		end
+	end
+end
+
+function PANEL:SetPlayer(ply, size)
+	self.ply = ply
+	
+	self.avatar:SetPlayer(ply, size)
+	self.havatar:SetPlayer(ply, 184)
+end
+
+function PANEL:SetSteamID(steamid, size)
+	local steamid64 = util.SteamIDTo64(steamid)
+	self.steamid = steamid
+	self.steamid64 = steamid64
+	
+	self.avatar:SetSteamID(steamid64, size)
+	self.havatar:SetSteamID(steamid64, 184)
+end
+
+function PANEL:OnRemove()
+	if IsValid(self.havatar) then
+		self.havatar:Remove()
+	end
+end
+
+vgui.Register('DPP_Avatar', PANEL, 'EditablePanel') --Panel from DScoreBoard/2
+
+local function SortPlayerListFriends(a, b)
+	return a:GetFriendStatus() == 'friend'
+end
+
 local function BuildFriendsPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
@@ -2342,12 +2454,27 @@ local function BuildFriendsPanel(Panel)
 
 	local plys = player.GetAll()
 	local active = DPP.GetActiveFriends()
+	
+	table.sort(plys, SortPlayerListFriends)
 
 	for k, v in pairs(plys) do
 		if v == LocalPlayer() then continue end
 		if active[v] then continue end
-		local b = Panel:Button(P('add_friend', v:Nick()))
+		
+		local pnl = vgui.Create('EditablePanel', Panel)
+		Panel:AddItem(pnl)
+		
+		local Avatar = pnl:Add('DPP_Avatar')
+		Avatar:SetPlayer(v, 32)
+		Avatar:Dock(LEFT)
+		Avatar:SetSize(24, 24)
+		
+		local b = pnl:Add('DButton')
+		b:SetText(P('add_friend', v:Nick()))
+		b:SetTooltip(P('menu_player_tip', v:Nick(), v:SteamID(), v:SteamID64(), v:GetFriendStatus() == 'friend' and 'true' or 'false'))
+		b:Dock(FILL)
 		SettingsClass.ApplyButtonStyle(b)
+		
 		b.DoClick = function()
 			DPP.OpenFriendEditMenu(v:SteamID())
 		end
