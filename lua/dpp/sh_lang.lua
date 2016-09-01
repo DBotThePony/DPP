@@ -391,6 +391,9 @@ entities.
 	menu_exclude_lists = 'Exclude lists',
 	menu_restrictions = 'Restrictions',
 	
+	menu_set_fallbackto = 'Set Fallback to %s',
+	menu_transferto = 'Transfer ownership of ALL props to %s',
+	
 	menu_player_tip = 'Player nickname: %s\nPlayer SteamID: %s\nPlayer SteamID64: %s\nIs your friend: %s',
 	menu_player_list_tip = 'Player nickname: %s\nPlayer SteamID: %s\nPlayer SteamID64: %s',
 	steam_profile = 'Steam profile',
@@ -996,6 +999,9 @@ local ru = {
 	menu_player_list_tip = 'Имя игрока: %s\nSteamID игрока: %s\nSteamID64 игрока: %s',
 	steam_profile = 'Профиль Steam',
 	open = 'Открыть %s',
+	
+	menu_set_fallbackto = 'Выбрать наследника - %s',
+	menu_transferto = 'Передать ВСЕ свои энтити игроку %s',
 	
 	--Some texts
 	main_note = 'DPP создан DBot\nВНИМАНИЕ - "Главный рубильник" отключает черные листы\nи защитные модули, но не ограничения.',

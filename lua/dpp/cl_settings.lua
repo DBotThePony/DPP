@@ -836,9 +836,26 @@ local function BuildFallbackList(Panel)
 
 	hook.Add('DPP_EntityVarsChanges', Lab, SettingsClass.FallbackLabelChange)
 
-	for k, v in ipairs(player.GetAll()) do
+	local plys = player.GetAll()
+	table.sort(plys, SettingsClass.PlayerFriendSorter)
+
+	for k, v in ipairs(plys) do
 		if v == ply then continue end
-		local Button = Panel:Button('Set Fallback to ' .. v:Nick(), 'dpp_fallbackto', v:UserID())
+		
+		local pnl = vgui.Create('EditablePanel', Panel)
+		Panel:AddItem(pnl)
+		
+		local Avatar = pnl:Add('DPP_Avatar')
+		Avatar:SetPlayer(v, 32)
+		Avatar:Dock(LEFT)
+		Avatar:SetSize(24, 24)
+		
+		local Button = pnl:Add('DButton')
+		Button:SetText(P('menu_set_fallbackto', v:Nick()))
+		Button:SetConsoleCommand('dpp_fallbackto', v:UserID())
+		Button:SetTooltip(P('menu_player_tip', v:Nick(), v:SteamID(), v:SteamID64(), v:GetFriendStatus() == 'friend' and 'true' or 'false'))
+		Button:Dock(FILL)
+		
 		SettingsClass.ApplyButtonStyle(Button)
 	end
 
@@ -851,9 +868,23 @@ local function BuildFallbackList(Panel)
 	local lab = Label('!!!DANGER!!!')
 	Panel:AddItem(lab)
 
-	for k, v in ipairs(player.GetAll()) do
+	for k, v in ipairs(plys) do
 		if v == ply then continue end
-		local Button = Panel:Button('Transfer ownership of ALL props to ' .. v:Nick(), 'dpp_transfertoplayer_all', v:UserID())
+		
+		local pnl = vgui.Create('EditablePanel', Panel)
+		Panel:AddItem(pnl)
+		
+		local Avatar = pnl:Add('DPP_Avatar')
+		Avatar:SetPlayer(v, 32)
+		Avatar:Dock(LEFT)
+		Avatar:SetSize(24, 24)
+		
+		local Button = pnl:Add('DButton')
+		Button:SetText(P('menu_transferto', v:Nick()))
+		Button:SetConsoleCommand('dpp_transfertoplayer_all', v:UserID())
+		Button:SetTooltip(P('menu_player_tip', v:Nick(), v:SteamID(), v:SteamID64(), v:GetFriendStatus() == 'friend' and 'true' or 'false'))
+		Button:Dock(FILL)
+		
 		SettingsClass.ApplyButtonStyle(Button)
 	end
 end
@@ -2406,7 +2437,7 @@ end
 
 vgui.Register('DPP_Avatar', PANEL, 'EditablePanel') --Panel from DScoreBoard/2
 
-local function SortPlayerListFriends(a, b)
+function SettingsClass.PlayerFriendSorter(a, b)
 	local isFA = a:GetFriendStatus() == 'friend'
 	local isFB = b:GetFriendStatus() == 'friend'
 	
@@ -2489,7 +2520,7 @@ local function BuildFriendsPanel(Panel)
 	local plys = player.GetAll()
 	local active = DPP.GetActiveFriends()
 	
-	table.sort(plys, SortPlayerListFriends)
+	table.sort(plys, SettingsClass.PlayerFriendSorter)
 
 	for k, v in pairs(plys) do
 		if v == LocalPlayer() then continue end
