@@ -2463,31 +2463,127 @@ function SettingsClass.FriendListRowDataLayout(self, parent)
 	SteamID:SetSize(parent:ColumnWidth(2), height)
 end
 
+function SettingsClass.HasValueLight(tab, val)
+	for k, v in ipairs(tab) do
+		if v == val then return true end
+	end
+	
+	return false
+end
+
+function SettingsClass.CalculatePlaceholderColor(col)
+	local newCol = Color(255 - col.r, 255 - col.g, 255 - col.b, 255 - col.a)
+	
+	for k, v in pairs(newCol) do
+		if v < 127 then
+			newCol[k] = v + 100
+		else
+			newCol[k] = v - 100
+		end
+	end
+	
+	return newCol
+end
+
+SettingsClass.QuickSearchMeta = {
+	BlockedKeys = {
+		KEY_BACKSLASH,
+		KEY_ENTER,
+		KEY_ESCAPE,
+	},
+	
+	OnKeyCodeTyped = function(self, key)
+		if SettingsClass.HasValueLight(self.BlockedKeys, key) then
+			return true
+		end
+	end,
+	
+	Paint = function(self, w, h)
+		if self.oldPaint then
+			self.oldPaint(self, w, h)
+		end
+		
+		self.PlaceholderDrawColor = self.PlaceholderDrawColor or SettingsClass.CalculatePlaceholderColor(self:GetTextColor())
+		
+		if self:GetText() == '' then
+			surface.SetFont(self:GetFont())
+			surface.SetTextPos(3, 4)
+			surface.SetTextColor(self.PlaceholderDrawColor)
+			surface.DrawText(P('search_placeholder'))
+		end
+	end,
+	
+	OnValueChange = function(self, str)
+		self.list:Clear()
+		SettingsClass.BuildUpFriendList(self.list, str)
+	end,
+}
+
+function SettingsClass.BuildUpFriendList(list, filter)
+	filter = filter or ''
+	local shouldFilter = filter ~= ''
+	filter = filter:lower()
+	list.AvatarQueue = {}
+	
+	for k, v in pairs(DPP.GetLocalFriends()) do
+		if shouldFilter then
+			if not v.nick:lower():find(filter, 1, true) then continue end
+		end
+		
+		local Line = list:AddLine(v.nick, k)
+		Line.DataLayout = SettingsClass.FriendListRowDataLayout
+		
+		table.insert(list.AvatarQueue, {Line, k})
+		
+		Line:SetTooltip(P('menu_player_list_tip', v.nick, k, util.SteamIDTo64(k)))
+	end
+end
+
+function SettingsClass.ListViewThink(self)
+	local next = table.remove(self.AvatarQueue, 1)
+	if not next then return end
+	
+	local Avatar = next[1]:Add('DPP_Avatar')
+	Avatar:Dock(LEFT)
+	Avatar:SetSize(16, 16)
+	Avatar:SetSteamID(next[2], 16)
+end
+
 local function BuildFriendsPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
 	SettingsClass.SetupBackColor(Panel)
 
 	DPP.SettingsClass.FriendPanel = Panel
+	
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	local Text = P('quick_search')
+	Lab:SetText(Text)
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SizeToContents()
+	Lab:SetTooltip(Text)
+	
+	local search = vgui.Create('DTextEntry', Panel)
+	Panel:AddItem(search)
+	search.oldPaint = search.Paint
+	search:SetUpdateOnType(true)
+	
+	for k, v in pairs(SettingsClass.QuickSearchMeta) do
+		search[k] = v
+	end
 
 	local list = vgui.Create('DListView', Panel)
 	Panel:AddItem(list)
+	
+	search.list = list
 
 	list:SetHeight(600)
 	list:AddColumn(P('nick'))
 	list:AddColumn(P('steamid'))
+	list.Think = SettingsClass.ListViewThink
 
-	for k, v in pairs(DPP.GetLocalFriends()) do
-		local Line = list:AddLine(v.nick, k)
-		Line.DataLayout = SettingsClass.FriendListRowDataLayout
-		
-		local Avatar = Line:Add('DPP_Avatar')
-		Avatar:Dock(LEFT)
-		Avatar:SetSize(16, 16)
-		Avatar:SetSteamID(k, 16)
-		
-		Line:SetTooltip(P('menu_player_list_tip', v.nick, k, util.SteamIDTo64(k)))
-	end
+	SettingsClass.BuildUpFriendList(list, filter)
 
 	list.OnRowRightClick = function(self, line)
 		local name = self:GetLine(line):GetValue(1)
@@ -2503,7 +2599,7 @@ local function BuildFriendsPanel(Panel)
 		end):SetIcon(table.Random(SettingsClass.TagIcons))
 
 		menu:AddOption(P('open', P('steam_profile')), function()
-			SetClipboardText(steamid)
+			gui.OpenURL('https://steamcommunity.com/profiles/' .. util.SteamIDTo64(steamid) .. '/')
 		end):SetIcon('icon16/user.png')
 
 		menu:AddOption(P('edit_r'), function()

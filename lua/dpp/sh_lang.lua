@@ -398,6 +398,8 @@ entities.
 	menu_player_list_tip = 'Player nickname: %s\nPlayer SteamID: %s\nPlayer SteamID64: %s',
 	steam_profile = 'Steam profile',
 	open = 'Open %s',
+	quick_search = 'Quick search by nickname',
+	search_placeholder = 'Search...',
 	
 	--Some texts
 	main_note = 'DPP was created by DBot\nNOTE "Main Power Switch" disables blacklists \nand protection modules, but not restrictions.',
@@ -999,6 +1001,8 @@ local ru = {
 	menu_player_list_tip = 'Имя игрока: %s\nSteamID игрока: %s\nSteamID64 игрока: %s',
 	steam_profile = 'Профиль Steam',
 	open = 'Открыть %s',
+	quick_search = 'Быстрый поиск по имени игрока в списке друзей',
+	search_placeholder = 'Поиск...',
 	
 	menu_set_fallbackto = 'Выбрать наследника - %s',
 	menu_transferto = 'Передать ВСЕ свои энтити игроку %s',
