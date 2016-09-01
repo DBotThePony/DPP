@@ -386,6 +386,11 @@ entities.
 	menu_e2function = 'E2 Functions',
 	menu_e2afunction = 'E2 Advanced Functions',
 	
+	menu_main = 'Main options',
+	menu_blacklists = 'Blacklists',
+	menu_exclude_lists = 'Exclude lists',
+	menu_restrictions = 'Restrictions',
+	
 	--Some texts
 	main_note = 'DPP was created by DBot\nNOTE "Main Power Switch" disables blacklists \nand protection modules, but not restrictions.',
 	strict_property_note = [[
@@ -976,6 +981,11 @@ local ru = {
 	menu_propertyt = 'Класс свойства',
 	menu_e2function = 'E2 Функции',
 	menu_e2afunction = 'E2 Advanced Функции',
+	
+	menu_main = 'Основные настройки',
+	menu_blacklists = 'Чёрные листы',
+	menu_exclude_lists = 'Листы исключений',
+	menu_restrictions = 'Ограничения',
 	
 	--Some texts
 	main_note = 'DPP создан DBot\nВНИМАНИЕ - "Главный рубильник" отключает черные листы\nи защитные модули, но не ограничения.',

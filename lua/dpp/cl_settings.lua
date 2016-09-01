@@ -2423,31 +2423,31 @@ local function About(Panel)
 end
 
 local function PopulateToolMenu()
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.SVars', DPP.GetPhrase('menu_server'), '', '', BuildSVarPanel)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Players', DPP.GetPhrase('menu_players'), '', '', BuildPlayerList)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Misc', DPP.GetPhrase('menu_server2'), '', '', BuildMiscVarsPanel)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.APropKill', DPP.GetPhrase('menu_propkill'), '', '', BuildAPropKillVarsPanel)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.CVars', DPP.GetPhrase('menu_client'), '', '', BuildCVarPanel)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.APanel', DPP.GetPhrase('menu_antispam'), '', '', BuildAntispamPanel)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Limits', DPP.GetPhrase('menu_elimits'), '', '', BuildLimitsList)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.SLimits', DPP.GetPhrase('menu_slimits'), '', '', BuildSLimitsList)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.CLimits', DPP.GetPhrase('menu_climits'), '', '', BuildCLimitsList)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP Blacklists', 'DPP.ModelList', DPP.GetPhrase('menu_mblacklist'), '', '', BuildModelsList)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Friends', DPP.GetPhrase('menu_friends'), '', '', BuildFriendsPanel)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.PPPanel', DPP.GetPhrase('menu_pcontrols'), '', '', BuildPlayerProtectionPanel)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.About', DPP.GetPhrase('menu_about'), '', '', About)
-	spawnmenu.AddToolMenuOption('Utilities', 'DPP', 'DPP.Fallback', DPP.GetPhrase('menu_fallback'), '', '', BuildFallbackList)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.SVars', P('menu_server'), '', '', BuildSVarPanel)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.Players', P('menu_players'), '', '', BuildPlayerList)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.Misc', P('menu_server2'), '', '', BuildMiscVarsPanel)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.APropKill', P('menu_propkill'), '', '', BuildAPropKillVarsPanel)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.CVars', P('menu_client'), '', '', BuildCVarPanel)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.APanel', P('menu_antispam'), '', '', BuildAntispamPanel)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.Limits', P('menu_elimits'), '', '', BuildLimitsList)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.SLimits', P('menu_slimits'), '', '', BuildSLimitsList)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.CLimits', P('menu_climits'), '', '', BuildCLimitsList)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_blacklists'), 'DPP.ModelList', P('menu_mblacklist'), '', '', BuildModelsList)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.Friends', P('menu_friends'), '', '', BuildFriendsPanel)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.PPPanel', P('menu_pcontrols'), '', '', BuildPlayerProtectionPanel)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.About', P('menu_about'), '', '', About)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.Fallback', P('menu_fallback'), '', '', BuildFallbackList)
 
 	for k, v in pairs(DPP.BlockTypes) do
-		spawnmenu.AddToolMenuOption('Utilities', 'DPP Blacklists', 'DPP.' .. k, DPP.GetPhrase('menu_blacklist', P('menu_' .. k)), '', '', PanelsFunctions[k])
+		spawnmenu.AddToolMenuOption('DPP', P('menu_blacklists'), 'DPP.' .. k, P('menu_blacklist', P('menu_' .. k)), '', '', PanelsFunctions[k])
 	end
 
 	for k, v in pairs(DPP.WhitelistTypes) do
-		spawnmenu.AddToolMenuOption('Utilities', 'DPP Exclude lists', 'DPP.' .. k .. '_whitelist', DPP.GetPhrase('menu_exclude', P('menu_' .. k)), '', '', WhitelistFunctions[k])
+		spawnmenu.AddToolMenuOption('DPP', P('menu_exclude_lists'), 'DPP.' .. k .. '_whitelist', P('menu_exclude', P('menu_' .. k)), '', '', WhitelistFunctions[k])
 	end
 
 	for k, v in pairs(DPP.RestrictTypes) do
-		spawnmenu.AddToolMenuOption('Utilities', 'DPP Restrictions', 'DPP.restrict' .. k, DPP.GetPhrase('menu_restricts', P('menu_' .. k)), '', '', PanelsFunctions2[k])
+		spawnmenu.AddToolMenuOption('DPP', P('menu_restrictions'), 'DPP.restrict' .. k, P('menu_restricts', P('menu_' .. k)), '', '', PanelsFunctions2[k])
 	end
 end
 
