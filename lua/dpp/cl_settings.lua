@@ -2584,20 +2584,21 @@ local function About(Panel)
 end
 
 local function PopulateToolMenu()
+	spawnmenu.AddToolMenuOption('DPP', P('menu_client'), 'DPP.CVars', P('menu_client'), '', '', BuildCVarPanel)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_client'), 'DPP.Friends', P('menu_friends'), '', '', BuildFriendsPanel)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_client'), 'DPP.About', P('menu_about'), '', '', About)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_client'), 'DPP.Fallback', P('menu_fallback'), '', '', BuildFallbackList)
+	
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.SVars', P('menu_server'), '', '', BuildSVarPanel)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.Players', P('menu_players'), '', '', BuildPlayerList)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.Misc', P('menu_server2'), '', '', BuildMiscVarsPanel)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.APropKill', P('menu_propkill'), '', '', BuildAPropKillVarsPanel)
-	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.CVars', P('menu_client'), '', '', BuildCVarPanel)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.APanel', P('menu_antispam'), '', '', BuildAntispamPanel)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.Limits', P('menu_elimits'), '', '', BuildLimitsList)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.SLimits', P('menu_slimits'), '', '', BuildSLimitsList)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.CLimits', P('menu_climits'), '', '', BuildCLimitsList)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_blacklists'), 'DPP.ModelList', P('menu_mblacklist'), '', '', BuildModelsList)
-	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.Friends', P('menu_friends'), '', '', BuildFriendsPanel)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.PPPanel', P('menu_pcontrols'), '', '', BuildPlayerProtectionPanel)
-	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.About', P('menu_about'), '', '', About)
-	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.Fallback', P('menu_fallback'), '', '', BuildFallbackList)
 
 	for k, v in pairs(DPP.BlockTypes) do
 		spawnmenu.AddToolMenuOption('DPP', P('menu_blacklists'), 'DPP.' .. k, P('menu_blacklist', P('menu_' .. k)), '', '', PanelsFunctions[k])
