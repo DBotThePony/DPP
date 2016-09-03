@@ -185,6 +185,32 @@ function DPP.OpenShareMenu(ent)
 	frame:MakePopup()
 end
 
+SettingsClass.PopulateQueue = {}
+
+function SettingsClass.LazyListPopulate(list, arr)
+	SettingsClass.PopulateQueue[list] = arr
+end
+
+hook.Add('Think', 'DPP.LazyListPopulate', function()
+	for list, data in pairs(SettingsClass.PopulateQueue) do
+		if not IsValid(list) then
+			SettingsClass.PopulateQueue[list] = nil
+			continue
+		end
+		
+		for i = 0, 21 do
+			local row = table.remove(data, 1)
+			
+			if not row then
+				SettingsClass.PopulateQueue[list] = nil
+				break
+			end
+			
+			list:AddLine(unpack(row))
+		end
+	end
+end)
+
 SettingsClass.Styles = SettingsClass.Styles or {}
 local Style = SettingsClass.Styles
 
@@ -1156,10 +1182,13 @@ local function BuildModelsList(Panel)
 	list:AddColumn(P('model'))
 
 	local L = DPP.BlockedModels
+	local lazy = {}
 
 	for k, v in SortedPairs(L) do
-		list:AddLine(k)
+		table.insert(lazy, {k})
 	end
+	
+	SettingsClass.LazyListPopulate(list, lazy)
 
 	list.OnRowRightClick = FUNCTIONS.ModelListClick
 
