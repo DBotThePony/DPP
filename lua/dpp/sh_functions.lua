@@ -256,3 +256,67 @@ end
 function DPP.IsProtectionDisabledFor(ply, mode)
 	return DPP.GetIsProtectionDisabledByPlayer(ply, mode) or DPP.GetIsProtectionDisabledByServer(ply, mode)
 end
+
+DPP.Helpers = DPP.Helpers or {}
+
+function DPP.Helpers.CreateArrayFromLines(arr, id)
+	local reply = {}
+	
+	for k, v in ipairs(arr) do
+		table.insert(reply, v:GetValue(id))
+	end
+	
+	return reply
+end
+
+function DPP.Helpers.ForEachCommand(arr, command)
+	for k, v in ipairs(arr) do
+		DPP.QueueCommand(command, v)
+	end
+end
+
+function DPP.Helpers.ForEachExecute(arr, func)
+	for k, v in ipairs(arr) do
+		DPP.QueueFunction(func, v)
+	end
+end
+
+function DPP.Helpers.ForEachExecuteNow(arr, func)
+	for k, v in ipairs(arr) do
+		func(v)
+	end
+end
+
+function DPP.Helpers.CompactSelectedCommand(arr, id, command)
+	DPP.Helpers.ForEachCommand(DPP.Helpers.CreateArrayFromLines(arr, id), command)
+end
+
+function DPP.Helpers.CompactSelectedExecute(arr, id, func)
+	DPP.Helpers.ForEachExecute(DPP.Helpers.CreateArrayFromLines(arr, id), func)
+end
+
+DPP.QueuedCommands = DPP.QueuedCommands or {}
+DPP.QueuedFuncs = DPP.QueuedFuncs or {}
+
+function DPP.QueueCommand(command, ...)
+	table.insert(DPP.QueuedCommands, {command, ...})
+end
+
+function DPP.QueueFunction(func, ...)
+	table.insert(DPP.QueuedFuncs, {func, ...})
+end
+
+local function CommandTimer()
+	local next = table.remove(DPP.QueuedCommands, 1)
+	if not next then return end
+	RunConsoleCommand('dpp_' .. next[1], unpack(next, 2, #next))
+end
+
+local function FuncTimer()
+	local next = table.remove(DPP.QueuedFuncs, 1)
+	if not next then return end
+	pcall(next[1], unpack(next, 2, #next))
+end
+
+timer.Create('DPP.QueueCommand', 0.2, 0, CommandTimer)
+timer.Create('DPP.QueueFunction', 0.2, 0, FuncTimer)

@@ -1126,6 +1126,23 @@ function SettingsClass.BuildModelsListGUI()
 	SettingsClass.UpdateModelsListGUI()
 end
 
+function FUNCTIONS.ModelListClick(self, line)
+	local val = self:GetLine(line):GetValue(1)
+	local allvals = DPP.Helpers.CreateArrayFromLines(self:GetSelected(), 1)
+	
+	local menu = vgui.Create('DMenu')
+
+	menu:AddOption(P('clipboard', P('model')), function()
+		SetClipboardText(val)
+	end):SetIcon(table.Random(SettingsClass.TagIcons))
+
+	menu:AddOption(P('remove_from_blacklist'), function()
+		DPP.Helpers.ForEachCommand(allvals, 'removeblockedmodel')
+	end):SetIcon(SettingsClass.RemoveIcon)
+
+	menu:Open()
+end
+
 local function BuildModelsList(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
@@ -1144,20 +1161,7 @@ local function BuildModelsList(Panel)
 		list:AddLine(k)
 	end
 
-	list.OnRowRightClick = function(self, line)
-		local val = self:GetLine(line):GetValue(1)
-		local menu = vgui.Create('DMenu')
-
-		menu:AddOption(P('clipboard', P('model')), function()
-			SetClipboardText(val)
-		end):SetIcon(table.Random(SettingsClass.TagIcons))
-
-		menu:AddOption(P('remove_from_blacklist'), function()
-			RunConsoleCommand('dpp_removeblockedmodel', val)
-		end):SetIcon(SettingsClass.RemoveIcon)
-
-		menu:Open()
-	end
+	list.OnRowRightClick = FUNCTIONS.ModelListClick
 
 	local Apply = Panel:Button(P('visual_list'))
 	Apply.DoClick = SettingsClass.BuildModelsListGUI
@@ -1643,25 +1647,25 @@ local WhitelistFunctions = SettingsClass.WhitelistFunctions
 
 local function REMOVE_ALL(class)
 	for k, v in pairs(DPP.BlockTypes) do
-		RunConsoleCommand('dpp_removeblockedentity' .. k, class)
+		DPP.QueueCommand('removeblockedentity' .. k, class)
 	end
 end
 
 local function REMOVE_ALL_W(class)
 	for k, v in pairs(DPP.WhitelistTypes) do
-		RunConsoleCommand('dpp_removewhitelistedentity' .. k, class)
+		DPP.QueueCommand('removewhitelistedentity' .. k, class)
 	end
 end
 
 local function ADD_ALL(class)
 	for k, v in pairs(DPP.BlockTypes) do
-		RunConsoleCommand('dpp_addblockedentity' .. k, class)
+		DPP.QueueCommand('addblockedentity' .. k, class)
 	end
 end
 
 local function ADD_ALL_W(class)
 	for k, v in pairs(DPP.WhitelistTypes) do
-		RunConsoleCommand('dpp_addwhitelistedentity' .. k, class)
+		DPP.QueueCommand('addwhitelistedentity' .. k, class)
 	end
 end
 
@@ -1671,6 +1675,54 @@ end
 
 local CustomBlockMenus = {}
 local CustomWhiteMenus = {}
+
+function FUNCTIONS.ExcludeTypesToolModeListClick(self, line)
+	local val = self:GetLine(line):GetValue(1)
+	local allvals = DPP.Helpers.CreateArrayFromLines(self:GetSelected(), 1)
+	local menu = vgui.Create('DMenu')
+
+	menu:AddOption(P('clipboard', P('Class')), function()
+		SetClipboardText(val)
+	end):SetIcon(table.Random(SettingsClass.TagIcons))
+
+	menu:AddOption(P('remove_exclude'), function()
+		DPP.Helpers.ForEachCommand(allvals, 'removewhitelistedentitytoolmode')
+	end):SetIcon(SettingsClass.RemoveIcon)
+
+	menu:Open()
+end
+
+function FUNCTIONS.BlockTypesToolgunWorldListClick(self, line)
+	local val = self:GetLine(line):GetValue(1)
+	local allvals = DPP.Helpers.CreateArrayFromLines(self:GetSelected(), 1)
+	local menu = vgui.Create('DMenu')
+
+	menu:AddOption(P('clipboard', P('tool_mode')), function()
+		SetClipboardText(val)
+	end):SetIcon(table.Random(SettingsClass.TagIcons))
+
+	menu:AddOption(P('remove_from_blacklist'), function()
+		DPP.Helpers.ForEachCommand(allvals, 'removeblockedentitytoolworld')
+	end):SetIcon(SettingsClass.RemoveIcon)
+
+	menu:Open()
+end
+
+function FUNCTIONS.ExcludeTypesPropertyTypeListClick(self, line)
+	local val = self:GetLine(line):GetValue(1)
+	local allvals = DPP.Helpers.CreateArrayFromLines(self:GetSelected(), 1)
+	local menu = vgui.Create('DMenu')
+
+	menu:AddOption(P('clipboard', P('Class')), function()
+		SetClipboardText(val)
+	end):SetIcon(table.Random(SettingsClass.TagIcons))
+
+	menu:AddOption(P('remove_exclude'), function()
+		DPP.Helpers.ForEachCommand(allvals, 'removewhitelistedentitypropertyt')
+	end):SetIcon(SettingsClass.RemoveIcon)
+
+	menu:Open()
+end
 
 --Too lazy for adding new panel
 function CustomBlockMenus.toolworld(Panel)
@@ -1700,18 +1752,7 @@ function CustomBlockMenus.toolworld(Panel)
 	end
 
 	list.OnRowRightClick = function(self, line)
-		local val = self:GetLine(line):GetValue(1)
-		local menu = vgui.Create('DMenu')
-
-		menu:AddOption(P('clipboard', P('tool_mode')), function()
-			SetClipboardText(val)
-		end):SetIcon(table.Random(SettingsClass.TagIcons))
-
-		menu:AddOption(P('remove_from_blacklist'), function()
-			RunConsoleCommand('dpp_removeblockedentity' .. k, val)
-		end):SetIcon(SettingsClass.RemoveIcon)
-
-		menu:Open()
+		
 	end
 
 	local entry = vgui.Create('DTextEntry', Panel)
@@ -1846,20 +1887,7 @@ function CustomWhiteMenus.propertyt(Panel)
 		list:AddLine(v)
 	end
 
-	list.OnRowRightClick = function(self, line)
-		local val = self:GetLine(line):GetValue(1)
-		local menu = vgui.Create('DMenu')
-
-		menu:AddOption(P('clipboard', P('property_class')), function()
-			SetClipboardText(val)
-		end):SetIcon(table.Random(SettingsClass.TagIcons))
-
-		menu:AddOption(P('remove_property'), function()
-			RunConsoleCommand('dpp_removewhitelistedentity' .. k, val)
-		end):SetIcon(SettingsClass.RemoveIcon)
-
-		menu:Open()
-	end
+	list.OnRowRightClick = FUNCTIONS.ExcludeTypesPropertyTypeListClick
 
 	local entry = vgui.Create('DTextEntry', Panel)
 	Panel:AddItem(entry)
@@ -1913,20 +1941,7 @@ function CustomWhiteMenus.toolmode(Panel)
 		list:AddLine(v)
 	end
 
-	list.OnRowRightClick = function(self, line)
-		local val = self:GetLine(line):GetValue(1)
-		local menu = vgui.Create('DMenu')
-
-		menu:AddOption(P('clipboard', P('tool_mode')), function()
-			SetClipboardText(val)
-		end):SetIcon(table.Random(SettingsClass.TagIcons))
-
-		menu:AddOption(P('remove_exclude'), function()
-			RunConsoleCommand('dpp_removewhitelistedentity' .. k, val)
-		end):SetIcon(SettingsClass.RemoveIcon)
-
-		menu:Open()
-	end
+	list.OnRowRightClick = FUNCTIONS.ExcludeTypesToolgunWorldListClick
 
 	local entry = vgui.Create('DTextEntry', Panel)
 	Panel:AddItem(entry)
@@ -1951,6 +1966,30 @@ for k, v in pairs(DPP.BlockTypes) do
 		continue
 	end
 
+	FUNCTIONS['BlockTypes' .. v .. 'ListClick'] = function(self, line)
+		local val = self:GetLine(line):GetValue(1)
+		local allvals = DPP.Helpers.CreateArrayFromLines(self:GetSelected(), 1)
+		local menu = vgui.Create('DMenu')
+
+		menu:AddOption(P('clipboard', P('Class')), function()
+			SetClipboardText(val)
+		end):SetIcon(table.Random(SettingsClass.TagIcons))
+
+		menu:AddOption(P('remove_from_blacklist'), function()
+			DPP.Helpers.ForEachCommand(allvals, 'removeblockedentity' .. k)
+		end):SetIcon(SettingsClass.RemoveIcon)
+
+		menu:AddOption(P('add_to_all_blacklists'), function()
+			DPP.Helpers.ForEachExecuteNow(allvals, ADD_ALL)
+		end):SetIcon(SettingsClass.AddAllIcon)
+
+		menu:AddOption(P('remove_from_all_blacklists'), function()
+			DPP.Helpers.ForEachExecuteNow(allvals, REMOVE_ALL)
+		end):SetIcon(SettingsClass.RemoveAllIcon)
+
+		menu:Open()
+	end
+	
 	PanelsFunctions[k] = function(Panel)
 		if not IsValid(Panel) then return end
 		Panel:Clear()
@@ -1975,28 +2014,7 @@ for k, v in pairs(DPP.BlockTypes) do
 			list:AddLine(v)
 		end
 
-		list.OnRowRightClick = function(self, line)
-			local val = self:GetLine(line):GetValue(1)
-			local menu = vgui.Create('DMenu')
-
-			menu:AddOption(P('clipboard', P('Class')), function()
-				SetClipboardText(val)
-			end):SetIcon(table.Random(SettingsClass.TagIcons))
-
-			menu:AddOption(P('remove_from_blacklist'), function()
-				RunConsoleCommand('dpp_removeblockedentity' .. k, val)
-			end):SetIcon(SettingsClass.RemoveIcon)
-
-			menu:AddOption(P('add_to_all_blacklists'), function()
-				ADD_ALL(val)
-			end):SetIcon(SettingsClass.AddAllIcon)
-
-			menu:AddOption(P('remove_from_all_blacklists'), function()
-				REMOVE_ALL(val)
-			end):SetIcon(SettingsClass.RemoveAllIcon)
-
-			menu:Open()
-		end
+		list.OnRowRightClick = FUNCTIONS['BlockTypes' .. v .. 'ListClick']
 
 		local entry = vgui.Create('DTextEntry', Panel)
 		Panel:AddItem(entry)
@@ -2069,6 +2087,30 @@ for k, v in pairs(DPP.WhitelistTypes) do
 		continue
 	end
 
+	FUNCTIONS['ExcludeTypes' .. v .. 'ListClick'] = function(self, line)
+		local val = self:GetLine(line):GetValue(1)
+		local allvals = DPP.Helpers.CreateArrayFromLines(self:GetSelected(), 1)
+		local menu = vgui.Create('DMenu')
+
+		menu:AddOption(P('clipboard', P('Class')), function()
+			SetClipboardText(val)
+		end):SetIcon(table.Random(SettingsClass.TagIcons))
+
+		menu:AddOption(P('remove_exclude'), function()
+			DPP.Helpers.ForEachCommand(allvals, 'removewhitelistedentity' .. k)
+		end):SetIcon(SettingsClass.RemoveIcon)
+
+		menu:AddOption(P('add_exclude_all'), function()
+			DPP.Helpers.ForEachExecuteNow(allvals, ADD_ALL_W)
+		end):SetIcon(SettingsClass.AddAllIcon)
+
+		menu:AddOption(P('remove_exclude_all'), function()
+			DPP.Helpers.ForEachExecuteNow(allvals, REMOVE_ALL_W)
+		end):SetIcon(SettingsClass.RemoveAllIcon)
+
+		menu:Open()
+	end
+	
 	WhitelistFunctions[k] = function(Panel)
 		if not IsValid(Panel) then return end
 		Panel:Clear()
@@ -2105,28 +2147,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 			list:AddLine(v)
 		end
 
-		list.OnRowRightClick = function(self, line)
-			local val = self:GetLine(line):GetValue(1)
-			local menu = vgui.Create('DMenu')
-
-			menu:AddOption(P('clipboard', P('Class')), function()
-				SetClipboardText(val)
-			end):SetIcon(table.Random(SettingsClass.TagIcons))
-
-			menu:AddOption(P('remove_exclude'), function()
-				RunConsoleCommand('dpp_removewhitelistedentity' .. k, val)
-			end):SetIcon(SettingsClass.RemoveIcon)
-
-			menu:AddOption(P('add_exclude_all'), function()
-				ADD_ALL_W(val)
-			end):SetIcon(SettingsClass.AddAllIcon)
-
-			menu:AddOption(P('remove_exclude_all'), function()
-				REMOVE_ALL_W(val)
-			end):SetIcon(SettingsClass.RemoveAllIcon)
-
-			menu:Open()
-		end
+		list.OnRowRightClick = FUNCTIONS['ExcludeTypes' .. v .. 'ListClick']
 
 		local entry = vgui.Create('DTextEntry', Panel)
 		Panel:AddItem(entry)
@@ -2265,6 +2286,28 @@ for k, v in pairs(DPP.RestrictTypes) do
 		frame:MakePopup()
 	end
 
+	FUNCTIONS['RestrictTypes' .. v .. 'ListClick'] = function(self, line)
+		local class = self:GetLine(line):GetValue(1)
+		local groups = self:GetLine(line):GetValue(2)
+		local iswhite = self:GetLine(line):GetValue(3)
+
+		local menu = vgui.Create('DMenu')
+
+		menu:AddOption(P('clipboard', P('Class')), function()
+			SetClipboardText(class)
+		end):SetIcon(table.Random(SettingsClass.TagIcons))
+
+		menu:AddOption(P('remove_from_restrict_list'), function()
+			RunConsoleCommand('dpp_unrestrict' .. k, class)
+		end):SetIcon(SettingsClass.RemoveIcon)
+
+		menu:AddOption(P('modify_r'), function()
+			OpenModifyPanel(class)
+		end):SetIcon(SettingsClass.EditIcon)
+
+		menu:Open()
+	end
+	
 	PanelsFunctions2[k] = function(Panel)
 		if not IsValid(Panel) then return end
 		Panel:Clear()
@@ -2279,6 +2322,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		list:AddColumn(P('Class'))
 		list:AddColumn(P('Groups'))
 		list:AddColumn(P('is_white'))
+		list:SetMultiSelect(false)
 
 		local L = DPP.RestrictedTypes[k]
 		local New = {}
@@ -2288,31 +2332,11 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 		table.sort(New, SORTER)
 
-		for k, v in pairs(New) do
+		for k, v in ipairs(New) do
 			list:AddLine(v.class, table.concat(v.groups, ','), v.iswhite)
 		end
 
-		list.OnRowRightClick = function(self, line)
-			local class = self:GetLine(line):GetValue(1)
-			local groups = self:GetLine(line):GetValue(2)
-			local iswhite = self:GetLine(line):GetValue(3)
-
-			local menu = vgui.Create('DMenu')
-
-			menu:AddOption(P('clipboard', P('Class')), function()
-				SetClipboardText(class)
-			end):SetIcon(table.Random(SettingsClass.TagIcons))
-
-			menu:AddOption(P('remove_from_restrict_list'), function()
-				RunConsoleCommand('dpp_unrestrict' .. k, class)
-			end):SetIcon(SettingsClass.RemoveIcon)
-
-			menu:AddOption(P('modify_r'), function()
-				OpenModifyPanel(class)
-			end):SetIcon(SettingsClass.EditIcon)
-
-			menu:Open()
-		end
+		list.OnRowRightClick = FUNCTIONS['RestrictTypes' .. v .. 'ListClick']
 
 		local entry = vgui.Create('DTextEntry', Panel)
 		Panel:AddItem(entry)
