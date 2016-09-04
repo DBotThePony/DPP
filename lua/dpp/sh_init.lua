@@ -109,6 +109,10 @@ function DPP.AssertArguments(funcName, args)
 	end
 end
 
+function DPP.IsEntity(obj)
+	return EntityTypes[type(obj)] or false
+end
+
 local RED = Color(255, 0, 0)
 
 function DPP.ThrowError(str, level, notabug)
@@ -1670,7 +1674,14 @@ function DPP.FormatPlayer(ply)
 	local t = {}
 
 	table.insert(t, team.GetColor(ply:Team()))
-	table.insert(t, 'NPHRASE:' .. ply:Nick())
+	
+	local nick = ply:Nick()
+	table.insert(t, 'NPHRASE:' .. nick)
+	
+	if ply.SteamName and ply:SteamName() ~= nick then
+		table.insert(t, ' (' .. ply:SteamName() .. ')')
+	end
+	
 	table.insert(t, color_white)
 	table.insert(t, '<' .. ply:SteamID() .. '>')
 
@@ -1682,6 +1693,7 @@ function DPP.Format(...)
 
 	for k, v in ipairs{...} do
 		local Type = type(v)
+		local IsEntity = DPP.IsEntity(v)
 
 		if Type == 'Player' then
 			for a, b in ipairs(DPP.FormatPlayer(v)) do
@@ -1691,7 +1703,7 @@ function DPP.Format(...)
 			continue
 		end
 
-		if Type == 'Entity' then
+		if IsEntity then
 			table.insert(repack, tostring(v))
 			continue
 		end
