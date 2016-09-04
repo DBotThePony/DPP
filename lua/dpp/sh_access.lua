@@ -15,14 +15,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
-local CAMIFailed = false
+include('sh_cami.lua')
+
 DPP.Access = DPP.Access or {}
 DPP.CAMIPrivTable = DPP.CAMIPrivTable or {}
 
 function DPP.RegisterAccess(id, default, desc, phraseid)
 	DPP.Access[id] = default
-
-	if not CAMI or CAMIFailed then return end
 
 	DPP.CAMIPrivTable[id] = CAMI.RegisterPrivilege{
 		Name = 'dpp_' .. id,
@@ -30,18 +29,6 @@ function DPP.RegisterAccess(id, default, desc, phraseid)
 		Description = desc,
 		DPP_PHRASEID = phraseid,
 	}
-end
-
-function DPP.DefaultAccessCheck(ply, id, callback, ...)
-	local access = DPP.Access[id]
-
-	if access == 'user' then
-		callback(true, 'user rights', ...)
-	elseif access == 'admin' then
-		callback(ply:IsAdmin(), 'admin rights', ...)
-	elseif access == 'superadmin' then
-		callback(ply:IsSuperAdmin(), 'superadmin rights', ...)
-	end
 end
 
 function DPP.DefaultAccessCheckLight(ply, id)
@@ -62,33 +49,25 @@ function DPP.HaveAccess(ply, id, callback, ...)
 		return
 	end
 
-	if CAMI and not CAMIFailed then
-		local args = {...}
+	local args = {...}
 
-		local access = DPP.Access[id]
+	local access = DPP.Access[id]
 
-		local function callbackWrapper(result, reason)
-			if result == nil then --Admin mod got confused
-				result = DPP.DefaultAccessCheckLight(ply, id)
-			end
-
-			if reason == 'Fallback.' then
-				reason = access .. ' rights'
-			end
-
-			callback(result, reason, unpack(args))
+	local function callbackWrapper(result, reason)
+		if result == nil then --Admin mod got confused
+			result = DPP.DefaultAccessCheckLight(ply, id)
 		end
 
-		--If i do not specify target as nil, it would be C "no value"
+		if reason == 'Fallback.' then
+			reason = access .. ' rights'
+		end
 
-		CAMI.PlayerHasAccess(ply, 'dpp_' .. id, callbackWrapper, nil, {
-			Fallback = access,
-		})
-
-		return
+		callback(result, reason, unpack(args))
 	end
 
-	DPP.DefaultAccessCheck(ply, id, callback, ...)
+	CAMI.PlayerHasAccess(ply, 'dpp_' .. id, callbackWrapper, nil, {
+		Fallback = access,
+	})
 end
 
 function DPP.CheckAccess(ply, id, call, ...)
@@ -202,28 +181,25 @@ for k, v in pairs(DPP.RestrictTypes) do
 	default_desc['unrestrict' .. k] = 'Can remove entities from ' .. k .. ' restrict list'
 end
 
-function DPP.RegisterRights()
-	for k, v in pairs(default_desc) do
-		DPP.RegisterPhrase('en', 'priv_' .. k, v)
-	end
-	
-	for k, v in pairs(default) do
-		local trace, reason
-		local status = xpcall(DPP.RegisterAccess, function(err) reason = err trace = debug.traceback() end, k, v, default_desc[k], 'priv_' .. k)
-
-		if not status and SERVER then
-			CAMIFailed = true
-			DPP.DoEcho(Color(255, 0, 0), 'ERROR: CAMI Failed. You are unable to use CAMI Privileges for now. Contact your admin mod developer!\nThe Error: ' .. (reason or '<unknown>'))
-			DPP.DoEcho(Color(255, 0, 0), trace)
-		end
-	end
-end
-
-hook.Add('DPP.LanguageChanged', 'DPP.Access', function()
+local function UpdateLang()
 	for k, v in pairs(DPP.CAMIPrivTable) do
 		if not v.DPP_PHRASEID then continue end
 		v.Description = DPP.GetPhrase(v.DPP_PHRASEID)
 	end
-end)
+end
+
+for k, v in pairs(default_desc) do
+	DPP.RegisterPhrase('en', 'priv_' .. k, v)
+end
+
+function DPP.RegisterRights()
+	for k, v in pairs(default) do
+		DPP.RegisterAccess(k, v, DPP.GetPhrase('priv_' .. k), 'priv_' .. k)
+	end
+	
+	UpdateLang()
+end
+
+hook.Add('DPP.LanguageChanged', 'DPP.Access', UpdateLang)
 
 timer.Simple(0, DPP.RegisterRights)

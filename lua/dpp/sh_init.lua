@@ -1490,10 +1490,6 @@ local PlayersTouchAccess = {}
 
 local function GetTouchAccess(ply)
 	DPP.HaveAccess(ply, 'touchother', function(result)
-		if result == nil then
-			result = DPP.DefaultAccessCheckLight(ply, 'touchother')
-		end
-
 		PlayersTouchAccess[ply] = {
 			result = result,
 			expires = CurTime() + 10,
