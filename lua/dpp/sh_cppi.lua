@@ -23,15 +23,15 @@ CPPI_DEFER = 9030
 CPPI = {}
 
 function CPPI.GetName()
-	return 'DBots Prop Protection'
+	return 'DBot Prop Protection'
 end
 
 function CPPI.GetVersion()
-	return 'Universal'
+	return 'universal'
 end
 
 function CPPI.GetInterfaceVersion()
-	return 1.4, 'unofficial'
+	return 1.5, 'unofficial'
 end
 
 local entMeta = FindMetaTable('Entity')
@@ -39,9 +39,7 @@ local plyMeta = FindMetaTable('Player')
 
 --Object Oriented Model
 
-function plyMeta:CPPIGetFriends()
-	return DPP.GetFriendTableCPPI(self)
-end
+plyMeta.CPPIGetFriends = DPP.GetFriendTableCPPI
 
 function entMeta:CPPIGetOwner()
 	local o = DPP.GetOwner(self)
@@ -51,9 +49,7 @@ function entMeta:CPPIGetOwner()
 end
 
 if SERVER then
-	function entMeta:CPPISetOwner(ply)
-		DPP.SetOwner(self, ply)
-	end
+	entMeta.CPPISetOwner = DPP.SetOwner
 
 	function entMeta:CPPISetOwnerUID(uid)
 		local ply = player.GetByUniqueID(uid)
@@ -63,6 +59,10 @@ if SERVER then
 			DPP.SetOwner(self, ply)
 		end
 	end
+
+	plyMeta.CPPIGetProps = DPP.GetPlayerEntities
+	plyMeta.CPPIGetEntitites = DPP.GetPlayerEntities
+	plyMeta.CPPIGetEnts = DPP.GetPlayerEntities
 end
 
 function entMeta:CPPICanDamage(ply)
@@ -101,9 +101,10 @@ function entMeta:CPPICanUse(ply)
 	return DPP.PlayerUse(ply, self) ~= false
 end
 
-function entMeta:CPPIIsOwned()
-	return DPP.IsOwned(self)
-end
+entMeta.CPPIIsOwned = DPP.IsOwned
+
+--Generic check
+entMeta.CPPICanTouch = DPP.CanTouch
 
 hook.Add('DPP.AssignOwnership', 'DPP.CPPI', function(ply, ent)
 	return hook.Run('CPPIAssignOwnership', ply, ent)
@@ -115,9 +116,7 @@ end)
 
 --Procedual model
 
-function CPPI.GetFriends(self)
-	return DPP.GetFriendTableCPPI(self)
-end
+CPPI.GetFriends = DPP.GetFriendTableCPPI
 
 function CPPI.GetOwner(self)
 	local o = DPP.GetOwner(self)
@@ -127,7 +126,7 @@ function CPPI.GetOwner(self)
 end
 
 if SERVER then
-	function CPPI.SetOwner(ply)
+	function CPPI.SetOwner(self, ply)
 		DPP.SetOwner(self, ply)
 	end
 
@@ -139,6 +138,10 @@ if SERVER then
 			DPP.SetOwner(self, ply)
 		end
 	end
+
+	CPPI.GetProps = DPP.GetPlayerEntities
+	CPPI.GetEntitites = DPP.GetPlayerEntities
+	CPPI.GetEnts = DPP.GetPlayerEntities
 end
 
 function CPPI.CanDamage(self, ply)
@@ -177,6 +180,7 @@ function CPPI.CanUse(self, ply)
 	return DPP.PlayerUse(ply, self) ~= false
 end
 
-function CPPI.IsOwned(self)
-	return DPP.IsOwned(self)
-end
+CPPI.IsOwned = DPP.IsOwned
+
+--Generic check
+CPPI.CanTouch = DPP.CanTouch

@@ -291,12 +291,12 @@ function DPP.CanTool(ply, ent, mode)
 
 	if not IsValid(ent) then 
 		if DPP.GetConVar('no_rope_world') then
-			if (mode and ropeModes[mode]) and not (not DPP.GetConVar('no_rope_world_weld') and mode == 'weld') then
+			if ropeModes[mode] and not (not DPP.GetConVar('no_rope_world_weld') and mode == 'weld') then
 				return false, DPP.GetPhrase('no_rope_world')
 			end
 		end
 
-		if mode and DPP.IsEntityBlockedToolgunWorld(mode, ply) then
+		if DPP.IsEntityBlockedToolgunWorld(mode, ply) then
 			return false, DPP.GetPhrase('toolmode_blocked_world')
 		end
 
@@ -311,7 +311,7 @@ function DPP.CanTool(ply, ent, mode)
 		return true, DPP.GetPhrase('entity_excluded')
 	end
 
-	if mode and DPP.IsEntityWhitelistedToolMode(mode) then
+	if DPP.IsEntityWhitelistedToolMode(mode) then
 		return true, DPP.GetPhrase('toolmode_excluded')
 	end
 

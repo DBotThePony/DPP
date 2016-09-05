@@ -262,6 +262,8 @@ function DPP.GetPlayerEntities(ply)
 	return reply
 end
 
+DPP.GetPlayerEnts = DPP.GetPlayerEntities
+
 function DPP.FindEntitiesByClass(ply, class)
 	local Ents = DPP.GetPlayerEntities(ply)
 	local reply = {}
@@ -790,6 +792,7 @@ function DPP.GetPropsByUID(uid)
 end
 
 DPP.GetEntitiesByUID = DPP.GetPropsByUID
+DPP.GetEntsByUID = DPP.GetPropsByUID
 
 function DPP.SetProtectionDisabled(ply, mode, status)
 	ply:SetDPPVar('DisablePP.' .. mode, status)
