@@ -537,6 +537,7 @@ local function PostDrawHUDDefault(x, y)
 	local name = DPP.GetOwnerName(ent)
 
 	local Owned
+	local isPly = false
 	local Owne
 	local Nick, UID, SteamID
 	local disconnected = false
@@ -555,6 +556,7 @@ local function PostDrawHUDDefault(x, y)
 		Owned = false
 		Owner = ent
 		name = ent:Nick()
+		isPly = true
 	end
 
 	local f = DPP.LocalConVar('display_owner')
@@ -581,7 +583,7 @@ local function PostDrawHUDDefault(x, y)
 		name = name .. '<' .. tostring(ent) .. '>'
 	end
 
-	if DPP.LocalConVar('display_entityname') then
+	if not isPly and DPP.LocalConVar('display_entityname') then
 		local str = ent:IsPlayer() and ent:Nick() or ent:IsWeapon() and ent:GetPrintName() or ent.PrintName or ''
 
 		if str ~= '' then
