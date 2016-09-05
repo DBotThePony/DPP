@@ -126,9 +126,7 @@ function CPPI.GetOwner(self)
 end
 
 if SERVER then
-	function CPPI.SetOwner(self, ply)
-		DPP.SetOwner(self, ply)
-	end
+	CPPI.SetOwner = DPP.SetOwner
 
 	function CPPI.SetOwnerUID(self, uid)
 		local ply = player.GetByUniqueID(uid)
