@@ -122,8 +122,12 @@ function DPP.ToolgunTouch(ply, tr, mode)
 		local Should = false
 
 		--Some addons (such as wiremod) calls CanTool after player toolgun it's entity (for example, Expression 2)
-		for i = 3, 8 do
+		for i = 1, 8 do
+			local info = debug.getinfo(i) --Check whatever level is valid
+			if not info then break end
+			
 			local Name, Value = debug.getlocal(i, 1)
+			
 			if not Name then break end
 			if not isentity(Value) then continue end
 			if not IsValid(Value) then continue end
