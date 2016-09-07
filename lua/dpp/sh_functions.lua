@@ -109,34 +109,21 @@ end
 
 local default = {'user', 'admin', 'superadmin'}
 
+local function HasValueLight(arr, val)
+	for k, v in ipairs(arr) do
+		if v == val then return true end
+	end
+	
+	return false
+end
+
 function DPP.GetGroups()
-	local reply = {}
+	local reply = {'user', 'admin', 'superadmin'}
+	local groups = CAMI.GetUsergroups()
 
-	if CAMI then
-		local groups = CAMI.GetUsergroups()
-		local reply = table.Copy(default)
-
-		for k, v in pairs(groups) do
-			if table.HasValue(reply, k) then continue end
-			table.insert(reply, k)
-		end
-
-		return reply
-	end
-
-	--CAMI is so fresh, so many servers have ULib without CAMI installed
-	if ULib then
-		local g = ULib.ucl.groups
-
-		for k, v in pairs(g) do
-			if table.HasValue(reply, k) then continue end
-			table.insert(reply, k)
-		end
-	end
-
-	for k, v in pairs(default) do
-		if table.HasValue(reply, v) then continue end
-		table.insert(reply, v)
+	for k, v in pairs(groups) do
+		if HasValueLight(reply, k) then continue end
+		table.insert(reply, k)
 	end
 
 	return reply
