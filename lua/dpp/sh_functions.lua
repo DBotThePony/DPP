@@ -107,8 +107,6 @@ function DPP.IsPlayerInEntity(ply, ent) --From DLib
 	return tr.Entity == ent or tr2.Entity == ent
 end
 
-local default = {'user', 'admin', 'superadmin'}
-
 local function HasValueLight(arr, val)
 	for k, v in ipairs(arr) do
 		if v == val then return true end
@@ -122,8 +120,9 @@ function DPP.GetGroups()
 	local groups = CAMI.GetUsergroups()
 
 	for k, v in pairs(groups) do
-		if HasValueLight(reply, k) then continue end
-		table.insert(reply, k)
+		if not HasValueLight(reply, k) then
+			table.insert(reply, k)
+		end
 	end
 
 	return reply

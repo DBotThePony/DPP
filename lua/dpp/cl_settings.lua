@@ -22,6 +22,10 @@ local P = DPP.GetPhrase
 local FUNCTIONS = {}
 DPP.SettingsClass.FUNCTIONS = FUNCTIONS
 
+SettingsClass.Accesses = {
+	setvar = false,
+}
+
 function FUNCTIONS.CheckBoxThink(self)
 	local val = DPP.GetConVar(self.val)
 	self:SetChecked(val)
@@ -221,7 +225,7 @@ SettingsClass.UnChecked = Color(255, 148, 148)
 SettingsClass.CheckBox = Color(50, 50, 50)
 SettingsClass.FrameColor = SettingsClass.Background
 SettingsClass.TextColor = color_white
-SettingsClass.Chars = {'!','@','#','$','%','^','&','*','(',')'}
+SettingsClass.Chars = {'!', '@', '#', '$', '%', '^', '&', '*', '(', ')'}
 
 function Style.ScramblingCharsThink(self)
 	if DPP.PlayerConVar(nil, 'no_scrambling_text') then return end
@@ -348,18 +352,40 @@ function Style.CheckBoxThink(self)
 	if self.oldThink then self.oldThink() end
 end
 
+Style.CheckBoxStrip = {}
+Style.StringStep = 40
+
+for x = 0, 10 do
+	table.insert(Style.CheckBoxStrip, {
+		{x = x * Style.StringStep, y = 0},
+		{x = x * Style.StringStep + Style.StringStep / 2, y = 0},
+		{x = x * Style.StringStep, y = 20},
+		{x = x * Style.StringStep - Style.StringStep / 2, y = 20},
+	})
+end
+
+Style.AccessDeniedColor = Color(200, 100, 100, 150)
+Style.AccessDeniedColorCheckbox = Color(0, 0, 0)
+
 function Style.CheckBoxPaint(self, w, h)
 	surface.SetDrawColor(SettingsClass.Glow)
 	surface.DrawRect(0, 0, self.CurrentArrowMove, 30)
+	
+	if not SettingsClass.Accesses.setvar then
+		draw.NoTexture()
+		surface.SetDrawColor(Style.AccessDeniedColor)
+		
+		for k, v in ipairs(Style.CheckBoxStrip) do
+			surface.DrawPoly(v)
+		end
+	end
 
-	--[[surface.DrawPoly{
-		{x = x, y = 0},
-		{x = x + 15, y = 0},
-		{x = x - 2, y = 6},
-		{x = x + 15, y = 12},
-		{x = x, y = 12},
-		{x = x - 15, y = 6},
-	}]]
+	self.oldPaint(w, h)
+end
+
+function Style.CheckBoxPaintClient(self, w, h)
+	surface.SetDrawColor(SettingsClass.Glow)
+	surface.DrawRect(0, 0, self.CurrentArrowMove, 30)
 
 	self.oldPaint(w, h)
 end
@@ -372,6 +398,39 @@ function Style.CheckBoxButtonPaint(self, w, h)
 
 	surface.SetDrawColor(isChecked and SettingsClass.Checked or SettingsClass.UnChecked)
 	surface.DrawRect(2, 2, w - 4, h - 4)
+	
+	if not SettingsClass.Accesses.setvar then
+		draw.NoTexture()
+		surface.SetDrawColor(Style.AccessDeniedColorCheckbox)
+		surface.DrawPoly{
+			{x = w - 2, y = 2},
+			{x = w - 2, y = h - 2},
+			{x = 2, y = h - 2},
+		}
+	end
+end
+
+function Style.CheckBoxButtonPaintClient(self, w, h)
+	local isChecked = self:GetChecked()
+
+	surface.SetDrawColor(SettingsClass.CheckBox)
+	surface.DrawRect(0, 0, w, h)
+
+	surface.SetDrawColor(isChecked and SettingsClass.Checked or SettingsClass.UnChecked)
+	surface.DrawRect(2, 2, w - 4, h - 4)
+end
+
+function Style.SliderPaint(self, w, h)
+	if not SettingsClass.Accesses.setvar then
+		draw.NoTexture()
+		surface.SetDrawColor(Style.AccessDeniedColor)
+		
+		for k, v in ipairs(Style.CheckBoxStrip) do
+			surface.DrawPoly(v)
+		end
+	end
+	
+	if self.oldPaint then self.oldPaint(self, w, h) end
 end
 
 function SettingsClass.MakeCheckboxBetter(panel)
@@ -400,6 +459,8 @@ end
 function SettingsClass.ApplySliderStyle(Slider)
 	Slider.Label:SetTextColor(SettingsClass.TextColor)
 	Slider.TextArea:SetTextColor(SettingsClass.TextColor)
+	Slider.oldPaint = Slider.Paint
+	Slider.Paint = Style.SliderPaint
 end
 
 local SortedConVars = {
@@ -507,6 +568,7 @@ function SettingsClass.ConVarSlider(Panel, var)
 	SettingsClass.ApplySliderStyle(Slider)
 	Slider:SetTooltip(P('scvar_base', P('cvar_' .. var), var))
 	Slider:SetValue(DPP.GetConVar(var))
+	
 	Slider.OnValueChanged = function()
 		local val = tonumber(Slider:GetValue())
 
@@ -518,6 +580,7 @@ function SettingsClass.ConVarSlider(Panel, var)
 
 		timer.Create('DPP.Change' .. var, 1, 1, function()
 			RunConsoleCommand('dpp_setvar', var, tostring(val))
+			
 			if IsValid(Slider) then
 				Slider:SetValue(val)
 			end
@@ -622,6 +685,8 @@ function SettingsClass.ClientConVarCheckbox(Panel, idx)
 	checkbox:SetTooltip(P('scvar_base', v.desc, idx))
 	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 	SettingsClass.MakeCheckboxBetter(checkbox)
+	checkbox.Paint = Style.CheckBoxPaintClient
+	checkbox.Button.Paint = Style.CheckBoxButtonPaintClient
 
 	return checkbox
 end
@@ -2945,13 +3010,19 @@ local function Access(id)
 	return AccessCache[id]
 end
 
-timer.Create('DPP.UpdateGUIAccessCache', 10, 0, function()
+timer.Create('DPP.Settings.AccessCache', 10, 0, function()
 	local ply = LocalPlayer()
 	if not IsValid(ply) then return end
 
-	for i, id in pairs(AccessCacheCheck) do
+	for i, id in ipairs(AccessCacheCheck) do
 		DPP.HaveAccess(ply, id, function(result)
 			AccessCache[id] = result
+		end)
+	end
+
+	for id, status in pairs(SettingsClass.Accesses) do
+		DPP.HaveAccess(ply, id, function(result)
+			SettingsClass.Accesses[id] = result
 		end)
 	end
 end)
