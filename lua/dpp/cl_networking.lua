@@ -155,7 +155,12 @@ local function ReadGenericLimits()
 
 		for i2 = 1, groups do
 			local group = net.ReadString()
+			local isNegative = net.ReadBool()
 			local value = net.ReadUInt(16)
+			
+			if isNegative then
+				value = -value
+			end
 
 			reply[name][group] = value
 		end

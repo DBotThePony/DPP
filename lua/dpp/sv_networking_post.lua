@@ -60,7 +60,9 @@ local function WriteGenericLimits(tab)
 
 		for group, value in pairs(v) do
 			net.WriteString(group)
-			net.WriteUInt(tonumber(value), 16) --to be safe
+			local num = tonumber(value)
+			net.WriteBool(num < 0)
+			net.WriteUInt(math.abs(num), 16) --to be safe
 		end
 	end
 end
