@@ -97,7 +97,7 @@ local en = {
 	remove_blacklist_looking_at = 'Remove the entity you are looking from the blacklist',
 	remove_blacklist_looking_at_all = 'Remove the entity you are looking from ALL blacklists',
 	is_white = 'Is whitelist',
-	about_header = 'DPP was created by DBot\nI tried to make it situable for all kinds of servers\nthat needs protect from minges',
+	about_header = 'DPP - DBot Prop Protection, by DBot.\nI tried to make it situable for all kinds of servers\nthat needs protect from minges',
 	about_thumbup = 'Can we have a free like please?\nPlease?! or i will cry ;n;',
 	about_star = 'Can we have a free star please?\nPlease?! or i will cry ;n;',
 	about_bug = 'Can we have a free bug report please?\nPlease?!',
@@ -456,7 +456,7 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	saveload_command_message_3 = 'Invalid argument "is white list" (#3)',
 	saveload_command_message_4 = 'Invalid class to unrestrict',
 	
-	menu_misc_moved = 'Generic options is moved to "Utilities" panel.',
+	menu_misc_moved = 'Generic options was moved to "Utilities" panel',
 	utilities = 'Utilities',
 	
 	inspect_button = 'Inspect entity you are looking at',
