@@ -852,6 +852,12 @@ local function DrawNearToolgun()
 	cam.End3D()
 end
 
+local LastRenderFrame = 0
+
+if IsValid(DPP.ScreenshotPanelHack) then
+	DPP.ScreenshotPanelHack:Remove()
+end
+
 local function HUDPaint()
 	local can = hook.Run('CanDrawDPPHUD')
 	if can == false then return end
@@ -880,6 +886,30 @@ local function HUDPaint()
 	else
 		HUDPaintSimple(x, y)
 	end
+end
+
+local LastPanelUpdate = 0
+
+local function CreateFix()
+	if IsValid(DPP.ScreenshotPanelHack) then
+		if LastPanelUpdate > CurTime() then return end
+		LastPanelUpdate = CurTime() + 1
+		DPP.ScreenshotPanelHack:SetSize(ScrW(), ScrH())
+		DPP.ScreenshotPanelHack:SetPos(0, 0)
+		DPP.ScreenshotPanelHack:SetRenderInScreenshots(DPP.LocalConVar('draw_in_screenshots', false))
+		return
+	end
+	
+	local newPnl = vgui.Create('EditablePanel')
+	DPP.ScreenshotPanelHack = newPnl
+	newPnl:SetRenderInScreenshots(false)
+	newPnl:SetSize(ScrW(), ScrH())
+	newPnl:SetPos(0, 0)
+	newPnl:SetMouseInputEnabled(false)
+	newPnl:SetKeyboardInputEnabled(false)
+	newPnl:KillFocus()
+	newPnl:SetVisible(true)
+	newPnl.Paint = HUDPaint
 end
 
 local LastSound = 0
@@ -917,6 +947,10 @@ end)
 
 net.Receive('DPP.Notify', function()
 	DPP.Notify(DPP.PreprocessPhrases(unpack(DPP.ReadMessageTable())), net.ReadUInt(6))
+end)
+
+net.Receive('DPP.Echo', function()
+	DPP.Message(unpack(DPP.ReadMessageTable()))
 end)
 
 net.Receive('DPP.PlayerList', function()
@@ -961,6 +995,38 @@ net.Receive('DPP.ReceiveFriendList', function()
 
 	DPP.RecalculateCPPIFriendTable(ply)
 	hook.Run('CPPIFriendsChanged', ply, DPP.GetFriendTableCPPI(ply))
+end)
+
+net.Receive('DPP.InspectEntity', function()
+	DPP.Notify(DPP.PreprocessPhrases('PHRASE:look_into_console'), NOTIFY_GENERIC)
+	
+	local ply = LocalPlayer()
+	local tr = util.TraceLine{
+		start = ply:EyePos(),
+		endpos = ply:EyePos() + ply:EyeAngles():Forward() * 32000,
+		mask = MASK_ALL,
+		filter = ply
+	}
+	
+	DPP.Message('PHRASE:inspect_client')
+	
+	local ent = tr.Entity
+	
+	if not IsValid(ent) then
+		DPP.Message('PHRASE:inspect_noentity')
+	else
+		DPP.Message('PHRASE:inspect_class', color_white, ent:GetClass())
+		DPP.Message('PHRASE:inspect_pos', color_white, DPP.ToString(ent:GetPos()))
+		DPP.Message('PHRASE:inspect_ang', color_white, DPP.ToString(ent:GetAngles()))
+		DPP.Message('PHRASE:inspect_table', color_white, DPP.ToString(table.Count(ent:GetTable())))
+		DPP.Message('PHRASE:inspect_hp', color_white, DPP.ToString(ent:Health()))
+		DPP.Message('PHRASE:inspect_mhp', color_white, DPP.ToString(ent:GetMaxHealth()))
+		DPP.Message('PHRASE:inspect_owner', color_white, DPP.ToString(DPP.GetOwner(ent)))
+		
+		DPP.Message('PHRASE:inspect_model', color_white, DPP.ToString(ent:GetModel()))
+		DPP.Message('PHRASE:inspect_skin', color_white, DPP.ToString(ent:GetSkin()))
+		DPP.Message('PHRASE:inspect_bodygroups', color_white, DPP.ToString(table.Count(ent:GetBodyGroups() or {})))
+	end
 end)
 
 local SelectedEntity
@@ -1028,7 +1094,7 @@ function DPP.ReplacePropertyFuncs()
 	end
 end
 
-hook.Add('HUDPaint', 'DPP.Hooks', HUDPaint)
+hook.Add('HUDPaint', 'DPP.Hooks', CreateFix)
 
 concommand.Add('dpp_printmissingphrases', function(_, _, args)
 	DPP.PrintMissingPhrases(args[1] or DPP.CURRENT_LANG)

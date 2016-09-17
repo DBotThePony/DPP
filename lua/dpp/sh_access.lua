@@ -109,6 +109,7 @@ local default = {
 	transfertoplayer = 'user',
 	transfertoplayer_all = 'user',
 	entcheck = 'admin',
+	inspect = 'admin',
 
 	--Database manipulate commands
 	addblockedmodel = 'superadmin',
@@ -148,6 +149,7 @@ local default_desc = {
 	transfertoplayer = 'Can transfer props to other players',
 	transfertoplayer_all = 'Can transfer all props to other players',
 	entcheck = 'Can request entity report',
+	inspect = 'Can player "inspect" entity',
 
 	--Database manipulate commands
 	addblockedmodel = 'Can add blocked model',

@@ -432,6 +432,41 @@ DPP.Commands = {
 
 		return true
 	end,
+
+	inspect = function(ply, cmd, args)
+		if not IsValid(ply) then return false, {'You are console'} end
+		
+		local tr = util.TraceLine{
+			start = ply:EyePos(),
+			endpos = ply:EyePos() + ply:EyeAngles():Forward() * 32000,
+			mask = MASK_ALL,
+			filter = ply
+		}
+		
+		net.Start('DPP.InspectEntity')
+		net.Send(ply)
+		
+		DPP.Echo(ply, 'PHRASE:inspect_server')
+		local ent = tr.Entity
+		
+		if not IsValid(ent) then
+			DPP.Echo(ply, 'PHRASE:inspect_noentity')
+		else
+			DPP.Echo(ply, 'PHRASE:inspect_class', color_white, ent:GetClass())
+			DPP.Echo(ply, 'PHRASE:inspect_pos', color_white, DPP.ToString(ent:GetPos()))
+			DPP.Echo(ply, 'PHRASE:inspect_ang', color_white, DPP.ToString(ent:GetAngles()))
+			DPP.Echo(ply, 'PHRASE:inspect_table', color_white, DPP.ToString(table.Count(ent:GetTable())))
+			DPP.Echo(ply, 'PHRASE:inspect_hp', color_white, DPP.ToString(ent:Health()))
+			DPP.Echo(ply, 'PHRASE:inspect_mhp', color_white, DPP.ToString(ent:GetMaxHealth()))
+			DPP.Echo(ply, 'PHRASE:inspect_owner', color_white, DPP.ToString(DPP.GetOwner(ent)))
+			
+			DPP.Echo(ply, 'PHRASE:inspect_model', color_white, DPP.ToString(ent:GetModel()))
+			DPP.Echo(ply, 'PHRASE:inspect_skin', color_white, DPP.ToString(ent:GetSkin()))
+			DPP.Echo(ply, 'PHRASE:inspect_bodygroups', color_white, DPP.ToString(table.Count(ent:GetBodyGroups() or {})))
+		end
+
+		return true
+	end,
 }
 
 DPP.RawCommands = {}

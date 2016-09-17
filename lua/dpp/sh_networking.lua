@@ -277,6 +277,9 @@ function DPP.ReadMessageTable()
 end
 
 hook.Add('OnEntityCreated', 'DPP.Networking', OnEntityCreated)
+hook.Add('DPP_ConVarRegistered', function()
+	timer.Create('DPP.OnConVarRegisteredNetworkUpdate', 0, 1, DPP.AssignConVarNetworkIDs)
+end)
 
 if CLIENT then
 	include('cl_networking.lua')

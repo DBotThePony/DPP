@@ -48,6 +48,16 @@ function DPP.Notify(ply, message, type)
 	end
 end
 
+function DPP.Echo(ply, ...)
+	if istable(ply) or IsValid(ply) then
+		net.Start('DPP.Echo')
+		DPP.WriteMessageTable({...})
+		net.Send(ply)
+	else
+		DPP.Message(message)
+	end
+end
+
 function DPP.ConVarChanged(var, old, new)
 	if not DPP.IGNORE_CVAR_SAVE then
 		timer.Create('DPP.SaveCVars', 1, 1, DPP.SaveCVars)

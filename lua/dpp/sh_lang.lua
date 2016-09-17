@@ -93,9 +93,9 @@ local en = {
 	add_entity = 'Add entity',
 	remove_entity = 'Remove entity',
 	add_blacklist_looking_at = 'Add the entity you are looking at to the blacklist',
-	add_blacklist_looking_at_all = 'Add the entity you are looking at to the ALL blacklists',
-	remove_blacklist_looking_at = 'Add the entity you are looking at to the blacklist',
-	remove_blacklist_looking_at_all = 'Add the entity you are looking at to the ALL blacklists',
+	add_blacklist_looking_at_all = 'Add the entity you are looking at to ALL blacklists',
+	remove_blacklist_looking_at = 'Remove the entity you are looking from the blacklist',
+	remove_blacklist_looking_at_all = 'Remove the entity you are looking from ALL blacklists',
 	is_white = 'Is whitelist',
 	about_header = 'DPP was created by DBot\nI tried to make it situable for all kinds of servers\nthat needs protect from minges',
 	about_thumbup = 'Can we have a free like please?\nPlease?! or i will cry ;n;',
@@ -109,9 +109,9 @@ local en = {
 	remove_exclude_all = 'Remove that entity from ALL exclude lists',
 	
 	add_exclude_looking_at = 'Add the entity you are looking at to the exclude list',
-	add_exclude_looking_at_all = 'Add the entity you are looking at to the ALL exclude lists',
-	remove_exclude_looking_at = 'Remove the entity you are looking at to the exclude list',
-	remove_exclude_looking_at_all = 'Remove the entity you are looking at to the ALL exclude lists',
+	add_exclude_looking_at_all = 'Add the entity you are looking at to ALL exclude lists',
+	remove_exclude_looking_at = 'Remove the entity you are looking at from the exclude list',
+	remove_exclude_looking_at_all = 'Remove the entity you are looking at from ALL exclude lists',
 	
 	toolmode_exclude_tip = [[
 This list defines toolgun modes that is allowed to be 
@@ -455,6 +455,24 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	saveload_command_message_2 = 'Invalid group(s). Groups are seperated by comma, without spaces (#2)',
 	saveload_command_message_3 = 'Invalid argument "is white list" (#3)',
 	saveload_command_message_4 = 'Invalid class to unrestrict',
+	
+	menu_misc_moved = 'Generic options is moved to "Utilities" panel.',
+	utilities = 'Utilities',
+	
+	inspect_button = 'Inspect entity you are looking at',
+	inspect_client = '--CLIENT--',
+	inspect_server = '--SERVER--',
+	inspect_class = 'Entity Class: ',
+	inspect_pos = 'Entity Position: ',
+	inspect_ang = 'Entity Angles: ',
+	inspect_hp = 'Entity Health: ',
+	inspect_mhp = 'Entity Max Health: ',
+	inspect_owner = 'Entity owner: ',
+	inspect_model = 'Entity model: ',
+	inspect_skin = 'Entity skin: ',
+	inspect_bodygroups = 'Entity bodygroup count: ',
+	inspect_table = 'Entity values in :GetTable() :',
+	inspect_noentity = 'Entity is not valid',
 }
 
 local ru = {
@@ -1144,6 +1162,24 @@ local ru = {
 	saveload_command_message_2 = 'Неверные групп(ы). Группы разделены запятой (,), без пробелов (#2)',
 	saveload_command_message_3 = 'Неверный аргумент к "является белым листом" (#3)',
 	saveload_command_message_4 = 'Неверный класс для убирания ограничения',
+	
+	menu_misc_moved = 'Общие кнопки были перемещены в "Утилиты"',
+	utilities = 'Утилиты',
+	
+	inspect_button = 'Проверить энтити на которое Вы смотрите',
+	inspect_client = '--КЛИЕНТ--',
+	inspect_server = '--СЕРВЕР--',
+	inspect_class = 'Класс Энтити: ',
+	inspect_pos = 'Позиция Энтити: ',
+	inspect_ang = 'Углы Энтити: ',
+	inspect_hp = 'Здоровье Энтити: ',
+	inspect_mhp = 'Максимальное Здоровье Энтити: ',
+	inspect_owner = 'Владелец Энтити: ',
+	inspect_model = 'Модель Энтити: ',
+	inspect_skin = 'Скин Энтити: ',
+	inspect_bodygroups = 'Количество изменяемых частей Энтити: ',
+	inspect_table = 'Количество записей в :GetTable() Энтити:',
+	inspect_noentity = 'Неверное Энтити',
 }
 
 DPP.RegisterPhraseList('en', en)

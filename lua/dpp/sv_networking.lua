@@ -38,6 +38,7 @@ util.AddNetworkString('DPP.ReceiveFriendList')
 util.AddNetworkString('DPP.SendConstrainedWith')
 
 util.AddNetworkString('DPP.Log')
+util.AddNetworkString('DPP.Echo')
 util.AddNetworkString('DPP.Notify')
 util.AddNetworkString('DPP.SetConVar')
 util.AddNetworkString('DPP.PlayerList')
@@ -50,6 +51,8 @@ util.AddNetworkString('DPP.NetworkedVar')
 util.AddNetworkString('DPP.NetworkedEntityVars')
 util.AddNetworkString('DPP.NetworkedVarFull')
 util.AddNetworkString('DPP.NetworkedRemove')
+
+util.AddNetworkString('DPP.InspectEntity')
 
 util.AddNetworkString('DPP.UpdateLang')
 

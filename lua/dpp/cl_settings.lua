@@ -552,6 +552,7 @@ local ClientVars = {
 }
 
 SettingsClass.ClientVars2 = {
+	'draw_in_screenshots',
 	'display_owner',
 	'display_entityclass',
 	'display_entityclass2',
@@ -833,10 +834,14 @@ local function BuildPlayerList(Panel)
 
 	DPP.SettingsClass.PlayerPanel = Panel
 
-	SettingsClass.ApplyButtonStyle(Panel:Button(P('clear_decals'), 'dpp_cleardecals'))
-	SettingsClass.ApplyButtonStyle(Panel:Button(P('report_ents'), 'dpp_entcheck'))
-	local lab = Label('')
-	Panel:AddItem(lab)
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	local TopText = P('menu_misc_moved')
+	Lab:SetText(TopText)
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SizeToContents()
+	Lab:SetTooltip(TopText)
+
 	SettingsClass.ApplyButtonStyle(Panel:Button(P('delete_ents'), 'dpp_clearmap'))
 	SettingsClass.ApplyButtonStyle(Panel:Button(P('freeze_all'), 'dpp_freezeall'))
 	SettingsClass.ApplyButtonStyle(Panel:Button(P('freeze_all_phys'), 'dpp_freezephys'))
@@ -1726,6 +1731,17 @@ local function BuildCLimitsList(Panel)
 	SettingsClass.ApplyButtonStyle(Apply)
 
 	ConVarCheckbox(Panel, 'const_limits_enable')
+end
+
+local function BuildToolsPanel(Panel)
+	if not IsValid(Panel) then return end
+	Panel:Clear()
+	SettingsClass.SetupBackColor(Panel)
+	DPP.SettingsClass.ToolsPanel = Panel
+	
+	SettingsClass.ApplyButtonStyle(Panel:Button(P('clear_decals'), 'dpp_cleardecals'))
+	SettingsClass.ApplyButtonStyle(Panel:Button(P('report_ents'), 'dpp_entcheck'))
+	SettingsClass.ApplyButtonStyle(Panel:Button(P('inspect_button'), 'dpp_inspect'))
 end
 
 local PanelsFunctions = {}
@@ -2844,6 +2860,7 @@ local function PopulateToolMenu()
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.CLimits', P('menu_climits'), '', '', BuildCLimitsList)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_blacklists'), 'DPP.ModelList', P('menu_mblacklist'), '', '', BuildModelsList)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.PPPanel', P('menu_pcontrols'), '', '', BuildPlayerProtectionPanel)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.Utilities', P('utilities'), '', '', BuildToolsPanel)
 
 	for k, v in pairs(DPP.BlockTypes) do
 		spawnmenu.AddToolMenuOption('DPP', P('menu_blacklists'), 'DPP.' .. k, P('menu_blacklist', P('menu_' .. k)), '', '', PanelsFunctions[k])
@@ -2959,6 +2976,7 @@ hook.Add('DPP.LanguageChanged', 'DPP.Menu', function()
 	BuildPlayerProtectionPanel(DPP.SettingsClass.PPPanel)
 	About(DPP.SettingsClass.AboutPanel)
 	BuildFallbackList(DPP.SettingsClass.FallbackPanel)
+	BuildToolsPanel(DPP.SettingsClass.ToolsPanel)
 	
 	if IsValid(SettingsClass.ModelsGUI) then
 		SettingsClass.BuildModelsListGUI()

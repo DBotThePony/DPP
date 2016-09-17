@@ -109,8 +109,18 @@ function DPP.AssertArguments(funcName, args)
 	end
 end
 
+function DPP.ToString(obj)
+	if type(obj) == 'no value' then
+		return 'nil'
+	elseif type(obj) == 'nil' then
+		return nil
+	end
+	
+	return tostring(obj)
+end
+
 function DPP.IsEntity(obj)
-	return EntityTypes[type(obj)] or false
+	return EntityTypes[type(obj)] ~= nil
 end
 
 local RED = Color(255, 0, 0)
@@ -922,6 +932,13 @@ DPP.CSettings = {
 		nosend = true,
 		desc = 'Use smaller fonts (works only with DPP fonts)',
 	},
+
+	['draw_in_screenshots'] = {
+		type = 'bool',
+		value = '0',
+		nosend = true,
+		desc = 'Draw owner display in screenshots',
+	},
 }
 
 DPP.ProtectionModes = {
@@ -947,6 +964,8 @@ for k, v in pairs(DPP.Settings) do
 	v.bool = v.type == 'bool'
 	v.int = v.type == 'int'
 	v.float = v.type == 'float'
+	
+	hook.Run('DPP_ConVarRegistered', k, v)
 end
 
 for k, v in pairs(DPP.CSettings) do
@@ -1092,6 +1111,8 @@ function DPP.AddConVar(k, tab)
 		DPP.SVars[k] = CreateConVar('dpp_' .. k, tab.value, {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE})
 		cvars.AddChangeCallback('dpp_' .. k, DPP.ConVarChanged, 'DPP')
 	end
+	
+	hook.Run('DPP_ConVarRegistered', k, tab)
 end
 
 for k, v in pairs(DPP.BlockTypes) do
@@ -1126,8 +1147,10 @@ for k, v in pairs(DPP.BlockTypes) do
 		if not DPP.GetConVar('enable_blocked') then return false end
 		if not DPP.GetConVar('blacklist_' .. k) then return false end
 
-		if isentity(ent) then
-			ent = ent:GetClass()
+		if DPP.IsEntity(ent) then
+			ent = ent:GetClass():lower()
+		else
+			ent = ent:lower()
 		end
 
 		if not ply then
@@ -1151,8 +1174,10 @@ for k, v in pairs(DPP.BlockTypes) do
 	end
 
 	DPP['IsEvenBlocked' .. v] = function(ent)
-		if isentity(ent) then
-			ent = ent:GetClass()
+		if DPP.IsEntity(ent) then
+			ent = ent:GetClass():lower()
+		else
+			ent = ent:lower()
 		end
 
 		return DPP.BlockedEntities[k][ent] ~= nil
@@ -1173,16 +1198,20 @@ for k, v in pairs(DPP.WhitelistTypes) do
 		if not DPP.GetConVar('enable_whitelisted') then return false end
 		if not DPP.GetConVar('whitelist_' .. k) then return false end
 
-		if isentity(ent) then
-			ent = ent:GetClass()
+		if DPP.IsEntity(ent) then
+			ent = ent:GetClass():lower()
+		else
+			ent = ent:lower()
 		end
 
 		return DPP.WhitelistedEntities[k][ent] ~= nil
 	end
 
 	DPP['IsEvenWhitelisted' .. v] = function(ent)
-		if isentity(ent) then
-			ent = ent:GetClass()
+		if DPP.IsEntity(ent) then
+			ent = ent:GetClass():lower()
+		else
+			ent = ent:lower()
 		end
 
 		return DPP.WhitelistedEntities[k][ent] ~= nil
@@ -1224,8 +1253,14 @@ for k, v in pairs(DPP.RestrictTypes) do
 		local reply = false
 		local hit = false
 		local isAdmin
+		
+		if DPP.IsEntity(class) then
+			class = class:GetClass():lower()
+		else
+			class = class:lower()
+		end
 
-		if isentity(group) then
+		if DPP.IsEntity(group) then
 			isAdmin = group:IsAdmin()
 			group = group:GetUserGroup()
 			if isAdmin then
@@ -1260,6 +1295,12 @@ for k, v in pairs(DPP.RestrictTypes) do
 	end
 
 	DPP['IsEvenRestricted' .. v] = function(class)
+		if DPP.IsEntity(class) then
+			class = class:GetClass():lower()
+		else
+			class = class:lower()
+		end
+		
 		local T = DPP.RestrictedTypes[k][class]
 
 		if T then
