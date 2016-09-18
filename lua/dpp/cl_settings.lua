@@ -27,6 +27,7 @@ local Style = SettingsClass.Styles
 
 SettingsClass.Accesses = {
 	setvar = false,
+	toggleplayerprotect = false,
 }
 
 function FUNCTIONS.CheckBoxThink(self)
@@ -374,7 +375,7 @@ function Style.CheckBoxPaint(self, w, h)
 	surface.SetDrawColor(SettingsClass.Glow)
 	surface.DrawRect(0, 0, self.CurrentArrowMove, 30)
 	
-	if not SettingsClass.Accesses.setvar then
+	if self.AccessVar and not SettingsClass.Accesses[self.AccessVar] then
 		draw.NoTexture()
 		surface.SetDrawColor(Style.AccessDeniedColor)
 		
@@ -402,7 +403,7 @@ function Style.CheckBoxButtonPaint(self, w, h)
 	surface.SetDrawColor(isChecked and SettingsClass.Checked or SettingsClass.UnChecked)
 	surface.DrawRect(2, 2, w - 4, h - 4)
 	
-	if not SettingsClass.Accesses.setvar then
+	if self.AccessVar and not SettingsClass.Accesses[self.AccessVar] then
 		draw.NoTexture()
 		surface.SetDrawColor(Style.AccessDeniedColorCheckbox)
 		surface.DrawPoly{
@@ -604,6 +605,8 @@ function SettingsClass.ConVarCheckbox(Panel, idx)
 	checkbox.Button.DoClick = FUNCTIONS.CheckBoxDoClick
 	checkbox.Button.Think = FUNCTIONS.CheckBoxThink
 	checkbox:SetTooltip(P('scvar_base', P('cvar_' .. idx), idx))
+	checkbox.AccessVar = 'setvar'
+	checkbox.Button.AccessVar = 'setvar'
 	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 	SettingsClass.MakeCheckboxBetter(checkbox)
 end
@@ -1019,15 +1022,15 @@ local function BuildPlayerProtectionPanel(Panel)
 	DPP.SettingsClass.PPPanel = Panel
 
 	for k, v in ipairs(player.GetAll()) do
-		local lab = Label(v:Nick())
-		Panel:AddItem(lab)
-		lab:SetTextColor(SettingsClass.TextColor)
-		lab:SizeToContents()
+		local contents = vgui.Create('DListLayout', Panel)
+		contents:DockPadding(3, 3, 3, 3)
 
 		for mode, b in pairs(DPP.ProtectionModes) do
 			local ID = 'disable_' .. mode .. '_protection'
 			local desc = P('disable_protection_for', P('protmode_' .. mode), v:Nick())
-			local checkbox = Panel:CheckBox(desc)
+			local checkbox = vgui.Create('DCheckBoxLabel', contents)
+			contents:Add(checkbox)
+			checkbox:SetText(desc)
 			checkbox.Button.val = ID
 			checkbox.Button.Ply = v
 			checkbox.Button.Mode = mode
@@ -1037,7 +1040,23 @@ local function BuildPlayerProtectionPanel(Panel)
 
 			SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 			SettingsClass.MakeCheckboxBetter(checkbox)
+			checkbox.AccessVar = 'toggleplayerprotect'
+			checkbox.Button.AccessVar = 'toggleplayerprotect'
+			checkbox:Dock(TOP)
+			checkbox:DockMargin(0, 2, 0, 0)
 		end
+		
+		local collapse = vgui.Create('DCollapsibleCategory', Panel)
+		Panel:AddItem(collapse)
+		collapse:SetContents(contents)
+		collapse:SetLabel(v:Nick())
+		collapse:SetExpanded(false)
+		collapse.Header:SetContentAlignment(5)
+		
+		local Avatar = vgui.Create('DPP_Avatar', collapse.Header)
+		Avatar:Dock(LEFT)
+		Avatar:SetSize(20, 20)
+		Avatar:SetSteamID(v:SteamID(), 16)
 	end
 end
 
