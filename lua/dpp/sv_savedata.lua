@@ -401,11 +401,11 @@ for k, v in pairs(DPP.RestrictTypes) do
 		DPP['Restrict' .. v](class, groups, isWhite)
 
 		if not old then
-			DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_added', color_white, class, Gray, 'PHRASE:saveload_to', 'PHRASE:saveload_restricted', color_white, 'PHRASE:exclude_' .. k, Gray, 'PHRASE:saveload_blackwhite'}
+			DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_added', color_white, class, Gray, 'PHRASE:saveload_to', 'PHRASE:saveload_restricted', color_white, 'PHRASE:restricted_' .. k, Gray, 'PHRASE:saveload_blackwhite'}
 		else
 			DPP.DoEcho(IsValid(ply) and ply or 'PHRASE:Console', Gray, ' updated restricts for ', color_white, class)
 			if IsValid(ply) then
-				DPP.Notify(ply, '(SILENT) You updated restricts for ' .. class)
+				DPP.Notify(ply, 'PHRASE:restricts_updated||' .. class)
 			end
 		end
 	end
@@ -417,7 +417,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 		DPP['UnRestrict' .. v](class)
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_removed', color_white, args[1], Gray, 'PHRASE:saveload_from', 'PHRASE:saveload_restricted', color_white, 'PHRASE:exclude_' .. k, Gray, 'PHRASE:saveload_blackwhite'}
+		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_removed', color_white, args[1], Gray, 'PHRASE:saveload_from', 'PHRASE:saveload_restricted', color_white, 'PHRASE:restricted_' .. k, Gray, 'PHRASE:saveload_blackwhite'}
 	end
 end
 

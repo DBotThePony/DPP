@@ -473,6 +473,8 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	inspect_bodygroups = 'Entity bodygroup count: ',
 	inspect_table = 'Entity values in :GetTable() :',
 	inspect_noentity = 'Entity is not valid',
+	
+	restricts_updated = '(SILENT) You updated restricts for %s',
 }
 
 local ru = {
@@ -1180,6 +1182,37 @@ local ru = {
 	inspect_bodygroups = 'Количество изменяемых частей Энтити: ',
 	inspect_table = 'Количество записей в :GetTable() Энтити:',
 	inspect_noentity = 'Неверное Энтити',
+	
+	block_damage = 'Урон',
+	block_gravgun = 'Гравипушка',
+	block_physgun = 'Физпушка',
+	block_pickup = 'Подбираемые',
+	block_tool = 'Инструмент',
+	block_toolworld = 'Режим инструмента по миру',
+	block_use = 'Используемые',
+	cvar_prop_auto_ban_check_aabb = 'Проверять AABB размер',
+	cvar_prop_auto_ban_minsmaxs = 'Маскимальная дистанция между минимальным и максимальным векторами коробки столкновений',
+	exclude_damage = 'Урон',
+	exclude_gravgun = 'Гравипушка',
+	exclude_physgun = 'Физпушка',
+	exclude_pickup = 'Подбираемые',
+	exclude_property = 'Свойство',
+	exclude_propertyt = 'Тип Свойства',
+	exclude_tool = 'Инструмент',
+	exclude_toolmode = 'Режим инструмента',
+	exclude_use = 'Используемые',
+	priv_inspect = 'Может ли "опознать" энтити',
+	property_transferplayer = 'Передать энтити игроку...',
+	restricted_e2afunction = 'Expression 2 Advanced функция',
+	restricted_e2function = 'Expression 2 функция',
+	restricted_model = 'Модель',
+	restricted_npc = 'NPC',
+	restricted_pickup = 'Подбираемые',
+	restricted_property = 'Свойство',
+	restricted_sent = 'Энтити',
+	restricted_swep = 'Оружие',
+	restricted_vehicle = 'Транспорт',
+	restricts_updated = '(БЕЗ ОПОВЕЩЕНИЙ ДРУГИМ) Вы обновили ограничения на %s',
 }
 
 DPP.RegisterPhraseList('en', en)

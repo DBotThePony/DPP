@@ -1456,6 +1456,10 @@ for k, v in pairs(DPP.BlockTypes) do
 	DPP.RegisterPhrase('en', 'block_' .. k, v)
 end
 
+for k, v in pairs(DPP.RestrictTypes) do
+	DPP.RegisterPhrase('en', 'restricted_' .. k, v)
+end
+
 for k, v in pairs(DPP.WhitelistTypes) do
 	DPP.RegisterPhrase('en', 'exclude_' .. k, v)
 end
