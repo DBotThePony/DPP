@@ -1839,6 +1839,11 @@ end
 
 DPP.AssignConVarNetworkIDs()
 
+concommand.Add('dpp_restart', function(ply)
+	if SERVER and IsValid(ply) then return end
+	include('sh_init.lua')
+end)
+
 include('sh_access.lua')
 include('sh_hooks.lua')
 if SERVER then
