@@ -231,6 +231,28 @@ SettingsClass.FrameColor = SettingsClass.Background
 SettingsClass.TextColor = color_white
 SettingsClass.Chars = {'!', '@', '#', '$', '%', '^', '&', '*', '(', ')'}
 
+Style.ButtonStrip = {}
+Style.CheckBoxStrip = {}
+Style.StringStep = 40
+
+for x = 0, 10 do
+	table.insert(Style.CheckBoxStrip, {
+		{x = x * Style.StringStep, y = 0},
+		{x = x * Style.StringStep + Style.StringStep / 2, y = 0},
+		{x = x * Style.StringStep, y = 20},
+		{x = x * Style.StringStep - Style.StringStep / 2, y = 20},
+	})
+end
+
+for x = 0, 15 do
+	table.insert(Style.ButtonStrip, {
+		{x = x * Style.StringStep, y = 0},
+		{x = x * Style.StringStep + Style.StringStep / 2, y = 0},
+		{x = x * Style.StringStep, y = 30},
+		{x = x * Style.StringStep - Style.StringStep / 2, y = 30},
+	})
+end
+
 function Style.ScramblingCharsThink(self)
 	if DPP.PlayerConVar(nil, 'no_scrambling_text') then return end
 	local isHovered = IsValid(hoverPanel) and hoverPanel:IsHovered() or IsValid(hoverPanel2) and hoverPanel2:IsHovered() or self:IsHovered()
@@ -320,11 +342,35 @@ function Style.NeonButtonPaint(self, w, h)
 	end
 end
 
+function Style.AccessButtonPaint(self, w, h)
+	if self.AccessVar and not SettingsClass.Accesses[self.AccessVar] then
+		draw.NoTexture()
+		surface.SetDrawColor(Style.AccessDeniedColor)
+		
+		for k, v in ipairs(Style.ButtonStrip) do
+			surface.DrawPoly(v)
+		end
+	end
+	
+	if self.accessPaint then
+		self.accessPaint(self, w, h)
+	end
+end
+
+function SettingsClass.SetButtonAccess(panel, accessName)
+	panel.accessPaint = panel.Paint
+	panel.Paint = Style.AccessButtonPaint
+	panel.AccessVar = accessName
+	return panel
+end
+
 function SettingsClass.ApplyButtonStyle(panel)
 	panel.Paint = Style.NeonButtonPaint
 	panel.Think = Style.ScramblingCharsThinkButton
 
-	timer.Simple(0, function() if IsValid(panel) then panel:SetTextColor(Color(255, 255, 255)) end end)
+	timer.Simple(0, function() if IsValid(panel) then panel:SetTextColor(color_white) end end)
+	
+	return panel
 end
 
 function Style.FramePaint(self, w, h)
@@ -354,18 +400,6 @@ function Style.CheckBoxThink(self)
 	end
 
 	if self.oldThink then self.oldThink() end
-end
-
-Style.CheckBoxStrip = {}
-Style.StringStep = 40
-
-for x = 0, 10 do
-	table.insert(Style.CheckBoxStrip, {
-		{x = x * Style.StringStep, y = 0},
-		{x = x * Style.StringStep + Style.StringStep / 2, y = 0},
-		{x = x * Style.StringStep, y = 20},
-		{x = x * Style.StringStep - Style.StringStep / 2, y = 20},
-	})
 end
 
 Style.AccessDeniedColor = Color(200, 100, 100, 150)
@@ -844,6 +878,14 @@ local function BuildAntispamPanel(Panel)
 	SettingsClass.ConVarSlider(Panel, 'antispam_toolgun')
 end
 
+SettingsClass.Accesses.clearmap = false
+SettingsClass.Accesses.freezeall = false
+SettingsClass.Accesses.freezephys = false
+SettingsClass.Accesses.cleardisconnected = false
+SettingsClass.Accesses.unfreezebyuid = false
+SettingsClass.Accesses.freezebyuid = false
+SettingsClass.Accesses.clearbyuid = false
+
 local function BuildPlayerList(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
@@ -859,10 +901,17 @@ local function BuildPlayerList(Panel)
 	Lab:SizeToContents()
 	Lab:SetTooltip(TopText)
 
-	SettingsClass.ApplyButtonStyle(Panel:Button(P('delete_ents'), 'dpp_clearmap'))
-	SettingsClass.ApplyButtonStyle(Panel:Button(P('freeze_all'), 'dpp_freezeall'))
-	SettingsClass.ApplyButtonStyle(Panel:Button(P('freeze_all_phys'), 'dpp_freezephys'))
-	SettingsClass.ApplyButtonStyle(Panel:Button(P('delete_disconnected'), 'dpp_cleardisconnected'))
+	local button = SettingsClass.ApplyButtonStyle(Panel:Button(P('delete_ents'), 'dpp_clearmap'))
+	SettingsClass.SetButtonAccess(button, 'clearmap')
+	
+	local button = SettingsClass.ApplyButtonStyle(Panel:Button(P('freeze_all'), 'dpp_freezeall'))
+	SettingsClass.SetButtonAccess(button, 'freezeall')
+	
+	local button = SettingsClass.ApplyButtonStyle(Panel:Button(P('freeze_all_phys'), 'dpp_freezephys'))
+	SettingsClass.SetButtonAccess(button, 'freezephys')
+	
+	local button = SettingsClass.ApplyButtonStyle(Panel:Button(P('delete_disconnected'), 'dpp_cleardisconnected'))
+	SettingsClass.SetButtonAccess(button, 'cleardisconnected')
 
 	for k, v in pairs(DPP.GetPlayerList()) do
 		local pnl = vgui.Create('EditablePanel')
@@ -880,6 +929,7 @@ local function BuildPlayerList(Panel)
 		Button:SetText(P('action_unfreeze'))
 		Button:SetConsoleCommand('dpp_unfreezebyuid', v.UID)
 		SettingsClass.ApplyButtonStyle(Button)
+		SettingsClass.SetButtonAccess(Button, 'unfreezebyuid')
 
 		local Button = vgui.Create('DButton', pnl)
 		Button:Dock(RIGHT)
@@ -887,6 +937,7 @@ local function BuildPlayerList(Panel)
 		Button:SetText(P('action_freeze'))
 		Button:SetConsoleCommand('dpp_freezebyuid', v.UID)
 		SettingsClass.ApplyButtonStyle(Button)
+		SettingsClass.SetButtonAccess(Button, 'freezebyuid')
 
 		local Button = vgui.Create('DButton', pnl)
 		Button:Dock(RIGHT)
@@ -894,6 +945,7 @@ local function BuildPlayerList(Panel)
 		Button:SetText(P('action_delete'))
 		Button:SetConsoleCommand('dpp_clearbyuid', v.UID)
 		SettingsClass.ApplyButtonStyle(Button)
+		SettingsClass.SetButtonAccess(Button, 'clearbyuid')
 	end
 end
 
@@ -1766,15 +1818,19 @@ local function BuildCLimitsList(Panel)
 	ConVarCheckbox(Panel, 'const_limits_enable')
 end
 
+SettingsClass.Accesses.cleardecals = false
+SettingsClass.Accesses.entcheck = false
+SettingsClass.Accesses.inspect = false
+
 local function BuildToolsPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
 	SettingsClass.SetupBackColor(Panel)
 	DPP.SettingsClass.ToolsPanel = Panel
 	
-	SettingsClass.ApplyButtonStyle(Panel:Button(P('clear_decals'), 'dpp_cleardecals'))
-	SettingsClass.ApplyButtonStyle(Panel:Button(P('report_ents'), 'dpp_entcheck'))
-	SettingsClass.ApplyButtonStyle(Panel:Button(P('inspect_button'), 'dpp_inspect'))
+	SettingsClass.SetButtonAccess(SettingsClass.ApplyButtonStyle(Panel:Button(P('clear_decals'), 'dpp_cleardecals')), 'cleardecals')
+	SettingsClass.SetButtonAccess(SettingsClass.ApplyButtonStyle(Panel:Button(P('report_ents'), 'dpp_entcheck')), 'entcheck')
+	SettingsClass.SetButtonAccess(SettingsClass.ApplyButtonStyle(Panel:Button(P('inspect_button'), 'dpp_inspect')), 'inspect')
 end
 
 local PanelsFunctions = {}

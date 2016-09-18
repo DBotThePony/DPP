@@ -52,6 +52,10 @@ function DPP.HaveAccess(ply, id, callback, ...)
 	local args = {...}
 
 	local access = DPP.Access[id]
+	
+	if not access then
+		DPP.ThrowError('Invalid access ID: ' .. id, 1, true)
+	end
 
 	local function callbackWrapper(result, reason)
 		if result == nil then --Admin mod got confused
@@ -110,6 +114,7 @@ local default = {
 	transfertoplayer_all = 'user',
 	entcheck = 'admin',
 	inspect = 'admin',
+	freezephys = 'admin',
 
 	--Database manipulate commands
 	addblockedmodel = 'superadmin',
@@ -150,6 +155,7 @@ local default_desc = {
 	transfertoplayer_all = 'Can transfer all props to other players',
 	entcheck = 'Can request entity report',
 	inspect = 'Can player "inspect" entity',
+	freezephys = 'Can freeze all valid physics objects',
 
 	--Database manipulate commands
 	addblockedmodel = 'Can add blocked model',
