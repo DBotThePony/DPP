@@ -22,6 +22,9 @@ local P = DPP.GetPhrase
 local FUNCTIONS = {}
 DPP.SettingsClass.FUNCTIONS = FUNCTIONS
 
+SettingsClass.Styles = SettingsClass.Styles or {}
+local Style = SettingsClass.Styles
+
 SettingsClass.Accesses = {
 	setvar = false,
 }
@@ -72,11 +75,13 @@ function DPP.OpenFriendEditMenu(steamid)
 		local p = frame:Add('DCheckBoxLabel')
 		Panels[k] = p
 		p:Dock(TOP)
-		p:SetText(string.gsub(k, '^.', string.upper) .. ' buddy')
+		p:SetText(P('friend_buddy', k:gsub('^.', string.upper)))
 		p:SetChecked(v)
 		p.Type = k
 
 		SettingsClass.MakeCheckboxBetter(p)
+		p.Button.Paint = Style.CheckBoxButtonPaintClient
+		p.Paint = Style.CheckBoxPaintClient
 		SettingsClass.AddScramblingChars(p.Label, p, p.Button)
 	end
 
@@ -107,8 +112,7 @@ function DPP.OpenFriendEditMenu(steamid)
 		frame:Close()
 	end
 
-	frame:SetHeight(height)
-	frame:SetWidth(200)
+	frame:SetSize(300, height)
 	frame:Center()
 	frame:MakePopup()
 end
@@ -132,11 +136,13 @@ function DPP.OpenShareMenu(ent)
 		local p = frame:Add('DCheckBoxLabel')
 		Panels[k] = p
 		p:Dock(TOP)
-		p:SetText(v .. ' share')
+		p:SetText(P('share_type', v))
 		p:SetChecked(t[k])
 		p.Type = k
 
 		SettingsClass.MakeCheckboxBetter(p)
+		p.Button.Paint = Style.CheckBoxButtonPaintClient
+		p.Paint = Style.CheckBoxPaintClient
 		SettingsClass.AddScramblingChars(p.Label, p, p.Button)
 	end
 
@@ -214,9 +220,6 @@ hook.Add('Think', 'DPP.LazyListPopulate', function()
 		end
 	end
 end)
-
-SettingsClass.Styles = SettingsClass.Styles or {}
-local Style = SettingsClass.Styles
 
 SettingsClass.Background = Color(65, 65, 65)
 SettingsClass.Glow = Color(125, 125, 125)
@@ -549,6 +552,7 @@ local ClientVars = {
 	'disable_toolgun_protection',
 	'disable_use_protection',
 	'disable_vehicle_protection',
+	'disable_pickup_protection',
 }
 
 SettingsClass.ClientVars2 = {
@@ -1014,7 +1018,7 @@ local function BuildPlayerProtectionPanel(Panel)
 
 	DPP.SettingsClass.PPPanel = Panel
 
-	for k, v in pairs(player.GetAll()) do
+	for k, v in ipairs(player.GetAll()) do
 		local lab = Label(v:Nick())
 		Panel:AddItem(lab)
 		lab:SetTextColor(SettingsClass.TextColor)
@@ -1022,7 +1026,7 @@ local function BuildPlayerProtectionPanel(Panel)
 
 		for mode, b in pairs(DPP.ProtectionModes) do
 			local ID = 'disable_' .. mode .. '_protection'
-			local desc = P('disable_protection_for', mode, v:Nick())
+			local desc = P('disable_protection_for', P('protmode_' .. mode), v:Nick())
 			local checkbox = Panel:CheckBox(desc)
 			checkbox.Button.val = ID
 			checkbox.Button.Ply = v

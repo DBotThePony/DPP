@@ -768,6 +768,8 @@ DPP.ShareTypes = {
 	physgun = 'Physgun',
 	gravgun = 'Gravgun',
 	damage = 'Damage',
+	vehicle = 'Vehicle',
+	pickup = 'Pickup',
 }
 
 for k, v in pairs(DPP.ShareTypes) do
@@ -942,12 +944,13 @@ DPP.CSettings = {
 }
 
 DPP.ProtectionModes = {
-	['toolgun'] = true, 
-	['vehicle'] = true, 
-	['use'] = true, 
-	['physgun'] = true, 
-	['damage'] = true, 
-	['gravgun'] = true
+	toolgun = 'Toolgun',
+	vehicle = 'Vehicle',
+	use = 'Use',
+	physgun = 'Physgun',
+	damage = 'Damage',
+	pickup = 'Pickup',
+	gravgun = 'Gravgun'
 }
 
 for k, v in pairs(DPP.ProtectionModes) do
@@ -1456,6 +1459,10 @@ for k, v in pairs(DPP.CSettings) do
 	DPP.RegisterPhrase('en', 'ccvar_' .. k, v.desc)
 end
 
+for k, v in pairs(DPP.ProtectionModes) do
+	DPP.RegisterPhrase('en', 'protmode_' .. k, v)
+end
+
 for k, v in pairs(DPP.BlockTypes) do
 	DPP.RegisterPhrase('en', 'block_' .. k, v)
 end
@@ -1616,7 +1623,7 @@ function DPP.CanTouch(ply, ent, mode)
 	end
 
 	for k, owner in pairs(constrained) do
-		if isstring(owner) then
+		if type(owner) == 'string' then
 			if owner == dString then
 				if isShared then
 					if mode then
@@ -1648,7 +1655,7 @@ function DPP.CanTouch(ply, ent, mode)
 			end
 		end
 
-		if not isentity(owner) then continue end --???
+		if not DPP.IsEntity(owner) then continue end --???
 
 		if IsValid(owner) and owner:GetClass() == 'gmod_anchor' then continue end
 

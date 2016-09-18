@@ -481,6 +481,9 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	cust_display_can = 'Color when can touch',
 	cust_display_cant = 'Color when can not touch',
 	display_customization_position = 'Owner display position',
+	
+	friend_buddy = 'Friend in %q protection',
+	share_type = 'Share in %q protection module',
 }
 
 local ru = {
@@ -1254,6 +1257,18 @@ local ru = {
 	cust_display_cant = 'Цвет текста когда нельзя трогать',
 	display_customization_position = 'Позиция панели',
 	font = 'Шрифт',
+	
+	ccvar_disable_pickup_protection = 'Отключить защиту для подбираемых моих энтити',
+	friend_buddy = 'Является другом в режиме %q',
+	protmode_damage = 'Урон',
+	protmode_gravgun = 'Гравипушка',
+	protmode_physgun = 'Физпушка',
+	protmode_pickup = 'Подбираемые',
+	protmode_toolgun = 'Инструменты',
+	protmode_use = 'Используемые',
+	protmode_vehicle = 'Транспорт',
+	share_type = 'Зашарить в режиме %q',
+
 }
 
 DPP.RegisterPhraseList('en', en)
