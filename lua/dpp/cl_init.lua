@@ -38,6 +38,18 @@ local POSITION_Y = CreateConVar('dpp_position_Y', 50, FCVAR_ARCHIVE, 'Y coordina
 language.Add('Undo_TransferedProp', 'Undo DPP Transfered Entity')
 language.Add('Undo_Owned_Prop', 'Undo DPP Owned Entity')
 
+DPP.FriendsSQLTable = [[
+	CREATE TABLE IF NOT EXISTS dpp_friends
+	(
+		STEAMID VARCHAR(32) NOT NULL,
+		NICKNAME VARCHAR(64) NOT NULL,
+		MODES VARCHAR(255) NOT NULL,
+		PRIMARY KEY (STEAMID)
+	)
+]]
+
+sql.Query(DPP.FriendsSQLTable)
+
 DPP.ClientFriends = {}
 DPP.ActiveFriends = {}
 DPP.FriendsCPPI = {}
@@ -123,37 +135,66 @@ end
 
 function DPP.LoadFriends()
 	local FILE = 'dpp/friends.txt'
-	local content = file.Read(FILE, 'DATA')
-
-	local out
-	if not content or content == '' then
-		out = {}
-		file.Write(FILE, util.TableToJSON(out))
-	else
-		out = util.JSONToTable(content)
-		if not out then --Corrupt
-			out = {}
-			file.Write(FILE, util.TableToJSON(out))
+	local out = {}
+	
+	if file.Exists(FILE, 'DATA') then
+		local content = file.Read(FILE, 'DATA')
+		local parse = util.JSONToTable(content)
+		
+		if parse then
+			for k, v in pairs(parse) do
+				DPP.SaveFriendData(k, v)
+			end
+		end
+		
+		file.Delete(FILE)
+	end
+	
+	local reply = sql.Query('SELECT * FROM dpp_friends')
+	
+	for i, row in ipairs(reply or {}) do
+		out[row.STEAMID] = {
+			nick = row.NICKNAME,
+		}
+		
+		local decode = util.JSONToTable(row.MODES)
+		
+		if decode then
+			table.Merge(out[row.STEAMID], decode)
 		end
 	end
-
+	
 	DPP.ClientFriends = out
-
+	
 	for k, v in pairs(out) do
 		DPP.CheckFriendArgs(v)
 	end
-
+	
 	DPP.Message(DPP.GetPhrase('friends_loaded'))
 	timer.Simple(0, DPP.RefreshFriends)
+	
+	return out
 end
 
 timer.Simple(0, DPP.LoadFriends)
 
 function DPP.SaveFriends()
-	local FILE = 'dpp/friends.txt'
-	local contents = util.TableToJSON(DPP.ClientFriends, true)
-	file.Write(FILE, contents)
-	DPP.Message(DPP.GetPhrase('friends_saved'))
+	sql.Query('DELETE FROM dpp_friends')
+	
+	for k, v in pairs(DPP.ClientFriends) do
+		DPP.SaveFriendData(k, v)
+	end
+end
+
+function DPP.SaveFriendData(steamid, tab)
+	local validModes = table.Copy(tab)
+	validModes.nick = nil
+	
+	sql.Query(string.format('REPLACE INTO dpp_friends (STEAMID, NICKNAME, MODES) VALUES (%s, %s, %s)', SQLStr(steamid), SQLStr(tab.nick or 'unknown'), SQLStr(util.TableToJSON(validModes))))
+end
+
+function DPP.SaveFriend(steamid)
+	DPP.SaveFriendData(steamid, DPP.ClientFriends[steamid])
 end
 
 function DPP.SendFriends()
@@ -194,7 +235,7 @@ function DPP.AddFriend(ply, physgun, gravgun, toolgun, use, vehicle, damage, pic
 
 	DPP.RecalculateCPPIFriendTable(LocalPlayer())
 	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
-	DPP.SaveFriends()
+	DPP.SaveFriend(steamid)
 	DPP.SendFriends()
 
 	hook.Run('DPP.FriendsChanged')
@@ -231,7 +272,7 @@ function DPP.AddFriendBySteamID(steamid, physgun, gravgun, toolgun, use, vehicle
 
 	DPP.RecalculateCPPIFriendTable(LocalPlayer())
 	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
-	DPP.SaveFriends()
+	DPP.SaveFriend(steamid)
 	DPP.SendFriends()
 
 	hook.Run('DPP.FriendsChanged')
@@ -250,7 +291,7 @@ function DPP.RemoveFriend(ply)
 
 	DPP.RecalculateCPPIFriendTable(LocalPlayer())
 	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
-	DPP.SaveFriends()
+	sql.Query(string.format('DELETE FROM dpp_friends WHERE STEAMID = %s', SQLStr(steamid)))
 	DPP.SendFriends()
 
 	hook.Run('DPP.FriendsChanged')
@@ -268,7 +309,7 @@ function DPP.RemoveFriendBySteamID(steamid)
 
 	DPP.RecalculateCPPIFriendTable(LocalPlayer())
 	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
-	DPP.SaveFriends()
+	sql.Query(string.format('DELETE FROM dpp_friends WHERE STEAMID = %s', SQLStr(steamid)))
 	DPP.SendFriends()
 
 	hook.Run('DPP.FriendsChanged')
