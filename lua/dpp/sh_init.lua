@@ -1452,6 +1452,10 @@ for k, v in pairs(DPP.Settings) do
 	DPP.RegisterPhrase('en', 'cvar_' .. k, v.desc)
 end
 
+for k, v in pairs(DPP.CSettings) do
+	DPP.RegisterPhrase('en', 'ccvar_' .. k, v.desc)
+end
+
 for k, v in pairs(DPP.BlockTypes) do
 	DPP.RegisterPhrase('en', 'block_' .. k, v)
 end

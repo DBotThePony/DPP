@@ -475,6 +475,12 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	inspect_noentity = 'Entity is not valid',
 	
 	restricts_updated = '(SILENT) You updated restricts for %s',
+	
+	font = 'Font',
+	cust_display_background = 'Owner display background color',
+	cust_display_can = 'Color when can touch',
+	cust_display_cant = 'Color when can not touch',
+	display_customization_position = 'Owner display position',
 }
 
 local ru = {
@@ -1213,6 +1219,41 @@ local ru = {
 	restricted_swep = 'Оружие',
 	restricted_vehicle = 'Транспорт',
 	restricts_updated = '(БЕЗ ОПОВЕЩЕНИЙ ДРУГИМ) Вы обновили ограничения на %s',
+	
+	ccvar_disable_damage_protection = 'Отключить защиту от урона для моих энтити',
+	ccvar_disable_gravgun_protection = 'Отключить защиту гравипушки для моих энтити',
+	ccvar_disable_physgun_protection = 'Отключить защиту физпушки для моих энтити',
+	ccvar_disable_toolgun_protection = 'Отключить защиту от инструментов для моих энтити',
+	ccvar_disable_use_protection = 'Отключить защиту используемых для моих энтити',
+	ccvar_disable_vehicle_protection = 'Отключить защиту моего транспорта ',
+	ccvar_display_disconnected = 'Отображать отключился ли владелец энтити',
+	ccvar_display_entityclass = 'Отображать класс энтити',
+	ccvar_display_entityclass2 = 'Отображть сетевой индетификатор и сетевой класс энтити',
+	ccvar_display_entityname = 'Отображать имя энтити',
+	ccvar_display_grabs = 'Отображать, можно ли присвоить энтити',
+	ccvar_display_owner = 'Отображать владельца энтити',
+	ccvar_display_reason = 'Отображать причину возможности трогать энтити',
+	ccvar_draw_in_screenshots = 'Отображать владельца на скриншотах',
+	ccvar_font = 'Шрифт (1 для стандартного)',
+	ccvar_hide_hud = 'Отключить отображение информации',
+	ccvar_no_block_options = 'Отключить опции быстрого блокирования в меню свойств',
+	ccvar_no_hud_in_vehicle = 'Отключить отображение пока в транспорте',
+	ccvar_no_load_messages = 'Я не хочу видеть надписи про загрузку листов',
+	ccvar_no_physgun_display = 'Отключить красивое отображения информации на физпушке',
+	ccvar_no_player_touch = 'Я не хочу трогать других игроков (если администратор)',
+	ccvar_no_restrict_options = 'Отключить опции быстрого ограничения в меню свойств',
+	ccvar_no_scrambling_text = 'Отключить перемешивающийся текст',
+	ccvar_no_toolgun_display = 'Отключить красивое отображения информации на инструменте',
+	ccvar_no_touch = 'Я не хочу трогать энтити владелец которых - я',
+	ccvar_no_touch_other = 'Я не хочу трогать энтити других игроков',
+	ccvar_no_touch_world = 'Я не хочу трогать энтити принадлежащие карте',
+	ccvar_simple_hud = 'Упрощённая панель владельца',
+	ccvar_smaller_fonts = 'Использовать мелкие шрифты (работает только с шрифтами DPP)',
+	cust_display_background = 'Фон информационной панели',
+	cust_display_can = 'Цвет текста когда можно трогать',
+	cust_display_cant = 'Цвет текста когда нельзя трогать',
+	display_customization_position = 'Позиция панели',
+	font = 'Шрифт',
 }
 
 DPP.RegisterPhraseList('en', en)

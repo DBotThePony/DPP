@@ -665,9 +665,9 @@ SettingsClass.MixerColors = {
 }
 
 SettingsClass.MixerCVars = {
-	{'dpp_color_background', 'Owner display background color'},
-	{'dpp_color_cantouch', 'Color when can touch'},
-	{'dpp_color_cannottouch', 'Color when can not touch'},
+	{'dpp_color_background', 'cust_display_background'},
+	{'dpp_color_cantouch', 'cust_display_can'},
+	{'dpp_color_cannottouch', 'cust_display_cant'},
 }
 
 local POSITION_X = CreateConVar('dpp_position_x', 0, FCVAR_ARCHIVE, 'X coordinate (percent) on screen for owner display')
@@ -677,13 +677,13 @@ function SettingsClass.ClientConVarCheckbox(Panel, idx)
 	local v = DPP.CSettings[idx]
 	local val = DPP.LocalConVar(idx)
 
-	local checkbox = Panel:CheckBox(v.desc)
+	local checkbox = Panel:CheckBox(P('ccvar_' .. idx))
 	checkbox:SetChecked(val)
 	checkbox.Button.LastVal = val
 	checkbox.Button.val = idx
 	checkbox.Button.DoClick = FUNCTIONS.CCheckBoxDoClick
 	checkbox.Button.Think = FUNCTIONS.CCheckBoxThink
-	checkbox:SetTooltip(P('scvar_base', v.desc, idx))
+	checkbox:SetTooltip(P('scvar_base', P('ccvar_' .. idx), idx))
 	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 	SettingsClass.MakeCheckboxBetter(checkbox)
 	checkbox.Paint = Style.CheckBoxPaintClient
@@ -706,7 +706,7 @@ local function BuildCVarPanel(Panel)
 		SettingsClass.ClientConVarCheckbox(Panel, v)
 	end
 
-	local FontBox, Lab = Panel:ComboBox('Font')
+	local FontBox, Lab = Panel:ComboBox(P('font'))
 	for k, v in pairs(DPP.Fonts) do
 		FontBox:AddChoice(v.name)
 	end
@@ -741,7 +741,7 @@ local function BuildCVarPanel(Panel)
 
 	for i, data in ipairs(SettingsClass.MixerCVars) do
 		local lab = vgui.Create('DLabel', Panel)
-		local text = data[2]
+		local text = P(data[2])
 		Panel:AddItem(lab)
 		lab:SetText(text)
 		lab:SetTextColor(SettingsClass.TextColor)
@@ -757,9 +757,18 @@ local function BuildCVarPanel(Panel)
 			mixer['SetConVar' .. k](mixer, data[1] .. '_' .. v)
 		end
 	end
+	
+	local lab = vgui.Create('DLabel', Panel)
+	local text = P('display_customization_position')
+	Panel:AddItem(lab)
+	lab:SetText(text)
+	lab:SetTextColor(SettingsClass.TextColor)
+	lab:SizeToContents()
+	lab:SetTooltip(text)
 
 	local Slider = Panel:NumSlider(P('display_x'), nil, 0, 100)
 	SettingsClass.ApplySliderStyle(Slider)
+	Slider.Paint = Slider.oldPaint
 	Slider:SetTooltip(P('display_x'))
 	Slider:SetValue(POSITION_X:GetFloat())
 	Slider.OnValueChanged = function()
@@ -768,6 +777,7 @@ local function BuildCVarPanel(Panel)
 
 	local Slider = Panel:NumSlider(P('display_y'), nil, 0, 100)
 	SettingsClass.ApplySliderStyle(Slider)
+	Slider.Paint = Slider.oldPaint
 	Slider:SetTooltip(P('display_y'))
 	Slider:SetValue(POSITION_Y:GetFloat())
 	Slider.OnValueChanged = function()
