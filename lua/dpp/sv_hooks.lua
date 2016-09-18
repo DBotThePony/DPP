@@ -43,7 +43,7 @@ local function LogSpawn(ply, ent, type)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	logFunc(ply, SPACE, GRAY, 'PHRASE:log_spawned', color_white, SPACE2, ent:GetClass(), GRAY, string.format(' <%s | %s> ', tostring(ent), ent:GetModel()), type or 'PHRASE:log_not_avaliable')
+	logFunc(ply, SPACE, GRAY, 'PHRASE:log_spawned', color_white, SPACE2, ent:GetClass(), GRAY, string.format(' <%s | %s> ', tostring(ent), ent:GetModel() or '<no model>'), type or 'PHRASE:log_not_avaliable')
 end
 
 local function LogSpawnC(ply, class, type, model)
@@ -64,7 +64,7 @@ local function LogTryPost(ply, type, ent)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	logFunc(ply, SPACE, RED, 'PHRASE:log_tried', GRAY, 'PHRASE:log_to_spawn', SPACE2, string.format(' %s <%s | %s> ', ent:GetClass(), tostring(ent), ent:GetModel()), type or 'PHRASE:log_not_avaliable')
+	logFunc(ply, SPACE, RED, 'PHRASE:log_tried', GRAY, 'PHRASE:log_to_spawn', SPACE2, string.format(' %s <%s | %s> ', ent:GetClass(), tostring(ent), ent:GetModel() or '<no model>'), type or 'PHRASE:log_not_avaliable')
 end
 
 --god
@@ -214,7 +214,7 @@ DPP.oldCleanupAdd = DPP.oldCleanupAdd or cleanup.Add
 DPP.oldUndoAddEntity = DPP.oldUndoAddEntity or undo.AddEntity
 DPP.oldUndoFinish = DPP.oldUndoFinish or undo.Finish
 
-local function CheckBefore(ply, ent, forceVerbose, ignoreAntispam)
+local function CheckAfter(ply, ent, forceVerbose, ignoreAntispam)
 	local hide = not forceVerbose and not DPP.GetConVar('verbose_logging')
 	if not ent then return end
 	if IsValid(ent) and not DPP.IsOwned(ent) or not IsValid(DPP.GetOwner(ent)) then --Wow, we spawned entity without calling spawning hook!
@@ -237,7 +237,7 @@ local function CheckBefore(ply, ent, forceVerbose, ignoreAntispam)
 	end
 end
 
-SpawnFunctions.CheckBefore = CheckBefore
+SpawnFunctions.CheckAfter = CheckAfter
 
 local function undo_Finish(name)
 	local name, val = debug.getupvalue(DPP.oldUndoFinish, 1)
@@ -249,7 +249,7 @@ local function undo_Finish(name)
 				if not IsValid(v) then continue end
 				if DPP.IsOwned(v) then continue end
 
-				CheckBefore(owner, v, true) --HOLY FUCK
+				CheckAfter(owner, v, true) --HOLY FUCK
 			end
 		end
 	end
@@ -284,7 +284,7 @@ local function cleanup_Add(ply, type, ent)
 
 	if IsValid(ent) then
 		if not DPP.IsOwned(ent) then
-			CheckBefore(ply, ent)
+			CheckAfter(ply, ent)
 			PENDING = nil
 			PENDING_PLY = nil
 		end
@@ -799,13 +799,13 @@ function PostEntityCreated(ent, Timestamp)
 				if t1 == Timestamp and not IsValid(o1) and IsValid(o2) then --Because we are running on next frame
 					o1 = o2
 					if DPP.GetGhosted(ent2) then DPP.SetGhosted(ent1, true) end
-					CheckBefore(o2, ent1, false, spawn_checks_noaspam)
+					CheckAfter(o2, ent1, false, spawn_checks_noaspam)
 				end
 
 				if t2 == Timestamp and not IsValid(o2) and IsValid(o1) then
 					o2 = o1
 					if DPP.GetGhosted(ent1) then DPP.SetGhosted(ent2, true) end
-					CheckBefore(o1, ent2, false, spawn_checks_noaspam)
+					CheckAfter(o1, ent2, false, spawn_checks_noaspam)
 				end
 			end
 
@@ -848,7 +848,7 @@ function PostEntityCreated(ent, Timestamp)
 
 				if not shouldRemove then
 					if iGhost then DPP.SetGhosted(v, true) end
-					CheckBefore(get, v, false, spawn_checks_noaspam)
+					CheckAfter(get, v, false, spawn_checks_noaspam)
 				else
 					SafeRemoveEntity(v)
 				end
@@ -887,7 +887,7 @@ function PostEntityCreated(ent, Timestamp)
 			end
 
 			if IsValid(owner) and owner:IsPlayer() then
-				CheckBefore(owner, ent, false, spawn_checks_noaspam)
+				CheckAfter(owner, ent, false, spawn_checks_noaspam)
 				--DPP.SetOwner(ent, owner)
 			end
 		end
@@ -897,7 +897,7 @@ function PostEntityCreated(ent, Timestamp)
 
 			local owner = ent:GetPlayer()
 			if IsValid(owner) then
-				CheckBefore(owner, ent, false, spawn_checks_noaspam)
+				CheckAfter(owner, ent, false, spawn_checks_noaspam)
 			end
 
 			ent.SetPlayer = DPP_ReplacedSetPlayer
@@ -913,7 +913,7 @@ function DPP.SetPlayerMeta(self, ply)
 
 	DPP.AssertArguments('SetPlayer', {{self, 'AnyEntity'}, {ply, 'Player'}})
 
-	CheckBefore(ply, self)
+	CheckAfter(ply, self)
 
 	self:SetVar("Founder", ply)
 	self:SetVar("FounderIndex", ply:UniqueID())

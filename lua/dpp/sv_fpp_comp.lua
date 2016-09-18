@@ -60,7 +60,7 @@ function FPP.UnGhost(ply, ent) --phys arg is ignored
 end
 
 function FPP.AntiSpam.CreateEntity(ply, ent, IsDuplicate)
-	DPP.SpawnFunctions.CheckBefore(ply, ent, nil, IsDuplicate)
+	DPP.SpawnFunctions.CheckAfter(ply, ent, nil, IsDuplicate)
 	DPP.SetOwner(ent, ply)
 end
 
