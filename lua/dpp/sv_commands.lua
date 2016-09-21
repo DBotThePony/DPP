@@ -42,23 +42,23 @@ DPP.Commands = {
 			v:ConCommand('r_cleardecals')
 			v:SendLua('game.RemoveRagdolls()')
 		end
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_decals'}
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#com_decals'}
 	end,
 
 	toggleplayerprotect = function(ply, cmd, args)
-		if not args[1] then return false, {'PHRASE:com_invalid_target'}, NOTIFY_ERROR end
-		if not args[2] then return false, {'PHRASE:com_invalid_mode'}, NOTIFY_ERROR end
-		if not args[3] then return false, {'PHRASE:com_invalid_status'}, NOTIFY_ERROR end
+		if not args[1] then return false, {'#com_invalid_target'}, NOTIFY_ERROR end
+		if not args[2] then return false, {'#com_invalid_mode'}, NOTIFY_ERROR end
+		if not args[3] then return false, {'#com_invalid_status'}, NOTIFY_ERROR end
 
 		local target = Player(args[1])
 		local mode = args[2]
 		local status = tobool(args[3])
 
-		if not IsValid(target) then return false, {'PHRASE:com_invalid_target'}, NOTIFY_ERROR end
-		if not DPP.ProtectionModes[mode] then return false, {'PHRASE:com_invalid_pmode'}, NOTIFY_ERROR end
+		if not IsValid(target) then return false, {'#com_invalid_target'}, NOTIFY_ERROR end
+		if not DPP.ProtectionModes[mode] then return false, {'#com_invalid_pmode'}, NOTIFY_ERROR end
 
 		DPP.SetProtectionDisabled(target, mode, status)
-		local f = {IsValid(ply) and ply or 'PHRASE:Console', Gray, (status and ' disabled ' or ' enabled '), 'protection mode ' .. mode .. ' for ', target}
+		local f = {IsValid(ply) and ply or '#Console', Gray, (status and ' disabled ' or ' enabled '), 'protection mode ' .. mode .. ' for ', target}
 		DPP.DoEcho(f)
 
 		return true
@@ -66,7 +66,7 @@ DPP.Commands = {
 
 	cleardisconnected = function(ply, cmd, args)
 		DPP.ClearDisconnectedProps()
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_cleared_disconnected'}
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#com_cleared_disconnected'}
 
 		return true
 	end,
@@ -79,18 +79,18 @@ DPP.Commands = {
 		DPP.RecalculatePlayerList()
 		DPP.SendPlayerList()
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_cleared_map'}
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#com_cleared_map'}
 
 		return true
 	end,
 
 	clearbyuid = function(ply, cmd, args)
 		local uid = args[1]
-		if not tonumber(uid) then return false, {'PHRASE:com_invalid_uid'}, NOTIFY_ERROR end
+		if not tonumber(uid) then return false, {'#com_invalid_uid'}, NOTIFY_ERROR end
 
 		DPP.ClearByUID(uid)
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_cleared_ply_1', {type = 'UIDPlayer', uid = uid}, Gray, 'PHRASE:com_cleared_ply_2'}
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#com_cleared_ply_1', {type = 'UIDPlayer', uid = uid}, Gray, '#com_cleared_ply_2'}
 
 		return true
 	end,
@@ -103,7 +103,7 @@ DPP.Commands = {
 			end
 		end
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_freezed_players'}
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#com_freezed_players'}
 
 		return true
 	end,
@@ -111,20 +111,20 @@ DPP.Commands = {
 	freezephys = function(ply, cmd, args)
 		local i = DPP.FreezeAllPhysObjects()
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_freezed||' .. i}
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#com_freezed||' .. i}
 
 		return true
 	end,
 
 	clearplayer = function(ply, cmd, args)
-		if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'PHRASE:com_invalid_ply_c'}, NOTIFY_ERROR end
+		if not args[1] or args[1] == '' or args[1] == ' ' then return false, {'#com_invalid_ply_c'}, NOTIFY_ERROR end
 
 		if tonumber(args[1]) then
 			local found = Player(tonumber(args[1]))
-			if not found then return false, {'PHRASE:com_invalid_ply_userid'}, NOTIFY_ERROR end
+			if not found then return false, {'#com_invalid_ply_userid'}, NOTIFY_ERROR end
 			DPP.ClearPlayerEntities(found)
 
-			DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, ' cleared all ', found, Gray, 'PHRASE:com_ply_ents'}
+			DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, ' cleared all ', found, Gray, '#com_ply_ents'}
 			return
 		end
 
@@ -135,10 +135,10 @@ DPP.Commands = {
 			if string.find(string.lower(v:Nick()), Ply) then found = v end
 		end
 
-		if not found then return false, {'PHRASE:com_invalid_target'}, NOTIFY_ERROR end
+		if not found then return false, {'#com_invalid_target'}, NOTIFY_ERROR end
 		DPP.ClearPlayerEntities(found)
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_cleared_ply_1', found, Gray, 'PHRASE:com_cleared_ply_2'}
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#com_cleared_ply_1', found, Gray, '#com_cleared_ply_2'}
 
 		return true
 	end,
@@ -148,7 +148,7 @@ DPP.Commands = {
 
 		DPP.ClearPlayerEntities(ply)
 
-		DPP.DoEcho(ply, Gray, 'PHRASE:com_clear_success_c')
+		DPP.DoEcho(ply, Gray, '#com_clear_success_c')
 		DPP.Notify(ply, DPP.PPhrase('com_clear_success'))
 
 		return true
@@ -156,17 +156,17 @@ DPP.Commands = {
 
 	transfertoworld = function(ply, cmd, args)
 		local id = args[1]
-		if not id then return false, {'PHRASE:com_invalid_eid', ' (#1)'}, NOTIFY_ERROR end
+		if not id then return false, {'#com_invalid_eid', ' (#1)'}, NOTIFY_ERROR end
 		local num = tonumber(id)
-		if not num then return false, {'PHRASE:com_invalid_eid', ' (#1)'}, NOTIFY_ERROR end
+		if not num then return false, {'#com_invalid_eid', ' (#1)'}, NOTIFY_ERROR end
 		local ent = Entity(num)
-		if not IsValid(ent) then return false, {'PHRASE:not_valid', ' (#2)'}, NOTIFY_ERROR end
+		if not IsValid(ent) then return false, {'#not_valid', ' (#2)'}, NOTIFY_ERROR end
 
 		DPP.SetOwner(ent, NULL)
 		DPP.DeleteEntityUndo(ent)
 		DPP.RecalcConstraints(ent)
 
-		DPP.SimpleLog(ply, Gray, 'PHRASE:com_transfer', ent, Gray, 'PHRASE:com_transfer_world')
+		DPP.SimpleLog(ply, Gray, '#com_transfer', ent, Gray, '#com_transfer_world')
 		DPP.Notify(ply, DPP.PPhrase('com_transfer_s'))
 
 		return true
@@ -174,11 +174,11 @@ DPP.Commands = {
 
 	transfertoworld_constrained = function(ply, cmd, args)
 		local id = args[1]
-		if not id then return false, {'PHRASE:com_invalid_eid', ' (#1)'}, NOTIFY_ERROR end
+		if not id then return false, {'#com_invalid_eid', ' (#1)'}, NOTIFY_ERROR end
 		local num = tonumber(id)
-		if not num then return false, {'PHRASE:com_invalid_eid', ' (#1)'}, NOTIFY_ERROR end
+		if not num then return false, {'#com_invalid_eid', ' (#1)'}, NOTIFY_ERROR end
 		local ent = Entity(num)
-		if not IsValid(ent) then return false, {'PHRASE:not_valid', ' (#2)'}, NOTIFY_ERROR end
+		if not IsValid(ent) then return false, {'#not_valid', ' (#2)'}, NOTIFY_ERROR end
 
 		local Entities = DPP.GetAllConnectedEntities(ent)
 
@@ -188,7 +188,7 @@ DPP.Commands = {
 			DPP.DeleteEntityUndo(v)
 		end
 
-		DPP.SimpleLog(ply, Gray, 'PHRASE:com_transfer', ent, Gray, 'PHRASE:com_transfer_world_c')
+		DPP.SimpleLog(ply, Gray, '#com_transfer', ent, Gray, '#com_transfer_world_c')
 		DPP.Notify(ply, DPP.Format(DPP.PPhrase('com_transfer_s_c'))) --Format?
 
 		DPP.RecalcConstraints(ent)
@@ -197,14 +197,14 @@ DPP.Commands = {
 	end,
 
 	freezeplayer = function(ply, cmd, args)
-		if not args[1] then return false, {'PHRASE:com_invalid_ply_c'}, NOTIFY_ERROR end
+		if not args[1] then return false, {'#com_invalid_ply_c'}, NOTIFY_ERROR end
 
 		if tonumber(args[1]) then
 			local found = Player(tonumber(args[1]))
-			if not found then return false, {'PHRASE:com_invalid_ply_userid'}, NOTIFY_ERROR end
+			if not found then return false, {'#com_invalid_ply_userid'}, NOTIFY_ERROR end
 			DPP.FreezePlayerEntities(found)
 
-			DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_freezed_all', found, Gray, 'PHRASE:com_ply_ents'}
+			DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#com_freezed_all', found, Gray, '#com_ply_ents'}
 			return true
 		end
 
@@ -215,10 +215,10 @@ DPP.Commands = {
 			if string.find(string.lower(v:Nick()), Ply) then found = v end
 		end
 
-		if not found then return false, {'PHRASE:com_no_target'}, NOTIFY_ERROR end
+		if not found then return false, {'#com_no_target'}, NOTIFY_ERROR end
 		DPP.FreezePlayerEntities(found)
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_freezed_all', found, Gray, 'PHRASE:com_ply_ents'}
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#com_freezed_all', found, Gray, '#com_ply_ents'}
 
 		return true
 	end,
@@ -226,10 +226,10 @@ DPP.Commands = {
 	freezebyuid = function(ply, cmd, args)
 		local uid = args[1]
 
-		if not tonumber(args[1]) then return false, {'PHRASE:com_invalid_uid'}, NOTIFY_ERROR end
+		if not tonumber(args[1]) then return false, {'#com_invalid_uid'}, NOTIFY_ERROR end
 		DPP.FreezeByUID(uid)
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_freezed_all', {type = 'UIDPlayer', uid = uid}, Gray, 'PHRASE:com_ply_ents'}
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#com_freezed_all', {type = 'UIDPlayer', uid = uid}, Gray, '#com_ply_ents'}
 
 		return true
 	end,
@@ -237,24 +237,24 @@ DPP.Commands = {
 	unfreezebyuid = function(ply, cmd, args)
 		local uid = args[1]
 
-		if not tonumber(args[1]) then return false, {'PHRASE:com_invalid_uid'}, NOTIFY_ERROR end
+		if not tonumber(args[1]) then return false, {'#com_invalid_uid'}, NOTIFY_ERROR end
 
 		DPP.UnFreezeByUID(uid)
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_unfreezed_all', {type = 'UIDPlayer', uid = uid}, Gray, 'PHRASE:com_ply_ents'}
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#com_unfreezed_all', {type = 'UIDPlayer', uid = uid}, Gray, '#com_ply_ents'}
 
 		return true
 	end,
 
 	unfreezeplayer = function(ply, cmd, args)
-		if not args[1] then return false, {'PHRASE:com_invalid_ply_c'}, NOTIFY_ERROR end
+		if not args[1] then return false, {'#com_invalid_ply_c'}, NOTIFY_ERROR end
 
 		if tonumber(args[1]) then
 			local found = Player(tonumber(args[1]))
-			if not found then return false, {'PHRASE:com_invalid_ply_userid'}, NOTIFY_ERROR end
+			if not found then return false, {'#com_invalid_ply_userid'}, NOTIFY_ERROR end
 			DPP.UnFreezePlayerEntities(found)
 
-			DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_unfreezed_all', found, Gray, 'PHRASE:com_ply_ents'}
+			DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#com_unfreezed_all', found, Gray, '#com_ply_ents'}
 			return true
 		end
 
@@ -265,10 +265,10 @@ DPP.Commands = {
 			if string.find(string.lower(v:Nick()), Ply) then found = v end
 		end
 
-		if not found then return false, {'PHRASE:com_no_target'}, NOTIFY_ERROR end
+		if not found then return false, {'#com_no_target'}, NOTIFY_ERROR end
 		DPP.UnFreezePlayerEntities(found)
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_unfreezed_all', found, Gray, 'PHRASE:com_ply_ents'}
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#com_unfreezed_all', found, Gray, '#com_ply_ents'}
 
 		return true
 	end,
@@ -278,15 +278,15 @@ DPP.Commands = {
 		local type = args[2]
 		local status = args[3]
 
-		if not num then return false, {'PHRASE:com_invalid_eid', ' (#1)'}, NOTIFY_ERROR end
-		if not type then return false, {'PHRASE:com_invalid_share', ' (#2)'}, NOTIFY_ERROR end
-		if not status then return false, {'PHRASE:com_invalid_status', ' (#3)'}, NOTIFY_ERROR end
+		if not num then return false, {'#com_invalid_eid', ' (#1)'}, NOTIFY_ERROR end
+		if not type then return false, {'#com_invalid_share', ' (#2)'}, NOTIFY_ERROR end
+		if not status then return false, {'#com_invalid_status', ' (#3)'}, NOTIFY_ERROR end
 
-		if not DPP.ShareTypes[type] then return false, {'PHRASE:com_invalid_share', ' (#2)'}, NOTIFY_ERROR end
+		if not DPP.ShareTypes[type] then return false, {'#com_invalid_share', ' (#2)'}, NOTIFY_ERROR end
 
 		local ent = Entity(num)
-		if not IsValid(ent) then return false, {'PHRASE:not_valid'}, NOTIFY_ERROR end
-		if IsValid(ply) and DPP.GetOwner(ent) ~= ply then return false, {'PHRASE:not_a_owner'}, NOTIFY_ERROR end
+		if not IsValid(ent) then return false, {'#not_valid'}, NOTIFY_ERROR end
+		if IsValid(ply) and DPP.GetOwner(ent) ~= ply then return false, {'#not_a_owner'}, NOTIFY_ERROR end
 
 		status = tobool(status)
 
@@ -297,10 +297,10 @@ DPP.Commands = {
 
 	entcheck = function(ply, cmd, args)
 		if IsValid(ply) then
-			DPP.Notify(ply, 'PHRASE:look_into_console')
+			DPP.Notify(ply, '#look_into_console')
 		end
 
-		DPP.SimpleLog(IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:com_report_req')
+		DPP.SimpleLog(IsValid(ply) and ply or '#Console', Gray, '#com_report_req')
 		DPP.ReportEntitiesPrint()
 
 		return true
@@ -308,7 +308,7 @@ DPP.Commands = {
 
 	fallbackto = function(ply, cmd, args)
 		if not IsValid(ply) then return false, {'You are console'} end
-		if not args[1] then return false, {'PHRASE:com_invalid_target'}, NOTIFY_ERROR end
+		if not args[1] then return false, {'#com_invalid_target'}, NOTIFY_ERROR end
 
 		local found
 
@@ -327,10 +327,10 @@ DPP.Commands = {
 			end
 		end
 
-		if not found or found == ply then return false, {'PHRASE:com_no_target'}, NOTIFY_ERROR end
+		if not found or found == ply then return false, {'#com_no_target'}, NOTIFY_ERROR end
 
-		DPP.SimpleLog(ply, Gray, 'PHRASE:com_target', found, Gray, 'PHRASE:com_owning_fallback')
-		DPP.Notify(ply, DPP.Format('PHRASE:com_success', found, Gray, 'PHRASE:com_owning_fallback_m'))
+		DPP.SimpleLog(ply, Gray, '#com_target', found, Gray, '#com_owning_fallback')
+		DPP.Notify(ply, DPP.Format('#com_success', found, Gray, '#com_owning_fallback_m'))
 
 		ply:SetDPPVar('fallback', found)
 
@@ -339,7 +339,7 @@ DPP.Commands = {
 
 	transfertoplayer = function(ply, cmd, args)
 		if not IsValid(ply) then return false, {'You are console'} end
-		if not args[1] then return false, {'PHRASE:com_invalid_ply_c', ' (#1)'}, NOTIFY_ERROR end
+		if not args[1] then return false, {'#com_invalid_ply_c', ' (#1)'}, NOTIFY_ERROR end
 
 		local found
 
@@ -358,16 +358,16 @@ DPP.Commands = {
 			end
 		end
 
-		if not found or found == ply then return false, {'PHRASE:com_no_target', ' (#1)'}, NOTIFY_ERROR end
+		if not found or found == ply then return false, {'#com_no_target', ' (#1)'}, NOTIFY_ERROR end
 
 		local id = args[2]
-		if not id then return false, {'PHRASE:com_invalid_eid', ' (#2)'}, NOTIFY_ERROR end
+		if not id then return false, {'#com_invalid_eid', ' (#2)'}, NOTIFY_ERROR end
 		local num = tonumber(id)
-		if not num then return false, {'PHRASE:com_invalid_eid', ' (#2)'}, NOTIFY_ERROR end
+		if not num then return false, {'#com_invalid_eid', ' (#2)'}, NOTIFY_ERROR end
 		local ent = Entity(num)
-		if not IsValid(ent) then return false, {'PHRASE:not_valid', ' (#2)'}, NOTIFY_ERROR end
+		if not IsValid(ent) then return false, {'#not_valid', ' (#2)'}, NOTIFY_ERROR end
 
-		if DPP.GetOwner(ent) ~= ply then return false, {'PHRASE:not_a_owner'}, NOTIFY_ERROR end
+		if DPP.GetOwner(ent) ~= ply then return false, {'#not_a_owner'}, NOTIFY_ERROR end
 
 		DPP.DeleteEntityUndo(ent)
 		DPP.SetOwner(ent, found)
@@ -377,15 +377,15 @@ DPP.Commands = {
 		undo.AddEntity(ent)
 		undo.Finish()
 
-		DPP.SimpleLog(ply, Gray, 'PHRASE:com_transfer', color_white, ent, Gray, 'PHRASE:com_to', found)
-		DPP.Notify(ply, DPP.Format('PHRASE:com_owning_transfer', found))
+		DPP.SimpleLog(ply, Gray, '#com_transfer', color_white, ent, Gray, '#com_to', found)
+		DPP.Notify(ply, DPP.Format('#com_owning_transfer', found))
 
 		return true
 	end,
 
 	transfertoplayer_all = function(ply, cmd, args)
 		if not IsValid(ply) then return false, {'You are console'} end
-		if not args[1] then return false, {'PHRASE:com_invalid_target'}, NOTIFY_ERROR end
+		if not args[1] then return false, {'#com_invalid_target'}, NOTIFY_ERROR end
 
 		local found
 
@@ -404,10 +404,10 @@ DPP.Commands = {
 			end
 		end
 
-		if not found or found == ply then return false, {'PHRASE:com_no_target'}, NOTIFY_ERROR end
+		if not found or found == ply then return false, {'#com_no_target'}, NOTIFY_ERROR end
 
 		local props = DPP.GetPropsByUID(ply:UniqueID())
-		if #props == 0 then return false, {'PHRASE:com_no_props_to_transfer'} end
+		if #props == 0 then return false, {'#com_no_props_to_transfer'} end
 
 		for k, v in ipairs(props) do
 			DPP.SetOwner(v, found)
@@ -415,18 +415,18 @@ DPP.Commands = {
 
 		DPP.TransferUndoTo(ply, found)
 
-		DPP.SimpleLog(ply, Gray, 'PHRASE:com_transfer_all', found)
-		DPP.Notify(ply, DPP.Format('PHRASE:com_owning_transfer_all', found))
+		DPP.SimpleLog(ply, Gray, '#com_transfer_all', found)
+		DPP.Notify(ply, DPP.Format('#com_owning_transfer_all', found))
 
 		return true
 	end,
 
 	removefallbackto = function(ply, cmd, args)
 		if not IsValid(ply) then return false, {'You are console'} end
-		if not IsValid(ply:DPPVar('fallback')) then return false, {'PHRASE:com_owning_no'}, NOTIFY_ERROR end
+		if not IsValid(ply:DPPVar('fallback')) then return false, {'#com_owning_no'}, NOTIFY_ERROR end
 
-		DPP.SimpleLog(ply, Gray, 'PHRASE:com_owning_removed')
-		DPP.Notify(ply, 'PHRASE:com_owning_removed_n')
+		DPP.SimpleLog(ply, Gray, '#com_owning_removed')
+		DPP.Notify(ply, '#com_owning_removed_n')
 
 		ply:SetDPPVar('fallback', NULL)
 
@@ -446,23 +446,23 @@ DPP.Commands = {
 		net.Start('DPP.InspectEntity')
 		net.Send(ply)
 		
-		DPP.Echo(ply, 'PHRASE:inspect_server')
+		DPP.Echo(ply, '#inspect_server')
 		local ent = tr.Entity
 		
 		if not IsValid(ent) then
-			DPP.Echo(ply, 'PHRASE:inspect_noentity')
+			DPP.Echo(ply, '#inspect_noentity')
 		else
-			DPP.Echo(ply, 'PHRASE:inspect_class', color_white, ent:GetClass())
-			DPP.Echo(ply, 'PHRASE:inspect_pos', color_white, DPP.ToString(ent:GetPos()))
-			DPP.Echo(ply, 'PHRASE:inspect_ang', color_white, DPP.ToString(ent:GetAngles()))
-			DPP.Echo(ply, 'PHRASE:inspect_table', color_white, DPP.ToString(table.Count(ent:GetTable())))
-			DPP.Echo(ply, 'PHRASE:inspect_hp', color_white, DPP.ToString(ent:Health()))
-			DPP.Echo(ply, 'PHRASE:inspect_mhp', color_white, DPP.ToString(ent:GetMaxHealth()))
-			DPP.Echo(ply, 'PHRASE:inspect_owner', color_white, DPP.ToString(DPP.GetOwner(ent)))
+			DPP.Echo(ply, '#inspect_class', color_white, ent:GetClass())
+			DPP.Echo(ply, '#inspect_pos', color_white, DPP.ToString(ent:GetPos()))
+			DPP.Echo(ply, '#inspect_ang', color_white, DPP.ToString(ent:GetAngles()))
+			DPP.Echo(ply, '#inspect_table', color_white, DPP.ToString(table.Count(ent:GetTable())))
+			DPP.Echo(ply, '#inspect_hp', color_white, DPP.ToString(ent:Health()))
+			DPP.Echo(ply, '#inspect_mhp', color_white, DPP.ToString(ent:GetMaxHealth()))
+			DPP.Echo(ply, '#inspect_owner', color_white, DPP.ToString(DPP.GetOwner(ent)))
 			
-			DPP.Echo(ply, 'PHRASE:inspect_model', color_white, DPP.ToString(ent:GetModel()))
-			DPP.Echo(ply, 'PHRASE:inspect_skin', color_white, DPP.ToString(ent:GetSkin()))
-			DPP.Echo(ply, 'PHRASE:inspect_bodygroups', color_white, DPP.ToString(table.Count(ent:GetBodyGroups() or {})))
+			DPP.Echo(ply, '#inspect_model', color_white, DPP.ToString(ent:GetModel()))
+			DPP.Echo(ply, '#inspect_skin', color_white, DPP.ToString(ent:GetSkin()))
+			DPP.Echo(ply, '#inspect_bodygroups', color_white, DPP.ToString(table.Count(ent:GetBodyGroups() or {})))
 		end
 
 		return true

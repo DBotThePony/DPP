@@ -114,10 +114,10 @@ end
 local RED = Color(200, 100, 100)
 
 local function NetworkError(Message)
-	DPP.SimpleLog(RED, 'PHRASE:net_error_1')
+	DPP.SimpleLog(RED, '#net_error_1')
 	DPP.SimpleLog(RED, Message)
 	DPP.SimpleLog(RED, debug.traceback())
-	DPP.SimpleLog(RED, 'PHRASE:net_error_2')
+	DPP.SimpleLog(RED, '#net_error_2')
 end
 
 local function SendTimer()
@@ -137,7 +137,7 @@ local function NetworkedVarFull(len, ply, auto)
 	DPP.SendConVarsTo(ply)
 
 	if not auto then
-		DPP.SimpleLog(ply, Gray, 'PHRASE:net_auto')
+		DPP.SimpleLog(ply, Gray, '#net_auto')
 	end
 
 	local reply = {}
@@ -174,10 +174,10 @@ local function command(ply)
 	local reply = NetworkedVarFull(nil, ply, true)
 
 	if not reply then
-		DPP.Notify(ply, 'PHRASE:net_must_wait')
+		DPP.Notify(ply, '#net_must_wait')
 	else
-		DPP.Notify(ply, 'PHRASE:accepted')
-		DPP.SimpleLog(ply, Gray, 'PHRASE:net_manual')
+		DPP.Notify(ply, '#accepted')
+		DPP.SimpleLog(ply, Gray, '#net_manual')
 	end
 end
 

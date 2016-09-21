@@ -215,19 +215,19 @@ end
 
 DPP.ManipulateCommands = {
 	addblockedmodel = function(ply, cmd, args)
-		if not args[1] or args[1]:Trim() == '' then return false, {'PHRASE:saveload_invalid_model'}, NOTIFY_ERROR end
+		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_model'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower():Trim()
-		if DPP.BlockedModels[args[1]] then return false, {'PHRASE:saveload_model_already_y'} end
+		if DPP.BlockedModels[args[1]] then return false, {'#saveload_model_already_y'} end
 		DPP.AddBlockedModel(args[1])
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_added', color_white, args[1], Gray, 'PHRASE:saveload_to', 'PHRASE:saveload_bmodels'}
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#saveload_added', color_white, args[1], Gray, '#saveload_to', '#saveload_bmodels'}
 	end,
 
 	removeblockedmodel = function(ply, cmd, args)
-		if not args[1] or args[1]:Trim() == '' then return false, {'PHRASE:saveload_invalid_model'}, NOTIFY_ERROR end
+		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_model'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower():Trim()
-		if not DPP.BlockedModels[args[1]] then return false, {'PHRASE:saveload_model_already_n'} end
+		if not DPP.BlockedModels[args[1]] then return false, {'#saveload_model_already_n'} end
 		DPP.RemoveBlockedModel(args[1])
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_removed', color_white, args[1], Gray, 'PHRASE:saveload_from', 'PHRASE:saveload_bmodels'}
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#saveload_removed', color_white, args[1], Gray, '#saveload_from', '#saveload_bmodels'}
 	end,
 }
 
@@ -286,21 +286,21 @@ for k, v in pairs(DPP.BlockTypes) do
 	end
 
 	DPP.ManipulateCommands['addblockedentity' .. k] = function(ply, cmd, args)
-		if not args[1] or args[1]:Trim() == '' then return false, {'PHRASE:saveload_invalid_class'}, NOTIFY_ERROR end
+		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_class'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower():Trim()
-		if DPP.BlockedEntities[k][args[1]] then return false, {'PHRASE:saveload_entity_already_y'} end
-		if HasValueLight(blockedEnts, args[1]) then return false, {'PHRASE:saveload_unable_to_add'}, NOTIFY_ERROR end
+		if DPP.BlockedEntities[k][args[1]] then return false, {'#saveload_entity_already_y'} end
+		if HasValueLight(blockedEnts, args[1]) then return false, {'#saveload_unable_to_add'}, NOTIFY_ERROR end
 		DPP['AddBlockedEntity' .. v](args[1])
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_added', color_white, args[1], Gray, 'PHRASE:saveload_to', color_white, 'PHRASE:block_' .. k, Gray, 'PHRASE:saveload_blackwhite'}
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#saveload_added', color_white, args[1], Gray, '#saveload_to', color_white, '#block_' .. k, Gray, '#saveload_blackwhite'}
 	end
 
 	DPP.ManipulateCommands['removeblockedentity' .. k] = function(ply, cmd, args)
-		if not args[1] or args[1]:Trim() == '' then return false, {'PHRASE:saveload_invalid_class'}, NOTIFY_ERROR end
+		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_class'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower():Trim()
-		if not DPP.BlockedEntities[k][args[1]] then return false, {'PHRASE:saveload_entity_already_n'} end
-		if HasValueLight(blockedEnts, args[1]) then return false, {'PHRASE:saveload_unable_to_remove'}, NOTIFY_ERROR end
+		if not DPP.BlockedEntities[k][args[1]] then return false, {'#saveload_entity_already_n'} end
+		if HasValueLight(blockedEnts, args[1]) then return false, {'#saveload_unable_to_remove'}, NOTIFY_ERROR end
 		DPP['RemoveBlockedEntity' .. v](args[1])
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_removed', color_white, args[1], Gray, 'PHRASE:saveload_from', color_white, 'PHRASE:block_' .. k, Gray, 'PHRASE:saveload_blackwhite'}
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#saveload_removed', color_white, args[1], Gray, '#saveload_from', color_white, '#block_' .. k, Gray, '#saveload_blackwhite'}
 	end
 end
 
@@ -336,20 +336,20 @@ for k, v in pairs(DPP.WhitelistTypes) do
 	end
 
 	DPP.ManipulateCommands['addwhitelistedentity' .. k] = function(ply, cmd, args)
-		if not args[1] or args[1]:Trim() == '' then return false, {'PHRASE:saveload_invalid_class'}, NOTIFY_ERROR end
+		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_class'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower():Trim()
-		if DPP.WhitelistedEntities[k][args[1]] then return false, {'PHRASE:saveload_eentity_already_y'} end
+		if DPP.WhitelistedEntities[k][args[1]] then return false, {'#saveload_eentity_already_y'} end
 		if HasValueLight(blockedEnts, args[1]) then return false, {'You can not add that entity to exclude list'}, NOTIFY_ERROR end
 		DPP['AddWhitelistedEntity' .. v](args[1])
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_added', color_white, args[1], Gray, 'PHRASE:saveload_to', 'PHRASE:exclude_' .. k, 'PHRASE:saveload_excludedents'}
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#saveload_added', color_white, args[1], Gray, '#saveload_to', '#exclude_' .. k, '#saveload_excludedents'}
 	end
 
 	DPP.ManipulateCommands['removewhitelistedentity' .. k] = function(ply, cmd, args)
-		if not args[1] or args[1]:Trim() == '' then return false, {'PHRASE:saveload_invalid_class'}, NOTIFY_ERROR end
+		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_class'}, NOTIFY_ERROR end
 		args[1] = args[1]:lower():Trim()
-		if not DPP.WhitelistedEntities[k][args[1]] then return false, {'PHRASE:saveload_eentity_already_n'} end
+		if not DPP.WhitelistedEntities[k][args[1]] then return false, {'#saveload_eentity_already_n'} end
 		DPP['RemoveWhitelistedEntity' .. v](args[1])
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_removed', color_white, args[1], Gray, 'PHRASE:saveload_from', color_white, 'PHRASE:exclude_' .. k, Gray, 'PHRASE:saveload_excludedents'}
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#saveload_removed', color_white, args[1], Gray, '#saveload_from', color_white, '#exclude_' .. k, Gray, '#saveload_excludedents'}
 	end
 end
 
@@ -389,9 +389,9 @@ for k, v in pairs(DPP.RestrictTypes) do
 	end
 
 	DPP.ManipulateCommands['restrict' .. k] = function(ply, cmd, args)
-		if not args[1] or args[1]:Trim() == '' then return false, {'PHRASE:saveload_command_message_1'}, NOTIFY_ERROR end
-		if not args[2] then return false, {'PHRASE:saveload_command_message_2'}, NOTIFY_ERROR end --No groups allowed
-		if not args[3] or args[3]:Trim() == '' then return false, {'PHRASE:saveload_command_message_3'}, NOTIFY_ERROR end
+		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_command_message_1'}, NOTIFY_ERROR end
+		if not args[2] then return false, {'#saveload_command_message_2'}, NOTIFY_ERROR end --No groups allowed
+		if not args[3] or args[3]:Trim() == '' then return false, {'#saveload_command_message_3'}, NOTIFY_ERROR end
 
 		local class = args[1]:lower():Trim()
 		local groups = string.Explode(',', args[2])
@@ -401,23 +401,23 @@ for k, v in pairs(DPP.RestrictTypes) do
 		DPP['Restrict' .. v](class, groups, isWhite)
 
 		if not old then
-			DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_added', color_white, class, Gray, 'PHRASE:saveload_to', 'PHRASE:saveload_restricted', color_white, 'PHRASE:restricted_' .. k, Gray, 'PHRASE:saveload_blackwhite'}
+			DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#saveload_added', color_white, class, Gray, '#saveload_to', '#saveload_restricted', color_white, '#restricted_' .. k, Gray, '#saveload_blackwhite'}
 		else
-			DPP.DoEcho(IsValid(ply) and ply or 'PHRASE:Console', Gray, ' updated restricts for ', color_white, class)
+			DPP.DoEcho(IsValid(ply) and ply or '#Console', Gray, ' updated restricts for ', color_white, class)
 			if IsValid(ply) then
-				DPP.Notify(ply, 'PHRASE:restricts_updated||' .. class)
+				DPP.Notify(ply, '#restricts_updated||' .. class)
 			end
 		end
 	end
 
 	DPP.ManipulateCommands['unrestrict' .. k] = function(ply, cmd, args)
-		if not args[1] or args[1]:Trim() == '' then return false, {'PHRASE:saveload_command_message_4'}, NOTIFY_ERROR end
+		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_command_message_4'}, NOTIFY_ERROR end
 
 		local class = args[1]:lower():Trim()
 
 		DPP['UnRestrict' .. v](class)
 
-		DPP.NotifyLog{IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_removed', color_white, args[1], Gray, 'PHRASE:saveload_from', 'PHRASE:saveload_restricted', color_white, 'PHRASE:restricted_' .. k, Gray, 'PHRASE:saveload_blackwhite'}
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#saveload_removed', color_white, args[1], Gray, '#saveload_from', '#saveload_restricted', color_white, '#restricted_' .. k, Gray, '#saveload_blackwhite'}
 	end
 end
 
@@ -576,20 +576,20 @@ end
 local Last = 0
 
 DPP.ManipulateCommands.addentitylimit = function(ply, cmd, args)
-	if not args[1] or args[1]:Trim() == '' then return false, {'PHRASE:saveload_invalid_class', ' (#1)'}, NOTIFY_ERROR end
-	if not args[2] or args[2]:Trim() == '' then return false, {'PHRASE:saveload_command_message_2'}, NOTIFY_ERROR end
-	if not args[3] or args[3]:Trim() == '' then return false, {'PHRASE:saveload_invalid_limit', ' (#3)'}, NOTIFY_ERROR end
+	if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_class', ' (#1)'}, NOTIFY_ERROR end
+	if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_command_message_2'}, NOTIFY_ERROR end
+	if not args[3] or args[3]:Trim() == '' then return false, {'#saveload_invalid_limit', ' (#3)'}, NOTIFY_ERROR end
 
 	local class = args[1]:lower():Trim()
 	local group = args[2]
 	local num = tonumber(args[3])
 
-	if not num then return false, {'PHRASE:saveload_invalid_limit', ' (#3)'}, NOTIFY_ERROR end
+	if not num then return false, {'#saveload_invalid_limit', ' (#3)'}, NOTIFY_ERROR end
 
 	DPP.AddEntityLimit(class, group, num)
 
 	if Last < CurTime() then
-		local f = {IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_added_updated', color_white, class, Gray, 'PHRASE:saveload_limits'}
+		local f = {IsValid(ply) and ply or '#Console', Gray, '#saveload_added_updated', color_white, class, Gray, '#saveload_limits'}
 		DPP.NotifyLog(f)
 		Last = CurTime() + 0.5
 	end
@@ -607,82 +607,82 @@ DPP.ManipulateCommands.removeentitylimit = function(ply, cmd, args)
 	DPP.RemoveEntityLimit(class, group)
 
 	if Last < CurTime() then
-		local f = {IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_removed', color_white, class, Gray, 'PHRASE:saveload_limit_removed'}
+		local f = {IsValid(ply) and ply or '#Console', Gray, '#saveload_removed', color_white, class, Gray, '#saveload_limit_removed'}
 		DPP.NotifyLog(f)
 		Last = CurTime() + 0.5
 	end
 end
 
 DPP.ManipulateCommands.addsboxlimit = function(ply, cmd, args)
-	if not args[1] or args[1]:Trim() == '' then return false, {'PHRASE:saveload_invalid_slimit', ' (#1)'}, NOTIFY_ERROR end
-	if not args[2] or args[2]:Trim() == '' then return false, {'PHRASE:saveload_invalid_group', ' (#2)'}, NOTIFY_ERROR end
-	if not args[3] or args[3]:Trim() == '' then return false, {'PHRASE:saveload_invalid_limit', ' (#3)'}, NOTIFY_ERROR end
+	if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_slimit', ' (#1)'}, NOTIFY_ERROR end
+	if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_invalid_group', ' (#2)'}, NOTIFY_ERROR end
+	if not args[3] or args[3]:Trim() == '' then return false, {'#saveload_invalid_limit', ' (#3)'}, NOTIFY_ERROR end
 
 	local class = args[1]:lower():Trim()
 	local group = args[2]
 	local num = tonumber(args[3])
 
-	if not num then return false, {'PHRASE:saveload_invalid_limit', ' (#3)'}, NOTIFY_ERROR end
+	if not num then return false, {'#saveload_invalid_limit', ' (#3)'}, NOTIFY_ERROR end
 
 	DPP.AddSBoxLimit(class, group, num)
 
-	local f = {IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_added_updated', color_white, class, Gray, 'PHRASE:saveload_slimits', color_white, group}
+	local f = {IsValid(ply) and ply or '#Console', Gray, '#saveload_added_updated', color_white, class, Gray, '#saveload_slimits', color_white, group}
 	DPP.NotifyLog(f)
 	Last = CurTime() + 0.5
 end
 
 DPP.ManipulateCommands.addconstlimit = function(ply, cmd, args)
-	if not args[1] or args[1]:Trim() == '' then return false, {'PHRASE:saveload_invalid_climit', ' (#1)'}, NOTIFY_ERROR end
-	if not args[2] or args[2]:Trim() == '' then return false, {'PHRASE:saveload_invalid_group', ' (#2)'}, NOTIFY_ERROR end
-	if not args[3] or args[3]:Trim() == '' then return false, {'PHRASE:saveload_invalid_limit', ' (#3)'}, NOTIFY_ERROR end
+	if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_climit', ' (#1)'}, NOTIFY_ERROR end
+	if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_invalid_group', ' (#2)'}, NOTIFY_ERROR end
+	if not args[3] or args[3]:Trim() == '' then return false, {'#saveload_invalid_limit', ' (#3)'}, NOTIFY_ERROR end
 
 	local class = args[1]:lower():Trim()
 	local group = args[2]
 	local num = tonumber(args[3])
 
-	if not num then return false, {'PHRASE:saveload_invalid_limit', ' (#3)'}, NOTIFY_ERROR end
+	if not num then return false, {'#saveload_invalid_limit', ' (#3)'}, NOTIFY_ERROR end
 
 	DPP.AddConstLimit(class, group, num)
 
-	local f = {IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_added_updated', color_white, class, Gray, 'PHRASE:saveload_climits', color_white, group}
+	local f = {IsValid(ply) and ply or '#Console', Gray, '#saveload_added_updated', color_white, class, Gray, '#saveload_climits', color_white, group}
 	DPP.NotifyLog(f)
 	Last = CurTime() + 0.5
 end
 
 DPP.ManipulateCommands.removesboxlimit = function(ply, cmd, args)
-	if not args[1] or args[1]:Trim() == '' then return false, {'PHRASE:saveload_invalid_climit', ' (#1)'}, NOTIFY_ERROR end
-	if not args[2] or args[2]:Trim() == '' then return false, {'PHRASE:saveload_invalid_group', ' (#2)'}, NOTIFY_ERROR end
+	if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_climit', ' (#1)'}, NOTIFY_ERROR end
+	if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_invalid_group', ' (#2)'}, NOTIFY_ERROR end
 
 	local class = args[1]:lower():Trim()
 	local group = args[2]
-	if not DPP.SBoxLimits[class] then return false, {'PHRASE:saveload_limit_not_exists'} end
-	if not DPP.SBoxLimits[class][group] then return false, {'PHRASE:saveload_limit_not_exists'} end
+	if not DPP.SBoxLimits[class] then return false, {'#saveload_limit_not_exists'} end
+	if not DPP.SBoxLimits[class][group] then return false, {'#saveload_limit_not_exists'} end
 
 	DPP.RemoveSBoxLimit(class, group)
 
-	local f = {IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_removed', color_white, class, Gray, 'PHRASE:saveload_from', 'PHRASE:saveload_slimits', color_white, group}
+	local f = {IsValid(ply) and ply or '#Console', Gray, '#saveload_removed', color_white, class, Gray, '#saveload_from', '#saveload_slimits', color_white, group}
 	DPP.NotifyLog(f)
 	Last = CurTime() + 0.5
 end
 
 DPP.ManipulateCommands.removeconstlimit = function(ply, cmd, args)
-	if not args[1] or args[1]:Trim() == '' then return false, {'PHRASE:saveload_invalid_climit', ' (#1)'}, NOTIFY_ERROR end
-	if not args[2] or args[2]:Trim() == '' then return false, {'PHRASE:saveload_invalid_group', ' (#2)'}, NOTIFY_ERROR end
+	if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_climit', ' (#1)'}, NOTIFY_ERROR end
+	if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_invalid_group', ' (#2)'}, NOTIFY_ERROR end
 
 	local class = args[1]:lower():Trim()
 	local group = args[2]
-	if not DPP.ConstrainsLimits[class] then return false, {'PHRASE:saveload_limit_not_exists'} end
-	if not DPP.ConstrainsLimits[class][group] then return false, {'PHRASE:saveload_limit_not_exists'} end
+	if not DPP.ConstrainsLimits[class] then return false, {'#saveload_limit_not_exists'} end
+	if not DPP.ConstrainsLimits[class][group] then return false, {'#saveload_limit_not_exists'} end
 
 	DPP.RemoveConstLimit(class, group)
 
-	local f = {IsValid(ply) and ply or 'PHRASE:Console', Gray, 'PHRASE:saveload_removed', color_white, class, Gray, 'PHRASE:saveload_from', 'PHRASE:saveload_climits', color_white, group}
+	local f = {IsValid(ply) and ply or '#Console', Gray, '#saveload_removed', color_white, class, Gray, '#saveload_from', '#saveload_climits', color_white, group}
 	DPP.NotifyLog(f)
 	Last = CurTime() + 0.5
 end
 
 function DPP.SaveCVars()
-	DPP.Message('PHRASE:saving_cvars')
+	DPP.Message('#saving_cvars')
 	
 	local t = {}
 

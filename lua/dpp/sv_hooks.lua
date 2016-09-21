@@ -43,28 +43,28 @@ local function LogSpawn(ply, ent, type)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	logFunc(ply, SPACE, GRAY, 'PHRASE:log_spawned', color_white, SPACE2, ent:GetClass(), GRAY, string.format(' <%s | %s> ', tostring(ent), ent:GetModel() or '<no model>'), type or 'PHRASE:log_not_avaliable')
+	logFunc(ply, SPACE, GRAY, '#log_spawned', color_white, SPACE2, ent:GetClass(), GRAY, string.format(' <%s | %s> ', tostring(ent), ent:GetModel() or '<no model>'), type or '#log_not_avaliable')
 end
 
 local function LogSpawnC(ply, class, type, model)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[class] then return end
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	logFunc(ply, SPACE, GRAY, 'PHRASE:log_spawned', color_white, SPACE2, class, GRAY, string.format(' <%s | %s> ', class, model or 'N/A'), type or 'PHRASE:log_not_avaliable')
+	logFunc(ply, SPACE, GRAY, '#log_spawned', color_white, SPACE2, class, GRAY, string.format(' <%s | %s> ', class, model or 'N/A'), type or '#log_not_avaliable')
 end
 
 local function LogTry(ply, type, model, class)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[class] then return end
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	logFunc(ply, SPACE, RED, 'PHRASE:log_tried', GRAY, 'PHRASE:log_to_spawn', SPACE2, string.format(' %s <%s | %s> ', class or 'N/A', class or 'N/A', model or 'N/A'), type or 'PHRASE:log_not_avaliable')
+	logFunc(ply, SPACE, RED, '#log_tried', GRAY, '#log_to_spawn', SPACE2, string.format(' %s <%s | %s> ', class or 'N/A', class or 'N/A', model or 'N/A'), type or '#log_not_avaliable')
 end
 
 local function LogTryPost(ply, type, ent)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	logFunc(ply, SPACE, RED, 'PHRASE:log_tried', GRAY, 'PHRASE:log_to_spawn', SPACE2, string.format(' %s <%s | %s> ', ent:GetClass(), tostring(ent), ent:GetModel() or '<no model>'), type or 'PHRASE:log_not_avaliable')
+	logFunc(ply, SPACE, RED, '#log_tried', GRAY, '#log_to_spawn', SPACE2, string.format(' %s <%s | %s> ', ent:GetClass(), tostring(ent), ent:GetModel() or '<no model>'), type or '#log_not_avaliable')
 end
 
 --god
@@ -99,7 +99,7 @@ local function LogConstraint(ply, ent)
 	end
 
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	logFunc(ply, SPACE, GRAY, 'PHRASE:log_created_constraint', SPACE2, color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, 'PHRASE:log_constraint_between||' .. tostring(ent1) .. '||' .. tostring(ent2))
+	logFunc(ply, SPACE, GRAY, '#log_created_constraint', SPACE2, color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, '#log_constraint_between||' .. tostring(ent1) .. '||' .. tostring(ent2))
 end
 
 local function LogConstraintTry(ply, ent)
@@ -109,15 +109,15 @@ local function LogConstraintTry(ply, ent)
 	local ent1, ent2 = DPP.GetConstrainedEntities(ent)
 
 	if not IsValid(ent1) then
-		ent1 = 'PHRASE:log_unknown'
+		ent1 = '#log_unknown'
 	end
 
 	if not IsValid(ent2) then
-		ent2 = 'PHRASE:log_unknown'
+		ent2 = '#log_unknown'
 	end
 
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	logFunc(ply, SPACE, RED, 'PHRASE:log_tried', GRAY, SPACE2, 'PHRASE:log_tried_c', color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, 'PHRASE:log_constraint_between||' .. tostring(ent1) .. '||' .. tostring(ent2))
+	logFunc(ply, SPACE, RED, '#log_tried', GRAY, SPACE2, '#log_tried_c', color_white, DPP.GetContstrainType(ent), ' <' .. tostring(ent) .. '>', GRAY, '#log_constraint_between||' .. tostring(ent1) .. '||' .. tostring(ent2))
 end
 
 local function CheckEntityLimit(ply, class)
@@ -194,7 +194,7 @@ function SpawnFunctions.PlayerSpawnedNPC(ply, ent, shouldHideLog)
 	end
 
 	Spawned(ply, ent)
-	if not shouldHideLog then LogSpawn(ply, ent, 'PHRASE:log_npc') end
+	if not shouldHideLog then LogSpawn(ply, ent, '#log_npc') end
 
 	DPP.CheckAntispamDelay(ply, ent)
 	DPP.CheckDroppedEntity(ply, ent)
@@ -203,7 +203,7 @@ end
 
 function SpawnFunctions.PlayerSpawnedEffect(ply, model, ent, shouldHideLog)
 	Spawned(ply, ent)
-	if not shouldHideLog then LogSpawn(ply, ent, 'PHRASE:log_effect') end
+	if not shouldHideLog then LogSpawn(ply, ent, '#log_effect') end
 
 	DPP.CheckAntispamDelay(ply, ent)
 	CheckBlocked(ply, ent)
@@ -302,19 +302,19 @@ function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog, ignore
 	ent.DPP_SpawnTime = CurTime()
 
 	if CheckEntityLimit(ply, ent:GetClass()) then 
-		LogTryPost(ply, 'PHRASE:log_prop', ent)
+		LogTryPost(ply, '#log_prop', ent)
 		SafeRemoveEntity(ent)
 		return false
 	end
 
 	Spawned(ply, ent)
 	if not ignoreAntispam then DPP.CheckSizesDelay(ent, ply) end
-	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, 'PHRASE:log_prop') end return end
+	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, '#log_prop') end return end
 	if DPP.GetConVar('check_stuck') then
 		StuckCheckDelay(ply, ent)
 	end
 
-	if not shouldHideLog then LogSpawn(ply, ent, 'PHRASE:log_prop') end
+	if not shouldHideLog then LogSpawn(ply, ent, '#log_prop') end
 
 	PENDING = ent
 	PENDING_PLY = ply
@@ -383,7 +383,7 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog, ign
 	ent.DPP_SpawnTime = CurTime()
 
 	if CheckEntityLimit(ply, ent:GetClass()) then 
-		LogTryPost(ply, 'PHRASE:log_ragdoll', ent)
+		LogTryPost(ply, '#log_ragdoll', ent)
 		SafeRemoveEntity(ent)
 		return false
 	end
@@ -394,8 +394,8 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog, ign
 
 	Spawned(ply, ent)
 	if not ignoreAntispam then DPP.CheckSizesDelay(ent, ply) end
-	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, 'PHRASE:log_ragdoll') end return end
-	if not shouldHideLog then LogSpawn(ply, ent, 'PHRASE:log_ragdoll') end
+	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, '#log_ragdoll') end return end
+	if not shouldHideLog then LogSpawn(ply, ent, '#log_ragdoll') end
 
 	PENDING = ent
 	PENDING_PLY = ply
@@ -410,14 +410,14 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog, ignoreAntispa
 	ent.DPP_SpawnTime = CurTime()
 
 	if DPP.IsRestrictedSENT(ent:GetClass(), ply) then 
-		LogTryPost(ply, 'PHRASE:log_sent', ent)
+		LogTryPost(ply, '#log_sent', ent)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'entity_restricted'), 1)
 		SafeRemoveEntity(ent)
 		return false
 	end
 
 	if CheckEntityLimit(ply, ent:GetClass()) then 
-		LogTryPost(ply, 'PHRASE:log_sent', ent)
+		LogTryPost(ply, '#log_sent', ent)
 		SafeRemoveEntity(ent)
 		return false
 	end
@@ -428,8 +428,8 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog, ignoreAntispa
 
 	Spawned(ply, ent)
 	if not ignoreAntispam then DPP.CheckSizesDelay(ent, ply) end
-	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, 'PHRASE:log_sent') end return end
-	if not shouldHideLog then LogSpawn(ply, ent, 'PHRASE:log_sent') end
+	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, '#log_sent') end return end
+	if not shouldHideLog then LogSpawn(ply, ent, '#log_sent') end
 
 	PENDING = ent
 	PENDING_PLY = ply
@@ -444,14 +444,14 @@ function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog, ignoreAntispa
 	ent.DPP_SpawnTime = CurTime()
 
 	if DPP.IsRestrictedSWEP(ent:GetClass(), ply) then 
-		LogTryPost(ply, 'PHRASE:log_swep', ent)
+		LogTryPost(ply, '#log_swep', ent)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'weapon_restricted'), 1)
 		SafeRemoveEntity(ent)
 		return false
 	end
 
 	if CheckEntityLimit(ply, ent:GetClass()) then 
-		LogTryPost(ply, 'PHRASE:log_swep', ent)
+		LogTryPost(ply, '#log_swep', ent)
 		SafeRemoveEntity(ent)
 		return false
 	end
@@ -461,7 +461,7 @@ function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog, ignoreAntispa
 	end
 
 	Spawned(ply, ent)
-	if not shouldHideLog then LogSpawn(ply, ent, 'PHRASE:log_swep') end
+	if not shouldHideLog then LogSpawn(ply, ent, '#log_swep') end
 
 	PENDING = ent
 	PENDING_PLY = ply
@@ -476,26 +476,26 @@ function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog, ignoreAnti
 	ent.DPP_SpawnTime = CurTime()
 
 	if DPP.IsRestrictedVehicle(ent:GetClass(), ply) then 
-		LogTryPost(ply, 'PHRASE:log_vehicle', ent)
+		LogTryPost(ply, '#log_vehicle', ent)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'vehicle_restricted'), 1)
 		SafeRemoveEntity(ent)
 		return false
 	end
 
 	if CheckEntityLimit(ply, ent:GetClass()) then 
-		LogTryPost(ply, 'PHRASE:log_vehicle', ent)
+		LogTryPost(ply, '#log_vehicle', ent)
 		SafeRemoveEntity(ent)
 		return false
 	end
 
-	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, 'PHRASE:log_vehicle') end return end
+	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, '#log_vehicle') end return end
 
 	if DPP.GetConVar('check_stuck') then
 		StuckCheckDelay(ply, ent)
 	end
 
 	Spawned(ply, ent)
-	if not shouldHideLog then LogSpawn(ply, ent, 'PHRASE:log_vehicle') end
+	if not shouldHideLog then LogSpawn(ply, ent, '#log_vehicle') end
 
 	PENDING = ent
 	PENDING_PLY = ply
@@ -507,23 +507,23 @@ function SpawnFunctions.PlayerSpawnProp(ply, model)
 	DPP.AssertArguments('PlayerSpawnProp', {{ply, 'Player'}, {model, 'string'}})
 
 	if DPP.IsModelBlocked(model, ply) then 
-		LogTry(ply, 'PHRASE:log_prop', model)
+		LogTry(ply, '#log_prop', model)
 		return false 
 	end
 
 	if CheckEntityLimit(ply, 'prop_physics') then 
-		LogTry(ply, 'PHRASE:log_prop', model)
+		LogTry(ply, '#log_prop', model)
 		return false 
 	end
 
 	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
-		LogTry(ply, 'PHRASE:log_prop', model)
+		LogTry(ply, '#log_prop', model)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'spam_removed'), 1)
 		return false 
 	end
 
 	if not CheckBlocked2(ply, model) then 
-		LogTry(ply, 'PHRASE:log_prop', model)
+		LogTry(ply, '#log_prop', model)
 		return false 
 	end
 end
@@ -532,18 +532,18 @@ function SpawnFunctions.PlayerSpawnObject(ply, model)
 	DPP.AssertArguments('PlayerSpawnObject', {{ply, 'Player'}, {model, 'string'}})
 
 	if DPP.IsModelBlocked(model, ply) then 
-		LogTry(ply, 'PHRASE:log_obj', model)
+		LogTry(ply, '#log_obj', model)
 		return false 
 	end
 
 	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
-		LogTry(ply, 'PHRASE:log_obj', model)
+		LogTry(ply, '#log_obj', model)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'spam_removed'), 1)
 		return false 
 	end
 
 	if not CheckBlocked2(ply, model) then 
-		LogTry(ply, 'PHRASE:log_obj', model)
+		LogTry(ply, '#log_obj', model)
 		return false 
 	end
 end
@@ -552,18 +552,18 @@ function SpawnFunctions.PlayerSpawnRagdoll(ply, model)
 	DPP.AssertArguments('PlayerSpawnRagdoll', {{ply, 'Player'}, {model, 'string'}})
 
 	if DPP.IsModelBlocked(model, ply) then 
-		LogTry(ply, 'PHRASE:log_ragdoll', model)
+		LogTry(ply, '#log_ragdoll', model)
 		return false 
 	end
 
 	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
-		LogTry(ply, 'PHRASE:log_ragdoll', model)
+		LogTry(ply, '#log_ragdoll', model)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'spam_removed'), 1)
 		return false 
 	end
 
 	if not CheckBlocked2(ply, model) then 
-		LogTry(ply, 'PHRASE:log_ragdoll', model)
+		LogTry(ply, '#log_ragdoll', model)
 		return false 
 	end
 end
@@ -572,28 +572,28 @@ function SpawnFunctions.PlayerSpawnVehicle(ply, model, class)
 	DPP.AssertArguments('PlayerSpawnVehicle', {{ply, 'Player'}, {model, 'string'}, {class, 'string'}})
 
 	if DPP.IsModelBlocked(model, ply) then 
-		LogTry(ply, 'PHRASE:log_vehicle', model)
+		LogTry(ply, '#log_vehicle', model)
 		return false 
 	end
 
 	if CheckEntityLimit(ply, class) then 
-		LogTry(ply, 'PHRASE:log_vehicle', model)
+		LogTry(ply, '#log_vehicle', model)
 		return false 
 	end
 
 	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
-		LogTry(ply, 'PHRASE:log_vehicle', model)
+		LogTry(ply, '#log_vehicle', model)
 		DPP.Notify(ply, DPP.PPhrase('spam_removed'), 1)
 		return false 
 	end
 
 	if not CheckBlocked2(ply, model) then 
-		LogTry(ply, 'PHRASE:log_vehicle', model)
+		LogTry(ply, '#log_vehicle', model)
 		return false 
 	end
 
 	if DPP.IsRestrictedVehicle(class, ply) then 
-		LogTry(ply, 'PHRASE:log_vehicle', class)
+		LogTry(ply, '#log_vehicle', class)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'vehicle_restricted'), 1)
 		return false 
 	end
@@ -603,13 +603,13 @@ function SpawnFunctions.PlayerSpawnSENT(ply, ent)
 	DPP.AssertArguments('PlayerSpawnSENT', {{ply, 'Player'}, {ent, 'string'}})
 
 	if DPP.IsRestrictedSENT(ent, ply) then 
-		LogTry(ply, 'PHRASE:log_sent', 'N/A', ent)
+		LogTry(ply, '#log_sent', 'N/A', ent)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'entity_restricted'), 1)
 		return false 
 	end
 
 	if CheckEntityLimit(ply, ent) then 
-		LogTry(ply, 'PHRASE:log_sent', model)
+		LogTry(ply, '#log_sent', model)
 		return false 
 	end
 end
@@ -618,13 +618,13 @@ function SpawnFunctions.PlayerSpawnSWEP(ply, ent)
 	DPP.AssertArguments('PlayerSpawnSWEP', {{ply, 'Player'}, {ent, 'string'}})
 
 	if DPP.IsRestrictedSWEP(ent, ply) then 
-		LogTry(ply, 'PHRASE:log_swep', 'N/A', ent)
+		LogTry(ply, '#log_swep', 'N/A', ent)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'weapon_restricted'), 1)
 		return false 
 	end
 
 	if CheckEntityLimit(ply, ent) then 
-		LogTry(ply, 'PHRASE:log_swep', model)
+		LogTry(ply, '#log_swep', model)
 		return false 
 	end
 end
@@ -634,20 +634,20 @@ function SpawnFunctions.PlayerGiveSWEP(ply, class, tab)
 
 	local can = SpawnFunctions.PlayerSpawnSWEP(ply, class)
 	if can == false then return false end
-	LogSpawnC(ply, class, 'PHRASE:log_swep', tab and (tab.Model or tab.WorldModel) or 'N/A')
+	LogSpawnC(ply, class, '#log_swep', tab and (tab.Model or tab.WorldModel) or 'N/A')
 end
 
 function SpawnFunctions.PlayerSpawnNPC(ply, ent)
 	DPP.AssertArguments('PlayerSpawnNPC', {{ply, 'Player'}, {ent, 'string'}})
 
 	if DPP.IsRestrictedNPC(ent, ply) then 
-		LogTry(ply, 'PHRASE:log_npc', 'N/A', ent)
+		LogTry(ply, '#log_npc', 'N/A', ent)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'npc_restricted'), 1)
 		return false 
 	end
 
 	if CheckEntityLimit(ply, ent) then 
-		LogTry(ply, 'PHRASE:log_npc', model)
+		LogTry(ply, '#log_npc', model)
 		return false 
 	end
 end
@@ -939,7 +939,7 @@ function DPP.OverrideE2()
 	function Compiler:GetFunction(instr, Name, Args)
 		if self.DPly then
 			if DPP.IsRestrictedE2Function(Name, self.DPly) then
-				SimpleLog(team.GetColor(self.DPly:Team()), self.DPly:Nick(), color_white, '<' .. self.DPly:SteamID() .. '>', RED, 'PHRASE:log_tried', GRAY, 'PHRASE:log_tried_f||' .. Name)
+				SimpleLog(team.GetColor(self.DPly:Team()), self.DPly:Nick(), color_white, '<' .. self.DPly:SteamID() .. '>', RED, '#log_tried', GRAY, '#log_tried_f||' .. Name)
 				self:Error(DPP.PPhrase(self.DPly, 'e2_func_restricted', name), instr)
 				return
 			end

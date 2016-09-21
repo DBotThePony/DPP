@@ -1728,7 +1728,7 @@ function DPP.FormatPlayer(ply)
 	table.insert(t, team.GetColor(ply:Team()))
 	
 	local nick = ply:Nick()
-	table.insert(t, 'NPHRASE:' .. nick)
+	table.insert(t, '!#' .. nick)
 	
 	if ply.SteamName and ply:SteamName() ~= nick then
 		table.insert(t, ' (' .. ply:SteamName() .. ')')
@@ -1792,7 +1792,7 @@ function DPP.Format(...)
 		end
 
 		if Type == 'string' then
-			if v == 'Console' or v == 'PHRASE:Console' then
+			if v == 'Console' or v == '#Console' then
 				table.insert(repack, ConsoleColor)
 				table.insert(repack, v)
 			else
@@ -1813,17 +1813,17 @@ function DPP.PreprocessPhrases(...)
 			continue
 		end
 		
-		if v:sub(1, 8) == 'NPHRASE:' then
-			table.insert(repack, v:sub(9))
+		if v:sub(1, 2) == '!#' then
+			table.insert(repack, v:sub(3))
 			continue
 		end
 		
-		if v:sub(1, 7) ~= 'PHRASE:' then
+		if v:sub(1, 1) ~= '#' then
 			table.insert(repack, v)
 			continue
 		end
 		
-		local raw = v:sub(8)
+		local raw = v:sub(2)
 		local args = string.Explode('||', raw)
 		local id = table.remove(args, 1)
 		

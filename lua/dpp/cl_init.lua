@@ -1039,7 +1039,7 @@ net.Receive('DPP.ReceiveFriendList', function()
 end)
 
 net.Receive('DPP.InspectEntity', function()
-	DPP.Notify(DPP.PreprocessPhrases('PHRASE:look_into_console'), NOTIFY_GENERIC)
+	DPP.Notify(DPP.PreprocessPhrases('#look_into_console'), NOTIFY_GENERIC)
 	
 	local ply = LocalPlayer()
 	local tr = util.TraceLine{
@@ -1049,24 +1049,24 @@ net.Receive('DPP.InspectEntity', function()
 		filter = ply
 	}
 	
-	DPP.Message('PHRASE:inspect_client')
+	DPP.Message('#inspect_client')
 	
 	local ent = tr.Entity
 	
 	if not IsValid(ent) then
-		DPP.Message('PHRASE:inspect_noentity')
+		DPP.Message('#inspect_noentity')
 	else
-		DPP.Message('PHRASE:inspect_class', color_white, ent:GetClass())
-		DPP.Message('PHRASE:inspect_pos', color_white, DPP.ToString(ent:GetPos()))
-		DPP.Message('PHRASE:inspect_ang', color_white, DPP.ToString(ent:GetAngles()))
-		DPP.Message('PHRASE:inspect_table', color_white, DPP.ToString(table.Count(ent:GetTable())))
-		DPP.Message('PHRASE:inspect_hp', color_white, DPP.ToString(ent:Health()))
-		DPP.Message('PHRASE:inspect_mhp', color_white, DPP.ToString(ent:GetMaxHealth()))
-		DPP.Message('PHRASE:inspect_owner', color_white, DPP.ToString(DPP.GetOwner(ent)))
+		DPP.Message('#inspect_class', color_white, ent:GetClass())
+		DPP.Message('#inspect_pos', color_white, DPP.ToString(ent:GetPos()))
+		DPP.Message('#inspect_ang', color_white, DPP.ToString(ent:GetAngles()))
+		DPP.Message('#inspect_table', color_white, DPP.ToString(table.Count(ent:GetTable())))
+		DPP.Message('#inspect_hp', color_white, DPP.ToString(ent:Health()))
+		DPP.Message('#inspect_mhp', color_white, DPP.ToString(ent:GetMaxHealth()))
+		DPP.Message('#inspect_owner', color_white, DPP.ToString(DPP.GetOwner(ent)))
 		
-		DPP.Message('PHRASE:inspect_model', color_white, DPP.ToString(ent:GetModel()))
-		DPP.Message('PHRASE:inspect_skin', color_white, DPP.ToString(ent:GetSkin()))
-		DPP.Message('PHRASE:inspect_bodygroups', color_white, DPP.ToString(table.Count(ent:GetBodyGroups() or {})))
+		DPP.Message('#inspect_model', color_white, DPP.ToString(ent:GetModel()))
+		DPP.Message('#inspect_skin', color_white, DPP.ToString(ent:GetSkin()))
+		DPP.Message('#inspect_bodygroups', color_white, DPP.ToString(table.Count(ent:GetBodyGroups() or {})))
 	end
 end)
 

@@ -30,7 +30,7 @@ local function GiveEntityChance(ent, funcToCall, ...)
 	local status = table.remove(stuff, 1)
 	
 	if not status then
-		DPP.DoEcho(RED, 'PHRASE:givechance_error', GRAY, 'PHRASE:givechance_Entity', color_white, tostring(ent), GRAY, 'PHRASE:givechance_desc||' .. funcToCall, color_white, stuff[1])
+		DPP.DoEcho(RED, '#givechance_error', GRAY, '#givechance_Entity', color_white, tostring(ent), GRAY, '#givechance_desc||' .. funcToCall, color_white, stuff[1])
 		return nil
 	end
 	
@@ -151,7 +151,7 @@ function DPP.ToolgunTouch(ply, tr, mode)
 			if not DPP.GetConVar('no_tool_log') and not DPP.GetConVar('no_tool_fail_log') and ply._DPP_LastToolgunLog < CurTime() then
 				ply._DPP_LastToolgunLog = CurTime() + 0.2
 				local logFunc = not DPP.GetConVar('no_tool_log_echo') and DPP.SimpleLog or DPP.LogIntoFile
-				logFunc(ply, DPP.SpawnFunctions.SPACE, RED, 'PHRASE:log_tried', GRAY, 'PHRASE:log_tried_t', DPP.SpawnFunctions.SPACE2, 'PHRASE:log_tool_on_f||' .. mode .. '||' .. tostring(tr.Entity))
+				logFunc(ply, DPP.SpawnFunctions.SPACE, RED, '#log_tried', GRAY, '#log_tried_t', DPP.SpawnFunctions.SPACE2, '#log_tool_on_f||' .. mode .. '||' .. tostring(tr.Entity))
 			end
 		end
 
@@ -165,7 +165,7 @@ function DPP.ToolgunTouch(ply, tr, mode)
 		if not DPP.GetConVar('no_tool_log') and ply._DPP_LastToolgunLog < CurTime() then 
 			ply._DPP_LastToolgunLog = CurTime() + 0.2
 			local logFunc = not DPP.GetConVar('no_tool_log_echo') and DPP.SimpleLog or DPP.LogIntoFile
-			logFunc(ply, DPP.SpawnFunctions.SPACE, GRAY, 'PHRASE:log_tool_used', DPP.SpawnFunctions.SPACE2, color_white, mode, GRAY, 'PHRASE:log_tool_on', tostring(tr.Entity)) 
+			logFunc(ply, DPP.SpawnFunctions.SPACE, GRAY, '#log_tool_used', DPP.SpawnFunctions.SPACE2, color_white, mode, GRAY, '#log_tool_on', tostring(tr.Entity)) 
 		end
 	end
 end

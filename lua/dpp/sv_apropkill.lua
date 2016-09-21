@@ -30,7 +30,7 @@ function DPP.CheckDroppedEntity(ply, ent)
 		if can == false then continue end
 
 		timer.Simple(0, function()
-			DPP.Notify(ply, 'PHRASE:prop_stuck_in_player')
+			DPP.Notify(ply, '#prop_stuck_in_player')
 			DPP.SetGhosted(ent, true)
 		end)
 
