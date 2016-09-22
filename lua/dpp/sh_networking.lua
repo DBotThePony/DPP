@@ -228,10 +228,50 @@ function DPP.ReadVarchar()
 	return str
 end
 
+function DPP.WriteBigInt(num, base)
+	base = base or 63
+	local reply = {}
+	local signed = num < 0
+	num = math.abs(num)
+	
+	while num > 0 do
+		local div = num % 2
+		num = (num - div) / 2
+		table.insert(reply, div)
+	end
+	
+	for i = 1, base do
+		net.WriteBit(reply[base - i + 1] or 0)
+	end
+	
+	net.WriteBool(signed)
+end
+
+local preProcessed = {}
+
+for i = 1, 127 do
+	preProcessed[i] = 2 ^ (i - 1)
+end
+
+function DPP.ReadBigInt(base)
+	base = base or 63
+	local reply = {}
+	local output = 0
+	
+	for i = 1, base do
+		output = output + preProcessed[base - i + 1] * net.ReadBit()
+	end
+	
+	local signed = net.ReadBool()
+	
+	return not signed and output or -output
+end
+
 DPP_NETTYPE_NUMBER = 1
 DPP_NETTYPE_STRING = 2
 DPP_NETTYPE_COLOR = 3
 DPP_NETTYPE_BOOL = 4
+DPP_NETTYPE_PLAYER = 5
 
 function DPP.WriteMessageTable(tab)
 	net.WriteUInt(#tab, 8)
@@ -242,9 +282,12 @@ function DPP.WriteMessageTable(tab)
 		if T == 'string' then
 			net.WriteUInt(DPP_NETTYPE_STRING, 6)
 			DPP.WriteVarchar(v)
+		elseif T == 'Player' then
+			net.WriteUInt(DPP_NETTYPE_PLAYER, 6)
+			net.WriteUInt(v:EntIndex(), 8)
 		elseif T == 'number' then
 			net.WriteUInt(DPP_NETTYPE_NUMBER, 6)
-			net.WriteInt(v, 32)
+			DPP.WriteBigInt(v)
 		elseif T == 'boolean' then
 			net.WriteUInt(DPP_NETTYPE_BOOL, 6)
 			net.WriteBool(v)
@@ -265,9 +308,11 @@ function DPP.ReadMessageTable()
 		if T == DPP_NETTYPE_STRING then
 			table.insert(reply, DPP.ReadVarchar())
 		elseif T == DPP_NETTYPE_NUMBER then
-			table.insert(reply, net.ReadInt(32))
+			table.insert(reply, DPP.ReadBigInt())
 		elseif T == DPP_NETTYPE_BOOL then
 			table.insert(reply, net.ReadBool())
+		elseif T == DPP_NETTYPE_PLAYER then
+			table.insert(reply, Entity(net.ReadUInt(8)))
 		elseif T == DPP_NETTYPE_COLOR then
 			table.insert(reply, net.ReadColor())
 		end
