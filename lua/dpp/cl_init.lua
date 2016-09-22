@@ -955,11 +955,11 @@ end
 
 local LastSound = 0
 
-function DPP.Notify(message, type)
+function DPP.Notify(message, Type)
 	if LastSound < CurTime() then
-		if type == NOTIFY_ERROR then
+		if Type == NOTIFY_ERROR then
 			surface.PlaySound('buttons/button10.wav')
-		elseif type == NOTIFY_UNDO then
+		elseif Type == NOTIFY_UNDO then
 			surface.PlaySound('buttons/button15.wav')
 		else
 			surface.PlaySound('npc/turret_floor/click1.wav')
@@ -971,13 +971,21 @@ function DPP.Notify(message, type)
 		DPP.Message(unpack(message))
 
 		local str = ''
+		
 		for k, v in pairs(message) do
-			if isstring(v) then str = str .. v end
+			if type(v) == 'string' then
+				if v:sub(1, 6) == '<STEAM' then
+					continue
+				end
+				
+				str = str .. v
+			end
 		end
-		notification.AddLegacy(str, type, 5)
+
+		notification.AddLegacy(str, Type, 5)
 	else
 		DPP.Message(message)
-		notification.AddLegacy(message, type, 5)
+		notification.AddLegacy(message, Type, 5)
 	end
 end
 

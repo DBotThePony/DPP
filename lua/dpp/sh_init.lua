@@ -1740,10 +1740,10 @@ function DPP.FormatPlayer(ply)
 	return t
 end
 
-function DPP.Format(...)
+function DPP.TFormat(arg)
 	local repack = {}
 
-	for k, v in ipairs{...} do
+	for k, v in ipairs(arg) do
 		local Type = type(v)
 		local IsEntity = DPP.IsEntity(v)
 
@@ -1802,6 +1802,10 @@ function DPP.Format(...)
 	end
 
 	return repack
+end
+
+function DPP.Format(...)
+	return DPP.TFormat{...}
 end
 
 function DPP.PreprocessPhrases(...)
