@@ -958,11 +958,11 @@ local LastSound = 0
 function DPP.Notify(message, type)
 	if LastSound < CurTime() then
 		if type == NOTIFY_ERROR then
-			surface.PlaySound("buttons/button10.wav")
+			surface.PlaySound('buttons/button10.wav')
 		elseif type == NOTIFY_UNDO then
-			surface.PlaySound("buttons/button15.wav")
+			surface.PlaySound('buttons/button15.wav')
 		else
-			surface.PlaySound("ambient/water/drip" .. math.random(1, 4) .. ".wav")
+			surface.PlaySound('npc/turret_floor/click1.wav')
 		end
 		LastSound = CurTime() + 0.1
 	end
