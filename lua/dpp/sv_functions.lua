@@ -310,6 +310,22 @@ function DPP.DeleteEntityUndo(ent)
 	end
 end
 
+function DPP.DeleteEntityUndoByTable(target)
+	local tab = undo.GetTable()
+
+	for uid, data in pairs(tab) do
+		for index, udata in pairs(data) do
+			udata.Entities = udata.Entities or {}
+
+			for k, v in pairs(udata.Entities) do
+				if DPP.HasValueLight(target, v) then
+					udata.Entities[k] = NULL
+				end
+			end
+		end
+	end
+end
+
 function DPP.TransferUndoTo(source, target)
 	local tab = undo.GetTable()
 

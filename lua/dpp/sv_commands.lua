@@ -375,9 +375,29 @@ DPP.Commands = {
 		undo.Create('TransferedProp')
 		undo.SetPlayer(found)
 		undo.AddEntity(ent)
-		undo.Finish()
+		
 
 		DPP.SimpleLog(ply, Gray, '#com_transfer', color_white, ent, Gray, '#com_to', found)
+		local verbose_logging = DPP.GetConVar('verbose_logging')
+		
+		local toRemove = {}
+		
+		for k, ent2 in ipairs(ent.__DPP_BundledEntities) do
+			if IsValid(ent2) and DPP.GetOwner(ent2) == ply then
+				DPP.SetOwner(ent2, found)
+				undo.AddEntity(ent2)
+				table.insert(toRemove, ent2)
+				
+				if verbose_logging then
+					DPP.SimpleLog(ply, Gray, '#com_transfer', color_white, ent2, Gray, '#com_to', found)
+				end
+			end
+		end
+		
+		DPP.DeleteEntityUndoByTable(toRemove)
+		
+		undo.Finish()
+		
 		DPP.Notify(ply, DPP.Format('#com_owning_transfer', found))
 
 		return true

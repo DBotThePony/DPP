@@ -146,6 +146,14 @@ function DPP.IsPlayer(obj)
 	return isentity(obj) and IsValid(obj) and obj:IsPlayer()
 end
 
+function DPP.HasValueLight(tab, val)
+	for i = 1, #tab do
+		if val == tab[i] then return true end
+	end
+
+	return false
+end
+
 if SERVER then
 	include('sv_init.lua')
 else

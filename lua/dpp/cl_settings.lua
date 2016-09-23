@@ -2686,13 +2686,7 @@ function SettingsClass.FriendListRowDataLayout(self, parent)
 	SteamID:SetSize(parent:ColumnWidth(2), height)
 end
 
-function SettingsClass.HasValueLight(tab, val)
-	for k, v in ipairs(tab) do
-		if v == val then return true end
-	end
-	
-	return false
-end
+SettingsClass.HasValueLight = DPP.HasValueLight
 
 function SettingsClass.CalculatePlaceholderColor(col)
 	local newCol = Color(255 - col.r, 255 - col.g, 255 - col.b, 255 - col.a)

@@ -764,6 +764,15 @@ function PostEntityCreated(ent, Timestamp)
 	local iGhost = DPP.GetGhosted(ent)
 	local wasChecked = DPP.IsChekedByAntispam(ent)
 	local shouldRemove = false
+	local bundledEntities = {ent}
+	
+	if not ent.__DPP_BundledEntities then
+		ent.__DPP_BundledEntities = bundledEntities
+	elseif not DPP.HasValueLight(ent.__DPP_BundledEntities, ent) then
+		table.insert(ent.__DPP_BundledEntities, ent)
+	end
+	
+	bundledEntities = ent.__DPP_BundledEntities
 
 	local function AntispamHit(ply)
 		if wasChecked then return end
@@ -800,12 +809,24 @@ function PostEntityCreated(ent, Timestamp)
 					o1 = o2
 					if DPP.GetGhosted(ent2) then DPP.SetGhosted(ent1, true) end
 					CheckAfter(o2, ent1, false, spawn_checks_noaspam)
+					
+					ent1.__DPP_BundledEntities = bundledEntities
 				end
 
 				if t2 == Timestamp and not IsValid(o2) and IsValid(o1) then
 					o2 = o1
 					if DPP.GetGhosted(ent1) then DPP.SetGhosted(ent2, true) end
 					CheckAfter(o1, ent2, false, spawn_checks_noaspam)
+					
+					ent2.__DPP_BundledEntities = bundledEntities
+				end
+				
+				if not DPP.HasValueLight(bundledEntities, ent2) then
+					table.insert(bundledEntities, ent2)
+				end
+				
+				if not DPP.HasValueLight(bundledEntities, ent1) then
+					table.insert(bundledEntities, ent1)
 				end
 			end
 
@@ -843,6 +864,10 @@ function PostEntityCreated(ent, Timestamp)
 				if DPP.IsOwned(v) then continue end
 				if v.DPP_CHECK_HIT == Timestamp then continue end
 				v.DPP_CHECK_HIT = Timestamp
+				
+				if not DPP.HasValueLight(bundledEntities, v) then
+					table.insert(bundledEntities, v)
+				end
 
 				AntispamHit(get)
 
@@ -859,6 +884,10 @@ function PostEntityCreated(ent, Timestamp)
 	if shouldRemove then
 		SafeRemoveEntity(ent)
 		return
+	end
+	
+	for k, ent in ipairs(bundledEntities) do
+		ent.__DPP_BundledEntities = bundledEntities
 	end
 
 	if iGhost and not DPP.GetGhosted(ent) then
@@ -915,9 +944,9 @@ function DPP.SetPlayerMeta(self, ply)
 
 	CheckAfter(ply, self)
 
-	self:SetVar("Founder", ply)
-	self:SetVar("FounderIndex", ply:UniqueID())
-	self:SetNetworkedString("FounderName", ply:Nick())
+	self:SetVar('Founder', ply)
+	self:SetVar('FounderIndex', ply:UniqueID())
+	self:SetNetworkedString('FounderName', ply:Nick())
 
 	return DPP.SetOwner(self, ply)
 end
