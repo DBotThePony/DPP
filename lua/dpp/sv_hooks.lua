@@ -979,7 +979,13 @@ local function Tick()
 	for k, data in ipairs(TimeredEntities) do
 		if data[2] ~= cTime then
 			table.insert(toRemove, k)
-			PostEntityCreated(data[1], data[2])
+			local status, err = pcall(PostEntityCreated, data[1], data[2])
+			
+			if not status then
+				table.remove(TimeredEntities, k)
+				DPP.ThrowError(err, 1, true)
+				break
+			end
 		end
 	end
 	
