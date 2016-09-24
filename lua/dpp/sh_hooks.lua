@@ -474,21 +474,31 @@ function DPP.CanPickupItemTouch(ply, ent)
 	end
 end
 
---I think this would be useful shared
-hook.Add('PlayerCanPickupItem', '!DPP.Hooks', DPP.CanPickupItemTouch, -1)
-hook.Add('PlayerCanPickupWeapon', '!DPP.Hooks', DPP.CanPickupItemTouch, -1)
+local HooksToRegister = {
+	--I think this would be useful shared
+	PlayerCanPickupItem = DPP.CanPickupItemTouch,
+	PlayerCanPickupWeapon = DPP.CanPickupItemTouch,
+	
+	--Default shared hooks
+	GravGunPunt = DPP.GravGunPuntTouch,
+	OnPhysgunReload = DPP.PhysgunReloadTouch,
+	GravGunPickupAllowed = DPP.GravgunTouch,
+	PhysgunPickup = DPP.PhysgunTouch,
+	CanPlayerEnterVehicle = DPP.CanPlayerEnterVehicleTouch,
+	CanEditVariable = DPP.CanEditVariableTouch,
+	CanDrive = DPP.CanDriveTouch,
+	PlayerUse = DPP.UseTouch,
+	CanTool = DPP.ToolgunTouch,
+	CanProperty = DPP.PropertyTouch,
+}
 
---Maximal Priority
-hook.Add('GravGunPunt', '!DPP.Hooks', DPP.GravGunPuntTouch, -1)
-hook.Add('OnPhysgunReload', '!DPP.Hooks', DPP.PhysgunReloadTouch, -1)
-hook.Add('GravGunPickupAllowed', '!DPP.Hooks', DPP.GravgunTouch, -1)
-hook.Add('PhysgunPickup', '!DPP.Hooks', DPP.PhysgunTouch, -1)
-hook.Add('CanProperty', '!DPP.Hooks', DPP.PropertyTouch, -1)
-hook.Add('CanTool', '!DPP.Hooks', DPP.ToolgunTouch, -1)
-hook.Add('PlayerUse', '!DPP.Hooks', DPP.UseTouch, -1)
-hook.Add('CanDrive', '!DPP.Hooks', DPP.CanDriveTouch, -1)
-hook.Add('CanEditVariable', '!DPP.Hooks', DPP.CanEditVariableTouch, -1)
-hook.Add('CanPlayerEnterVehicle', '!DPP.Hooks', DPP.CanPlayerEnterVehicleTouch, -1)
+local function RegisterHooks()
+	for k, v in pairs(HooksToRegister) do
+		hook.Add(k, '!DPP.Hooks', v, -1)
+	end
+end
+
+timer.Simple(0, RegisterHooks)
 
 function DPP.OverrideE2Adv()
 	if not EXPADV then return end
