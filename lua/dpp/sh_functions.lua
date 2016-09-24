@@ -299,10 +299,13 @@ end
 timer.Create('DPP.QueueCommand', 0.2, 0, CommandTimer)
 timer.Create('DPP.QueueFunction', 0.2, 0, FuncTimer)
 
-local RECURSIVE_MEM = {}
 local MEM_TABLE_CACHE = {}
 
 local function RecursiveFunc(tab, what, to)
+	if not tab then return end
+	if MEM_TABLE_CACHE[tab] then return end
+	MEM_TABLE_CACHE[tab] = true
+	
 	for k, v in pairs(tab) do
 		if v == what then
 			tab[k] = to
@@ -311,10 +314,15 @@ local function RecursiveFunc(tab, what, to)
 			MEM_TABLE_CACHE[v] = true
 			RecursiveFunc(v, what, to)
 		end
+		
+		if DPP.IsEntity(v) and not v:IsPlayer() then
+			RecursiveFunc(v:GetTable(), what, to)
+		end
 	end
 end
 
 function DPP.TableRecursiveReplace(tab, what, to)
+	MEM_TABLE_CACHE = {}
 	RecursiveFunc(tab, what, to)
 	return tab
 end
