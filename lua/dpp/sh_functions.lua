@@ -298,3 +298,23 @@ end
 
 timer.Create('DPP.QueueCommand', 0.2, 0, CommandTimer)
 timer.Create('DPP.QueueFunction', 0.2, 0, FuncTimer)
+
+local RECURSIVE_MEM = {}
+local MEM_TABLE_CACHE = {}
+
+local function RecursiveFunc(tab, what, to)
+	for k, v in pairs(tab) do
+		if v == what then
+			tab[k] = to
+		elseif type(v) == 'table' then
+			if MEM_TABLE_CACHE[v] then continue end -- Prevent recursion
+			MEM_TABLE_CACHE[v] = true
+			RecursiveFunc(v, what, to)
+		end
+	end
+end
+
+function DPP.TableRecursiveReplace(tab, what, to)
+	RecursiveFunc(tab, what, to)
+	return tab
+end
