@@ -705,28 +705,58 @@ local function DPP_ReplacedSetPlayer(self, ply)
 end
 
 local PostEntityCreated
+local TimeredEntities = {}
 
 local function OnEntityCreated(ent)
 	local Timestamp = CurTime()
 	Timestamps[ent] = Timestamp
 
-	timer.Simple(0, function()
-		PostEntityCreated(ent, Timestamp)
-	end)
+	table.insert(TimeredEntities, {ent, Timestamp})
 end
 
 local RECURSIVE_MEM = {}
 local MEM_TABLE_CACHE = {}
 
-local function HaveValueLight(tab, val)
-	for k = 1, #tab do
-		if tab[k] == val then return true end
+local HaveValueLight = DPP.HaveValueLight
+
+local function Track(tab, entToTrack)
+	if not DPP.GetConVar('strict_spawn_checks_track') then return end
+	local meta = getmetatable(tab) or {}
+	if meta.DPP_TRACKED then return end
+	if tab.__newindex or tab.__index or meta.__newindex or meta.__index then return end
+	
+	local meta = {}
+	meta.DPP_TRACKED = true
+	function meta.__newindex(self, key, val)
+		rawset(self, key, val)
+		
+		if not DPP.IsEntity(val) or val:IsPlayer() or not val:IsValid() or not entToTrack:IsValid() or not DPP.GetOwner(entToTrack):IsValid() or Timestamps[val] ~= CurTime() then return end
+		
+		CheckAfter(DPP.GetOwner(entToTrack), val, false, DPP.GetConVar('spawn_checks_noaspam'))
+		local bundled = entToTrack.__DPP_BundledEntities or {}
+		
+		if not DPP.HasValueLight(bundled, entToTrack) then
+			table.insert(bundled, entToTrack)
+		end
+		
+		if not DPP.HasValueLight(bundled, val) then
+			table.insert(bundled, val)
+		end
+		
+		for k, v in ipairs(val.__DPP_BundledEntities or {}) do
+			if not DPP.HasValueLight(bundled, v) then
+				table.insert(bundled, v)
+			end
+		end
+		
+		val.__DPP_BundledEntities = bundled
+		entToTrack.__DPP_BundledEntities = bundled
 	end
 
-	return false
+	setmetatable(tab, meta)
 end
 
-local function FindEntitiesRecursiveFunc(tab)
+local function FindEntitiesRecursiveFunc(root, tab, stopRecursion)
 	for k, v in pairs(tab) do
 		local t = type(v)
 
@@ -736,20 +766,28 @@ local function FindEntitiesRecursiveFunc(tab)
 			local eTab = v:GetTable()
 
 			if eTab then
-				FindEntitiesRecursiveFunc(eTab)
+				Track(eTab, v)
+				FindEntitiesRecursiveFunc(root, eTab)
+			end
+			
+			local sTab = v:GetSaveTable()
+			
+			if sTab then
+				FindEntitiesRecursiveFunc(root, sTab, true)
 			end
 		end
 
-		if t == 'table' then
+		if t == 'table' and not stopRecursion then
 			if MEM_TABLE_CACHE[v] then continue end --Prevent recursion
 			MEM_TABLE_CACHE[v] = true
-			FindEntitiesRecursiveFunc(v)
+			Track(v, root)
+			FindEntitiesRecursiveFunc(root, v)
 		end
 	end
 end
 
-local function FindEntitiesRecursive(tab)
-	FindEntitiesRecursiveFunc(tab)
+local function FindEntitiesRecursive(root, tab)
+	FindEntitiesRecursiveFunc(root, tab)
 	local reply = RECURSIVE_MEM
 	RECURSIVE_MEM = {}
 	MEM_TABLE_CACHE = {}
@@ -856,11 +894,11 @@ function PostEntityCreated(ent, Timestamp)
 		local get = DPP.GetOwner(ent)
 
 		if IsValid(get) then
-			local Ents = FindEntitiesRecursive(ent:GetTable())
+			local Ents = FindEntitiesRecursive(ent, ent:GetTable())
 
 			for k, v in ipairs(Ents) do
 				if not IsValid(v) then continue end
-				if Timestamps[v] ~= Timestamp then continue end
+				if not DPP.GetConVar('strict_spawn_checks_timestamps') and Timestamps[v] ~= Timestamp then continue end
 				if DPP.IsOwned(v) then continue end
 				if v.DPP_CHECK_HIT == Timestamp then continue end
 				v.DPP_CHECK_HIT = Timestamp
@@ -934,8 +972,25 @@ function PostEntityCreated(ent, Timestamp)
 	end
 end
 
+local function Tick()
+	local toRemove = {}
+	local cTime = CurTime()
+	
+	for k, data in ipairs(TimeredEntities) do
+		if data[2] ~= cTime then
+			table.insert(toRemove, k)
+			PostEntityCreated(data[1], data[2])
+		end
+	end
+	
+	for i, v in ipairs(toRemove) do
+		table.remove(TimeredEntities, v)
+	end
+end
+
 hook.Add('OnEntityCreated', 'DPP.OnEntityCreated', OnEntityCreated)
 hook.Add('EntityRemoved', 'DPP.EntityRemoved', EntityRemoved)
+hook.Add('Tick', 'DPP.EntityRemoved', Tick)
 
 function DPP.SetPlayerMeta(self, ply)
 	--Compability

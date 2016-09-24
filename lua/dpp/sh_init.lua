@@ -154,6 +154,8 @@ function DPP.HasValueLight(tab, val)
 	return false
 end
 
+DPP.HaveValueLight = DPP.HasValueLight
+
 if SERVER then
 	include('sv_init.lua')
 else
@@ -511,6 +513,18 @@ DPP.Settings = {
 		type = 'bool',
 		value = '1',
 		desc = '[Experimental/Beta] (Very) Strict spawn checks.\nTARDIS, Combine APC and other\naddons like that would be owned by spawned player',
+	},
+
+	['strict_spawn_checks_timestamps'] = {
+		type = 'bool',
+		value = '1',
+		desc = '[Experimental] Strict spawn check ignores\nspawn timestamps <lenny face>',
+	},
+
+	['strict_spawn_checks_track'] = {
+		type = 'bool',
+		value = '1',
+		desc = '[Experimental] Track entities tables for changes.\nThis is a top of entity spawn tracking',
 	},
 
 	['spawn_checks_noaspam'] = {

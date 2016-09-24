@@ -551,6 +551,8 @@ local MiscConVars = {
 	'prevent_explosions_crash',
 	'advanced_spawn_checks',
 	'strict_spawn_checks',
+	'strict_spawn_checks_timestamps',
+	'strict_spawn_checks_track',
 	'experemental_spawn_checks',
 	'spawn_checks_noaspam',
 	'allow_damage_vehicles',
@@ -3111,7 +3113,7 @@ local function Access(id)
 	return AccessCache[id]
 end
 
-timer.Create('DPP.Settings.AccessCache', 10, 0, function()
+local function AccessTimer()
 	local ply = LocalPlayer()
 	if not IsValid(ply) then return end
 
@@ -3126,7 +3128,9 @@ timer.Create('DPP.Settings.AccessCache', 10, 0, function()
 			SettingsClass.Accesses[id] = result
 		end)
 	end
-end)
+end
+
+timer.Create('DPP.Settings.AccessCache', 10, 0, AccessTimer)
 
 local BlockedPropetries = {}
 
@@ -3633,4 +3637,7 @@ end
 hook.Add('DPP.LanguageChanged', 'DPP.PropertyMenus', UpdatePhrases)
 
 InitializeCache()
+if IsValid(LocalPlayer()) then
+	AccessTimer()
+end
 timer.Simple(0, UpdatePhrases)
