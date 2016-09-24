@@ -17,6 +17,23 @@ limitations under the License.
 
 local GhostColor = Color(255, 255, 255, 224)
 
+function DPP.SetOwnerFull(ent, owner, knownOwner)
+	knownOwner = knownOwner or DPP.GetOwner(ent)
+	DPP.SetOwner(ent, owner)
+	
+	for k, ent2 in ipairs(ent.__DPP_BundledEntities) do
+		if IsValid(ent2) then
+			DPP.SetOwner(ent2, owner)
+			DPP.TableRecursiveReplace(ent2:GetTable(), knownOwner, owner)
+		end
+	end
+	
+	DPP.TableRecursiveReplace(ent:GetTable(), knownOwner, owner)
+end
+
+DPP.SetOwnerRecursive = DPP.SetOwnerFull
+DPP.SetOwnerTable = DPP.SetOwnerFull
+
 function DPP.SetGhosted(ent, status)
 	if not IsValid(ent) then return end
 	if ent:IsPlayer() then return end
