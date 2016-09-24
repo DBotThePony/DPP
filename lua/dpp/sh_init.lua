@@ -512,7 +512,7 @@ DPP.Settings = {
 	['strict_spawn_checks'] = {
 		type = 'bool',
 		value = '1',
-		desc = '[Experimental/Beta] (Very) Strict spawn checks.\nTARDIS, Combine APC and other\naddons like that would be owned by spawned player',
+		desc = '[Experimental/Beta] (Very) Strict spawn checks.\n85%% of spawned entities in unusual ways is detected\nby that option.',
 	},
 
 	['strict_spawn_checks_timestamps'] = {
@@ -524,7 +524,7 @@ DPP.Settings = {
 	['strict_spawn_checks_track'] = {
 		type = 'bool',
 		value = '1',
-		desc = '[Experimental] Track entities tables for changes.\nThis is a top of entity spawn tracking',
+		desc = '[Experimental] Track entities tables for changes.\nThis is a top of entity spawn tracking\nThis is 15%% of unusual ways.',
 	},
 
 	['spawn_checks_noaspam'] = {
@@ -1469,7 +1469,7 @@ function DPP.PrintMissingPhrases(lang)
 	local reply = DPP.MissingPhrases(lang)
 	
 	for k, v in SortedPairs(reply) do
-		print(k .. ' = \'' .. v .. '\',')
+		print(k .. ' = \'' .. v:Replace('\n', '\\n') .. '\',')
 	end
 end
 

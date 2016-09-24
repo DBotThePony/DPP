@@ -1269,6 +1269,9 @@ local ru = {
 	protmode_vehicle = 'Транспорт',
 	share_type = 'Зашарить в режиме %q',
 
+	cvar_strict_spawn_checks_timestamps = '[Эксперементально] Строгие проверки игнорируют\nврменные метки спавна <lenny face>',
+	cvar_strict_spawn_checks_track = '[Experimental] Отслеживать таблицы энтити на изменения.\nЭто самый пик всех отслеживаний.',
+	priv_freezephys = 'Может ли заморозить все физические объекты',
 }
 
 DPP.RegisterPhraseList('en', en)
