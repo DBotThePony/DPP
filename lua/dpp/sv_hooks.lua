@@ -43,28 +43,97 @@ local function LogSpawn(ply, ent, type)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	logFunc(ply, SPACE, GRAY, '#log_spawned', color_white, SPACE2, ent:GetClass(), GRAY, string.format(' <%s | %s> ', tostring(ent), ent:GetModel() or '<no model>'), type or '#log_not_avaliable')
+	
+	local logArgs = {}
+	
+	local log_spawns_model = DPP.GetConVar('log_spawns_model')
+	local log_spawns_nname = DPP.GetConVar('log_spawns_nname')
+	local log_spawns_pmodel = DPP.GetConVar('log_spawns_pmodel')
+	local isProp = ent:GetClass():sub(1, 5) == 'prop_'
+	
+	if not log_spawns_model and log_spawns_nname then
+		table.insert(logArgs, string.format(' <%s> ', tostring(ent)))
+	elseif (log_spawns_model and (not log_spawns_pmodel or log_spawns_pmodel and isProp)) and not log_spawns_nname then
+		table.insert(logArgs, string.format(' <%s> ', ent:GetModel() or 'no model'))
+	elseif (log_spawns_model and (not log_spawns_pmodel or log_spawns_pmodel and isProp)) and log_spawns_nname then
+		table.insert(logArgs, string.format(' <%s | %s> ', tostring(ent), ent:GetModel() or 'no model'))
+	elseif log_spawns_model and log_spawns_pmodel and not isProp and log_spawns_nname then
+		table.insert(logArgs, string.format(' <%s> ', tostring(ent)))
+	end
+	
+	if DPP.GetConVar('log_spawns_type') then
+		table.insert(logArgs, type or '#log_not_avaliable')
+	end
+	
+	logFunc(ply, SPACE, GRAY, '#log_spawned', color_white, SPACE2, ent:GetClass(), GRAY, unpack(logArgs))
 end
 
 local function LogSpawnC(ply, class, type, model)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[class] then return end
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	logFunc(ply, SPACE, GRAY, '#log_spawned', color_white, SPACE2, class, GRAY, string.format(' <%s | %s> ', class, model or 'N/A'), type or '#log_not_avaliable')
+	
+	local logArgs = {}
+	
+	if DPP.GetConVar('log_spawns_model') then
+		table.insert(logArgs, string.format(' <%s> ', model or 'no model'))
+	end
+	
+	if DPP.GetConVar('log_spawns_type') then
+		table.insert(logArgs, type or '#log_not_avaliable')
+	end
+	
+	logFunc(ply, SPACE, GRAY, '#log_spawned', color_white, SPACE2, class, GRAY, unpack(logArgs))
 end
 
 local function LogTry(ply, type, model, class)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[class] then return end
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	logFunc(ply, SPACE, RED, '#log_tried', GRAY, '#log_to_spawn', SPACE2, string.format(' %s <%s | %s> ', class or 'N/A', class or 'N/A', model or 'N/A'), type or '#log_not_avaliable')
+	
+	local logArgs = {}
+	
+	local isProp = class:sub(1, 5) == 'prop_'
+	local log_spawns_pmodel = DPP.GetConVar('log_spawns_pmodel')
+	local log_spawns_model = DPP.GetConVar('log_spawns_model')
+	
+	if log_spawns_model and (not log_spawns_pmodel or log_spawns_pmodel and isProp) then
+		table.insert(logArgs, string.format(' <%s> ', model or 'no model'))
+	end
+	
+	if DPP.GetConVar('log_spawns_type') then
+		table.insert(logArgs, type or '#log_not_avaliable')
+	end
+	
+	logFunc(ply, SPACE, RED, '#log_tried', GRAY, '#log_to_spawn', SPACE2, (' %s'):format(class or 'N/A'), unpack(logArgs))
 end
 
 local function LogTryPost(ply, type, ent)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	logFunc(ply, SPACE, RED, '#log_tried', GRAY, '#log_to_spawn', SPACE2, string.format(' %s <%s | %s> ', ent:GetClass(), tostring(ent), ent:GetModel() or '<no model>'), type or '#log_not_avaliable')
+	
+	local logArgs = {}
+	local log_spawns_model = DPP.GetConVar('log_spawns_model')
+	local log_spawns_nname = DPP.GetConVar('log_spawns_nname')
+	local log_spawns_pmodel = DPP.GetConVar('log_spawns_pmodel')
+	local isProp = ent:GetClass():sub(1, 5) == 'prop_'
+	
+	if not log_spawns_model and log_spawns_nname then
+		table.insert(logArgs, string.format(' <%s> ', tostring(ent)))
+	elseif (log_spawns_model and (not log_spawns_pmodel or log_spawns_pmodel and isProp)) and not log_spawns_nname then
+		table.insert(logArgs, string.format(' <%s> ', ent:GetModel() or 'no model'))
+	elseif (log_spawns_model and (not log_spawns_pmodel or log_spawns_pmodel and isProp)) and log_spawns_nname then
+		table.insert(logArgs, string.format(' <%s | %s> ', tostring(ent), ent:GetModel() or 'no model'))
+	elseif log_spawns_model and log_spawns_pmodel and not isProp and log_spawns_nname then
+		table.insert(logArgs, string.format(' <%s> ', tostring(ent)))
+	end
+	
+	if DPP.GetConVar('log_spawns_type') then
+		table.insert(logArgs, type or '#log_not_avaliable')
+	end
+	
+	logFunc(ply, SPACE, RED, '#log_tried', GRAY, '#log_to_spawn', SPACE2, (' %s '):format(ent:GetClass()), unpack(logArgs))
 end
 
 --god

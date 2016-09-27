@@ -539,14 +539,6 @@ local MiscConVars = {
 	'check_stuck',
 	'no_rope_world',
 	'no_rope_world_weld',
-	'log_spawns',
-	'echo_spawns',
-	'log_constraints',
-	'log_file',
-	'verbose_logging',
-	'no_tool_log',
-	'no_tool_log_echo',
-	'no_tool_fail_log',
 	'player_cant_punt',
 	'prevent_explosions_crash',
 	'advanced_spawn_checks',
@@ -828,19 +820,41 @@ local function BuildCVarPanel(Panel)
 	end
 end
 
+SettingsClass.MiscVarsLoggingVars = {
+	'log_spawns',
+	'echo_spawns',
+	'log_constraints',
+	'log_file',
+	'verbose_logging',
+	'no_tool_log',
+	'no_tool_log_echo',
+	'no_tool_fail_log',
+	'log_spawns_model',
+	'log_spawns_pmodel',
+	'log_spawns_nname',
+	'log_spawns_type',
+}
+
 local function BuildMiscVarsPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
 	SettingsClass.SetupBackColor(Panel)
 	SettingsClass.MiscVarsPanel = Panel
 
-	for a, b in pairs(MiscConVars) do
+	for a, b in ipairs(MiscConVars) do
 		local class = DPP.Settings[b]
 		if class.bool then
 			ConVarCheckbox(Panel, b)
 		elseif class.int or class.float then
 			ConVarSlider(Panel, b)
 		end
+	end
+	
+	local lab = Label('')
+	Panel:AddItem(lab)
+	
+	for i, var in ipairs(SettingsClass.MiscVarsLoggingVars) do
+		ConVarCheckbox(Panel, var)
 	end
 end
 

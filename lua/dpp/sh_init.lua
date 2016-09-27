@@ -307,6 +307,30 @@ DPP.Settings = {
 		desc = 'Log spawns. Disables logging to files of spawns!',
 	},
 
+	['log_spawns_model'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Log model of entity',
+	},
+
+	['log_spawns_nname'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Log network name and ID of entity',
+	},
+
+	['log_spawns_type'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Log type of entity',
+	},
+
+	['log_spawns_pmodel'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Log only props models',
+	},
+
 	['echo_spawns'] = {
 		type = 'bool',
 		value = '1',
