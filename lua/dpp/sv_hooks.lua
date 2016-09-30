@@ -855,6 +855,7 @@ local function FindEntitiesRecursiveFunc(root, tab, stopRecursion)
 			local eTab = v:GetTable()
 
 			if eTab then
+				Track(eTab, v)
 				FindEntitiesRecursiveFunc(root, eTab)
 			end
 			
@@ -868,6 +869,7 @@ local function FindEntitiesRecursiveFunc(root, tab, stopRecursion)
 		if t == 'table' and not stopRecursion then
 			if MEM_TABLE_CACHE[v] then continue end --Prevent recursion
 			MEM_TABLE_CACHE[v] = true
+			Track(v, root)
 			FindEntitiesRecursiveFunc(root, v)
 		end
 	end
