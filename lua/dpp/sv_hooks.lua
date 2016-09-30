@@ -1058,8 +1058,8 @@ local function Tick()
 		end
 	end
 	
-	for i, v in ipairs(toRemove) do
-		table.remove(TimeredEntities, v)
+	for i = #toRemove, 1, -1 do
+		table.remove(TimeredEntities, toRemove[i])
 	end
 end
 
