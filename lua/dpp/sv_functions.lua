@@ -584,6 +584,7 @@ end
 function DPP.CheckAntispam(ply, ent, force)
 	if not DPP.GetConVar('antispam') then return DPP.ANTISPAM_VALID end
 	if not IsValid(ent) then return DPP.ANTISPAM_VALID end
+	if ent.IsConstraint and ent:IsConstraint() then return DPP.ANTISPAM_VALID end
 
 	if not force and ent:GetSolid() == SOLID_NONE then return DPP.ANTISPAM_VALID end
 	if not force and ent:GetMoveType() == MOVETYPE_NONE then return DPP.ANTISPAM_VALID end

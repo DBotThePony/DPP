@@ -976,7 +976,9 @@ function PostEntityCreated(ent, Timestamp)
 					table.insert(bundledEntities, v)
 				end
 
-				AntispamHit(get)
+				if not (v.IsConstraint and v:IsConstraint()) then
+					AntispamHit(get)
+				end
 
 				if not shouldRemove then
 					if iGhost then DPP.SetGhosted(v, true) end
