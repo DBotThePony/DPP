@@ -966,7 +966,7 @@ function PostEntityCreated(ent, Timestamp)
 
 			for k, v in ipairs(Ents) do
 				if not IsValid(v) then continue end
-				if not DPP.GetConVar('strict_spawn_checks_timestamps') and Timestamps[v] ~= Timestamp then continue end
+				if Timestamps[v] ~= Timestamp then continue end
 				if DPP.IsOwned(v) then continue end
 				if v.DPP_CHECK_HIT == Timestamp then continue end
 				v.DPP_CHECK_HIT = Timestamp

@@ -539,12 +539,6 @@ DPP.Settings = {
 		desc = '[Experimental/Beta] (Very) Strict spawn checks.\n85%% of spawned entities in unusual ways is detected\nby that option.',
 	},
 
-	['strict_spawn_checks_timestamps'] = {
-		type = 'bool',
-		value = '1',
-		desc = '[Experimental] Strict spawn check ignores\nspawn timestamps <lenny face>',
-	},
-
 	['strict_spawn_checks_track'] = {
 		type = 'bool',
 		value = '1',

@@ -210,7 +210,7 @@ function DPP.SendConVarsTo(ply)
 
 	net.Start('DPP.NetworkedConVarFull')
 
-	for k, v in pairs(DPP.Settings) do
+	for k, v in SortedPairs(DPP.Settings) do
 		WriteEasy(v, DPP.GetConVar(k))
 	end
 

@@ -126,7 +126,7 @@ local function ConVarReceived()
 end
 
 local function ConVarReceivedFull()
-	for k, v in pairs(DPP.Settings) do
+	for k, v in SortedPairs(DPP.Settings) do
 		DPP.NetworkedConVarsDB[k] = ReadEasy(v)
 	end
 end

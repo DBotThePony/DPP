@@ -543,7 +543,6 @@ local MiscConVars = {
 	'prevent_explosions_crash',
 	'advanced_spawn_checks',
 	'strict_spawn_checks',
-	'strict_spawn_checks_timestamps',
 	'strict_spawn_checks_track',
 	'experemental_spawn_checks',
 	'spawn_checks_noaspam',

@@ -201,8 +201,8 @@ end
 function DPP.AssignConVarNetworkIDs()
 	local nextID = 1
 
-	for k, v in pairs(DPP.Settings) do
-		v.NetworkID = nextID
+	for k, v in SortedPairs(DPP.Settings) do
+		DPP.Settings[k].NetworkID = nextID
 		nextID = nextID + 1
 	end
 end
