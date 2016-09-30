@@ -734,8 +734,8 @@ local function EntityRemoved(ent)
 				local o2 = DPP.GetOwner(ent2)
 
 				if o1 ~= o2 or not DPP.IsSingleOwner(ent1, o2) or not DPP.IsSingleOwner(ent2, o1) then
-					DPP.RecalcConstraints(ent1)
-					DPP.RecalcConstraints(ent2)
+					DPP.RecalcConstraintsDelay(ent1)
+					DPP.RecalcConstraintsDelay(ent2)
 				end
 			end
 
@@ -787,8 +787,11 @@ local MEM_TABLE_CACHE = {}
 
 local HaveValueLight = DPP.HaveValueLight
 
+-- It hacks as fuck into tables
+-- So i decided to roll back this change, but not remove it
+
 local function Track(tab, entToTrack)
-	if not DPP.GetConVar('strict_spawn_checks_track') then return end
+	if not DPP.GetConVar('strict_spawn_checks_atrack') then return end
 	local meta = getmetatable(tab) or {}
 	if meta.DPP_TRACKED then return end
 	if tab.__newindex or tab.__index or meta.__newindex or meta.__index then return end
@@ -798,7 +801,25 @@ local function Track(tab, entToTrack)
 	function meta.__newindex(self, key, val)
 		rawset(self, key, val)
 		
-		if not DPP.IsEntity(val) or val:IsPlayer() or not val:IsValid() or not entToTrack:IsValid() or not DPP.GetOwner(entToTrack):IsValid() or Timestamps[val] ~= CurTime() then return end
+		local cTime = CurTime()
+		
+		local cond = not DPP.IsEntity(val) or
+			not val.GetClass or
+			val:IsPlayer() or
+			not val:IsValid() or
+			not entToTrack:IsValid() or
+			not DPP.GetOwner(entToTrack):IsValid() or
+			Timestamps[val] ~= cTime
+		
+		if cond then return end
+
+		if val.IsConstraint and val:IsConstraint() then
+			local ent1, ent2 = val:GetConstrainedEntities()
+			
+			if Timestamps[ent1] ~= cTime and Timestamps[ent2] ~= cTime then
+				return
+			end
+		end
 		
 		CheckAfter(DPP.GetOwner(entToTrack), val, false, DPP.GetConVar('spawn_checks_noaspam'))
 		local bundled = entToTrack.__DPP_BundledEntities or {}
@@ -810,7 +831,7 @@ local function Track(tab, entToTrack)
 		if not DPP.HasValueLight(bundled, val) then
 			table.insert(bundled, val)
 		end
-		
+
 		for k, v in ipairs(val.__DPP_BundledEntities or {}) do
 			if not DPP.HasValueLight(bundled, v) then
 				table.insert(bundled, v)
@@ -834,7 +855,6 @@ local function FindEntitiesRecursiveFunc(root, tab, stopRecursion)
 			local eTab = v:GetTable()
 
 			if eTab then
-				Track(eTab, v)
 				FindEntitiesRecursiveFunc(root, eTab)
 			end
 			
@@ -848,7 +868,6 @@ local function FindEntitiesRecursiveFunc(root, tab, stopRecursion)
 		if t == 'table' and not stopRecursion then
 			if MEM_TABLE_CACHE[v] then continue end --Prevent recursion
 			MEM_TABLE_CACHE[v] = true
-			Track(v, root)
 			FindEntitiesRecursiveFunc(root, v)
 		end
 	end
@@ -917,6 +936,10 @@ function PostEntityCreated(ent, Timestamp)
 					CheckAfter(o2, ent1, false, spawn_checks_noaspam)
 					
 					ent1.__DPP_BundledEntities = bundledEntities
+					
+					if not DPP.HasValueLight(bundledEntities, ent1) then
+						table.insert(bundledEntities, ent1)
+					end
 				end
 
 				if t2 == Timestamp and not IsValid(o2) and IsValid(o1) then
@@ -925,19 +948,15 @@ function PostEntityCreated(ent, Timestamp)
 					CheckAfter(o1, ent2, false, spawn_checks_noaspam)
 					
 					ent2.__DPP_BundledEntities = bundledEntities
-				end
-				
-				if not DPP.HasValueLight(bundledEntities, ent2) then
-					table.insert(bundledEntities, ent2)
-				end
-				
-				if not DPP.HasValueLight(bundledEntities, ent1) then
-					table.insert(bundledEntities, ent1)
+					
+					if not DPP.HasValueLight(bundledEntities, ent2) then
+						table.insert(bundledEntities, ent2)
+					end
 				end
 			end
 
 			if o1 ~= o2 or not DPP.IsSingleOwner(ent1, o2) or not DPP.IsSingleOwner(ent2, o1) then
-				DPP.RecalcConstraints(ent1) --Recalculating only for one entity, because second is constrained with first
+				DPP.RecalcConstraintsDelay(ent1) --Recalculating only for one entity, because second is constrained with first
 			end
 
 			if o1 == o2 and not DPP.IsOwned(ent) and (IsValid(o1) or IsValid(o2)) then

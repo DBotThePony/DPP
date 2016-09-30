@@ -164,10 +164,10 @@ DPP.Commands = {
 
 		DPP.SetOwner(ent, NULL)
 		DPP.DeleteEntityUndo(ent)
-		DPP.RecalcConstraints(ent)
+		DPP.RecalcConstraintsDelay(ent)
 
 		DPP.SimpleLog(ply, Gray, '#com_transfer', ent, Gray, '#com_transfer_world')
-		DPP.Notify(ply, DPP.PPhrase('com_transfer_s'))
+		DPP.Notify(ply, DPP.PPhrase(ply, 'com_transfer_s'))
 
 		return true
 	end,
@@ -191,7 +191,7 @@ DPP.Commands = {
 		DPP.SimpleLog(ply, Gray, '#com_transfer', ent, Gray, '#com_transfer_world_c')
 		DPP.Notify(ply, DPP.Format(DPP.PPhrase('com_transfer_s_c'))) --Format?
 
-		DPP.RecalcConstraints(ent)
+		DPP.RecalcConstraintsDelay(ent)
 
 		return true
 	end,

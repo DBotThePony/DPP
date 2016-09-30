@@ -536,13 +536,15 @@ DPP.Settings = {
 	['strict_spawn_checks'] = {
 		type = 'bool',
 		value = '1',
-		desc = '[Experimental/Beta] (Very) Strict spawn checks.\n85%% of spawned entities in unusual ways is detected\nby that option.',
+		desc = '[Beta] (Very) Strict spawn checks.\n85%% of spawned entities in unusual ways is detected\nby that option.',
 	},
 
-	['strict_spawn_checks_track'] = {
+	-- Too Hacky
+	
+	['strict_spawn_checks_atrack'] = {
 		type = 'bool',
-		value = '1',
-		desc = '[Experimental] Track entities tables for changes.\nThis is a top of entity spawn tracking\nThis is 15%% of unusual ways.',
+		value = '0',
+		desc = '[MAGMATIC] Track entities tables for changes.\nThis is a top of entity spawn tracking\nThis is 15%% of unusual ways.\nENABLE WITH CAUTION. THIS BREAKS PROTECTION OF\nCONSTRAINED ENTITIES',
 	},
 
 	['spawn_checks_noaspam'] = {

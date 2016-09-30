@@ -407,7 +407,7 @@ Style.AccessDeniedColorCheckbox = Color(0, 0, 0)
 
 function Style.CheckBoxPaint(self, w, h)
 	surface.SetDrawColor(SettingsClass.Glow)
-	surface.DrawRect(0, 0, self.CurrentArrowMove, 30)
+	surface.DrawRect(0, 0, self.CurrentArrowMove, h)
 	
 	if self.AccessVar and not SettingsClass.Accesses[self.AccessVar] then
 		draw.NoTexture()
@@ -423,7 +423,7 @@ end
 
 function Style.CheckBoxPaintClient(self, w, h)
 	surface.SetDrawColor(SettingsClass.Glow)
-	surface.DrawRect(0, 0, self.CurrentArrowMove, 30)
+	surface.DrawRect(0, 0, self.CurrentArrowMove, h)
 
 	self.oldPaint(w, h)
 end
@@ -543,7 +543,7 @@ local MiscConVars = {
 	'prevent_explosions_crash',
 	'advanced_spawn_checks',
 	'strict_spawn_checks',
-	'strict_spawn_checks_track',
+	'strict_spawn_checks_atrack',
 	'experemental_spawn_checks',
 	'spawn_checks_noaspam',
 	'allow_damage_vehicles',

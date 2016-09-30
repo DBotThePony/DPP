@@ -650,6 +650,12 @@ do
 				end
 			end
 		end
+		
+		for k, ent in ipairs(ent.__DPP_BundledEntities) do
+			if IsValid(ent) then
+				DoSearch(ent)
+			end
+		end
 
 		for k = 1, #all do
 			local ent1, ent2 = all[k].Ent1, all[k].Ent2
@@ -690,6 +696,29 @@ do
 
 		return result
 	end
+	
+	local toCheck = {}
+	
+	function DPP.RecalcConstraintsDelay(ent)
+		if ent._DPP_LastRecalc == CurTime() then return end
+		table.insert(toCheck, {ent, CurTime()})
+	end
+	
+	hook.Add('Tick', 'DPP.RecalcConstraintsDelay', function()
+		local toRemove = {}
+		local cTime = CurTime()
+		
+		for k, data in ipairs(toCheck) do
+			if data[2] ~= cTime then
+				table.insert(toRemove, k)
+				DPP.RecalcConstraints(data[1])
+			end
+		end
+		
+		for i = #toRemove, 1, -1 do
+			table.remove(toCheck, toRemove[i])
+		end
+	end)
 
 	--Really slow for now
 	function DPP.RecalcConstraints(ent)
@@ -697,26 +726,23 @@ do
 		if not IsValid(ent) then return end
 
 		if ent._DPP_LastRecalc == CurTime() then return end
-		EntMem = {}
-		local result = {}
-		DoSearch(ent)
+		local result = DPP.GetAllConnectedEntities(ent)
 
 		local worldspawn = Entity(0)
 		local owners = {}
 		local touched = {}
 
-		for k, v in pairs(EntMem) do
-			if not IsValid(k) then continue end
-			table.insert(result, k)
-			if k:GetClass() == 'gmod_anchor' then continue end
-			local o = DPP.GetOwner(k)
-			local isOwned = DPP.IsOwned(k)
-			table.insert(touched, k)
+		for i, ent in ipairs(result) do
+			if not IsValid(ent) then continue end
+			if ent:GetClass() == 'gmod_anchor' then continue end
+			local o = DPP.GetOwner(ent)
+			local isOwned = DPP.IsOwned(ent)
+			table.insert(touched, ent)
 
 			if IsValid(o) then
 				owners[o] = true
 			elseif not IsValid(o) and isOwned then
-				local Name, UID, SteamID = DPP.GetOwnerDetails(k)
+				local Name, UID, SteamID = DPP.GetOwnerDetails(ent)
 
 				owners['disconnected_' .. UID] = true
 			else
@@ -731,9 +757,10 @@ do
 		end
 
 		local c = CurTime()
-		for k, v in pairs(EntMem) do
-			k._DPP_Constrained = owners2
-			k._DPP_LastRecalc = c
+		
+		for i, ent in ipairs(touched) do
+			ent._DPP_Constrained = owners2
+			ent._DPP_LastRecalc = c
 		end
 
 		timer.Simple(1, function()
