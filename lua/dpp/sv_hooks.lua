@@ -337,6 +337,12 @@ local function RemoveFromPending(ent)
 	end
 end
 
+local function AddToPending(ent)
+	if not DPP.HasValueLight(PENDING_ENTS, ent) then
+		table.insert(PENDING_ENTS, ent)
+	end
+end
+
 local function cleanup_Add(ply, type, ent)
 	if not ent then return end --Fuck this down
 	DPP.AssertArguments('cleanup.Add', {{ply, 'Player'}, {type, 'string'}, {ent, 'AnyEntity'}})
@@ -383,7 +389,7 @@ function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog, ignore
 
 	if not shouldHideLog then LogSpawn(ply, ent, '#log_prop') end
 
-	table.insert(PENDING_ENTS, ent)
+	AddToPending(ent)
 
 	DPP.CheckDroppedEntity(ply, ent)
 	CheckBlocked(ply, ent)
@@ -463,7 +469,7 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog, ign
 	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, '#log_ragdoll') end return end
 	if not shouldHideLog then LogSpawn(ply, ent, '#log_ragdoll') end
 
-	table.insert(PENDING_ENTS, ent)
+	AddToPending(ent)
 
 	CheckBlocked(ply, ent)
 end
@@ -496,7 +502,7 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog, ignoreAntispa
 	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, '#log_sent') end return end
 	if not shouldHideLog then LogSpawn(ply, ent, '#log_sent') end
 
-	table.insert(PENDING_ENTS, ent)
+	AddToPending(ent)
 
 	CheckBlocked(ply, ent)
 end
@@ -527,7 +533,7 @@ function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog, ignoreAntispa
 	Spawned(ply, ent)
 	if not shouldHideLog then LogSpawn(ply, ent, '#log_swep') end
 
-	table.insert(PENDING_ENTS, ent)
+	AddToPending(ent)
 
 	CheckBlocked(ply, ent)
 end
@@ -560,7 +566,7 @@ function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog, ignoreAnti
 	Spawned(ply, ent)
 	if not shouldHideLog then LogSpawn(ply, ent, '#log_vehicle') end
 
-	table.insert(PENDING_ENTS, ent)
+	AddToPending(ent)
 
 	CheckBlocked(ply, ent)
 end
