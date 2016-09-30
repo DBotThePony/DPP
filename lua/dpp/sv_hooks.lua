@@ -389,7 +389,7 @@ function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog, ignore
 
 	if not shouldHideLog then LogSpawn(ply, ent, '#log_prop') end
 
-	AddToPending(ent)
+	if not ignoreAntispam then AddToPending(ent) end
 
 	DPP.CheckDroppedEntity(ply, ent)
 	CheckBlocked(ply, ent)
@@ -469,7 +469,7 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog, ign
 	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, '#log_ragdoll') end return end
 	if not shouldHideLog then LogSpawn(ply, ent, '#log_ragdoll') end
 
-	AddToPending(ent)
+	if not ignoreAntispam then AddToPending(ent) end
 
 	CheckBlocked(ply, ent)
 end
@@ -502,7 +502,7 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog, ignoreAntispa
 	if not DPP.CheckAutoBlock(ent, ply) then if not shouldHideLog then LogTryPostInv(ply, ent, '#log_sent') end return end
 	if not shouldHideLog then LogSpawn(ply, ent, '#log_sent') end
 
-	AddToPending(ent)
+	if not ignoreAntispam then AddToPending(ent) end
 
 	CheckBlocked(ply, ent)
 end
@@ -533,7 +533,7 @@ function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog, ignoreAntispa
 	Spawned(ply, ent)
 	if not shouldHideLog then LogSpawn(ply, ent, '#log_swep') end
 
-	AddToPending(ent)
+	if not ignoreAntispam then AddToPending(ent) end
 
 	CheckBlocked(ply, ent)
 end
@@ -566,7 +566,7 @@ function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog, ignoreAnti
 	Spawned(ply, ent)
 	if not shouldHideLog then LogSpawn(ply, ent, '#log_vehicle') end
 
-	AddToPending(ent)
+	if not ignoreAntispam then AddToPending(ent) end
 
 	CheckBlocked(ply, ent)
 end
