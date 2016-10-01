@@ -651,7 +651,7 @@ do
 			end
 		end
 		
-		for k, ent in ipairs(ent.__DPP_BundledEntities) do
+		for k, ent in ipairs(ent.__DPP_BundledEntities or {}) do
 			if IsValid(ent) then
 				DoSearch(ent)
 			end
