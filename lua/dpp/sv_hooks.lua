@@ -599,19 +599,19 @@ end
 function SpawnFunctions.PlayerSpawnObject(ply, model)
 	DPP.AssertArguments('PlayerSpawnObject', {{ply, 'Player'}, {model, 'string'}})
 
-	if DPP.IsModelBlocked(model, ply) then 
+	if DPP.IsModelBlocked(model, ply, 'prop_physics') then 
 		LogTry(ply, '#log_obj', model)
 		return false 
 	end
 
 	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
-		LogTry(ply, '#log_obj', model)
+		LogTry(ply, '#log_obj', model, 'prop_physics')
 		DPP.Notify(ply, DPP.PPhrase(ply, 'spam_removed'), 1)
 		return false 
 	end
 
 	if not CheckBlocked2(ply, model) then 
-		LogTry(ply, '#log_obj', model)
+		LogTry(ply, '#log_obj', model, 'prop_physics')
 		return false 
 	end
 end
@@ -620,18 +620,18 @@ function SpawnFunctions.PlayerSpawnRagdoll(ply, model)
 	DPP.AssertArguments('PlayerSpawnRagdoll', {{ply, 'Player'}, {model, 'string'}})
 
 	if DPP.IsModelBlocked(model, ply) then 
-		LogTry(ply, '#log_ragdoll', model)
+		LogTry(ply, '#log_ragdoll', model, 'prop_ragdoll')
 		return false 
 	end
 
 	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
-		LogTry(ply, '#log_ragdoll', model)
+		LogTry(ply, '#log_ragdoll', model, 'prop_ragdoll')
 		DPP.Notify(ply, DPP.PPhrase(ply, 'spam_removed'), 1)
 		return false 
 	end
 
 	if not CheckBlocked2(ply, model) then 
-		LogTry(ply, '#log_ragdoll', model)
+		LogTry(ply, '#log_ragdoll', model, 'prop_ragdoll')
 		return false 
 	end
 end
@@ -640,28 +640,28 @@ function SpawnFunctions.PlayerSpawnVehicle(ply, model, class)
 	DPP.AssertArguments('PlayerSpawnVehicle', {{ply, 'Player'}, {model, 'string'}, {class, 'string'}})
 
 	if DPP.IsModelBlocked(model, ply) then 
-		LogTry(ply, '#log_vehicle', model)
+		LogTry(ply, '#log_vehicle', model, class)
 		return false 
 	end
 
 	if CheckEntityLimit(ply, class) then 
-		LogTry(ply, '#log_vehicle', model)
+		LogTry(ply, '#log_vehicle', model, class)
 		return false 
 	end
 
 	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
-		LogTry(ply, '#log_vehicle', model)
+		LogTry(ply, '#log_vehicle', model, class)
 		DPP.Notify(ply, DPP.PPhrase('spam_removed'), 1)
 		return false 
 	end
 
 	if not CheckBlocked2(ply, model) then 
-		LogTry(ply, '#log_vehicle', model)
+		LogTry(ply, '#log_vehicle', model, class)
 		return false 
 	end
 
 	if DPP.IsRestrictedVehicle(class, ply) then 
-		LogTry(ply, '#log_vehicle', class)
+		LogTry(ply, '#log_vehicle', model, class)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'vehicle_restricted'), 1)
 		return false 
 	end
@@ -677,7 +677,7 @@ function SpawnFunctions.PlayerSpawnSENT(ply, ent)
 	end
 
 	if CheckEntityLimit(ply, ent) then 
-		LogTry(ply, '#log_sent', model)
+		LogTry(ply, '#log_sent', model, ent)
 		return false 
 	end
 end
@@ -692,7 +692,7 @@ function SpawnFunctions.PlayerSpawnSWEP(ply, ent)
 	end
 
 	if CheckEntityLimit(ply, ent) then 
-		LogTry(ply, '#log_swep', model)
+		LogTry(ply, '#log_swep', model, ent)
 		return false 
 	end
 end
@@ -715,7 +715,7 @@ function SpawnFunctions.PlayerSpawnNPC(ply, ent)
 	end
 
 	if CheckEntityLimit(ply, ent) then 
-		LogTry(ply, '#log_npc', model)
+		LogTry(ply, '#log_npc', 'N/A', ent)
 		return false 
 	end
 end
