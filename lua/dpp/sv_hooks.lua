@@ -105,7 +105,7 @@ local function LogTry(ply, type, model, class)
 		table.insert(logArgs, type or '#log_not_avaliable')
 	end
 	
-	logFunc(ply, SPACE, RED, '#log_tried', GRAY, '#log_to_spawn', SPACE2, (' %s'):format(class or 'N/A'), unpack(logArgs))
+	logFunc(ply, SPACE, RED, '#log_tried', GRAY, '#log_to_spawn', SPACE2, color_white, (' %s'):format(class or 'N/A'), GRAY, unpack(logArgs))
 end
 
 local function LogTryPost(ply, type, ent)
@@ -133,7 +133,7 @@ local function LogTryPost(ply, type, ent)
 		table.insert(logArgs, type or '#log_not_avaliable')
 	end
 	
-	logFunc(ply, SPACE, RED, '#log_tried', GRAY, '#log_to_spawn', SPACE2, (' %s '):format(ent:GetClass()), unpack(logArgs))
+	logFunc(ply, SPACE, RED, '#log_tried', GRAY, '#log_to_spawn', SPACE2, color_white, (' %s '):format(ent:GetClass()), GRAY, unpack(logArgs))
 end
 
 --god
