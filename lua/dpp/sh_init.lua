@@ -199,6 +199,12 @@ DPP.Settings = {
 		desc = 'Anti-Propkill Master Toggle',
 	},
 
+	['apropkill_crash'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Try to prevent server crash from colliding props',
+	},
+
 	['apropkill_damage'] = {
 		type = 'bool',
 		value = '1',

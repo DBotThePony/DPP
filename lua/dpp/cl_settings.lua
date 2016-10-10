@@ -643,6 +643,7 @@ local ConVarCheckbox = SettingsClass.ConVarCheckbox
 
 local APropKillVars = {
 	'apropkill_enable',
+	'apropkill_crash',
 	'apropkill_nopush',
 	'apropkill_nopush_mode',
 	'apropkill_vehicle',

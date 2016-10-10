@@ -53,10 +53,53 @@ end
 local WhitelistProps = {
 	['func_door'] = true,
 	['prop_door_rotating'] = true,
+	['prop_door'] = true,
 }
+
+local GRAY = Color(200, 200, 200)
+
+local function ProceedCrush(ent)
+	ent._DPP_LastPhysicsDamage = ent._DPP_LastPhysicsDamage or 0
+	ent._DPP_LastPhysicsDamage_Counter = ent._DPP_LastPhysicsDamage_Counter or 0
+	
+	if ent._DPP_LastPhysicsDamage + 2 < CurTime() then
+		ent._DPP_LastPhysicsDamage_Counter = ent._DPP_LastPhysicsDamage_Counter or 0
+	end
+	
+	ent._DPP_LastPhysicsDamage = CurTime()
+	
+	ent._DPP_LastPhysicsDamage_Counter = ent._DPP_LastPhysicsDamage_Counter + 1
+	
+	if ent._DPP_LastPhysicsDamage_Counter > 5 then
+		DPP.SimpleLog('#crazy_physics', color_white, tostring(ent), GRAY, '#crazy_physics2', DPP.GetOwner(ent), GRAY, '#crazy_physics3')
+		DPP.SetGhosted(ent, true)
+	end
+end
+
+local function ProceedCrushingChecks(ent, dmg)
+	if ent:IsNPC() or ent:IsPlayer() or ent:IsVehicle() then return end
+	if ent:GetClass():sub(1, 5) ~= 'prop_' then return end
+	if dmg:GetDamageType() ~= DMG_CRUSH then return end
+	local attacker, inflictor = dmg:GetAttacker(), dmg:GetInflictor()
+	
+	ProceedCrush(ent)
+	
+	if IsValid(attacker) and attacker:GetClass():sub(1, 5) == 'prop_' and not attacker:IsNPC() and not attacker:IsPlayer() and not attacker:IsVehicle() then
+		ProceedCrush(attacker)
+	end
+	
+	if inflictor ~= attacker and IsValid(inflictor) and inflictor:GetClass():sub(1, 5) == 'prop_' and not inflictor:IsNPC() and not inflictor:IsPlayer() and not inflictor:IsVehicle() then
+		ProceedCrush(inflictor)
+	end
+end
 
 local function EntityTakeDamage(ent, dmg)
 	if not DPP.GetConVar('apropkill_enable') then return end
+	
+	if DPP.GetConVar('apropkill_crash') then
+		ProceedCrushingChecks(ent, dmg)
+	end
+	
 	if not DPP.GetConVar('apropkill_damage') then return end
 	if not ent:IsPlayer() then return end
 

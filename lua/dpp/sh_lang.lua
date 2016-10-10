@@ -484,6 +484,10 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	
 	friend_buddy = 'Friend in %q protection',
 	share_type = 'Share in %q protection module',
+	
+	crazy_physics = 'Crazy physics detected, next prop have crazy physics: ',
+	crazy_physics2 = ' that belongs to ',
+	crazy_physics3 = ', ghosting it.',
 }
 
 local ru = {
@@ -1271,6 +1275,15 @@ local ru = {
 
 	cvar_strict_spawn_checks_atrack = '[ОБЖИГАЮЩЕ НЕСТАБИЛЬНО] Отслеживать таблицы энтити на изменения.\nЭто самый пик всех отслеживаний.\nЭТА ОПЦИЯ ЛОМАЕТ ЗАЩИТУ СОЕДИНЕННЫХ\nИНСТРУМЕНТОМ ЭНТИТИ. АКТИВИРУЙТЕ НА СВОЙ СТРАХ И РИСК',
 	priv_freezephys = 'Может ли заморозить все физические объекты',
+	
+	crazy_physics = 'Обнаружен неверный физический объект: ',
+	crazy_physics2 = ' который принадлежит ',
+	crazy_physics3 = ', делаю объект призраком.',
+	cvar_apropkill_crash = 'Пытатся предотвратить краш сервера от бесчисленной коллюзии пропов',
+	cvar_log_spawns_model = 'Записывать модель энтити',
+	cvar_log_spawns_nname = 'Записывать сетевой класс и ID энтити',
+	cvar_log_spawns_pmodel = 'Записывать модели только у пропов',
+	cvar_log_spawns_type = 'Записывать типь энтити',
 }
 
 DPP.RegisterPhraseList('en', en)
