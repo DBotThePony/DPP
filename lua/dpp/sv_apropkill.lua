@@ -62,8 +62,8 @@ local function ProceedCrush(ent)
 	ent._DPP_LastPhysicsDamage = ent._DPP_LastPhysicsDamage or 0
 	ent._DPP_LastPhysicsDamage_Counter = ent._DPP_LastPhysicsDamage_Counter or 0
 	
-	if ent._DPP_LastPhysicsDamage + 2 < CurTime() then
-		ent._DPP_LastPhysicsDamage_Counter = ent._DPP_LastPhysicsDamage_Counter or 0
+	if ent._DPP_LastPhysicsDamage + 1 < CurTime() then
+		ent._DPP_LastPhysicsDamage_Counter = 0
 	end
 	
 	ent._DPP_LastPhysicsDamage = CurTime()
