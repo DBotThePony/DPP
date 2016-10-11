@@ -1565,17 +1565,6 @@ else
 	end
 end
 
-function DPP.CanTouchWorld(ply, ent)
-	local canAdmin = DPP.GetConVar('can_admin_touch_world')
-	local can = DPP.GetConVar('can_touch_world')
-
-	if not ply:IsAdmin() then
-		return can
-	else
-		return can or canAdmin
-	end
-end
-
 function DPP.IsEnabled()
 	return DPP.GetConVar('enable')
 end
@@ -1591,10 +1580,31 @@ function DPP.AddDuplicatorType(str)
 end
 
 local PlayersTouchAccess = {}
+local WorldTouchAccess = {}
 
-local function GetTouchAccess(ply)
+local function GetTouchAccess1(ply)
+	PlayersTouchAccess[ply] = {
+		expires = math.huge,
+		waiting = true,
+	}
+	
 	DPP.HaveAccess(ply, 'touchother', function(result)
 		PlayersTouchAccess[ply] = {
+			result = result,
+			expires = CurTime() + 10,
+			waiting = false,
+		}
+	end)
+end
+
+local function GetTouchAccess2(ply)
+	WorldTouchAccess[ply] = {
+		expires = math.huge,
+		waiting = true,
+	}
+	
+	DPP.HaveAccess(ply, 'touchworld', function(result)
+		WorldTouchAccess[ply] = {
 			result = result,
 			expires = CurTime() + 10,
 			waiting = false,
@@ -1608,15 +1618,38 @@ timer.Create('DPP.ClearPlayersTouchAccess', 1, 0, function()
 	for k, v in pairs(PlayersTouchAccess) do
 		if not IsValid(k) then
 			PlayersTouchAccess[k] = nil
-			continue
+		else
+			if v.expires < ctime and not v.waiting then
+				GetTouchAccess1(k)
+			end
 		end
+	end
 
-		if v.expires < ctime and not v.waiting then
-			GetTouchAccess(k)
-			v.waiting = true
+	for k, v in pairs(WorldTouchAccess) do
+		if not IsValid(k) then
+			WorldTouchAccess[k] = nil
+		else
+			if v.expires < ctime and not v.waiting then
+				GetTouchAccess2(k)
+			end
 		end
 	end
 end)
+
+function DPP.CanTouchWorld(ply, ent)
+	if WorldTouchAccess[ply] == nil then
+		GetTouchAccess2(ply)
+	end
+
+	local canAdmin = DPP.GetConVar('can_admin_touch_world')
+	local can = DPP.GetConVar('can_touch_world')
+
+	if not WorldTouchAccess[ply].result then
+		return can
+	else
+		return can or canAdmin
+	end
+end
 
 function DPP.CanTouch(ply, ent, mode)
 	if not IsValid(ply) then return true, GetPhrase('World') end
@@ -1638,7 +1671,7 @@ function DPP.CanTouch(ply, ent, mode)
 	--Otherwise, proceed default checks
 
 	if PlayersTouchAccess[ply] == nil then
-		GetTouchAccess(ply)
+		GetTouchAccess1(ply)
 	end
 
 	local owner = DPP.GetOwner(ent)
@@ -1655,15 +1688,8 @@ function DPP.CanTouch(ply, ent, mode)
 	local can = true
 	local reason
 
-	local canTouchOther
-
-	if PlayersTouchAccess[ply] ~= nil then
-		canTouchOther = PlayersTouchAccess[ply].result
-	else
-		canTouchOther = ply:IsAdmin()
-	end
-
 	local admin, adminEverything = ply:IsAdmin(), DPP.GetConVar('admin_can_everything')
+	local canTouchOther = adminEverything and PlayersTouchAccess[ply].result
 
 	local isShared = DPP.IsShared(ent)
 	if mode and DPP.ShareTypes[mode] then
@@ -1681,7 +1707,7 @@ function DPP.CanTouch(ply, ent, mode)
 					end
 
 					continue
-				elseif canTouchOther and adminEverything then
+				elseif canTouchOther then
 					continue
 				else
 					can = false
@@ -1693,7 +1719,7 @@ function DPP.CanTouch(ply, ent, mode)
 			if string.gsub(owner, 1, 12) == 'disconnected' then
 				local UID = string.gsub(owner, 13)
 
-				if canTouchOther and adminEverything then
+				if canTouchOther then
 					continue
 				else
 					can = false
@@ -1745,7 +1771,7 @@ function DPP.CanTouch(ply, ent, mode)
 					break
 				end
 
-				if canTouchOther and adminEverything then
+				if canTouchOther then
 					continue
 				elseif not friend then
 					can = false

@@ -89,6 +89,7 @@ end
 local default = {
 	--Core access
 	touchother = 'admin',
+	touchworld = 'admin',
 	seelogs = 'admin',
 	setvar = 'superadmin',
 
@@ -130,6 +131,7 @@ local default = {
 local default_desc = {
 	--Core access
 	touchother = 'Whatever player can touch other players props',
+	touchworld = 'Whatever player can touch world props',
 	seelogs = 'Whatever player can see logs',
 	setvar = 'Whatever player can change DPP convars',
 

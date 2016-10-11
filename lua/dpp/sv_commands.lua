@@ -189,7 +189,7 @@ DPP.Commands = {
 		end
 
 		DPP.SimpleLog(ply, Gray, '#com_transfer', ent, Gray, '#com_transfer_world_c')
-		DPP.Notify(ply, DPP.Format(DPP.PPhrase('com_transfer_s_c'))) --Format?
+		DPP.Notify(ply, DPP.Format(DPP.PPhrase(ply, 'com_transfer_s_c'))) --Format?
 
 		DPP.RecalcConstraintsDelay(ent)
 
