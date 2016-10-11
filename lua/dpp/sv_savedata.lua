@@ -581,7 +581,7 @@ DPP.ManipulateCommands.addentitylimit = function(ply, cmd, args)
 	DPP.AddEntityLimit(class, group, num)
 
 	if Last < CurTime() then
-		local f = {IsValid(ply) and ply or '#Console', Gray, '#saveload_added_updated', color_white, class, Gray, '#saveload_limits'}
+		local f = {IsValid(ply) and ply or '#Console', Gray, '#saveload_added_updated', color_white, class, Gray, '#saveload_limits', color_white, group}
 		DPP.NotifyLog(f)
 		Last = CurTime() + 0.5
 	end
@@ -599,7 +599,7 @@ DPP.ManipulateCommands.removeentitylimit = function(ply, cmd, args)
 	DPP.RemoveEntityLimit(class, group)
 
 	if Last < CurTime() then
-		local f = {IsValid(ply) and ply or '#Console', Gray, '#saveload_removed', color_white, class, Gray, '#saveload_limit_removed'}
+		local f = {IsValid(ply) and ply or '#Console', Gray, '#saveload_removed', color_white, class, Gray, '#saveload_limit_removed', color_white, group}
 		DPP.NotifyLog(f)
 		Last = CurTime() + 0.5
 	end

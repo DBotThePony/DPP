@@ -197,7 +197,7 @@ local function CheckEntityLimit(ply, class)
 	local count = #DPP.FindEntitiesByClass(ply,	class)
 	local status = count + 1 > limit
 	if status then
-		DPP.Notify(ply, DPP.PPhrase('entity_limit_hit', class), 1)
+		DPP.Notify(ply, DPP.PPhrase(ply, 'entity_limit_hit', class), 1)
 	end
 
 	return status
