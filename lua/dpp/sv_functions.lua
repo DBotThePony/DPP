@@ -735,6 +735,7 @@ do
 		for i, ent in ipairs(result) do
 			if not IsValid(ent) then continue end
 			if ent:GetClass() == 'gmod_anchor' then continue end
+			if ent:GetClass():sub(1, 5) == 'phys_' then continue end -- No constraints
 			local o = DPP.GetOwner(ent)
 			local isOwned = DPP.IsOwned(ent)
 			table.insert(touched, ent)
