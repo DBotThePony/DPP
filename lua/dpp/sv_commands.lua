@@ -149,7 +149,7 @@ DPP.Commands = {
 		DPP.ClearPlayerEntities(ply)
 
 		DPP.DoEcho(ply, Gray, '#com_clear_success_c')
-		DPP.Notify(ply, DPP.PPhrase('com_clear_success'))
+		DPP.Notify(ply, '#com_clear_success')
 
 		return true
 	end,
@@ -167,7 +167,7 @@ DPP.Commands = {
 		DPP.RecalcConstraintsDelay(ent)
 
 		DPP.SimpleLog(ply, Gray, '#com_transfer', ent, Gray, '#com_transfer_world')
-		DPP.Notify(ply, DPP.PPhrase(ply, 'com_transfer_s'))
+		DPP.Notify(ply, '#com_transfer_s')
 
 		return true
 	end,
@@ -189,7 +189,7 @@ DPP.Commands = {
 		end
 
 		DPP.SimpleLog(ply, Gray, '#com_transfer', ent, Gray, '#com_transfer_world_c')
-		DPP.Notify(ply, DPP.Format(DPP.PPhrase(ply, 'com_transfer_s_c'))) --Format?
+		DPP.Notify(ply, '#com_transfer_s_c') --Format?
 
 		DPP.RecalcConstraintsDelay(ent)
 
