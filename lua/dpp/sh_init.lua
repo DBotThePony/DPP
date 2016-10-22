@@ -62,6 +62,11 @@ function DPP.AssertEntity(obj)
 	DPP.Assert(isentity(obj) and IsValid(obj), 'Argument is not a valid entity! Argument is ' .. type(obj) .. ' (' .. tostring(obj) .. ')', DPP.FindBestLevel())
 end
 
+function DPP.PrintFancyError(err)
+	MsgC(err, '\n')
+	MsgC(debug.traceback())
+end
+
 local EntityTypes = {
 	['Entity'] = true,
 	['Player'] = true,

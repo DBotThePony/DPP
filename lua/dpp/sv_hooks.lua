@@ -309,9 +309,9 @@ end
 SpawnFunctions.CheckAfter = CheckAfter
 
 local function undo_Finish(name)
-	local name, val = debug.getupvalue(DPP.oldUndoFinish, 1)
+	local name2, val = debug.getupvalue(DPP.oldUndoFinish, 1)
 
-	if name == 'Current_Undo' and val then
+	if name2 == 'Current_Undo' and val then
 		local owner = val.Owner
 		if IsValid(owner) then
 			for k, v in pairs(val.Entities) do
@@ -321,6 +321,8 @@ local function undo_Finish(name)
 				CheckAfter(owner, v, true) --HOLY FUCK
 			end
 		end
+		
+		xpcall(hook.Run, DPP.PrintFancyError, 'UndoFinish', name, val)
 	end
 
 	return DPP.oldUndoFinish(name)
@@ -364,6 +366,8 @@ local function cleanup_Add(ply, type, ent)
 
 		DPP.SetOwner(ent, ply)
 	end
+	
+	xpcall(hook.Run, DPP.PrintFancyError, 'CleanupAdd', ply, type, ent)
 
 	return DPP.oldCleanupAdd(ply, type, ent)
 end
