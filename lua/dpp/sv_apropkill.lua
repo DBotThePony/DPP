@@ -295,6 +295,21 @@ local function Think()
 	end
 end
 
+local function DetectAPG()
+	if not APG_DRM then return end
+	DPP.Message('-------------------------')
+	DPP.Message('APG Detected!')
+	DPP.Message('DPP Anti-Propkill is getting disabled!')
+	DPP.Message('-------------------------')
+	
+	RunConsoleCommand('dpp_setvar', 'apropkill_clampspeed', '0')
+	RunConsoleCommand('dpp_setvar', 'apropkill_nopush', '0')
+	RunConsoleCommand('dpp_setvar', 'apropkill_vehicle', '0')
+	RunConsoleCommand('dpp_setvar', 'prevent_player_stuck', '0')
+	RunConsoleCommand('dpp_setvar', 'apropkill_crash', '0')
+	RunConsoleCommand('dpp_setvar', 'apropkill_damage', '0')
+end
+
 hook.Add('EntityTakeDamage', '!DPP.APropKill', EntityTakeDamage, -1)
 hook.Add('Think', 'DPP.APropKill', Think)
 hook.Add('PhysgunDrop', 'DPP.APropKill', PhysgunDrop)
@@ -303,3 +318,4 @@ hook.Add('PlayerSpawnedVehicle', 'DPP.APropKill', PlayerSpawnedVehicle)
 hook.Add('PlayerEnteredVehicle', 'DPP.APropKill', PlayerEnteredVehicle)
 hook.Add('CanTool', 'DPP.APropKill', CanTool, 2) --Extra low priority if we have UHook (ULib's Hook)/DHook installed
 hook.Add('PhysgunDrop', 'DPP.PreventPlayerStuck', DPP.CheckDroppedEntity)
+timer.Simple(5, DetectAPG)
