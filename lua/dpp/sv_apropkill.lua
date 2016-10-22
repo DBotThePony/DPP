@@ -298,6 +298,7 @@ end
 local function DetectAPG()
 	if not APG_DRM then return end
 	DPP.Message('-------------------------')
+	DPP.Message('I <3 Noize')
 	DPP.Message('APG Detected!')
 	DPP.Message('DPP Anti-Propkill is getting disabled!')
 	DPP.Message('-------------------------')
