@@ -853,17 +853,36 @@ local function FindEntitiesRecursiveFunc(root, tab, stopRecursion)
 	for k, v in pairs(tab) do
 		local t = type(v)
 
-		if t ~= 'Player' and DPP.ENTITY_TYPES[t] and IsValid(v) then
-			if HaveValueLight(RECURSIVE_MEM, v) then continue end --Prevent recursion
-			table.insert(RECURSIVE_MEM, v)
-			local eTab = v:GetTable()
+		local cond = t ~= 'Player' and
+			DPP.ENTITY_TYPES[t] and
+			IsValid(v) and
+			not RECURSIVE_MEM[v]
+		
+		if cond then
+			RECURSIVE_MEM[v] = v
+			local eTab
+			local isConstr = v.IsConstraint and v:IsConstraint()
 
+			if not DPP.IsOwned(v) or v:GetClass():sub(1, 5) ~= 'prop_' then
+				eTab = v:GetTable()
+			end
+			
 			if eTab then
 				Track(eTab, v)
 				FindEntitiesRecursiveFunc(root, eTab)
+				
+				if isConstr then
+					local get = not v._DPP_FindEntitiesTab and DPP.GetAllConnectedEntities(v) or v._DPP_FindEntitiesTab
+					v._DPP_FindEntitiesTab = get
+					FindEntitiesRecursiveFunc(root, get)
+				end
 			end
 			
-			local sTab = v:GetSaveTable()
+			local sTab
+			
+			if v:IsNPC() or v:IsVehicle() or isConstr or v:GetClass():sub(1, 9) == 'phys_cons' then
+				sTab = v:GetSaveTable()
+			end
 			
 			if sTab then
 				FindEntitiesRecursiveFunc(root, sTab, true)
@@ -881,9 +900,15 @@ end
 
 local function FindEntitiesRecursive(root, tab)
 	FindEntitiesRecursiveFunc(root, tab)
-	local reply = RECURSIVE_MEM
+	local reply = {}
+	
+	for k, v in pairs(RECURSIVE_MEM) do
+		table.insert(reply, v)
+	end
+	
 	RECURSIVE_MEM = {}
 	MEM_TABLE_CACHE = {}
+	RUN_TIME = 0
 	return reply
 end
 
@@ -983,7 +1008,7 @@ function PostEntityCreated(ent, Timestamp)
 		end
 	end
 
-	if DPP.GetConVar('strict_spawn_checks') then
+	if DPP.GetConVar('strict_spawn_checks') and ent.DPP_CHECK_HIT ~= Timestamp then
 		local get = DPP.GetOwner(ent)
 
 		if IsValid(get) then
@@ -1050,7 +1075,6 @@ function PostEntityCreated(ent, Timestamp)
 
 			if IsValid(owner) and owner:IsPlayer() then
 				CheckAfter(owner, ent, false, spawn_checks_noaspam)
-				--DPP.SetOwner(ent, owner)
 			end
 		end
 
@@ -1067,6 +1091,22 @@ function PostEntityCreated(ent, Timestamp)
 	end
 end
 
+local function TimeredEntitiesSorter(check1, check2)
+	if not IsValid(check1[1]) then return end
+	if not IsValid(check2[1]) then return end
+	
+	local bool1 = check1[1].IsConstraint and check1[1]:IsConstraint() or check1[1]:GetClass():sub(1, 9) == 'phys_cons'
+	local bool2 = check2[1].IsConstraint and check2[1]:IsConstraint() or check2[1]:GetClass():sub(1, 9) == 'phys_cons'
+	
+	if bool1 == bool2 then
+		return false
+	elseif bool2 then
+		return false
+	end
+	
+	return true
+end
+
 local function Tick()
 	for k, ent in ipairs(PENDING_ENTS) do
 		local owner = DPP.GetOwner(ent)
@@ -1081,16 +1121,13 @@ local function Tick()
 	local toRemove = {}
 	local cTime = CurTime()
 	
+	-- Sorting to check constraints first
+	table.sort(TimeredEntities, TimeredEntitiesSorter)
+	
 	for k, data in ipairs(TimeredEntities) do
 		if data[2] ~= cTime then
 			table.insert(toRemove, k)
-			local status, err = pcall(PostEntityCreated, data[1], data[2])
-			
-			if not status then
-				table.remove(TimeredEntities, k)
-				DPP.ThrowError(err, 1, true)
-				break
-			end
+			pcall(PostEntityCreated, data[1], data[2])
 		end
 	end
 	

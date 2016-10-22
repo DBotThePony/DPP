@@ -722,10 +722,10 @@ do
 
 	--Really slow for now
 	function DPP.RecalcConstraints(ent)
-		if not DPP.GetConVar('enable') then return end
-		if not IsValid(ent) then return end
+		if not DPP.GetConVar('enable') then return {} end
+		if not IsValid(ent) then return {} end
 
-		if ent._DPP_LastRecalc == CurTime() then return end
+		if ent._DPP_LastRecalc == CurTime() then return ent._DPP_RecalcLastResult or {} end
 		local result = DPP.GetAllConnectedEntities(ent)
 
 		local worldspawn = Entity(0)
@@ -762,6 +762,7 @@ do
 		for i, ent in ipairs(touched) do
 			ent._DPP_Constrained = owners2
 			ent._DPP_LastRecalc = c
+			ent._DPP_RecalcLastResult = result
 		end
 
 		timer.Simple(1, function()
