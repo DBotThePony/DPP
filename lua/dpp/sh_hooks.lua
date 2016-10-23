@@ -542,17 +542,41 @@ function DPP.OverrideCounts()
 	if not plyMeta.CheckLimit then return end --Not sandbox
 
 	DPP.Message('Overriding Player.GetCount Player.CheckLimit')
-	DPP.oldCheckLimit = DPP.oldCheckLimit or plyMeta.CheckLimit
+	
+	local CVars_Cache = {}
 
-	function plyMeta:CheckLimit(str)
-		local limit = DPP.GetSBoxLimit(str, self:GetUserGroup())
-		if limit == 0 then return DPP.oldCheckLimit(self, str) end
-		if limit < 0 then return true end
+	function plyMeta:CheckLimit(limit)
+		if game.SinglePlayer() then return true end -- DPP In singleplayer, huh?
+		
+		local can = hook.Run('CheckLimit', self, limit)
+		if can ~= nil then return can end
+		
+		CVars_Cache[limit] = CVars_Cache[limit] or GetConVar('sbox_max' .. limit)
+		
+		if not CVars_Cache[limit] then
+			DPP.ThrowError('Invalid console variable to check player limit. WTF?')
+		end
+		
+		local dppLimit = DPP.GetSBoxLimit(limit, self:GetUserGroup())
+		local defaultLimit = CVars_Cache[limit]:GetInt()
+		local limitToUse = dppLimit ~= 0 and dppLimit or defaultLimit
+		
+		if limitToUse < 0 then return true end
 
-		local C = self:GetCount(str)
-		if C >= limit then self:LimitHit(str) return false end
+		if self:GetCount(limit) >= limitToUse then
+			if SERVER then self:LimitHit(limit) end
+			return false
+		end
 
-		return DPP.oldCheckLimit(self, str)
+		return true
+	end
+	
+	function plyMeta:LimitHit(limit)
+		if not SERVER then return end
+		
+		net.Start('DPP.LimitHit')
+		net.WriteString(limit)
+		net.Send(self)
 	end
 end
 

@@ -44,6 +44,7 @@ util.AddNetworkString('DPP.SetConVar')
 util.AddNetworkString('DPP.PlayerList')
 util.AddNetworkString('DPP.ConVarChanged')
 util.AddNetworkString('properties_dpp')
+util.AddNetworkString('DPP.LimitHit')
 
 util.AddNetworkString('DPP.NetworkedConVar')
 util.AddNetworkString('DPP.NetworkedConVarFull')

@@ -319,6 +319,10 @@ DPP.ClientReceiveFuncs = {
 
 		hook.Run('DPP.BlockedModelListChanged', s, b)
 	end,
+	
+	LimitHit = function()
+		hook.Run('LimitHit', net.ReadString())
+	end,
 }
 
 for k, v in pairs(DPP.ClientReceiveFuncs) do
