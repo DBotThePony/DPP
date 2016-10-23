@@ -1405,19 +1405,33 @@ end
 local function OpenLimitEditPanel(class)
 	local t = DPP.EntsLimits[class] or {}
 
-	local height = 50
-
 	local frame = vgui.Create('DFrame')
 	frame:SetTitle(P('modifying', class))
 	SettingsClass.ApplyFrameStyle(frame)
-
+	local scroll = frame:Add('DScrollPanel')
+	local canvas = scroll:GetCanvas()
+	
+	scroll:Dock(TOP)
+	scroll:SetHeight(400)
+	
+	local lab = frame:Add('DLabel')
+	lab:SetTextColor(SettingsClass.TextColor)
+	lab:SetText(P('elimit_tip'))
+	lab:Dock(TOP)
+	lab:SizeToContents()
+	
 	local groups = DPP.GetGroups()
 	local Panels = {}
+	
+	for k, v in pairs(t) do
+		if not DPP.HasValueLight(groups, k) then
+			table.insert(groups, k)
+		end
+	end
 
 	for k, v in pairs(groups) do
-		height = height + 50
-		local l = frame:Add('DLabel')
-		local p = frame:Add('DTextEntry')
+		local l = canvas:Add('DLabel')
+		local p = canvas:Add('DTextEntry')
 		table.insert(Panels, p)
 		p.Group = v
 		l:Dock(TOP)
@@ -1427,6 +1441,32 @@ local function OpenLimitEditPanel(class)
 		p:SetText(t[v] or '-1')
 		p.OriginalValue = (t[v] or '-1')
 	end
+	
+	local CustomEnter
+	
+	do
+		local l = canvas:Add('DLabel')
+		local gentry = canvas:Add('DTextEntry')
+		local p = canvas:Add('DTextEntry')
+		table.insert(Panels, p)
+		p.Group = ''
+		
+		l:Dock(TOP)
+		l:SetText(P('cami_tip'))
+		l:SetTextColor(SettingsClass.TextColor)
+		l:SizeToContents()
+
+		gentry:Dock(TOP)
+		gentry:SetText('')
+		
+		gentry.p = p
+		
+		p:Dock(TOP)
+		p:SetText('-1')
+		p.OriginalValue = '-1'
+		
+		CustomEnter = gentry
+	end
 
 	local apply = frame:Add('DButton')
 	apply:Dock(BOTTOM)
@@ -1434,14 +1474,16 @@ local function OpenLimitEditPanel(class)
 	SettingsClass.ApplyButtonStyle(apply)
 
 	function apply.DoClick()
+		CustomEnter.p.Group = CustomEnter:GetText()
 		t = {}
 
 		for k, v in pairs(Panels) do
+			if v.Group == '' then continue end
 			local n = tonumber(v:GetText())
 			if not n then continue end
 			if tonumber(v.OriginalValue) == n then continue end
 
-			if n > 0 then
+			if n >= 0 then
 				RunConsoleCommand('dpp_addentitylimit', class, v.Group, n)
 			else
 				RunConsoleCommand('dpp_removeentitylimit', class, v.Group)
@@ -1460,8 +1502,7 @@ local function OpenLimitEditPanel(class)
 		frame:Close()
 	end
 
-	frame:SetHeight(height)
-	frame:SetWidth(300)
+	frame:SetSize(300, 550)
 	frame:Center()
 	frame:MakePopup()
 end
@@ -1563,11 +1604,14 @@ end
 local function OpenSLimitEditPanel(class)
 	local t = DPP.SBoxLimits[class] or {}
 
-	local height = 90
-
 	local frame = vgui.Create('DFrame')
 	frame:SetTitle(P('modifying', class))
 	SettingsClass.ApplyFrameStyle(frame)
+	local scroll = frame:Add('DScrollPanel')
+	local canvas = scroll:GetCanvas()
+	
+	scroll:Dock(TOP)
+	scroll:SetHeight(400)
 
 	local lab = frame:Add('DLabel')
 	lab:SetTextColor(SettingsClass.TextColor)
@@ -1577,11 +1621,16 @@ local function OpenSLimitEditPanel(class)
 
 	local groups = DPP.GetGroups()
 	local Panels = {}
+	
+	for k, v in pairs(t) do
+		if not DPP.HasValueLight(groups, k) then
+			table.insert(groups, k)
+		end
+	end
 
 	for k, v in pairs(groups) do
-		height = height + 50
-		local l = frame:Add('DLabel')
-		local p = frame:Add('DTextEntry')
+		local l = canvas:Add('DLabel')
+		local p = canvas:Add('DTextEntry')
 		table.insert(Panels, p)
 		p.Group = v
 		l:Dock(TOP)
@@ -1591,6 +1640,32 @@ local function OpenSLimitEditPanel(class)
 		p:SetText(t[v] or '0')
 		p.OriginalValue = (t[v] or '0')
 	end
+	
+	local CustomEnter
+	
+	do
+		local l = canvas:Add('DLabel')
+		local gentry = canvas:Add('DTextEntry')
+		local p = canvas:Add('DTextEntry')
+		table.insert(Panels, p)
+		p.Group = ''
+		
+		l:Dock(TOP)
+		l:SetText(P('cami_tip'))
+		l:SetTextColor(SettingsClass.TextColor)
+		l:SizeToContents()
+
+		gentry:Dock(TOP)
+		gentry:SetText('')
+		
+		gentry.p = p
+		
+		p:Dock(TOP)
+		p:SetText('0')
+		p.OriginalValue = '0'
+		
+		CustomEnter = gentry
+	end
 
 	local apply = frame:Add('DButton')
 	apply:Dock(BOTTOM)
@@ -1598,9 +1673,11 @@ local function OpenSLimitEditPanel(class)
 	SettingsClass.ApplyButtonStyle(apply)
 
 	function apply.DoClick()
+		CustomEnter.p.Group = CustomEnter:GetText()
 		t = {}
 
 		for k, v in pairs(Panels) do
+			if v.Group == '' then continue end
 			local n = tonumber(v:GetText())
 			if not n then continue end
 			if tonumber(v.OriginalValue) == n then continue end
@@ -1624,8 +1701,7 @@ local function OpenSLimitEditPanel(class)
 		frame:Close()
 	end
 
-	frame:SetHeight(height)
-	frame:SetWidth(300)
+	frame:SetSize(300, 550)
 	frame:Center()
 	frame:MakePopup()
 end
@@ -1633,33 +1709,67 @@ end
 local function OpenCLimitEditPanel(class)
 	local t = DPP.ConstrainsLimits[class] or {}
 
-	local height = 90
-
 	local frame = vgui.Create('DFrame')
 	frame:SetTitle(P('modifying', class))
 	SettingsClass.ApplyFrameStyle(frame)
+	local scroll = frame:Add('DScrollPanel')
+	local canvas = scroll:GetCanvas()
+	
+	scroll:Dock(TOP)
+	scroll:SetHeight(400)
 
 	local lab = frame:Add('DLabel')
 	lab:SetTextColor(SettingsClass.TextColor)
-	lab:SetText(P('limit_tip'))
+	lab:SetText(P('elimit_tip'))
 	lab:Dock(TOP)
 	lab:SizeToContents()
 
 	local groups = DPP.GetGroups()
 	local Panels = {}
+	
+	for k, v in pairs(t) do
+		if not DPP.HasValueLight(groups, k) then
+			table.insert(groups, k)
+		end
+	end
 
 	for k, v in pairs(groups) do
-		height = height + 50
-		local l = frame:Add('DLabel')
-		local p = frame:Add('DTextEntry')
+		local l = canvas:Add('DLabel')
+		local p = canvas:Add('DTextEntry')
 		table.insert(Panels, p)
 		p.Group = v
 		l:Dock(TOP)
 		l:SetText(v)
 		l:SetTextColor(SettingsClass.TextColor)
 		p:Dock(TOP)
-		p:SetText(t[v] or '0')
-		p.OriginalValue = (t[v] or '0')
+		p:SetText(t[v] or '-1')
+		p.OriginalValue = (t[v] or '-1')
+	end
+	
+	local CustomEnter
+	
+	do
+		local l = canvas:Add('DLabel')
+		local gentry = canvas:Add('DTextEntry')
+		local p = canvas:Add('DTextEntry')
+		table.insert(Panels, p)
+		p.Group = ''
+		
+		l:Dock(TOP)
+		l:SetText(P('cami_tip'))
+		l:SetTextColor(SettingsClass.TextColor)
+		l:SizeToContents()
+
+		gentry:Dock(TOP)
+		gentry:SetText('')
+		
+		gentry.p = p
+		
+		p:Dock(TOP)
+		p:SetText('-1')
+		p.OriginalValue = '-1'
+		
+		CustomEnter = gentry
 	end
 
 	local apply = frame:Add('DButton')
@@ -1668,14 +1778,16 @@ local function OpenCLimitEditPanel(class)
 	SettingsClass.ApplyButtonStyle(apply)
 
 	function apply.DoClick()
+		CustomEnter.p.Group = CustomEnter:GetText()
 		t = {}
 
 		for k, v in pairs(Panels) do
+			if v.Group == '' then continue end
 			local n = tonumber(v:GetText())
 			if not n then continue end
 			if tonumber(v.OriginalValue) == n then continue end
 
-			if n ~= 0 then
+			if n >= 0 then
 				RunConsoleCommand('dpp_addconstlimit', class, v.Group, n)
 			else
 				RunConsoleCommand('dpp_removeconstlimit', class, v.Group)
@@ -1694,8 +1806,7 @@ local function OpenCLimitEditPanel(class)
 		frame:Close()
 	end
 
-	frame:SetHeight(height)
-	frame:SetWidth(300)
+	frame:SetSize(300, 550)
 	frame:Center()
 	frame:MakePopup()
 end

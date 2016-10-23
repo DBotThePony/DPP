@@ -77,6 +77,7 @@ local en = {
 	remove_limit_all = 'Remove this limit from all groups',
 	entity_limit_note = 'NOTE: This just prevents the player from spawning\n entities with the given class if the player spawned\n the given amount of entities within this class.\nThat means it DOES NOT allow groups to spawn\n unlimited amounts of entities within that\n type. For that use the Sandbox limits\n instead.',
 	limit_tip = 'Unlimited: -1\n0 - removes limit from db\nAny values higher than 0 is a limit',
+	elimit_tip = '-1 - removes limit from db\nAny values higher than 0 is a limit',
 	sbox_limit_note = 'WHAT THIS DOES:\nIt\'s the console variable sbox_max<...> overrides for user groups.\nTo add values, you must know the console variable you are changing.\nExample: Modifying prop limits would be "props" (sbox_maxprops).\nA value of -1 is unlimited, and 0 leaves the limit unmodified.',
 	constraints_limit_tip = 'You can see type of constraints in DPP logs\nATTENTION: Because of nature of rope constraints\nDPP thinks that keyframe_rope is a "vrope"\nconstraint because rope (and related) constraints\n creating keyframe_rope too to show visual rope.',
 	sbox_max = 'sbox_max...',
@@ -488,6 +489,8 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	crazy_physics = 'Crazy physics detected, next prop have crazy physics: ',
 	crazy_physics2 = ' that belongs to ',
 	crazy_physics3 = ', ghosting it.',
+	
+	cami_tip = "Can't find your custom group here?\nYou can enter a custom one here!\n(that happens if admin mod doesn't support CAMI\nor it's CAMI support is bad)",
 }
 
 local ru = {
@@ -712,7 +715,8 @@ local ru = {
 	remove_limit = 'Убрать лимит',
 	remove_limit_all = 'Убрать этот лимит для всех групп',
 	entity_limit_note = 'ВНИМАНИЕ: Этот лист просто запрещает спавнить энтити\nс указанном классом выше этого лимита\nЭто означает, что это НЕ РАЗРЕШАЕТ спавнить группе\nнеограниченное количество энтити с данным классом.\nДля этого используйте лимиты "песочницы".',
-	limit_tip = 'Неограниченно: -1\n0 - удаляет лимит с энтити\nВсе значения больше 0 являются лимитом',
+	limit_tip = 'Неограниченно: -1\n0 - удаляет лимит из базы данных\nВсе значения больше 0 являются лимитом',
+	elimit_tip = '-1 - удаляет лимит с базы данных\nЛюбое значение, включая 0, является лимитом',
 	sbox_limit_note = 'ЧТО ЭТО ДЕЛАЕТ:\nЭто устанавливает значение sbox_max<...> для определённой группы.\nЧто-бы добавлять числа, Вам нужно знать, какие переменные вы хоотите изменить.\nПример: Изменения лимита пропов - "props" (sbox_maxprops).\nЗначение -1 - неограниченно, 0 - убирает уникальный лимит с группы, всё больше 0 устанавливает лимит.',
 	constraints_limit_tip = 'Вы можете посмотреть типы соединений в логах DPP\nВНИМАНИЕ: Из-за того, как веревки сделаны\nDPP думает, что keyframe_rope является "vrope"\nпо причине того, что инструмент "верёвка" (и другие) создают энтити\nkeyframe_rope для визуальной верёвки.',
 	sbox_max = 'sbox_max...',
@@ -1284,6 +1288,8 @@ local ru = {
 	cvar_log_spawns_nname = 'Записывать сетевой класс и ID энтити',
 	cvar_log_spawns_pmodel = 'Записывать модели только у пропов',
 	cvar_log_spawns_type = 'Записывать типь энтити',
+	
+	cami_tip = "Не можете найти свою группу?\nВы можете написать её тут!\n(обычно это случается когда модификация администрирования\nне поддерживает CAMI или её поддержка крайне плохая\nCAMI - Common Admin Mod Interface, Общий интерфейс модификации администрирования)",
 }
 
 DPP.RegisterPhraseList('en', en)
