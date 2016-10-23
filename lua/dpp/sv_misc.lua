@@ -26,6 +26,15 @@ local URS_Import = {
 	vehicle = 'Vehicle',
 }
 
+local URS_Limits = {
+	prop = 'props',
+	vehicle = 'vehicles',
+	ragdoll = 'ragdolls',
+	npc = 'npcs',
+	sent = 'sents',
+	effect = 'effects',
+}
+
 local function FakePrint(ply, message)
 	if not IsValid(ply) then
 		print(message)
@@ -38,10 +47,13 @@ concommand.Add('dpp_importurs', function(ply, cmd, args)
 	if IsValid(ply) and not ply:IsSuperAdmin() then return end
 	if not URS then DPP.Notify(ply, 'There is no URS installed! Nothing to import.') return end
 	local R = URS.restrictions
-	if not R or table.Count(R) < 1 then DPP.Notify(ply, 'Nothing to import.') return end
+	local L = URS.limits
+	if (not R or table.Count(R) < 1) and (not L or table.Count(L) < 1) then DPP.Notify(ply, 'Nothing to import.') return end
 
 	local isTest = not tobool(args[1])
 
+	R = R or {}
+	L = L or {}
 	local Props = R.prop
 	local Ragdolls = R.ragdoll
 
@@ -49,19 +61,19 @@ concommand.Add('dpp_importurs', function(ply, cmd, args)
 
 	for k, v in pairs(URS_Import) do
 		local tab = R[k]
-		if not tab then continue end
+		if not tab then
+			for class, groups in pairs(tab) do
+				if not istable(groups) then continue end
+				if type(class) ~= 'string' then continue end
+				if table.Count(groups) == 0 then continue end
 
-		for class, groups in pairs(tab) do
-			if not istable(groups) then continue end
-			if type(class) ~= 'string' then continue end
-			if table.Count(groups) == 0 then continue end
-
-			if not isTest then
-				DPP['Restrict' .. v](class, groups, false)
-			else
-				FakePrint(ply, string.format('[DPP] Restrict: %s from %s', class, table.concat(groups, ',')))
+				if not isTest then
+					DPP['Restrict' .. v](class, groups, false)
+				else
+					FakePrint(ply, string.format('[DPP] Restrict: %s from %s', class, table.concat(groups, ',')))
+				end
+				imported = imported + 1
 			end
-			imported = imported + 1
 		end
 	end
 
@@ -91,12 +103,31 @@ concommand.Add('dpp_importurs', function(ply, cmd, args)
 			else
 				FakePrint(ply, string.format('[DPP] Restrict: %s from %s', model, table.concat(groups, ',')))
 			end
+			
 			imported = imported + 1
+		end
+	end
+	
+	for toFix, fixed in pairs(URS_Limits) do
+		if L[toFix] then
+			for group, limit in pairs(L[toFix]) do
+				local num = tonumber(limit)
+				
+				if num then
+					if not isTest then
+						DPP.AddSBoxLimit(fixed, group, num)
+					else
+						FakePrint(ply, string.format('[DPP] Limit: %s from %s at %s amount', fixed, group, num))
+					end
+					
+					imported = imported + 1
+				end
+			end
 		end
 	end
 
 	if not isTest then
-		DPP.SimpleLog(IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' Imported Restrictions from URS. Total items imported: ' .. imported)
+		DPP.SimpleLog(IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' Imported Restrictions and Limits from URS. Total items imported: ' .. imported)
 	else
 		FakePrint(ply, 'Total items: ' .. imported)
 		FakePrint(ply, 'This was a test-print, changes does not applied')
