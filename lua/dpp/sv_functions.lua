@@ -298,19 +298,6 @@ function DPP.SetUpForGrabs(ent, status)
 	ent:SetDPPVar('IsUpForGraps', status)
 end
 
-function DPP.CheckUpForGrabs(ent, ply)
-	if not DPP.IsUpForGrabs(ent) then return end
-	DPP.DeleteEntityUndo(ent)
-	DPP.SetOwner(ent, ply) 
-	DPP.SetUpForGrabs(ent, false) 
-	DPP.Notify(ply, DPP.PPhrase(ply, 'grabs_hit'))
-	undo.Create('Owned_Prop')
-	undo.AddEntity(ent)
-	undo.SetPlayer(ply)
-	undo.Finish()
-	DPP.RecalcConstraints(ent)
-end
-
 function DPP.DeleteEntityUndo(ent)
 	local tab = undo.GetTable()
 

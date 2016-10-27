@@ -326,3 +326,23 @@ function DPP.TableRecursiveReplace(tab, what, to)
 	RecursiveFunc(tab, what, to)
 	return tab
 end
+
+function DPP.UnghostIfPossible(ent)
+	if not DPP.GetGhosted(ent) then return false end
+	if SERVER then DPP.SetGhosted(ent, false) end
+	return true
+end
+
+function DPP.CheckUpForGrabs(ent, ply)
+	if not SERVER then return end
+	if not DPP.IsUpForGrabs(ent) then return end
+	DPP.DeleteEntityUndo(ent)
+	DPP.SetOwner(ent, ply) 
+	DPP.SetUpForGrabs(ent, false) 
+	DPP.Notify(ply, DPP.PPhrase(ply, 'grabs_hit'))
+	undo.Create('Owned_Prop')
+	undo.AddEntity(ent)
+	undo.SetPlayer(ply)
+	undo.Finish()
+	DPP.RecalcConstraints(ent)
+end

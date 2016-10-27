@@ -26,7 +26,7 @@ local function GiveEntityChance(ent, funcToCall, ...)
 		return nil
 	end
 	
-	local stuff = {pcall(func, ...)}
+	local stuff = {pcall(func, ent, ...)}
 	local status = table.remove(stuff, 1)
 	
 	if not status then
@@ -80,37 +80,52 @@ function DPP.CanDamage(ply, ent, ignoreEnt)
 end
 
 function DPP.PhysgunTouch(ply, ent)
-	if SERVER then DPP.CheckUpForGrabs(ent, ply) end
+	DPP.CheckUpForGrabs(ent, ply)
 	if DPP.PhysgunPickup(ply, ent) == false then return false end
-	if SERVER and DPP.GetGhosted(ent) then DPP.SetGhosted(ent, false) end
+	DPP.UnghostIfPossible(ent)
 end
 
 function DPP.GravGunPuntTouch(ply, ent)
-	if SERVER then DPP.CheckUpForGrabs(ent, ply) end
+	DPP.CheckUpForGrabs(ent, ply)
 
 	if DPP.CanGravgunPunt(ply, ent) == false then return false end
 
-	if SERVER and DPP.GetGhosted(ent) then DPP.SetGhosted(ent, false) end
+	DPP.UnghostIfPossible(ent)
 end
 
 function DPP.GravgunTouch(ply, ent)
 	if DPP.CanGravgun(ply, ent) == false then return false end
 	--[[if SERVER then 
 		DPP.CheckUpForGrabs(ent, ply)
-		if DPP.GetGhosted(ent) then DPP.SetGhosted(ent, false) end
+		DPP.UnghostIfPossible(ent)
 	end]]
 end
 
 function DPP.PhysgunReloadTouch(phys, ply)
 	local ent = ply:GetEyeTrace().Entity
 
-	if SERVER then
-		DPP.CheckUpForGrabs(ent, ply)
-	end
+	DPP.CheckUpForGrabs(ent, ply)
+	
+	local final = true
 
 	if DPP.OnPhysgunReload(phys, ply) == false then return false end
+	
+	if SERVER then
+		local Connected = DPP.GetAllConnectedEntities(ent)
 
-	if SERVER and DPP.GetGhosted(ent) then DPP.SetGhosted(ent, false) end
+		for k, v in ipairs(Connected) do
+			local can = DPP.OnPhysgunReload(phys, ply, v)
+			
+			-- oops
+			if not can then return can end
+		end
+		
+		for k, v in ipairs(Connected) do
+			DPP.UnghostIfPossible(v)
+		end
+	end
+	
+	DPP.UnghostIfPossible(ent)
 end
 
 function DPP.ToolgunTouch(ply, tr, mode)
@@ -142,7 +157,7 @@ function DPP.ToolgunTouch(ply, tr, mode)
 		end
 	end
 
-	if SERVER then DPP.CheckUpForGrabs(tr.Entity, ply) end
+	DPP.CheckUpForGrabs(tr.Entity, ply)
 	
 	local CAN, Reason = DPP.CanTool(ply, tr.Entity, mode)
 	if CAN == false then 
@@ -159,7 +174,7 @@ function DPP.ToolgunTouch(ply, tr, mode)
 	end
 
 	if SERVER then
-		if DPP.GetGhosted(tr.Entity) then DPP.SetGhosted(tr.Entity, false) end
+		DPP.UnghostIfPossible(tr.Entity)
 		ply._DPP_LastToolgunLog = ply._DPP_LastToolgunLog or 0
 
 		if not DPP.GetConVar('no_tool_log') and ply._DPP_LastToolgunLog < CurTime() then 
@@ -171,19 +186,19 @@ function DPP.ToolgunTouch(ply, tr, mode)
 end
 
 function DPP.UseTouch(ply, ent)
-	if SERVER then DPP.CheckUpForGrabs(ent, ply) end
+	DPP.CheckUpForGrabs(ent, ply)
 
 	if DPP.PlayerUse(ply, ent) == false then return false end
 
-	if SERVER and DPP.GetGhosted(ent) then DPP.SetGhosted(ent, false) end
+	DPP.UnghostIfPossible(ent)
 end
 
 function DPP.PropertyTouch(ply, str, ent)
-	if SERVER then DPP.CheckUpForGrabs(ent, ply) end
+	DPP.CheckUpForGrabs(ent, ply)
 
 	if DPP.CanProperty(ply, str, ent) == false then return false end
 
-	if SERVER and DPP.GetGhosted(ent) then DPP.SetGhosted(ent, false) end
+	DPP.UnghostIfPossible(ent)
 end
 
 function DPP.CanPhysgun(ply, ent)
@@ -254,25 +269,14 @@ function DPP.CanGravgunPunt(ply, ent)
 	return DPP.CanGravgun(ply, ent)
 end
 
-function DPP.OnPhysgunReload(phys, ply, ignoreConnected, ent)
+function DPP.OnPhysgunReload(phys, ply, ent)
 	if not DPP.GetConVar('enable_physgun') then return end
 	ent = ent or ply:GetEyeTrace().Entity
-
-	local can, reason = DPP.CanTouch(ply, ent, 'physgun')
-	if not can then return can, reason end
 	
 	local can = GiveEntityChance(ent, 'OnPhysgunReload', ply)
 	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
-
-	if SERVER then
-		if not ignoreConnected then
-			local Connected = DPP.GetAllConnectedEntities(ent)
-
-			for k, v in pairs(Connected) do
-				DPP.OnPhysgunReload(phys, ply, true, v)
-			end
-		end
-	end
+	
+	return DPP.CanTouch(ply, ent, 'physgun')
 end
 
 local ropeModes = {
@@ -337,12 +341,12 @@ function DPP.CanTool(ply, ent, mode)
 end
 
 function DPP.CanPlayerEnterVehicleTouch(ply, ent)
-	if SERVER then DPP.CheckUpForGrabs(ent, ply) end
+	DPP.CheckUpForGrabs(ent, ply)
 
 	local reply, r = DPP.CanPlayerEnterVehicle(ply, ent)
 	if not reply then return false, r end
 
-	if SERVER and DPP.GetGhosted(ent) then DPP.SetGhosted(ent, false) end
+	DPP.UnghostIfPossible(ent)
 end
 
 function DPP.CanPlayerEnterVehicle(ply, ent)
@@ -358,12 +362,12 @@ function DPP.CanPlayerEnterVehicle(ply, ent)
 end
 
 function DPP.CanEditVariableTouch(ent, ply, key, val, editor)
-	if SERVER then DPP.CheckUpForGrabs(ent, ply) end
+	DPP.CheckUpForGrabs(ent, ply)
 
 	local reply, r = DPP.CanEditVariable(ent, ply, key, val, editor)
 	if not reply then return false, r end
 
-	if SERVER and DPP.GetGhosted(ent) then DPP.SetGhosted(ent, false) end
+	DPP.UnghostIfPossible(ent)
 end
 
 function DPP.CanEditVariable(ent, ply, key, val, editor)
@@ -424,12 +428,12 @@ function DPP.PlayerUse(ply, ent)
 end
 
 function DPP.CanDriveTouch(ply, ent)
-	if SERVER then DPP.CheckUpForGrabs(ent, ply) end
+	DPP.CheckUpForGrabs(ent, ply)
 
 	local reply, r = DPP.CanDrive(ply, ent)
 	if reply == false then return false, r end
 
-	if SERVER and DPP.GetGhosted(ent) then DPP.SetGhosted(ent, false) end
+	DPP.UnghostIfPossible(ent)
 end
 
 function DPP.CanDrive(ply, ent)
