@@ -423,6 +423,7 @@ function DPP.FindPlayerProps(ply)
 
 	for k, ent in pairs(find) do
 		DPP.SetOwner(ent, ply)
+		DPP.SetUpForGrabs(ent, false)
 	end
 
 	for k, ent in pairs(find) do
