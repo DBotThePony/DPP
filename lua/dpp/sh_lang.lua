@@ -502,6 +502,7 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	
 	saveload_command_message_1ply = 'Invalid SteamID (#1)',
 	saveload_command_message_2ply = 'Invalid Class (#2)',
+	restrict_ctip = 'Restriction for group entered above',
 }
 
 local ru = {

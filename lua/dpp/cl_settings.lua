@@ -2555,18 +2555,32 @@ for k, v in pairs(DPP.RestrictTypes) do
 			iswhite = false
 		}
 
-		local height = 50
-
 		local frame = vgui.Create('DFrame')
 		frame:SetTitle(P('modifying', class))
 		SettingsClass.ApplyFrameStyle(frame)
+		frame:SetSize(300, 450)
+		frame:Center()
+		frame:MakePopup()
+		
+		local scroll = frame:Add('DScrollPanel')
+		local canvas = scroll:GetCanvas()
+		
+		scroll:Dock(TOP)
+		scroll:SetHeight(300)
 
 		local groups = DPP.GetGroups()
 		local Panels = {}
+		
+		for k, data in pairs(DPP.RestrictedTypes[k]) do
+			for i, group in pairs(data.groups) do
+				if not DPP.HasValueLight(groups, group) then
+					table.insert(groups, group)
+				end
+			end
+		end
 
 		for k, v in pairs(groups) do
-			height = height + 20
-			local p = frame:Add('DCheckBoxLabel')
+			local p = canvas:Add('DCheckBoxLabel')
 			table.insert(Panels, p)
 			p:Dock(TOP)
 			p:SetText(v)
@@ -2576,9 +2590,36 @@ for k, v in pairs(DPP.RestrictTypes) do
 			SettingsClass.MakeCheckboxBetter(p)
 			SettingsClass.AddScramblingChars(p.Label, p, p.Button)
 		end
+		
+		local CustomEnter
+		
+		do
+			local l = canvas:Add('DLabel')
+			local gentry = canvas:Add('DTextEntry')
+			local p = canvas:Add('DCheckBoxLabel')
+			table.insert(Panels, p)
+			p:Dock(TOP)
+			p:SetText(P('restrict_ctip'))
+			p:SetTooltip(P('restrict_ctip'))
+			p:SetChecked(false)
+			p.Group = ''
+			
+			l:Dock(TOP)
+			l:SetText(P('cami_tip'))
+			l:SetTextColor(SettingsClass.TextColor)
+			l:SizeToContents()
 
-		height = height + 30
-		local iswhite = frame:Add('DCheckBoxLabel')
+			gentry:Dock(TOP)
+			gentry:SetText('')
+			
+			gentry.p = p
+			
+			CustomEnter = gentry
+			SettingsClass.MakeCheckboxBetter(p)
+			SettingsClass.AddScramblingChars(p.Label, p, p.Button)
+		end
+
+		local iswhite = canvas:Add('DCheckBoxLabel')
 		iswhite:Dock(TOP)
 		iswhite:SetText(P('is_white'))
 		iswhite:SetChecked(t.iswhite)
@@ -2592,12 +2633,15 @@ for k, v in pairs(DPP.RestrictTypes) do
 		SettingsClass.ApplyButtonStyle(apply)
 
 		function apply.DoClick()
+			CustomEnter.p.Group = CustomEnter:GetText()
 			t.groups = {}
+			
 			for k, v in pairs(Panels) do
-				if v:GetChecked() then
+				if v:GetChecked() and v.Group ~= '' then
 					table.insert(t.groups, v.Group)
 				end
 			end
+			
 			t.iswhite = iswhite:GetChecked()
 
 			RunConsoleCommand('dpp_restrict' .. k, class, table.concat(t.groups, ','), t.iswhite and '1' or '0')
@@ -2612,11 +2656,6 @@ for k, v in pairs(DPP.RestrictTypes) do
 		function discard.DoClick()
 			frame:Close()
 		end
-
-		frame:SetHeight(height)
-		frame:SetWidth(200)
-		frame:Center()
-		frame:MakePopup()
 	end
 
 	FUNCTIONS['RestrictTypes' .. v .. 'ListClick'] = function(self, line)
