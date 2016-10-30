@@ -323,6 +323,43 @@ DPP.ClientReceiveFuncs = {
 	LimitHit = function()
 		hook.Run('LimitHit', net.ReadString())
 	end,
+	
+	RListsInsert_Player = function()
+		local k = net.ReadString()
+		local steamid = net.ReadString()
+		local class = net.ReadString()
+		local status = net.ReadBool()
+		DPP.RestrictedTypes_SteamID[k][steamid] = DPP.RestrictedTypes_SteamID[k][steamid] or {}
+		
+		if status then
+			table.insert(DPP.RestrictedTypes_SteamID[k][steamid], class)
+		else
+			DPP.PopFromArray(DPP.RestrictedTypes_SteamID[k][steamid], class)
+		end
+		
+		hook.Run('DPP.RestrictedTypesUpdatedPlayer', k, steamid, class, status)
+	end,
+	
+	RLists_Player = function()
+		local k = net.ReadString()
+		local count = net.ReadUInt(16)
+		
+		DPP.RestrictedTypes_SteamID[k] = {}
+		
+		for i = 1, count do
+			local steamid = net.ReadString()
+			local classes_count = net.ReadUInt(8)
+			
+			DPP.RestrictedTypes_SteamID[k][steamid] = DPP.RestrictedTypes_SteamID[k][steamid] or {}
+			
+			for i2 = 1, classes_count do
+				local class = net.ReadString()
+				table.insert(DPP.RestrictedTypes_SteamID[k][steamid], class)
+			end
+		end
+		
+		hook.Run('DPP.RestrictedTypesReloadedPlayer', k)
+	end,
 }
 
 for k, v in pairs(DPP.ClientReceiveFuncs) do

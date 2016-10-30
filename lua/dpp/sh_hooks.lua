@@ -293,7 +293,7 @@ function DPP.CanTool(ply, ent, mode)
 	if not DPP.GetConVar('enable_tool') then return true, DPP.GetPhrase('protection_disabled') end
 	DPP.AssertArguments('DPP.CanTool', {{ply, 'Player'}, {ent, 'AnyEntity'}, {mode, 'string'}})
 
-	if DPP.IsRestrictedTool(mode, ply) then 
+	if DPP.IsRestrictedTool(mode, ply) or DPP.IsRestrictedToolPlayer(ply, mode) then 
 		return false, DPP.GetPhrase('restricted_tool')
 	end
 
@@ -390,7 +390,7 @@ function DPP.CanProperty(ply, str, ent)
 		return false, DPP.GetPhrase('toolgun_blocked')
 	end
 
-	if DPP.IsRestrictedProperty(str, ply) then 
+	if DPP.IsRestrictedProperty(str, ply) or DPP.IsRestrictedPropertyPlayer(ply, str) then 
 		return false, DPP.GetPhrase('property_restricted')
 	end
 
@@ -463,7 +463,7 @@ function DPP.CanPickupItem(ply, ent)
 	local class = ent:GetClass()
 
 	if DPP.IsEntityBlockedPickup(class) then return false, 'Blacklisted' end
-	if DPP.IsRestrictedPickup(class, ply) then return false, 'Restricted' end
+	if DPP.IsRestrictedPickup(class, ply) or DPP.IsRestrictedPickupPlayer(ply, class) then return false, 'Restricted' end
 	if DPP.IsEntityWhitelistedPickup(class) then return true, 'Excluded' end
 
 	if DPP.GetConVar('disable_pickup_world') and not DPP.IsOwned(ent) then return true, 'Not owned' end
@@ -527,7 +527,7 @@ function DPP.OverrideE2Adv()
 
 	function Compiler:Compile_FUNC(Trace, Variable, Expressions)
 		if self.DPly then
-			if DPP.IsRestrictedE2AFunction(Variable, self.DPly) then
+			if DPP.IsRestrictedE2AFunction(Variable, self.DPly) or DPP.IsRestrictedE2AFunctionPlayer(self.DPly, Variable)then
 				if SERVER then
 					DPP.Notify(self.DPly, DPP.PlayerPhrase('e2adv_func_restricted_s', Variable), 1)
 				end

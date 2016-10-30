@@ -159,6 +159,20 @@ function DPP.HasValueLight(tab, val)
 	return false
 end
 
+function DPP.PopFromArray(arr, val)
+	local i
+	
+	for k, v in ipairs(arr) do
+		if v == val then i = k end
+	end
+	
+	if i then
+		table.remove(arr, i)
+	end
+	
+	return arr
+end
+
 DPP.HaveValueLight = DPP.HasValueLight
 
 if SERVER then
@@ -547,7 +561,7 @@ DPP.Settings = {
 	['strict_spawn_checks'] = {
 		type = 'bool',
 		value = '1',
-		desc = '[Beta] (Very) Strict spawn checks.\n85%% of spawned entities in unusual ways is detected\nby that option.',
+		desc = '[Beta] (Very) Strict spawn checks.\n85%% of spawned entities in unusual ways is detected\nby that option.\nCan decrease performance on pasting dupes.',
 	},
 
 	-- Too Hacky
@@ -797,6 +811,7 @@ DPP.EntsLimits = DPP.EntsLimits or {}
 DPP.SBoxLimits = DPP.SBoxLimits or {}
 DPP.ConstrainsLimits = DPP.ConstrainsLimits or {}
 DPP.RestrictedTypes = DPP.RestrictedTypes or {}
+DPP.RestrictedTypes_SteamID = DPP.RestrictedTypes_SteamID or {}
 DPP.BlockedModels = DPP.BlockedModels or {}
 
 DPP.BlockTypes = {
@@ -1281,6 +1296,7 @@ DPP.AdminGroups = {
 
 for k, v in pairs(DPP.RestrictTypes) do
 	DPP.RestrictedTypes[k] = DPP.RestrictedTypes[k] or {}
+	DPP.RestrictedTypes_SteamID[k] = DPP.RestrictedTypes_SteamID[k] or {}
 
 	DPP.AddConVar('restrict_' .. k .. '_white_bypass', {
 		desc = 'Admins can bypass ' .. v .. ' whitelist (spawn/use unlisted things)',
@@ -1300,11 +1316,22 @@ for k, v in pairs(DPP.RestrictTypes) do
 		type = 'bool',
 	})
 
+	DPP.AddConVar('restrict_' .. k .. '_ply', {
+		desc = 'Enable ' .. v .. ' restrictions for specific players',
+		value = '1',
+		type = 'bool',
+	})
+	
+	local cvar1 = 'restrict_' .. k
+	local cvar2 = 'restrict_' .. k .. '_white'
+	local cvar3 = 'restrict_' .. k .. '_white_bypass'
+	local cvar4 = 'restrict_' .. k .. '_ply'
+
 	DPP['IsRestricted' .. v] = function(class, group)
 		if not DPP.GetConVar('enable_lists') then return false end
-		if not DPP.GetConVar('restrict_' .. k) then return false end
-		local isWhite = DPP.GetConVar('restrict_' .. k .. '_white')
-		local adminBypass = DPP.GetConVar('restrict_' .. k .. '_white_bypass')
+		if not DPP.GetConVar(cvar1) then return false end
+		local isWhite = DPP.GetConVar(cvar2)
+		local adminBypass = DPP.GetConVar(cvar3)
 
 		local reply = false
 		local hit = false
@@ -1319,6 +1346,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		if DPP.IsEntity(group) then
 			isAdmin = group:IsAdmin()
 			group = group:GetUserGroup()
+
 			if isAdmin then
 				DPP.AdminGroups[group] = true
 			end
@@ -1350,6 +1378,15 @@ for k, v in pairs(DPP.RestrictTypes) do
 		end
 	end
 
+	DPP['IsRestricted' .. v .. 'Player'] = function(ply, class)
+		if not DPP.GetConVar('enable_lists') then return false end
+		if not DPP.GetConVar(cvar4) then return false end
+		local steamid = DPP.IsEntity(ply) and ply:SteamID() or ply
+		
+		if not DPP.RestrictedTypes_SteamID[k][steamid] then return false end
+		return DPP.HasValueLight(DPP.RestrictedTypes_SteamID[k][steamid], class)
+	end
+
 	DPP['IsEvenRestricted' .. v] = function(class)
 		if DPP.IsEntity(class) then
 			class = class:GetClass():lower()
@@ -1364,6 +1401,13 @@ for k, v in pairs(DPP.RestrictTypes) do
 		else
 			return false
 		end
+	end
+	
+	DPP['IsEvenRestricted' .. v .. 'Player'] = function(ply, class)
+		local steamid = DPP.IsEntity(ply) and ply:SteamID() or ply
+		
+		if not DPP.RestrictedTypes_SteamID[k][steamid] then return false end
+		return DPP.HasValueLight(DPP.RestrictedTypes_SteamID[k][steamid], class)
 	end
 end
 
@@ -1522,6 +1566,7 @@ end
 
 for k, v in pairs(DPP.RestrictTypes) do
 	DPP.RegisterPhrase('en', 'restricted_' .. k, v)
+	DPP.RegisterPhrase('en', 'restricted_' .. k .. '_mode', v)
 end
 
 for k, v in pairs(DPP.WhitelistTypes) do
@@ -1929,6 +1974,7 @@ end)
 
 include('sh_access.lua')
 include('sh_hooks.lua')
+
 if SERVER then
 	include('sv_savedata.lua')
 	include('sv_apropkill.lua')

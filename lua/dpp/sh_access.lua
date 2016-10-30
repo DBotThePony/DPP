@@ -186,9 +186,13 @@ end
 
 for k, v in pairs(DPP.RestrictTypes) do
 	default['restrict' .. k] = 'superadmin'
+	default['restrict' .. k .. '_ply'] = 'superadmin'
 	default['unrestrict' .. k] = 'superadmin'
+	default['unrestrict' .. k .. '_ply'] = 'superadmin'
 	default_desc['restrict' .. k] = 'Can add entities to ' .. k .. ' restrict list'
+	default_desc['restrict' .. k .. '_ply'] = 'Can add entities to ' .. k .. ' restrict list by SteamID'
 	default_desc['unrestrict' .. k] = 'Can remove entities from ' .. k .. ' restrict list'
+	default_desc['unrestrict' .. k .. '_ply'] = 'Can remove entities from ' .. k .. ' restrict list by SteamID'
 end
 
 local function UpdateLang()

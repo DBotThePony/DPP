@@ -208,7 +208,7 @@ local function CheckBlocked(ply, ent)
 	if not Mod then return end
 	local model = string.lower(Mod)
 
-	if DPP.IsRestrictedModel(model, ply) then 
+	if DPP.IsRestrictedModel(model, ply) or DPP.IsRestrictedModelPlayer(ply, model) then 
 		SafeRemoveEntity(ent)
 
 		if ply then
@@ -226,7 +226,7 @@ end
 local function CheckBlocked2(ply, model)
 	model = string.lower(model) --Fucking upper case
 
-	if DPP.IsRestrictedModel(model, ply) then
+	if DPP.IsRestrictedModel(model, ply) or DPP.IsRestrictedModelPlayer(ply, model) then
 		if ply then
 			DPP.Notify(ply, DPP.PPhrase(ply, 'model_restricted'), 1)
 		end
@@ -245,7 +245,7 @@ function SpawnFunctions.PlayerSpawnedNPC(ply, ent, shouldHideLog)
 	if ent.DPP_SpawnTime  == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 
-	if DPP.IsRestrictedNPC(ent:GetClass(), ply) then 
+	if DPP.IsRestrictedNPC(ent:GetClass(), ply) or DPP.IsRestrictedNPCPlayer(ply, ent:GetClass()) then 
 		LogTryPost(ply, 'NPC', ent)
 		DPP.Notify(ply, 'That entity is restricted', 1)
 		SafeRemoveEntity(ent)
@@ -484,7 +484,7 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog, ignoreAntispa
 	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 
-	if DPP.IsRestrictedSENT(ent:GetClass(), ply) then 
+	if DPP.IsRestrictedSENT(ent:GetClass(), ply) or DPP.IsRestrictedSENTPlayer(ply, ent:GetClass()) then 
 		LogTryPost(ply, '#log_sent', ent)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'entity_restricted'), 1)
 		SafeRemoveEntity(ent)
@@ -517,7 +517,7 @@ function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog, ignoreAntispa
 	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 
-	if DPP.IsRestrictedSWEP(ent:GetClass(), ply) then 
+	if DPP.IsRestrictedSWEP(ent:GetClass(), ply) or DPP.IsRestrictedSWEPPlayer(ply, ent:GetClass()) then 
 		LogTryPost(ply, '#log_swep', ent)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'weapon_restricted'), 1)
 		SafeRemoveEntity(ent)
@@ -548,7 +548,7 @@ function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog, ignoreAnti
 	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 
-	if DPP.IsRestrictedVehicle(ent:GetClass(), ply) then 
+	if DPP.IsRestrictedVehicle(ent:GetClass(), ply) or DPP.IsRestrictedVehiclePlayer(ply, ent:GetClass()) then 
 		LogTryPost(ply, '#log_vehicle', ent)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'vehicle_restricted'), 1)
 		SafeRemoveEntity(ent)
@@ -664,7 +664,7 @@ function SpawnFunctions.PlayerSpawnVehicle(ply, model, class)
 		return false 
 	end
 
-	if DPP.IsRestrictedVehicle(class, ply) then 
+	if DPP.IsRestrictedVehicle(class, ply) or DPP.IsRestrictedVehiclePlayer(ply, class) then 
 		LogTry(ply, '#log_vehicle', model, class)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'vehicle_restricted'), 1)
 		return false 
@@ -674,7 +674,7 @@ end
 function SpawnFunctions.PlayerSpawnSENT(ply, ent)
 	DPP.AssertArguments('PlayerSpawnSENT', {{ply, 'Player'}, {ent, 'string'}})
 
-	if DPP.IsRestrictedSENT(ent, ply) then 
+	if DPP.IsRestrictedSENT(ent, ply) or DPP.IsRestrictedSENTPlayer(ply, ent) then 
 		LogTry(ply, '#log_sent', 'N/A', ent)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'entity_restricted'), 1)
 		return false 
@@ -689,7 +689,7 @@ end
 function SpawnFunctions.PlayerSpawnSWEP(ply, ent)
 	DPP.AssertArguments('PlayerSpawnSWEP', {{ply, 'Player'}, {ent, 'string'}})
 
-	if DPP.IsRestrictedSWEP(ent, ply) then 
+	if DPP.IsRestrictedSWEP(ent, ply) or DPP.IsRestrictedSWEPPlayer(ply, ent) then 
 		LogTry(ply, '#log_swep', 'N/A', ent)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'weapon_restricted'), 1)
 		return false 
@@ -712,7 +712,7 @@ end
 function SpawnFunctions.PlayerSpawnNPC(ply, ent)
 	DPP.AssertArguments('PlayerSpawnNPC', {{ply, 'Player'}, {ent, 'string'}})
 
-	if DPP.IsRestrictedNPC(ent, ply) then 
+	if DPP.IsRestrictedNPC(ent, ply) or DPP.IsRestrictedNPCPlayer(ply, ent) then 
 		LogTry(ply, '#log_npc', 'N/A', ent)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'npc_restricted'), 1)
 		return false 
@@ -1170,7 +1170,7 @@ function DPP.OverrideE2()
 
 	function Compiler:GetFunction(instr, Name, Args)
 		if self.DPly then
-			if DPP.IsRestrictedE2Function(Name, self.DPly) then
+			if DPP.IsRestrictedE2Function(Name, self.DPly) or DPP.IsRestrictedE2Function(self.DPly, Name) then
 				SimpleLog(team.GetColor(self.DPly:Team()), self.DPly:Nick(), color_white, '<' .. self.DPly:SteamID() .. '>', RED, '#log_tried', GRAY, '#log_tried_f||' .. Name)
 				self:Error(DPP.PPhrase(self.DPly, 'e2_func_restricted', name), instr)
 				return

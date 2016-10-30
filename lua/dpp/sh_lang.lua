@@ -391,6 +391,7 @@ entities.
 	menu_blacklists = 'Blacklists',
 	menu_exclude_lists = 'Exclude lists',
 	menu_restrictions = 'Restrictions',
+	menu_restrictions_ply = 'Restrictions per SteamID',
 	
 	menu_set_fallbackto = 'Set Fallback to %s',
 	menu_transferto = 'Transfer ownership of ALL props to %s',
@@ -454,6 +455,7 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	
 	saveload_command_message_1 = 'Invalid class to restrict (#1)',
 	saveload_command_message_2 = 'Invalid group(s). Groups are seperated by comma, without spaces (#2)',
+	saveload_command_message_2ply = 'Invalid SteamID (#2)',
 	saveload_command_message_3 = 'Invalid argument "is white list" (#3)',
 	saveload_command_message_4 = 'Invalid class to unrestrict',
 	
@@ -491,6 +493,15 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	crazy_physics3 = ', ghosting it.',
 	
 	cami_tip = "Can't find your custom group here?\nYou can enter a custom one here!\n(that happens if admin mod doesn't support CAMI\nor it's CAMI support is bad)",
+	
+	plyrestrict_already_not_restricted = 'This is not restricted from that player!',
+	plyrestrict_already_restricted = 'This is already restricted from that player!',
+	plyrestrict_from = ' from SteamID ',
+	selecting_player = 'Select a player...',
+	remove_r = 'Remove restriction',
+	
+	saveload_command_message_1ply = 'Invalid SteamID (#1)',
+	saveload_command_message_2ply = 'Invalid Class (#2)',
 }
 
 local ru = {

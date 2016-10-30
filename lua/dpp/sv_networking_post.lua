@@ -91,6 +91,29 @@ for k, v in pairs(DPP.RestrictedTypes) do
 	end
 
 	table.insert(DPP.NetworkSendFuncs, sendfunc)
+	
+	local function sendfunc(plys)
+		net.Start('DPP.RLists_Player')
+		
+		local v = DPP.RestrictedTypes_SteamID[k]
+		net.WriteString(k)
+
+		net.WriteUInt(table.Count(v), 16)
+
+		for steamid, classes in pairs(v) do
+			net.WriteString(steamid)
+			
+			net.WriteUInt(#classes, 8)
+			
+			for i2, class in ipairs(classes) do
+				net.WriteString(class)
+			end
+		end
+
+		net.Send(plys)
+	end
+
+	table.insert(DPP.NetworkSendFuncs, sendfunc)
 end
 
 do

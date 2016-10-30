@@ -105,6 +105,15 @@ function DPP.CreateTables()
 				PRIMARY KEY (CLASS)
 			)
 		]])
+		
+		table.insert(DPP.SQL_TABLES, [[
+			CREATE TABLE IF NOT EXISTS dpp_restricted]] .. k .. [[_ply
+			(
+				STEAMID VARCHAR(32) NOT NULL,
+				CLASS VARCHAR(64) NOT NULL,
+				PRIMARY KEY (CLASS, STEAMID)
+			)
+		]])
 	end
 
 	DPP.Message('Initializing database tables')
@@ -365,6 +374,48 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 		DPP.Query(string.format('REPLACE INTO dpp_restricted' .. k .. ' (CLASS, GROUPS, IS_WHITE) VALUES (%q, \'%s\', %q)', class, util.TableToJSON(groups), isWhite and '1' or '0'))
 	end
+	
+	DPP['Restrict' .. v .. 'Player'] = function(ply, class)
+		class = class:lower():Trim()
+		local steamid = DPP.IsEntity(ply) and ply:SteamID() or ply
+		
+		DPP.RestrictedTypes_SteamID[k][steamid] = DPP.RestrictedTypes_SteamID[k][steamid] or {}
+		if DPP.HasValueLight(DPP.RestrictedTypes_SteamID[k][steamid], class) then return end
+		
+		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
+
+		net.Start('DPP.RListsInsert_Player')
+		net.WriteString(k)
+		net.WriteString(steamid)
+		net.WriteString(class)
+		net.WriteBool(true)
+		net.Broadcast()
+
+		table.insert(DPP.RestrictedTypes_SteamID[k][steamid], class)
+
+		DPP.Query(string.format('REPLACE INTO dpp_restricted' .. k .. '_ply (STEAMID, CLASS) VALUES (%q, %q)', steamid, class))
+	end
+	
+	DPP['UnRestrict' .. v .. 'Player'] = function(ply, class)
+		class = class:lower():Trim()
+		local steamid = DPP.IsEntity(ply) and ply:SteamID() or ply
+		
+		DPP.RestrictedTypes_SteamID[k][steamid] = DPP.RestrictedTypes_SteamID[k][steamid] or {}
+		if not DPP.HasValueLight(DPP.RestrictedTypes_SteamID[k][steamid], class) then return end
+		
+		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
+
+		net.Start('DPP.RListsInsert_Player')
+		net.WriteString(k)
+		net.WriteString(steamid)
+		net.WriteString(class)
+		net.WriteBool(false)
+		net.Broadcast()
+
+		DPP.PopFromArray(DPP.RestrictedTypes_SteamID[k][steamid], class)
+
+		DPP.Query(string.format('DELETE FROM dpp_restricted' .. k .. '_ply WHERE STEAMID = %q AND CLASS = %q', steamid, class))
+	end
 
 	DPP['UnRestrict' .. v] = function(class, groups)
 		class = class:lower():Trim()
@@ -410,6 +461,36 @@ for k, v in pairs(DPP.RestrictTypes) do
 		DPP['UnRestrict' .. v](class)
 
 		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#saveload_removed', color_white, args[1], Gray, '#saveload_from', '#saveload_restricted', color_white, '#restricted_' .. k, Gray, '#saveload_blackwhite'}
+	end
+	
+	DPP.ManipulateCommands['restrict' .. k .. '_ply'] = function(ply, cmd, args)
+		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_command_message_1ply'}, NOTIFY_ERROR end
+		if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_command_message_2ply'}, NOTIFY_ERROR end
+
+		local class = args[2]:lower():Trim()
+		local steamid = args[1]:Trim()
+		
+		DPP.RestrictedTypes_SteamID[k][steamid] = DPP.RestrictedTypes_SteamID[k][steamid] or {}
+		if DPP.HasValueLight(DPP.RestrictedTypes_SteamID[k][steamid], class) then return false, {'#plyrestrict_already_restricted'}, NOTIFY_ERROR end
+		
+		DPP['Restrict' .. v .. 'Player'](steamid, class)
+
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#saveload_added', color_white, class, Gray, '#saveload_to', '#saveload_restricted', color_white, '#restricted_' .. k .. '_mode', Gray, '#plyrestrict_from', player.GetBySteamID(steamid) or steamid}
+	end
+	
+	DPP.ManipulateCommands['unrestrict' .. k .. '_ply'] = function(ply, cmd, args)
+		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_command_message_1ply'}, NOTIFY_ERROR end
+		if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_command_message_2ply'}, NOTIFY_ERROR end
+
+		local class = args[2]:lower():Trim()
+		local steamid = args[1]:Trim()
+		
+		DPP.RestrictedTypes_SteamID[k][steamid] = DPP.RestrictedTypes_SteamID[k][steamid] or {}
+		if not DPP.HasValueLight(DPP.RestrictedTypes_SteamID[k][steamid], class) then return false, {'#plyrestrict_already_not_restricted'}, NOTIFY_ERROR end
+		
+		DPP['UnRestrict' .. v .. 'Player'](steamid, class)
+
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#saveload_removed', color_white, class, Gray, '#saveload_from', '#saveload_restricted', color_white, '#restricted_' .. k .. '_mode', Gray, '#plyrestrict_from', player.GetBySteamID(steamid) or steamid}
 	end
 end
 
@@ -780,6 +861,7 @@ function DPP.ContinueDatabaseStartup()
 
 	for k, v in pairs(DPP.RestrictTypes) do
 		DPP.RestrictedTypes[k] = {}
+		
 		local data = DPP.Query('SELECT * FROM dpp_restricted' .. k, function(data)
 			if not data then return end
 
@@ -788,6 +870,17 @@ function DPP.ContinueDatabaseStartup()
 					groups = util.JSONToTable(b.GROUPS),
 					iswhite = tobool(b.IS_WHITE)
 				}
+			end
+		end)
+		
+		DPP.RestrictedTypes_SteamID[k] = {}
+		
+		local data = DPP.Query('SELECT * FROM dpp_restricted' .. k .. '_ply', function(data)
+			if not data then return end
+			
+			for i, row in ipairs(data) do
+				DPP.RestrictedTypes_SteamID[k][row.STEAMID] = DPP.RestrictedTypes_SteamID[k][row.STEAMID] or {}
+				table.insert(DPP.RestrictedTypes_SteamID[k][row.STEAMID], row.CLASS)
 			end
 		end)
 	end

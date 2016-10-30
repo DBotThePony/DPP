@@ -1971,6 +1971,9 @@ local ValidPanels3 = DPP.SettingsClass.ValidPanels3
 SettingsClass.WhitelistFunctions = SettingsClass.WhitelistFunctions or {}
 local WhitelistFunctions = SettingsClass.WhitelistFunctions
 
+SettingsClass.RestrictedByPlayerPanelFunctions = {}
+SettingsClass.RestrictedByPlayerPanelFunctionsValidPanels = SettingsClass.RestrictedByPlayerPanelFunctionsValidPanels or {}
+
 local function REMOVE_ALL(class)
 	for k, v in pairs(DPP.BlockTypes) do
 		DPP.QueueCommand('removeblockedentity' .. k, class)
@@ -2541,6 +2544,10 @@ local function SORTER(a, b)
 	return a.class < b.class
 end
 
+local function SORTER_SteamID(a, b)
+	return a.steamid < b.steamid
+end
+
 for k, v in pairs(DPP.RestrictTypes) do
 	local function OpenModifyPanel(class, isNew)
 		local t = DPP.RestrictedTypes[k][class] or {
@@ -2634,6 +2641,27 @@ for k, v in pairs(DPP.RestrictTypes) do
 		menu:Open()
 	end
 	
+	FUNCTIONS['RestrictTypes' .. v .. 'ListClickPlayer'] = function(self, line)
+		local steamid = self:GetLine(line):GetValue(1)
+		local class = self:GetLine(line):GetValue(2)
+
+		local menu = vgui.Create('DMenu')
+
+		menu:AddOption(P('clipboard', 'SteamID'), function()
+			SetClipboardText(class)
+		end):SetIcon(table.Random(SettingsClass.TagIcons))
+		
+		menu:AddOption(P('clipboard', P('Class')), function()
+			SetClipboardText(class)
+		end):SetIcon(table.Random(SettingsClass.TagIcons))
+
+		menu:AddOption(P('remove_from_restrict_list'), function()
+			RunConsoleCommand('dpp_unrestrict' .. k .. '_ply', steamid, class)
+		end):SetIcon(SettingsClass.RemoveIcon)
+
+		menu:Open()
+	end
+	
 	PanelsFunctions2[k] = function(Panel)
 		if not IsValid(Panel) then return end
 		Panel:Clear()
@@ -2676,6 +2704,125 @@ for k, v in pairs(DPP.RestrictTypes) do
 		ConVarCheckbox(Panel, 'restrict_' .. k)
 		ConVarCheckbox(Panel, 'restrict_' .. k .. '_white')
 		ConVarCheckbox(Panel, 'restrict_' .. k .. '_white_bypass')
+	end
+	
+	local function ButtonSelectClick(self)
+		if IsValid(self.entry) and IsValid(self.ply) then
+			self.entry:SetText(self.ply:SteamID())
+		end
+		
+		self.frame:Close()
+		
+		if IsValid(self.entry) then
+			self.entry:RequestFocus()
+			local x, y = self.entry:LocalToScreen(0, 0)
+			gui.SetMousePos(x + 3, y + 5)
+		end
+	end
+	
+	local function OpenPlayersMenu(self)
+		local frame = vgui.Create('DFrame')
+		frame:SetSize(300, 600)
+		frame:Center()
+		frame:MakePopup()
+		frame:SetTitle(P('selecting_player'))
+		
+		local scroll = frame:Add('DScrollPanel')
+		scroll:Dock(FILL)
+		local canvas = scroll:GetCanvas()
+		
+		for k, ply in ipairs(player.GetAll()) do
+			local pnl = canvas:Add('EditablePanel')
+			pnl:Dock(TOP)
+			
+			local Avatar = pnl:Add('DPP_Avatar')
+			Avatar:SetPlayer(ply, 32)
+			Avatar:Dock(LEFT)
+			Avatar:SetSize(24, 24)
+			
+			local button = pnl:Add('DButton')
+			button:SetText(ply:Nick())
+			button:Dock(FILL)
+			button.DoClick = ButtonSelectClick
+			button.frame = frame
+			button.ply = ply
+			button.entry = self.entry
+			SettingsClass.ApplyButtonStyle(button)
+		end
+		
+		gui.SetMousePos(ScrW() / 2, ScrH() / 2 - 295)
+	end
+	
+	SettingsClass.RestrictedByPlayerPanelFunctions[k] = function(Panel)
+		if not IsValid(Panel) then return end
+		Panel:Clear()
+		SettingsClass.SetupBackColor(Panel)
+
+		SettingsClass.RestrictedByPlayerPanelFunctionsValidPanels[k] = Panel
+
+		local list = vgui.Create('DListView', Panel)
+		Panel:AddItem(list)
+
+		list:SetHeight(600)
+		list:AddColumn('SteamID')
+		list:AddColumn(P('Class'))
+		list:SetMultiSelect(false)
+
+		local L = DPP.RestrictedTypes_SteamID[k]
+		local New = {}
+		
+		for steamid, classes in pairs(L) do
+			for i, class in ipairs(classes) do
+				table.insert(New, {class = class, steamid = steamid})
+			end
+		end
+
+		table.sort(New, SORTER_SteamID)
+
+		for k, v in ipairs(New) do
+			list:AddLine(v.steamid, v.class)
+		end
+
+		list.OnRowRightClick = FUNCTIONS['RestrictTypes' .. v .. 'ListClickPlayer']
+		
+		local button = vgui.Create('DButton', Panel)
+		button:SetText(P('selecting_player'))
+		SettingsClass.ApplyButtonStyle(button)
+		button.DoClick = OpenPlayersMenu
+		Panel:AddItem(button)
+		
+		local Lab = vgui.Create('DLabel', Panel)
+		Panel:AddItem(Lab)
+		Lab:SetText('SteamID')
+		Lab:SetTextColor(SettingsClass.TextColor)
+		Lab:SizeToContents()
+		
+		local entry_steamid = vgui.Create('DTextEntry', Panel)
+		Panel:AddItem(entry_steamid)
+		button.entry = entry_steamid
+		
+		local Lab = vgui.Create('DLabel', Panel)
+		Panel:AddItem(Lab)
+		Lab:SetText(P('Class'))
+		Lab:SetTextColor(SettingsClass.TextColor)
+		Lab:SizeToContents()
+
+		local entry_class = vgui.Create('DTextEntry', Panel)
+		Panel:AddItem(entry_class)
+
+		local Apply = Panel:Button(P('add_r'))
+		Apply.DoClick = function()
+			RunConsoleCommand('dpp_restrict' .. k .. '_ply', entry_steamid:GetText(), entry_class:GetText())
+		end
+		SettingsClass.ApplyButtonStyle(Apply)
+
+		local Apply = Panel:Button(P('remove_r'))
+		Apply.DoClick = function()
+			RunConsoleCommand('dpp_unrestrict' .. k .. '_ply', entry_steamid:GetText(), entry_class:GetText())
+		end
+		SettingsClass.ApplyButtonStyle(Apply)
+
+		ConVarCheckbox(Panel, 'restrict_' .. k .. '_ply')
 	end
 end
 
@@ -3082,6 +3229,7 @@ local function PopulateToolMenu()
 
 	for k, v in pairs(DPP.RestrictTypes) do
 		spawnmenu.AddToolMenuOption('DPP', P('menu_restrictions'), 'DPP.restrict' .. k, P('menu_restricts', P('menu_' .. k)), '', '', PanelsFunctions2[k])
+		spawnmenu.AddToolMenuOption('DPP', P('menu_restrictions_ply'), 'DPP.restrict' .. k .. '_ply', P('menu_restricts', P('menu_' .. k)), '', '', SettingsClass.RestrictedByPlayerPanelFunctions[k])
 	end
 end
 
@@ -3144,6 +3292,18 @@ end)
 hook.Add('DPP.RestrictedTypesUpdated', 'DPP.Menu', function(s1)
 	if PanelsFunctions2[s1] then
 		PanelsFunctions2[s1](DPP.SettingsClass.ValidPanels2[s1])
+	end
+end)
+
+hook.Add('DPP.RestrictedTypesUpdatedPlayer', 'DPP.Menu', function(k)
+	if SettingsClass.RestrictedByPlayerPanelFunctions[k] then
+		SettingsClass.RestrictedByPlayerPanelFunctions[k](SettingsClass.RestrictedByPlayerPanelFunctionsValidPanels[k])
+	end
+end)
+
+hook.Add('DPP.RestrictedTypesReloadedPlayer', 'DPP.Menu', function(k)
+	if SettingsClass.RestrictedByPlayerPanelFunctions[k] then
+		SettingsClass.RestrictedByPlayerPanelFunctions[k](SettingsClass.RestrictedByPlayerPanelFunctionsValidPanels[k])
 	end
 end)
 
