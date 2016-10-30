@@ -59,6 +59,7 @@ local WhitelistProps = {
 local GRAY = Color(200, 200, 200)
 
 local function ProceedCrush(ent)
+	if not DPP.IsOwned(ent) then return end
 	ent._DPP_LastPhysicsDamage = ent._DPP_LastPhysicsDamage or 0
 	ent._DPP_LastPhysicsDamage_Counter = ent._DPP_LastPhysicsDamage_Counter or 0
 	
