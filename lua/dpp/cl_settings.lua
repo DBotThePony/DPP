@@ -555,6 +555,7 @@ local MiscConVars = {
 	'disable_unfreeze',
 	'unfreeze_restrict',
 	'unfreeze_restrict_num',
+	'disable_huds',
 }
 
 local ClientVars = {
@@ -570,6 +571,7 @@ local ClientVars = {
 	'no_touch_world',
 	'no_touch_other',
 	'smaller_fonts',
+	'hud_obey_server',
 
 	'no_restrict_options',
 	'no_block_options',

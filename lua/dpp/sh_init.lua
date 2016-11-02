@@ -803,6 +803,12 @@ DPP.Settings = {
 		max = 1000,
 		desc = 'Maximal distance between props maximals and minimals vectors (AABB size)'
 	},
+	
+	['disable_huds'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Tell clients that server preffers DPP HUD to be disabled'
+	},
 }
 
 DPP.BlockedEntities = DPP.BlockedEntities or {}
@@ -1008,6 +1014,12 @@ DPP.CSettings = {
 		value = '0',
 		nosend = true,
 		desc = 'Draw owner display in screenshots',
+	},
+	
+	['hud_obey_server'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Disable DPP HUD if server wants so',
 	},
 }
 

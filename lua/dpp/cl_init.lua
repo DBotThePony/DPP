@@ -920,6 +920,7 @@ local function HUDPaint()
 	if can == false then return end
 
 	if DPP.PlayerConVar(nil, 'hide_hud') then return end
+	if DPP.GetConVar('disable_huds') and DPP.LocalConVar('hud_obey_server') then return end
 	if LocalPlayer():InVehicle() and DPP.PlayerConVar(nil, 'no_hud_in_vehicle') then return end
 
 	local AWeapon = LocalPlayer():GetActiveWeapon()
