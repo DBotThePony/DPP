@@ -563,9 +563,11 @@ function DPP.OverrideCounts()
 		
 		local dppLimit = DPP.GetSBoxLimit(limit, self:GetUserGroup())
 		local defaultLimit = CVars_Cache[limit]:GetInt()
-		local limitToUse = dppLimit ~= 0 and dppLimit or defaultLimit
+		local limitToUse = math.floor(dppLimit ~= 0 and dppLimit or defaultLimit)
 		
-		if limitToUse < 0 then return true end
+		if limitToUse == 0 then return false end -- ConVars
+		if limitToUse == -1 then return true end
+		if limitToUse <= -2 then return false end
 
 		if self:GetCount(limit) >= limitToUse then
 			if SERVER then self:LimitHit(limit) end

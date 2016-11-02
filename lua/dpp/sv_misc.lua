@@ -112,6 +112,7 @@ concommand.Add('dpp_importurs', function(ply, cmd, args)
 		if L[toFix] then
 			for group, limit in pairs(L[toFix]) do
 				local num = tonumber(limit)
+				if num == 0 then num = -2 end
 				
 				if num then
 					if not isTest then
