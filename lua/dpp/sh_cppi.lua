@@ -17,6 +17,12 @@ limitations under the License.
 
 --CPPI
 
+if CPPI then
+	-- Someone wants nuclear bomb by installing two PP on server.
+	-- We will try to deal with that!
+	if CPPI.GetName and CPPI.GetName() ~= 'DBot Prop Protection' then return end
+end
+
 CPPI_NOTIMPLEMENTED = 9020
 CPPI_DEFER = 9030
 

@@ -15,11 +15,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
---FPP Funcs compability
+-- FPP Funcs compability
 
-FPP = FPP or {}
-FPP.AntiSpam = FPP.AntiSpam or {}
-FPP.Protect = FPP.Protect or {}
+if FPP then return end
+
+FPP = {}
+FPP.AntiSpam = {}
+FPP.Protect = {}
 
 function FPP.plyCanTouchEnt(ply, ent, type)
 	if not type then --We are ignoring type
