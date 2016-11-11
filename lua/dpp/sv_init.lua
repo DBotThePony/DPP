@@ -24,6 +24,7 @@ AddCSLuaFile('sh_access.lua')
 AddCSLuaFile('sh_hooks.lua')
 AddCSLuaFile('sh_lang.lua')
 AddCSLuaFile('sh_cami.lua')
+AddCSLuaFile('sh_mystery.lua')
 AddCSLuaFile('sh_networking.lua')
 AddCSLuaFile('cl_networking.lua')
 AddCSLuaFile('cl_init.lua')
@@ -203,7 +204,7 @@ do
 	end
 
 	timer.Create('DPP.DoEchoAccessCacheClear', 10, 0, Clear)
-	Clear()
+	timer.Simple(0, Clear)
 end
 
 local function Think()

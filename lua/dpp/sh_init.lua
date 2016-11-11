@@ -1986,6 +1986,7 @@ end)
 
 include('sh_access.lua')
 include('sh_hooks.lua')
+include('sh_mystery.lua')
 
 if SERVER then
 	include('sv_savedata.lua')
