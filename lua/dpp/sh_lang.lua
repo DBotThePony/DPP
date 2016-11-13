@@ -503,6 +503,8 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	saveload_command_message_1ply = 'Invalid SteamID (#1)',
 	saveload_command_message_2ply = 'Invalid Class (#2)',
 	restrict_ctip = 'Restriction for group entered above',
+	
+	model_blacklisted = 'Model is blacklisted',
 }
 
 local ru = {
@@ -1353,6 +1355,8 @@ local ru = {
 	saveload_command_message_1ply = 'Неверный SteamID (#1)',
 	saveload_command_message_2ply = 'Неверный класс (#2)',
 	selecting_player = 'Выбрать игрока...',
+	
+	model_blacklisted = 'Модель находится в чёрном списке',
 }
 
 DPP.RegisterPhraseList('en', en)

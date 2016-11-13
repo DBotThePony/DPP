@@ -605,6 +605,7 @@ function SpawnFunctions.PlayerSpawnObject(ply, model)
 
 	if DPP.IsModelBlocked(model, ply, 'prop_physics') then 
 		LogTry(ply, '#log_obj', model, 'prop_physics')
+		DPP.Notify(ply, DPP.PPhrase(ply, 'model_blacklisted'), 1)
 		return false 
 	end
 
