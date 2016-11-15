@@ -3216,18 +3216,18 @@ local function About(Panel)
 	Lab:SizeToContents()
 	Lab:SetTooltip(TopText)
 
-	local Button = Panel:Button('Github')
+	local Button = Panel:Button('Discord!')
 	Button.DoClick = function()
-		gui.OpenURL('https://github.com/roboderpy/dpp')
+		gui.OpenURL('https://discord.gg/HG9eS79')
 	end
 	SettingsClass.ApplyButtonStyle(Button)
 	
-	local Button = Panel:Button('BitBucket')
+	local Button = Panel:Button('GitLab')
 	Button.DoClick = function()
-		gui.OpenURL('https://bitbucket.org/DBotThePony/dpp')
+		gui.OpenURL('https://git.dbot.serealia.ca/dbot/dpp')
 	end
 	SettingsClass.ApplyButtonStyle(Button)
-
+	
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
 	Lab:SetText(P('about_bug'))
@@ -3237,7 +3237,7 @@ local function About(Panel)
 
 	local Button = Panel:Button(P('about_issues'))
 	Button.DoClick = function()
-		gui.OpenURL('https://bitbucket.org/DBotThePony/dpp/issues?status=new&status=open')
+		gui.OpenURL('https://git.dbot.serealia.ca/dbot/dpp/issues')
 	end
 	SettingsClass.ApplyButtonStyle(Button)
 end
