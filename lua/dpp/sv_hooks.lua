@@ -21,6 +21,7 @@ DPP.SpawnFunctions = SpawnFunctions
 
 local function Spawned(ply, ent)
 	hook.Call('DPP.PlayerCreatedEntity', nil, ply, ent)
+	hook.Call('PlayerSpawnedObject', nil, ply, ent)
 	DPP.SetOwner(ent, ply)
 end
 
