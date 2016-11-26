@@ -568,12 +568,12 @@ local function PostDrawHUDDefault(x, y)
 	local Green = Color(DISPLAY_TOUCH_CAN_R:GetInt(), DISPLAY_TOUCH_CAN_G:GetInt(), DISPLAY_TOUCH_CAN_B:GetInt(), DISPLAY_TOUCH_CAN_A:GetInt())
 	local Red = Color(DISPLAY_TOUCH_CANNOT_R:GetInt(), DISPLAY_TOUCH_CANNOT_G:GetInt(), DISPLAY_TOUCH_CANNOT_B:GetInt(), DISPLAY_TOUCH_CANNOT_A:GetInt())
 
-	local epos = LocalPlayer():EyePos()
+	local epos = EyePos()
 	local tr = util.TraceLine{
 		mask = MASK_ALL,
 		filter = LocalPlayer(),
 		start = epos,
-		endpos = epos + LocalPlayer():EyeAngles():Forward() * 16000
+		endpos = epos + EyeAngles():Forward() * 16000
 	}
 	
 	local ent = tr.Entity
@@ -745,12 +745,12 @@ local function HUDPaintSimple(x, y)
 	local Green = Color(DISPLAY_TOUCH_CAN_R:GetInt(), DISPLAY_TOUCH_CAN_G:GetInt(), DISPLAY_TOUCH_CAN_B:GetInt(), DISPLAY_TOUCH_CAN_A:GetInt())
 	local Red = Color(DISPLAY_TOUCH_CANNOT_R:GetInt(), DISPLAY_TOUCH_CANNOT_G:GetInt(), DISPLAY_TOUCH_CANNOT_B:GetInt(), DISPLAY_TOUCH_CANNOT_A:GetInt())
 
-	local epos = LocalPlayer():EyePos()
+	local epos = EyePos()
 	local tr = util.TraceLine{
 		mask = MASK_ALL,
 		filter = LocalPlayer(),
 		start = epos,
-		endpos = epos + LocalPlayer():EyeAngles():Forward() * 16000
+		endpos = epos + EyeAngles():Forward() * 16000
 	}
 	
 	local ent = tr.Entity
