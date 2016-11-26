@@ -163,7 +163,7 @@ entities.
 	World = 'World',
 	not_valid = 'Invalid entity',
 	props_cleared = "%s's props has been cleaned up",
-	props_up_for_grabs = "%s's props is now up for grabs!",
+	props_up_for_grabs = "%s's props are now up for grabs!",
 	disconnected_player = 'Disconnected player',
 	up_for_grabs = 'Up for grabs!',
 	
