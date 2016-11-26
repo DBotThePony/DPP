@@ -3088,6 +3088,26 @@ local function BuildFriendsPanel(Panel)
 
 	DPP.SettingsClass.FriendPanel = Panel
 	
+	local total = sql.Query('SELECT COUNT("steamid") AS `COUNT` FROM `FPP_Buddies`')
+	
+	if total then
+		local Lab = vgui.Create('DLabel', Panel)
+		Panel:AddItem(Lab)
+		local Text = P('fpp_buddies', total[1].COUNT)
+		Lab:SetText(Text)
+		Lab:SetTextColor(SettingsClass.TextColor)
+		Lab:SizeToContents()
+		Lab:SetTooltip(Text)
+		
+		local Apply = Panel:Button(P('fpp_buddies_i'))
+		
+		Apply.DoClick = function()
+			RunConsoleCommand('dpp_importfppbuddies')
+		end
+		
+		SettingsClass.ApplyButtonStyle(Apply)
+	end
+	
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
 	local Text = P('quick_search')

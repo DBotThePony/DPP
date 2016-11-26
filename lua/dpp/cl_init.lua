@@ -385,6 +385,42 @@ concommand.Add('dpp_remfriend', function(ply, cmd, args)
 	DPP.RemoveFriend(found)
 end)
 
+concommand.Add('dpp_importfppbuddies', function(ply)
+	local friends = sql.Query('SELECT * FROM `FPP_Buddies`')
+	
+	if not friends then return end
+	
+	for k, row in ipairs(friends) do
+		local steamid = row.steamid
+		
+		if DPP.ClientFriends[steamid] then
+			continue
+		end
+		
+		DPP.ClientFriends[steamid] = {
+			use = tobool(row.playeruse),
+			toolgun = tobool(row.toolgun),
+			physgun = tobool(row.physgun),
+			gravgun = tobool(row.gravgun),
+			damage = tobool(row.entitydamage),
+			nick = row.name or '<FPP Buddy>',
+		}
+		
+		DPP.CheckFriendArgs(DPP.ClientFriends[steamid])
+		
+		DPP.SaveFriend(steamid)
+		DPP.Message(DPP.GetPhrase('friend_added_fpp', row.name or steamid))
+	end
+	
+	DPP.Message(DPP.GetPhrase('friend_added'))
+
+	DPP.RecalculateCPPIFriendTable(LocalPlayer())
+	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
+	DPP.SendFriends()
+
+	hook.Run('DPP.FriendsChanged')
+end)
+
 local DEFAULT_FONT = 'DPP.FONT'
 local DEFAULT_FONT_SMALL = 'DPP.FONT_small'
 

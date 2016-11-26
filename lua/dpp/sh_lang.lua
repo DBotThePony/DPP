@@ -505,6 +505,10 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	restrict_ctip = 'Restriction for group entered above',
 	
 	model_blacklisted = 'Model is blacklisted',
+	
+	fpp_buddies = 'There is %s buddies in your FPP friends list!',
+	fpp_buddies_i = 'Click here to import FPP buddies',
+	friend_added_fpp = 'FPP buddy %s added as friend',
 }
 
 local ru = {
