@@ -381,9 +381,9 @@ function DPP.CanEditVariable(ent, ply, key, val, editor)
 end
 
 function DPP.CanProperty(ply, str, ent)
-	if string.sub(str, 1, 4) == 'dpp.' then return true, DPP.GetPhrase('dpp_property') end
 	if not DPP.GetConVar('enable_tool') then return true, DPP.GetPhrase('protection_disabled') end
 	DPP.AssertArguments('DPP.CanProperty', {{ply, 'Player'}, {str, 'string'}, {ent, 'AnyEntity'}})
+	if string.sub(str, 1, 4) == 'dpp.' then return true, DPP.GetPhrase('dpp_property') end
 
 	--Make check before
 	if DPP.IsEntityBlockedTool(ent:GetClass(), ply) then
