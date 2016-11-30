@@ -3600,12 +3600,24 @@ local transfertoplayer = {
 	MenuOpen = function(self, menu, ent, tr)
 		local SubMenu = menu:AddSubMenu()
 		local ply = LocalPlayer()
+		local isAdmin = ply:IsAdmin()
+		local hit = false
 
 		for k, v in ipairs(player.GetAll()) do
 			if v == ply then continue end
+			if DPP.GetConVar('transfer_buddies') and not isAdmin and not DPP.IsFriend(ply, v) then
+				continue
+			end
+			
 			SubMenu:AddOption(v:Nick(), function()
 				RunConsoleCommand('dpp_transfertoplayer', v:UserID(), ent:EntIndex())
 			end)
+			
+			hit = true
+		end
+		
+		if not hit then
+			menu:Remove()
 		end
 	end,
 
