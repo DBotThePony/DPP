@@ -509,6 +509,13 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	fpp_buddies = 'There is %s buddies in your FPP friends list!',
 	fpp_buddies_i = 'Click here to import FPP buddies',
 	friend_added_fpp = 'FPP buddy %s added as friend',
+	
+	transfer_disabled = 'Transfering is entriely disabled',
+	transfer_fdisabled = 'Owner fallback is disabled',
+	transfer_adisabled = 'Transfering of everything is disabled',
+	transfer_edisabled = 'Transfering of single entity is disabled',
+	transfer_buddy = 'You must be in buddy list of target player',
+	transfer_spam = 'Stop transfer spam',
 }
 
 local ru = {

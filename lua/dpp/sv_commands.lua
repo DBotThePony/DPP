@@ -308,6 +308,8 @@ DPP.Commands = {
 
 	fallbackto = function(ply, cmd, args)
 		if not IsValid(ply) then return false, {'You are console'} end
+		if not DPP.GetConVar('transfer_enable') then return false, {'#transfer_disabled'}, NOTIFY_ERROR end
+		if not DPP.GetConVar('transfer_all_disc') then return false, {'#transfer_fdisabled'}, NOTIFY_ERROR end
 		if not args[1] then return false, {'#com_invalid_target'}, NOTIFY_ERROR end
 
 		local found
@@ -328,6 +330,10 @@ DPP.Commands = {
 		end
 
 		if not found or found == ply then return false, {'#com_no_target'}, NOTIFY_ERROR end
+		
+		if DPP.GetConVar('transfer_buddies') and not ply:IsAdmin() and not DPP.IsFriend(ply, found) then
+			return false, {'#transfer_buddy'}, NOTIFY_ERROR
+		end
 
 		DPP.SimpleLog(ply, Gray, '#com_target', found, Gray, '#com_owning_fallback')
 		DPP.Notify(ply, DPP.Format('#com_success', found, Gray, '#com_owning_fallback_m'))
@@ -339,6 +345,8 @@ DPP.Commands = {
 
 	transfertoplayer = function(ply, cmd, args)
 		if not IsValid(ply) then return false, {'You are console'} end
+		if not DPP.GetConVar('transfer_enable') then return false, {'#transfer_disabled'}, NOTIFY_ERROR end
+		if not DPP.GetConVar('transfer_single') then return false, {'#transfer_edisabled'}, NOTIFY_ERROR end
 		if not args[1] then return false, {'#com_invalid_ply_c', ' (#1)'}, NOTIFY_ERROR end
 
 		local found
@@ -359,6 +367,10 @@ DPP.Commands = {
 		end
 
 		if not found or found == ply then return false, {'#com_no_target', ' (#1)'}, NOTIFY_ERROR end
+		
+		if DPP.GetConVar('transfer_buddies') and not ply:IsAdmin() and not DPP.IsFriend(ply, found) then
+			return false, {'#transfer_buddy'}, NOTIFY_ERROR
+		end
 
 		local id = args[2]
 		if not id then return false, {'#com_invalid_eid', ' (#2)'}, NOTIFY_ERROR end
@@ -407,8 +419,18 @@ DPP.Commands = {
 
 	transfertoplayer_all = function(ply, cmd, args)
 		if not IsValid(ply) then return false, {'You are console'} end
+		if not DPP.GetConVar('transfer_enable') then return false, {'#transfer_disabled'}, NOTIFY_ERROR end
+		if not DPP.GetConVar('transfer_all') then return false, {'#transfer_adisabled'}, NOTIFY_ERROR end
 		if not args[1] then return false, {'#com_invalid_target'}, NOTIFY_ERROR end
 
+		ply.DPP_LastFullTransfer = ply.DPP_LastFullTransfer or 0
+		
+		if ply.DPP_LastFullTransfer > RealTime() then
+			return false, {'#transfer_spam'}, NOTIFY_ERROR
+		end
+		
+		ply.DPP_LastFullTransfer = RealTime() + 30
+		
 		local found
 
 		if tonumber(args[1]) then
@@ -427,6 +449,10 @@ DPP.Commands = {
 		end
 
 		if not found or found == ply then return false, {'#com_no_target'}, NOTIFY_ERROR end
+		
+		if DPP.GetConVar('transfer_buddies') and not ply:IsAdmin() and not DPP.IsFriend(ply, found) then
+			return false, {'#transfer_buddy'}, NOTIFY_ERROR
+		end
 
 		local props = DPP.GetPropsByUID(ply:UniqueID())
 		if #props == 0 then return false, {'#com_no_props_to_transfer'} end
@@ -446,6 +472,7 @@ DPP.Commands = {
 
 	removefallbackto = function(ply, cmd, args)
 		if not IsValid(ply) then return false, {'You are console'} end
+		if not DPP.GetConVar('transfer_enable') then return false, {'#transfer_disabled'}, NOTIFY_ERROR end
 		if not IsValid(ply:DPPVar('fallback')) then return false, {'#com_owning_no'}, NOTIFY_ERROR end
 
 		DPP.SimpleLog(ply, Gray, '#com_owning_removed')

@@ -67,8 +67,18 @@ function DPP.IsFriend(ply, ply2, mode)
 		if not t[ply] then return false end
 		return t[ply][mode] ~= false --???, i would return true if mode does not exist or ply2 is a generic friend to ply
 	end
+	
+	if not t[ply] then return false end
+	local hit = false
+	
+	for k, v in pairs(t[ply]) do
+		if v then
+			hit = true
+			break
+		end
+	end
 
-	return t[ply] ~= nil
+	return hit
 end
 
 function DPP.IsPlayerInEntity(ply, ent) --From DLib

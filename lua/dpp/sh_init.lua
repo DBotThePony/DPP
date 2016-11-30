@@ -809,6 +809,38 @@ DPP.Settings = {
 		value = '0',
 		desc = 'Tell clients that server preffers DPP HUD to be disabled'
 	},
+	
+	-- Transfer options
+	
+	['transfer_enable'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Allow players to transfer anything'
+	},
+	
+	['transfer_single'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Allow players to transfer one entity'
+	},
+	
+	['transfer_all'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Allow players to transfer all his entities'
+	},
+	
+	['transfer_buddies'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Allow players to transfer stuff only to buddies (this does not affect admins)'
+	},
+	
+	['transfer_all_disc'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Allow players to use owner fallback'
+	},
 }
 
 DPP.BlockedEntities = DPP.BlockedEntities or {}

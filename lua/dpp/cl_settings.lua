@@ -837,6 +837,14 @@ SettingsClass.MiscVarsLoggingVars = {
 	'log_spawns_type',
 }
 
+SettingsClass.BuddiesVars = {
+	'transfer_enable',
+	'transfer_buddies',
+	'transfer_single',
+	'transfer_all',
+	'transfer_all_disc',
+}
+
 local function BuildMiscVarsPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
@@ -856,6 +864,13 @@ local function BuildMiscVarsPanel(Panel)
 	Panel:AddItem(lab)
 	
 	for i, var in ipairs(SettingsClass.MiscVarsLoggingVars) do
+		ConVarCheckbox(Panel, var)
+	end
+	
+	local lab = Label('')
+	Panel:AddItem(lab)
+	
+	for i, var in ipairs(SettingsClass.BuddiesVars) do
 		ConVarCheckbox(Panel, var)
 	end
 end
@@ -3596,6 +3611,8 @@ local transfertoplayer = {
 
 	Filter = function(self, ent, ply)
 		if #player.GetAll() <= 1 then return false end
+		if not DPP.GetConVar('transfer_single') then return false end
+		if not DPP.GetConVar('transfer_enable') then return false end
 		return IsValid(ent) and Access('transfertoplayer') and DPP.GetOwner(ent) == ply
 	end,
 
