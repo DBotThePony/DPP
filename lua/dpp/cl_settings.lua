@@ -2718,6 +2718,10 @@ for k, v in pairs(DPP.RestrictTypes) do
 		menu:Open()
 	end
 	
+	FUNCTIONS['RestrictTypes' .. v .. 'ListDoubleClick'] = function(self, line)
+		OpenModifyPanel(self:GetLine(line):GetValue(1))
+	end
+	
 	PanelsFunctions2[k] = function(Panel)
 		if not IsValid(Panel) then return end
 		Panel:Clear()
@@ -2747,6 +2751,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		end
 
 		list.OnRowRightClick = FUNCTIONS['RestrictTypes' .. v .. 'ListClick']
+		list.DoDoubleClick = FUNCTIONS['RestrictTypes' .. v .. 'ListDoubleClick']
 
 		local entry = vgui.Create('DTextEntry', Panel)
 		Panel:AddItem(entry)
