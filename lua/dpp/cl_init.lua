@@ -605,11 +605,17 @@ local function PostDrawHUDDefault(x, y)
 	local Red = Color(DISPLAY_TOUCH_CANNOT_R:GetInt(), DISPLAY_TOUCH_CANNOT_G:GetInt(), DISPLAY_TOUCH_CANNOT_B:GetInt(), DISPLAY_TOUCH_CANNOT_A:GetInt())
 
 	local epos = EyePos()
+	local eang = LocalPlayer():EyeAngles()
+	
+	if LocalPlayer():InVehicle() then
+		eang = eang + LocalPlayer():GetVehicle():GetAngles()
+	end
+	
 	local tr = util.TraceLine{
 		mask = MASK_ALL,
 		filter = LocalPlayer(),
 		start = epos,
-		endpos = epos + EyeAngles():Forward() * 16000
+		endpos = epos + eang:Forward() * 16000
 	}
 	
 	local ent = tr.Entity
@@ -782,11 +788,17 @@ local function HUDPaintSimple(x, y)
 	local Red = Color(DISPLAY_TOUCH_CANNOT_R:GetInt(), DISPLAY_TOUCH_CANNOT_G:GetInt(), DISPLAY_TOUCH_CANNOT_B:GetInt(), DISPLAY_TOUCH_CANNOT_A:GetInt())
 
 	local epos = EyePos()
+	local eang = LocalPlayer():EyeAngles()
+	
+	if LocalPlayer():InVehicle() then
+		eang = eang + LocalPlayer():GetVehicle():GetAngles()
+	end
+	
 	local tr = util.TraceLine{
 		mask = MASK_ALL,
 		filter = LocalPlayer(),
 		start = epos,
-		endpos = epos + EyeAngles():Forward() * 16000
+		endpos = epos + eang:Forward() * 16000
 	}
 	
 	local ent = tr.Entity
