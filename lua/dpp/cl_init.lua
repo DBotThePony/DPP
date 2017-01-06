@@ -596,6 +596,71 @@ end
 
 --Keep these to be safe
 local X, Y = 0, ScrH() / 2
+local traceEntity
+
+local function pointInsideBox(point, mins, maxs)
+	return
+		mins.x < point.x and point.x < maxs.x and
+		mins.y < point.y and point.y < maxs.y and
+		mins.z < point.z and point.z < maxs.z
+end
+
+local fov, zfar, znear
+
+hook.Add('CalcView', 'DPP.checkCalcView', function(ply, _, _, fov2, zfar2, znear2)
+	fov, zfar, znear = fov2, zfar2, znear2
+end)
+
+-- DHUD/2 Code
+local function SelectPlayer()
+	local ply = LocalPlayer()
+	if not IsValid(ply) then return ply end
+	local obs = ply:GetObserverTarget()
+	
+	if IsValid(obs) and obs:IsPlayer() then
+		return obs
+	else
+		return ply
+	end
+end
+
+local function HUDThink()
+	local epos, eang
+	local ignoreNearest = false
+	local ply = SelectPlayer()
+	
+	if ply:ShouldDrawLocalPlayer() then
+		local view = hook.Run('CalcView', ply, ply:EyePos(), ply:EyeAngles(), fov, zfar, znear)
+		epos = view.origin or ply:EyePos()
+		eang = view.angles or ply:EyeAngles()
+		ignoreNearest = true
+	else
+		epos = ply:EyePos()
+		eang = ply:EyeAngles()
+		
+		if ply:InVehicle() then
+			eang = eang + ply:GetVehicle():GetAngles()
+		end
+	end
+	
+	hitPos = epos
+	hitAngle = eang
+	
+	local tr = util.TraceLine{
+		mask = MASK_ALL,
+		filter = function(hitEntity)
+			if not hitEntity:IsValid() then return true end
+			if not ignoreNearest and hitEntity == ply then return false end
+			if ignoreNearest and (pointInsideBox(epos, hitEntity:WorldSpaceAABB()) or epos:DistToSqr(hitEntity:GetPos()) < 400) then return false end
+			
+			return true
+		end,
+		start = epos,
+		endpos = epos + eang:Forward() * 16000
+	}
+	
+	traceEntity = tr.Entity
+end
 
 local function PostDrawHUDDefault(x, y)
 	x = x or X
@@ -604,21 +669,7 @@ local function PostDrawHUDDefault(x, y)
 	local Green = Color(DISPLAY_TOUCH_CAN_R:GetInt(), DISPLAY_TOUCH_CAN_G:GetInt(), DISPLAY_TOUCH_CAN_B:GetInt(), DISPLAY_TOUCH_CAN_A:GetInt())
 	local Red = Color(DISPLAY_TOUCH_CANNOT_R:GetInt(), DISPLAY_TOUCH_CANNOT_G:GetInt(), DISPLAY_TOUCH_CANNOT_B:GetInt(), DISPLAY_TOUCH_CANNOT_A:GetInt())
 
-	local epos = EyePos()
-	local eang = LocalPlayer():EyeAngles()
-	
-	if LocalPlayer():InVehicle() then
-		eang = eang + LocalPlayer():GetVehicle():GetAngles()
-	end
-	
-	local tr = util.TraceLine{
-		mask = MASK_ALL,
-		filter = LocalPlayer(),
-		start = epos,
-		endpos = epos + eang:Forward() * 16000
-	}
-	
-	local ent = tr.Entity
+	local ent = traceEntity
 	if not IsValid(ent) then return end
 
 	local curWeapon = LocalPlayer():GetActiveWeapon()
@@ -787,21 +838,7 @@ local function HUDPaintSimple(x, y)
 	local Green = Color(DISPLAY_TOUCH_CAN_R:GetInt(), DISPLAY_TOUCH_CAN_G:GetInt(), DISPLAY_TOUCH_CAN_B:GetInt(), DISPLAY_TOUCH_CAN_A:GetInt())
 	local Red = Color(DISPLAY_TOUCH_CANNOT_R:GetInt(), DISPLAY_TOUCH_CANNOT_G:GetInt(), DISPLAY_TOUCH_CANNOT_B:GetInt(), DISPLAY_TOUCH_CANNOT_A:GetInt())
 
-	local epos = EyePos()
-	local eang = LocalPlayer():EyeAngles()
-	
-	if LocalPlayer():InVehicle() then
-		eang = eang + LocalPlayer():GetVehicle():GetAngles()
-	end
-	
-	local tr = util.TraceLine{
-		mask = MASK_ALL,
-		filter = LocalPlayer(),
-		start = epos,
-		endpos = epos + eang:Forward() * 16000
-	}
-	
-	local ent = tr.Entity
+	local ent = traceEntity
 	if not IsValid(ent) then return end
 
 	local curWeapon = LocalPlayer():GetActiveWeapon()
@@ -1017,6 +1054,8 @@ local function CreateFix()
 	newPnl:SetVisible(true)
 	newPnl.Paint = HUDPaint
 end
+
+hook.Add('Think', 'DPP.HUDThink', HUDThink)
 
 local LastSound = 0
 
