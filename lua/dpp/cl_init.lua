@@ -678,10 +678,8 @@ local function PostDrawHUDDefault(x, y)
 
 	local name = DPP.GetOwnerName(ent)
 
-	local Owned
 	local isPly = false
-	local Owne
-	local Nick, UID, SteamID
+	local Owner, Owned, Nick, UID, SteamID
 	local disconnected = false
 
 	if not ent:IsPlayer() then
@@ -847,9 +845,7 @@ local function HUDPaintSimple(x, y)
 
 	local name = DPP.GetOwnerName(ent)
 
-	local Owned
-	local Owne
-	local Nick, UID, SteamID
+	local Owned, Owner, Nick, UID, SteamID
 	local disconnected = false
 
 	if not ent:IsPlayer() then
