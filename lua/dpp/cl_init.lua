@@ -605,9 +605,10 @@ local function pointInsideBox(point, mins, maxs)
 		mins.z < point.z and point.z < maxs.z
 end
 
-local fov, zfar, znear
+local fov, zfar, znear, ignoreCalcView
 
 hook.Add('CalcView', 'DPP.checkCalcView', function(ply, _, _, fov2, zfar2, znear2)
+	if ignoreCalcView then return end
 	fov, zfar, znear = fov2, zfar2, znear2
 end)
 
@@ -630,7 +631,9 @@ local function HUDThink()
 	local ply = SelectPlayer()
 	
 	if ply:ShouldDrawLocalPlayer() then
+		ignoreCalcView = true
 		local view = hook.Run('CalcView', ply, ply:EyePos(), ply:EyeAngles(), fov, zfar, znear)
+		ignoreCalcView = false
 		epos = view.origin or ply:EyePos()
 		eang = view.angles or ply:EyeAngles()
 		ignoreNearest = true
