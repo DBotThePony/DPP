@@ -3549,10 +3549,18 @@ local CleanupPlayer = {
 		if not DPP.IsOwned(ent) then return false end
 		return true
 	end,
+	
+	MenuOpen = function(self, menu, ent, tr)
+		local SubMenu = menu:AddSubMenu()
+
+		SubMenu:AddOption(DPP.GetPhrase('confirm'), function()
+			local Name, UID = DPP.GetOwnerDetails(ent)
+			RunConsoleCommand('dpp_clearbyuid', UID)
+		end):SetIcon('icon16/cross.png')
+	end,
 
 	Action = function(self, ent)
-		local Name, UID = DPP.GetOwnerDetails(ent)
-		RunConsoleCommand('dpp_clearbyuid', UID)
+		
 	end,
 }
 

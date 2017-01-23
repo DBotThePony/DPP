@@ -516,6 +516,8 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	transfer_edisabled = 'Transfering of single entity is disabled',
 	transfer_buddy = 'You must be in buddy list of target player',
 	transfer_spam = 'Stop transfer spam',
+	
+	confirm = 'Confirm?',
 }
 
 local ru = {
@@ -1368,6 +1370,8 @@ local ru = {
 	selecting_player = 'Выбрать игрока...',
 	
 	model_blacklisted = 'Модель находится в чёрном списке',
+	
+	confirm = 'Подтвердить?',
 }
 
 DPP.RegisterPhraseList('en', en)
