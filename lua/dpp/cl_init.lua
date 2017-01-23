@@ -630,7 +630,7 @@ local function HUDThink()
 	local ignoreNearest = false
 	local ply = SelectPlayer()
 	
-	if ply:ShouldDrawLocalPlayer() then
+	if ply:ShouldDrawLocalPlayer() and fov then
 		ignoreCalcView = true
 		local view = hook.Run('CalcView', ply, ply:EyePos(), ply:EyeAngles(), fov, zfar, znear)
 		ignoreCalcView = false
