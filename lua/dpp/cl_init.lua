@@ -1007,17 +1007,19 @@ local function HUDPaint()
 	if DPP.GetConVar('disable_huds') and DPP.LocalConVar('hud_obey_server') then return end
 	if LocalPlayer():InVehicle() and DPP.PlayerConVar(nil, 'no_hud_in_vehicle') then return end
 
-	local AWeapon = LocalPlayer():GetActiveWeapon()
+	if not LocalPlayer():ShouldDrawLocalPlayer() and not LocalPlayer():InVehicle() then
+		local AWeapon = LocalPlayer():GetActiveWeapon()
 
-	if IsValid(AWeapon) then
-		if not DPP.PlayerConVar(nil, 'no_physgun_display') and (AWeapon:GetClass() == 'weapon_physgun' or AWeapon:GetClass() == 'weapon_physcannon') then
-			DrawNearWeapon()
-			return
-		end
+		if IsValid(AWeapon) then
+			if not DPP.PlayerConVar(nil, 'no_physgun_display') and (AWeapon:GetClass() == 'weapon_physgun' or AWeapon:GetClass() == 'weapon_physcannon') then
+				DrawNearWeapon()
+				return
+			end
 
-		if not DPP.PlayerConVar(nil, 'no_toolgun_display') and AWeapon:GetClass() == 'gmod_tool' then
-			DrawNearToolgun()
-			return
+			if not DPP.PlayerConVar(nil, 'no_toolgun_display') and AWeapon:GetClass() == 'gmod_tool' then
+				DrawNearToolgun()
+				return
+			end
 		end
 	end
 
