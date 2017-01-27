@@ -634,6 +634,7 @@ local function HUDThink()
 		ignoreCalcView = true
 		local view = hook.Run('CalcView', ply, ply:EyePos(), ply:EyeAngles(), fov, zfar, znear)
 		ignoreCalcView = false
+		view = view or {}
 		epos = view.origin or ply:EyePos()
 		eang = view.angles or ply:EyeAngles()
 		ignoreNearest = true
