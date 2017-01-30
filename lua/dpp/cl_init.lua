@@ -626,6 +626,8 @@ local function SelectPlayer()
 end
 
 local function HUDThink()
+	if DPP.PlayerConVar(nil, 'hide_hud') then return end
+	if DPP.GetConVar('disable_huds') and DPP.LocalConVar('hud_obey_server') then return end
 	local epos, eang
 	local ignoreNearest = false
 	local ply = SelectPlayer()
