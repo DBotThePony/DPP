@@ -2142,7 +2142,7 @@ do
 		frame:SetSize(600, 600)
 		frame:Center()
 		frame:MakePopup()
-		frame:SetTitle(P('DPP Property Types Edit'))
+		frame:SetTitle(P('property_types_edit'))
 		SettingsClass.ApplyFrameStyle(frame)
 
 		local ScrollPanel = frame:Add('DScrollPanel')
