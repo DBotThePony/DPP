@@ -369,6 +369,25 @@ function DPP.ReadEntityArray()
 	return read
 end
 
+function DPP.WriteArray(tab)
+	net.WriteUInt(#tab, 16)
+	
+	for k, v in pairs(tab) do
+		net.WriteType(v)
+	end
+end
+
+function DPP.ReadArray()
+	local count = net.ReadUInt(16)
+	local read = {}
+	
+	for i = 1, count do
+		table.insert(read, net.ReadType())
+	end
+	
+	return read
+end
+
 if CLIENT then
 	include('cl_networking.lua')
 else

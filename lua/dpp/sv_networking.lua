@@ -100,7 +100,7 @@ local function SendTo(ply, tosend)
 	net.WriteUInt(uid, 12) --4096 should be enough
 	net.WriteUInt(table.Count(data), 6) --Quite bigger than max number of vars
 	data._DPP_Constrained = data._DPP_Constrained or {}
-	DPP.WriteEntityArray(data._DPP_Constrained)
+	DPP.WriteArray(data._DPP_Constrained)
 
 	for var, val in pairs(data) do
 		if type(var) ~= 'string' then continue end

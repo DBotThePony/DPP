@@ -55,7 +55,7 @@ local function NetworkedEntityVars()
 	local count = net.ReadUInt(6)
 
 	DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
-	DPP.NETWORK_DB[uid]._DPP_Constrained = DPP.ReadEntityArray()
+	DPP.NETWORK_DB[uid]._DPP_Constrained = DPP.ReadArray()
 
 	for i = 1, count do
 		local id = net.ReadUInt(6)
