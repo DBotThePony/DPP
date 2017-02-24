@@ -1117,17 +1117,6 @@ net.Receive('DPP.PlayerList', function()
 	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Player list changed, reloading') end
 end)
 
-net.Receive('DPP.ConstrainedTable', function()
-	local Ents = net.ReadTable()
-	local Owners = net.ReadTable()
-
-	for k, v in pairs(Ents) do
-		if IsValid(v) then
-			v._DPP_Constrained = Owners
-		end
-	end
-end)
-
 net.Receive('DPP.Log', function()
 	DPP.Message(unpack(DPP.ReadMessageTable()))
 end)

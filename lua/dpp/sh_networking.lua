@@ -157,6 +157,24 @@ function entMeta:DPPVar(var, ifNothing)
 	end
 end
 
+function DPP.GetNetworkDataTable(self)
+	local uid = self:EntIndex()
+	
+	if uid > 0 then
+		DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
+		return DPP.NETWORK_DB[uid], true
+	else
+		self.DPPVars = self.DPPVars or {}
+		return self.DPPVars, false
+	end
+end
+
+function DPP.GetConstrainedTable(ent)
+	local data = DPP.GetNetworkDataTable(ent)
+	data._DPP_Constrained = data._DPP_Constrained or {}
+	return data._DPP_Constrained
+end
+
 local function OnEntityCreated(ent)
 	local uid = ent:EntIndex()
 	if uid <= 0 then return end
@@ -325,6 +343,31 @@ hook.Add('OnEntityCreated', 'DPP.Networking', OnEntityCreated)
 hook.Add('DPP_ConVarRegistered', function()
 	timer.Create('DPP.OnConVarRegisteredNetworkUpdate', 0, 1, DPP.AssignConVarNetworkIDs)
 end)
+
+function DPP.WriteEntityArray(tab)
+	net.WriteUInt(#tab, 16)
+	
+	for k, v in pairs(tab) do
+		net.WriteBool(v:IsValid())
+		net.WriteUInt(v:EntIndex(), 12)
+	end
+end
+
+function DPP.ReadEntityArray()
+	local count = net.ReadUInt(16)
+	local read = {}
+	
+	for i = 1, count do
+		local shouldValid = net.ReadBool()
+		local get = Entity(net.ReadUInt(12))
+		
+		if (shouldValid and IsValid(get)) or (not shouldValid and not IsValid(get)) then
+			table.insert(read, get)
+		end
+	end
+	
+	return read
+end
 
 if CLIENT then
 	include('cl_networking.lua')

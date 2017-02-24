@@ -36,11 +36,6 @@ function DPP.GetOwnerDetails(ent)
 		ent:DPPVar('OwnerSteamID', '')
 end
 
-function DPP.GetConstrainedTable(ent)
-	ent._DPP_Constrained = ent._DPP_Constrained or {}
-	return ent._DPP_Constrained
-end
-
 function DPP.IsShared(ent)
 	return ent:DPPVar('IsShared')
 end

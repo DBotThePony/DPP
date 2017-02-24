@@ -63,24 +63,18 @@ local entMeta = FindMetaTable('Entity')
 
 function entMeta:SetDPPVar(var, val)
 	var = var:lower()
-	local uid = self:EntIndex()
-
-	if uid > 0 then
-		DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
-		if val == nil then val = DPP.NetworkVars[var].default end
-		DPP.NETWORK_DB[uid][var] = val
-
+	local data, isGlobal = DPP.GetNetworkDataTable(self)
+	
+	if isGlobal then
+		local uid = self:EntIndex()
 		net.Start('DPP.NetworkedVar')
 		net.WriteUInt(DPP.NetworkVars[var].NetworkID, 6)
 		net.WriteUInt(uid, 12) --4096 should be enough
 		DPP.NetworkVars[var].send(val)
 		net.Broadcast()
-
-		self.__DPP_Vars_Save = DPP.NETWORK_DB[uid]
-	else
-		self.DPPVars = self.DPPVars or {}
-		self.DPPVars[var] = val
 	end
+	
+	data[var] = val
 
 	hook.Run('DPP_EntityVarsChanges', self, var, val)
 end
@@ -105,8 +99,13 @@ local function SendTo(ply, tosend)
 	net.Start('DPP.NetworkedEntityVars')
 	net.WriteUInt(uid, 12) --4096 should be enough
 	net.WriteUInt(table.Count(data), 6) --Quite bigger than max number of vars
+	data._DPP_Constrained = data._DPP_Constrained or {}
+	DPP.WriteEntityArray(data._DPP_Constrained)
 
 	for var, val in pairs(data) do
+		if type(var) ~= 'string' then continue end
+		if type(val) == 'table' then continue end
+		if not DPP.NetworkVars[var] then continue end
 		net.WriteUInt(DPP.NetworkVars[var].NetworkID, 6)
 		DPP.NetworkVars[var].send(val)
 	end
@@ -117,15 +116,15 @@ end
 local RED = Color(200, 100, 100)
 
 local function NetworkError(Message)
-	DPP.SimpleLog(RED, '#net_error_1')
-	DPP.SimpleLog(RED, Message)
-	DPP.SimpleLog(RED, debug.traceback())
+	DPP.SimpleLog(RED, Message .. '\n' .. debug.traceback())
 	DPP.SimpleLog(RED, '#net_error_2')
 end
 
 local function SendTimer()
-	for ply, tosend in pairs(Clients) do
-		xpcall(SendTo, NetworkError, ply, tosend)
+	for i = 1, 5 do
+		for ply, tosend in pairs(Clients) do
+			xpcall(SendTo, NetworkError, ply, tosend)
+		end
 	end
 end
 
@@ -218,6 +217,13 @@ function DPP.SendConVarsTo(ply)
 	end
 
 	net.Send(ply)
+end
+
+function DPP.SendConstrained(ent)
+	net.Start('DPP.ConstrainedTable')
+	net.WriteTable({ent})
+	net.WriteTable(DPP.GetConstrainedTable(ent))
+	net.Broadcast()
 end
 
 hook.Add('EntityRemoved', 'DPP.Networking', EntityRemoved)

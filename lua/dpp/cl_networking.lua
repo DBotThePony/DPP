@@ -19,19 +19,8 @@ local entMeta = FindMetaTable('Entity')
 
 function entMeta:SetDPPVar(var, val)
 	var = var:lower()
-	local uid = self:EntIndex()
-
-	if uid > 0 then
-		DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
-		if val == nil then val = DPP.NetworkVars[var].default end
-		DPP.NETWORK_DB[uid][var] = val
-
-		self.__DPP_Vars_Save = DPP.NETWORK_DB[uid]
-	else
-		self.DPPVars = self.DPPVars or {}
-		self.DPPVars[var] = val
-	end
-
+	local data = DPP.GetNetworkDataTable(self)
+	data[var] = val
 	hook.Run('DPP_EntityVarsChanges', self, var, val)
 end
 
@@ -66,6 +55,7 @@ local function NetworkedEntityVars()
 	local count = net.ReadUInt(6)
 
 	DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
+	DPP.NETWORK_DB[uid]._DPP_Constrained = DPP.ReadEntityArray()
 
 	for i = 1, count do
 		local id = net.ReadUInt(6)
@@ -360,6 +350,17 @@ DPP.ClientReceiveFuncs = {
 		
 		hook.Run('DPP.RestrictedTypesReloadedPlayer', k)
 	end,
+	
+	ConstrainedTable = function()
+		local Ents = net.ReadTable()
+		local Owners = net.ReadTable()
+
+		for k, v in pairs(Ents) do
+			if IsValid(v) then
+				DPP.GetNetworkDataTable(v)._DPP_Constrained = Owners
+			end
+		end
+	end
 }
 
 for k, v in pairs(DPP.ClientReceiveFuncs) do

@@ -609,16 +609,6 @@ function DPP.IsChekedByAntispam(ent)
 	return true
 end
 
---Send constrained with is just half of protection
-function DPP.SendConstrained(ent)
-	ent._DPP_Constrained = ent._DPP_Constrained or {}
-
-	net.Start('DPP.ConstrainedTable')
-	net.WriteTable({ent})
-	net.WriteTable(ent._DPP_Constrained)
-	net.Broadcast()
-end
-
 do
 	local EntMem = {}
 
@@ -748,7 +738,7 @@ do
 		local c = CurTime()
 		
 		for i, ent in ipairs(touched) do
-			ent._DPP_Constrained = owners2
+			DPP.GetNetworkDataTable(ent)._DPP_Constrained = owners2
 			ent._DPP_LastRecalc = c
 			ent._DPP_RecalcLastResult = result
 		end
