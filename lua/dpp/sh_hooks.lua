@@ -558,7 +558,7 @@ function DPP.OverrideCounts()
 		CVars_Cache[limit] = CVars_Cache[limit] or GetConVar('sbox_max' .. limit)
 		
 		if not CVars_Cache[limit] then
-			DPP.ThrowError('Invalid console variable to check player limit. WTF?')
+			DPP.ThrowError('Invalid console variable to check player limit. WTF? sbox_max' .. limit .. ' is a not existing variable\nContact your addon author first, BEFORE contacting with DPP author.')
 		end
 		
 		local dppLimit = DPP.GetSBoxLimit(limit, self:GetUserGroup())
