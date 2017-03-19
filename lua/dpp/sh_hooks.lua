@@ -594,4 +594,4 @@ function DPP.ReplaceSharedFunctions()
 	if CLIENT then DPP.ReplacePropertyFuncs() end
 end
 
-timer.Simple(0, DPP.ReplaceSharedFunctions)
+timer.Simple(0, function() timer.Simple(10, DPP.ReplaceSharedFunctions) end)
