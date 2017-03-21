@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
---Misc Functions
+-- Misc Functions
 
 local URS_Import = {
 	npc = 'NPC',
@@ -61,7 +61,8 @@ concommand.Add('dpp_importurs', function(ply, cmd, args)
 
 	for k, v in pairs(URS_Import) do
 		local tab = R[k]
-		if not tab then
+		
+		if tab then
 			for class, groups in pairs(tab) do
 				if not istable(groups) then continue end
 				if type(class) ~= 'string' then continue end
@@ -133,6 +134,89 @@ concommand.Add('dpp_importurs', function(ply, cmd, args)
 		FakePrint(ply, 'Total items: ' .. imported)
 		FakePrint(ply, 'This was a test-print, changes does not applied')
 		FakePrint(ply, 'To apply, write dpp_importurs 1')
+	end
+end)
+
+concommand.Add('dpp_importurm', function(ply, cmd, args)
+	if IsValid(ply) and not ply:IsSuperAdmin() then return end
+	
+	local R, L
+	
+	if not TIIP or not TIIP.URM then
+		local pass1 = file.Exists('urm/restrictions.txt', 'DATA')
+		local pass2 = file.Exists('urm/limits.txt', 'DATA')
+		
+		if not pass1 and not pass2 then
+			DPP.Notify(ply, 'There is no URM installed! Nothing to import.')
+			return
+		elseif pass1 and pass2 then
+			R = util.JSONToTable(file.Read('urm/restrictions.txt', 'DATA')) or {}
+			L = util.JSONToTable(file.Read('urm/limits.txt', 'DATA')) or {}
+		elseif pass1 then
+			R = util.JSONToTable(file.Read('urm/restrictions.txt', 'DATA')) or {}
+			L = {}
+		elseif pass2 then
+			R = {}
+			L = util.JSONToTable(file.Read('urm/limits.txt', 'DATA')) or {}
+		end
+	else
+		R = TIIP.URM.Restrictions
+		L = TIIP.URM.Limits
+	end
+	
+	if (not R or table.Count(R) < 1) and (not L or table.Count(L) < 1) then DPP.Notify(ply, 'Nothing to import.') return end
+
+	local isTest = not tobool(args[1])
+
+	R = R or {}
+	L = L or {}
+
+	local imported = 0
+
+	for userGroup, rData in pairs(R) do
+		for rType, rList in pairs(rData) do
+			local rTypeValid = URS_Import[rType]
+			if not rTypeValid then continue end
+			
+			for class, rubbish in pairs(rList) do
+				if type(class) ~= 'string' then continue end
+
+				if not isTest then
+					DPP['AppendRestrict' .. rTypeValid](class, userGroup)
+				else
+					FakePrint(ply, string.format('[DPP] Restrict [%s] %s from %s', rTypeValid, class, userGroup))
+				end
+				
+				imported = imported + 1
+			end
+		end
+	end
+	
+	for userGroup, lData in pairs(L) do
+		for lType, lValue in pairs(lData) do
+			if type(lType) ~= 'string' then continue end
+			local rValue = lValue
+			
+			if lValue == 0 then
+				rValue = -1
+			end
+			
+			if not isTest then
+				DPP.AddSBoxLimit(lType, userGroup, rValue)
+			else
+				FakePrint(ply, string.format('[DPP] Limit %s from %s at %s', lType, userGroup, rValue))
+			end
+			
+			imported = imported + 1
+		end
+	end
+	
+	if not isTest then
+		DPP.SimpleLog(IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' Imported Restrictions and Limits from URM. Total items imported: ' .. imported)
+	else
+		FakePrint(ply, 'Total items: ' .. imported)
+		FakePrint(ply, 'This was a test-print, changes does not applied')
+		FakePrint(ply, 'To apply, write dpp_importurm 1')
 	end
 end)
 

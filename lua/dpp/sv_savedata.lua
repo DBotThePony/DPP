@@ -355,6 +355,31 @@ for k, v in pairs(DPP.WhitelistTypes) do
 end
 
 for k, v in pairs(DPP.RestrictTypes) do
+	DPP['AppendRestrict' .. v] = function(class, group)
+		class = class:lower():Trim()
+		
+		if not DPP.RestrictedTypes[k][class] then
+			DPP['Restrict' .. v](class, {group}, false)
+			return
+		end
+		
+		local myGroups = DPP.RestrictedTypes[k][class].groups
+		if DPP.HasValueLight(myGroups, group) then return end
+		table.insert(myGroups, group)
+		
+		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
+
+		net.Start('DPP.RListsInsert')
+		net.WriteString(k)
+		net.WriteString(class)
+		net.WriteBool(true)
+		net.WriteTable(myGroups)
+		net.WriteBool(DPP.RestrictedTypes[k][class].iswhite)
+		net.Broadcast()
+		
+		DPP.Query(string.format('REPLACE INTO dpp_restricted' .. k .. ' (CLASS, GROUPS, IS_WHITE) VALUES (%q, \'%s\', %q)', class, util.TableToJSON(myGroups), DPP.RestrictedTypes[k][class].iswhite and '1' or '0'))
+	end
+	
 	DPP['Restrict' .. v] = function(class, groups, isWhite)
 		class = class:lower():Trim()
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
