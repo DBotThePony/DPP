@@ -198,7 +198,7 @@ concommand.Add('dpp_importurm', function(ply, cmd, args)
 			local rValue = lValue
 			
 			if lValue == 0 then
-				rValue = -1
+				rValue = -2
 			end
 			
 			if not isTest then
