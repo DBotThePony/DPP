@@ -26,6 +26,15 @@ local URS_Import = {
 	vehicle = 'Vehicle',
 }
 
+local URM_Import = {
+	npc = 'NPC',
+	pickup = 'Pickup',
+	entity = 'SENT',
+	swep = 'SWEP',
+	tool = 'Tool',
+	vehicle = 'Vehicle',
+}
+
 local URS_Limits = {
 	prop = 'props',
 	vehicle = 'vehicles',
@@ -175,7 +184,7 @@ concommand.Add('dpp_importurm', function(ply, cmd, args)
 
 	for userGroup, rData in pairs(R) do
 		for rType, rList in pairs(rData) do
-			local rTypeValid = URS_Import[rType]
+			local rTypeValid = URM_Import[rType]
 			if not rTypeValid then continue end
 			
 			for class, rubbish in pairs(rList) do
@@ -185,6 +194,22 @@ concommand.Add('dpp_importurm', function(ply, cmd, args)
 					DPP['AppendRestrict' .. rTypeValid](class, userGroup)
 				else
 					FakePrint(ply, string.format('[DPP] Restrict [%s] %s from %s', rTypeValid, class, userGroup))
+				end
+				
+				imported = imported + 1
+			end
+		end
+		
+		local props = rData.prop
+		
+		if props then
+			for mdlName, rubbish in pairs(props) do
+				if type(mdlName) ~= 'string' then continue end
+				
+				if not isTest then
+					DPP.AppendRestrictModel(mdlName, userGroup)
+				else
+					FakePrint(ply, string.format('[DPP] Restrict [MODEL] %s from %s', mdlName, userGroup))
 				end
 				
 				imported = imported + 1
