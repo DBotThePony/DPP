@@ -28,16 +28,14 @@ end
 function DPP.CreateTables()
 	DPP.SQL_TABLES = {
 		[[
-			CREATE TABLE IF NOT EXISTS dpp_blockedmodels
-			(
+			CREATE TABLE IF NOT EXISTS dpp_blockedmodels (
 				MODEL VARCHAR(64) NOT NULL,
 				PRIMARY KEY (MODEL)
 			)
 		]],
 
 		[[
-			CREATE TABLE IF NOT EXISTS dpp_cvars
-			(
+			CREATE TABLE IF NOT EXISTS dpp_cvars (
 				CVAR VARCHAR(64) NOT NULL,
 				`VALUE` VARCHAR(64) NOT NULL,
 				PRIMARY KEY (CVAR)
@@ -45,8 +43,7 @@ function DPP.CreateTables()
 		]],
 
 		[[
-			CREATE TABLE IF NOT EXISTS dpp_entitylimits
-			(
+			CREATE TABLE IF NOT EXISTS dpp_entitylimits (
 				CLASS VARCHAR(64) NOT NULL,
 				UGROUP VARCHAR(64) NOT NULL,
 				ULIMIT INT NOT NULL,
@@ -55,8 +52,16 @@ function DPP.CreateTables()
 		]],
 
 		[[
-			CREATE TABLE IF NOT EXISTS dpp_sboxlimits
-			(
+			CREATE TABLE IF NOT EXISTS dpp_modellimits (
+				MODEL VARCHAR(64) NOT NULL,
+				UGROUP VARCHAR(64) NOT NULL,
+				ULIMIT INT NOT NULL,
+				PRIMARY KEY (MODEL, UGROUP)
+			)
+		]],
+
+		[[
+			CREATE TABLE IF NOT EXISTS dpp_sboxlimits (
 				CLASS VARCHAR(64) NOT NULL,
 				UGROUP VARCHAR(64) NOT NULL,
 				ULIMIT INT NOT NULL,
@@ -65,8 +70,7 @@ function DPP.CreateTables()
 		]],
 
 		[[
-			CREATE TABLE IF NOT EXISTS dpp_constlimits
-			(
+			CREATE TABLE IF NOT EXISTS dpp_constlimits (
 				CLASS VARCHAR(64) NOT NULL,
 				UGROUP VARCHAR(64) NOT NULL,
 				ULIMIT INT NOT NULL,
@@ -77,8 +81,7 @@ function DPP.CreateTables()
 
 	for k, v in pairs(DPP.BlockTypes) do
 		table.insert(DPP.SQL_TABLES, [[
-			CREATE TABLE IF NOT EXISTS dpp_blockedentities]] .. k .. [[
-			(
+			CREATE TABLE IF NOT EXISTS dpp_blockedentities]] .. k .. [[ (
 				ENTITY VARCHAR(64) NOT NULL,
 				PRIMARY KEY (ENTITY)
 			)
@@ -87,8 +90,7 @@ function DPP.CreateTables()
 
 	for k, v in pairs(DPP.WhitelistTypes) do
 		table.insert(DPP.SQL_TABLES, [[
-			CREATE TABLE IF NOT EXISTS dpp_whitelistentities]] .. k .. [[
-			(
+			CREATE TABLE IF NOT EXISTS dpp_whitelistentities]] .. k .. [[ (
 				ENTITY VARCHAR(64) NOT NULL,
 				PRIMARY KEY (ENTITY)
 			)
@@ -97,8 +99,7 @@ function DPP.CreateTables()
 
 	for k, v in pairs(DPP.RestrictTypes) do
 		table.insert(DPP.SQL_TABLES, [[
-			CREATE TABLE IF NOT EXISTS dpp_restricted]] .. k .. [[
-			(
+			CREATE TABLE IF NOT EXISTS dpp_restricted]] .. k .. [[ (
 				CLASS VARCHAR(64) NOT NULL,
 				GROUPS VARCHAR(255) NOT NULL,
 				IS_WHITE BOOL NOT NULL,
@@ -107,8 +108,7 @@ function DPP.CreateTables()
 		]])
 		
 		table.insert(DPP.SQL_TABLES, [[
-			CREATE TABLE IF NOT EXISTS dpp_restricted]] .. k .. [[_ply
-			(
+			CREATE TABLE IF NOT EXISTS dpp_restricted]] .. k .. [[_ply (
 				STEAMID VARCHAR(32) NOT NULL,
 				CLASS VARCHAR(64) NOT NULL,
 				PRIMARY KEY (CLASS, STEAMID)
@@ -557,6 +557,44 @@ function DPP.RemoveEntityLimit(class, group)
 	timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 end
 
+function DPP.AddModelLimit(model, group, val)
+	if not val then return end
+	model = model:lower():Trim()
+	val = math.max(val, 1)
+	DPP.ModelsLimits[model] = DPP.ModelsLimits[model] or {}
+	DPP.ModelsLimits[model][group] = val
+
+	net.Start('DPP.MLListsInsert')
+	net.WriteString(model)
+	net.WriteTable(DPP.ModelsLimits[model])
+	net.Broadcast()
+
+	DPP.Query(string.format('REPLACE INTO dpp_modellimits (MODEL, UGROUP, ULIMIT) VALUES (%q, %q, %q)', model, group, val))
+
+	timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
+end
+
+function DPP.RemoveModelLimit(model, group)
+	model = model:lower():Trim()
+
+	if group then
+		DPP.ModelsLimits[model] = DPP.ModelsLimits[model] or {}
+		DPP.ModelsLimits[model][group] = nil
+
+		DPP.Query(string.format('DELETE FROM dpp_modellimits WHERE MODEL = %q AND UGROUP = %q', model, group))
+	else
+		DPP.ModelsLimits[model] = nil
+		DPP.Query(string.format('DELETE FROM dpp_modellimits WHERE MODEL = %q', model))
+	end
+
+	net.Start('DPP.MLListsInsert')
+	net.WriteString(model)
+	net.WriteTable(DPP.ModelsLimits[model])
+	net.Broadcast()
+
+	timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
+end
+
 function DPP.AddSBoxLimit(class, group, val)
 	if not val then return end
 
@@ -637,12 +675,26 @@ end
 
 function DPP.LoadLimits()
 	DPP.EntsLimits = {}
+	
 	DPP.Query('SELECT * FROM dpp_entitylimits', function(data)
 		if not data then return end
 
 		for index, row in pairs(data) do
 			DPP.EntsLimits[row.CLASS] = DPP.EntsLimits[row.CLASS] or {}
 			DPP.EntsLimits[row.CLASS][row.UGROUP] = row.ULIMIT
+		end
+	end)
+end
+
+function DPP.LoadMLimits()
+	DPP.ModelsLimits = {}
+	
+	DPP.Query('SELECT * FROM dpp_modellimits', function(data)
+		if not data then return end
+
+		for index, row in pairs(data) do
+			DPP.ModelsLimits[row.MODEL] = DPP.ModelsLimits[row.MODEL] or {}
+			DPP.ModelsLimits[row.MODEL][row.UGROUP] = row.ULIMIT
 		end
 	end)
 end
@@ -694,18 +746,56 @@ DPP.ManipulateCommands.addentitylimit = function(ply, cmd, args)
 end
 
 DPP.ManipulateCommands.removeentitylimit = function(ply, cmd, args)
-	if not args[1] or args[1]:Trim() == '' then return false, {'Invalid class (#1)'}, NOTIFY_ERROR end
-	if not args[2] or args[2]:Trim() == '' then return false, {'Invalid group (#2)'}, NOTIFY_ERROR end
+	if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_class', ' (#1)'}, NOTIFY_ERROR end
+	if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_command_message_2'}, NOTIFY_ERROR end
 
 	local class = args[1]:lower():Trim()
 	local group = args[2]
-	if not DPP.EntsLimits[class] then return false, {'Limit for class does not exists'} end
-	if not DPP.EntsLimits[class][group] then return false, {'Limit for group does not exists'} end
+	if not DPP.EntsLimits[class] then return false, {'#saveload_limit_not_exists'} end
+	if not DPP.EntsLimits[class][group] then return false, {'#saveload_glimit_not_exists'} end
 
 	DPP.RemoveEntityLimit(class, group)
 
 	if Last < CurTime() then
 		local f = {IsValid(ply) and ply or '#Console', Gray, '#saveload_removed', color_white, class, Gray, '#saveload_limit_removed', color_white, group}
+		DPP.NotifyLog(f)
+		Last = CurTime() + 0.5
+	end
+end
+
+DPP.ManipulateCommands.addmodellimit = function(ply, cmd, args)
+	if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_model', ' (#1)'}, NOTIFY_ERROR end
+	if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_command_message_2'}, NOTIFY_ERROR end
+	if not args[3] or args[3]:Trim() == '' then return false, {'#saveload_invalid_limit', ' (#3)'}, NOTIFY_ERROR end
+
+	local model = args[1]:lower():Trim()
+	local group = args[2]
+	local num = tonumber(args[3])
+
+	if not num then return false, {'#saveload_invalid_limit', ' (#3)'}, NOTIFY_ERROR end
+
+	DPP.AddModelLimit(model, group, num)
+
+	if Last < CurTime() then
+		local f = {IsValid(ply) and ply or '#Console', Gray, '#saveload_added_updated', color_white, model, Gray, '#saveload_limits_models', color_white, group}
+		DPP.NotifyLog(f)
+		Last = CurTime() + 0.5
+	end
+end
+
+DPP.ManipulateCommands.removemodellimit = function(ply, cmd, args)
+	if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_model', ' (#1)'}, NOTIFY_ERROR end
+	if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_command_message_2'}, NOTIFY_ERROR end
+
+	local model = args[1]:lower():Trim()
+	local group = args[2]
+	if not DPP.ModelsLimits[model] then return false, {'#saveload_mlimit_not_exists'} end
+	if not DPP.ModelsLimits[model][group] then return false, {'#saveload_glimit_not_exists'} end
+
+	DPP.RemoveModelLimit(model, group)
+
+	if Last < CurTime() then
+		local f = {IsValid(ply) and ply or '#Console', Gray, '#saveload_removed', color_white, model, Gray, '#saveload_limits_models_removed', color_white, group}
 		DPP.NotifyLog(f)
 		Last = CurTime() + 0.5
 	end
@@ -860,6 +950,7 @@ function DPP.ContinueDatabaseStartup()
 
 	DPP.LoadBlockedModels()
 	DPP.LoadLimits()
+	DPP.LoadMLimits()
 	DPP.LoadSLimits()
 	DPP.LoadCLimits()
 	DPP.LoadCVars()

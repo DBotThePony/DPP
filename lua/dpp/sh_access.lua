@@ -123,8 +123,10 @@ local default = {
 	addentitylimit = 'superadmin',
 	removeentitylimit = 'superadmin',
 	addsboxlimit = 'superadmin',
+	addmodellimit = 'superadmin',
 	addconstlimit = 'superadmin',
 	removesboxlimit = 'superadmin',
+	removemodellimit = 'superadmin',
 	removeconstlimit = 'superadmin',
 }
 
@@ -165,8 +167,10 @@ local default_desc = {
 	addentitylimit = 'Can add entity limit',
 	removeentitylimit = 'Can remove entity limit',
 	addsboxlimit = 'Can add sandbox limit',
+	addmodellimit = 'Can add model limit',
 	addconstlimit = 'Can add constraints limit',
 	removesboxlimit = 'Can remove sandbox limit',
+	removemodellimit = 'Can remove model limit',
 	removeconstlimit = 'Can remove constraints limit',
 }
 

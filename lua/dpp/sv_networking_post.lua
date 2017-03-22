@@ -134,6 +134,14 @@ do
 	table.insert(DPP.NetworkSendFuncs, sendfunc)
 
 	function sendfunc(plys)
+		net.Start('DPP.MLLists')
+		WriteGenericLimits(DPP.ModelsLimits)
+		net.Send(plys)
+	end
+
+	table.insert(DPP.NetworkSendFuncs, sendfunc)
+
+	function sendfunc(plys)
 		net.Start('DPP.SLists')
 		WriteGenericLimits(DPP.SBoxLimits)
 		net.Send(plys)

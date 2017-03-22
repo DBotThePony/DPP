@@ -182,61 +182,52 @@ local function ReadRestrictions()
 end
 
 DPP.ClientReceiveFuncs = {
-	--Full update functions
+	-- Full update functions
 
 	Lists = function()
 		local str = net.ReadString()
 		DPP.BlockedEntities[str] = ReadInvertedTable()
-
 		hook.Run('DPP.BlockedEntitiesReloaded', str, DPP.BlockedEntities[str])
-		if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Blacklist "' .. str .. '" received from server, reloading') end
 	end,
 
 	RLists = function()
 		local str = net.ReadString()
 		DPP.RestrictedTypes[str] = ReadRestrictions()
-
 		hook.Run('DPP.BlockedEntitiesReloaded', str, DPP.RestrictedTypes[str])
-		if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Restrict list "' .. str .. '" received from server, reloading') end
 	end,
 
 	WLists = function()
 		local str = net.ReadString()
 		DPP.WhitelistedEntities[str] = ReadInvertedTable()
-
 		hook.Run('DPP.WhitelistedEntitiesReloaded', str, DPP.WhitelistedEntities[str])
-		if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Whitelist "' .. str .. '" received from server, reloading') end
 	end,
 
 	ModelLists = function()
 		DPP.BlockedModels = ReadInvertedTable()
-
 		hook.Run('DPP.BlockedModelListReloaded', DPP.BlockedModels)
-		if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Blacklisted models received from server, reloading') end
 	end,
 
 	LLists = function()
 		DPP.EntsLimits = ReadGenericLimits()
-
 		hook.Run('DPP.EntsLimitsReloaded', DPP.EntsLimits)
-		if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Entity limit list received from server, reloading') end
+	end,
+
+	MLLists = function()
+		DPP.ModelsLimits = ReadGenericLimits()
+		hook.Run('DPP.ModelsLimitsReloaded', DPP.EntsLimits)
 	end,
 
 	SLists = function()
 		DPP.SBoxLimits = ReadGenericLimits()
-
 		hook.Run('DPP.EntsLimitsReloaded', DPP.SBoxLimits)
-		if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('SBox limit list received from server, reloading') end
 	end,
 
 	CLists = function()
 		DPP.ConstrainsLimits = ReadGenericLimits()
-
 		hook.Run('DPP.ConstrainsLimitsReloaded', DPP.ConstrainsLimits)
-		if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Constrains limit list received from server, reloading') end
 	end,
 
-	--Insert receive functions
+	-- Insert receive functions
 
 	ListsInsert = function()
 		local s1, s2, b = net.ReadString(), net.ReadString(), net.ReadBool()
@@ -282,6 +273,13 @@ DPP.ClientReceiveFuncs = {
 		DPP.EntsLimits[s1] = net.ReadTable()
 
 		hook.Run('DPP.EntsLimitsUpdated', s1)
+	end,
+
+	MLListsInsert = function()
+		local s1 = net.ReadString()
+		DPP.ModelsLimits[s1] = net.ReadTable()
+
+		hook.Run('DPP.ModelsLimitsUpdated', s1)
 	end,
 
 	SListsInsert = function()

@@ -146,7 +146,7 @@ function DPP.SetOwner(ent, ply)
 		if isConst then
 			DPP.ConstraintsListing[ent] = true
 		end
-		DPP.PropListing[ent] = true
+		DPP.PropListing[ent] = ent
 	else
 		ent:SetDPPVar('IsOwned', false)
 		ent:SetDPPVar('OwnerString', 'World')

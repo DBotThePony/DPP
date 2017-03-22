@@ -125,6 +125,23 @@ function DPP.RecalculatePlayerList()
 	return r2
 end
 
+function DPP.ListModelCounts(ply)
+	DPP.RefreshPropList()
+	local reply = {}
+	
+	for k, ent in pairs(DPP.PropListing) do
+		if DPP.GetOwner(ent) == ply then
+			local m = ent:GetModel()
+			
+			if m then
+				reply[m] = (reply[m] or 0) + 1
+			end
+		end
+	end
+	
+	return reply
+end
+
 function DPP.SendPlayerList()
 	net.Start('DPP.PlayerList')
 	net.WriteTable(DPP.PlayerList)

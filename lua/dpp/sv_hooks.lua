@@ -191,7 +191,8 @@ local function LogConstraintTry(ply, ent)
 end
 
 local function CheckEntityLimit(ply, class)
-	if not DPP.IsEnabled() then return end
+	if not DPP.IsEnabled() then return false end
+	
 	local limit = DPP.GetEntityLimit(class, ply:GetUserGroup())
 	if limit <= 0 then return false end
 
@@ -199,6 +200,30 @@ local function CheckEntityLimit(ply, class)
 	local status = count + 1 > limit
 	if status then
 		DPP.Notify(ply, DPP.PPhrase(ply, 'entity_limit_hit', class), 1)
+	end
+
+	return status
+end
+
+local function CheckModelLimit(ply, model)
+	if not DPP.IsEnabled() then return false end
+	model = model:lower()
+	
+	local limit = DPP.GetModelLimit(model, ply:GetUserGroup())
+	if limit < 0 then return false end
+
+	local list = DPP.ListModelCounts(ply)
+	
+	if list[model] == 0 then
+		DPP.Notify(ply, DPP.PPhrase(ply, 'model_limit_hit', model), 1)
+		return true
+	end
+	
+	if not list[model] then return false end
+	local status = list[model] + 1 > limit
+	
+	if status then
+		DPP.Notify(ply, DPP.PPhrase(ply, 'model_limit_hit', model), 1)
 	end
 
 	return status
@@ -248,12 +273,12 @@ function SpawnFunctions.PlayerSpawnedNPC(ply, ent, shouldHideLog)
 
 	if DPP.IsRestrictedNPC(ent:GetClass(), ply) or DPP.IsRestrictedNPCPlayer(ply, ent:GetClass()) then 
 		LogTryPost(ply, 'NPC', ent)
-		DPP.Notify(ply, 'That entity is restricted', 1)
+		DPP.Notify(ply, 'This entity is restricted', 1)
 		SafeRemoveEntity(ent)
 		return false
 	end
 
-	if CheckEntityLimit(ply, ent:GetClass()) then 
+	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, ent:GetModel()) then 
 		LogTryPost(ply, 'NPC', ent)
 		SafeRemoveEntity(ent)
 		return false
@@ -379,7 +404,7 @@ function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog, ignore
 	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 
-	if CheckEntityLimit(ply, ent:GetClass()) then 
+	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, ent:GetModel()) then 
 		LogTryPost(ply, '#log_prop', ent)
 		SafeRemoveEntity(ent)
 		return false
@@ -459,7 +484,7 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog, ign
 	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 
-	if CheckEntityLimit(ply, ent:GetClass()) then 
+	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, ent:GetModel()) then 
 		LogTryPost(ply, '#log_ragdoll', ent)
 		SafeRemoveEntity(ent)
 		return false
@@ -492,7 +517,7 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog, ignoreAntispa
 		return false
 	end
 
-	if CheckEntityLimit(ply, ent:GetClass()) then 
+	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, ent:GetModel()) then 
 		LogTryPost(ply, '#log_sent', ent)
 		SafeRemoveEntity(ent)
 		return false
@@ -525,7 +550,7 @@ function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog, ignoreAntispa
 		return false
 	end
 
-	if CheckEntityLimit(ply, ent:GetClass()) then 
+	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, ent:GetModel()) then 
 		LogTryPost(ply, '#log_swep', ent)
 		SafeRemoveEntity(ent)
 		return false
@@ -556,7 +581,7 @@ function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog, ignoreAnti
 		return false
 	end
 
-	if CheckEntityLimit(ply, ent:GetClass()) then 
+	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, ent:GetModel()) then 
 		LogTryPost(ply, '#log_vehicle', ent)
 		SafeRemoveEntity(ent)
 		return false
@@ -584,7 +609,7 @@ function SpawnFunctions.PlayerSpawnProp(ply, model)
 		return false 
 	end
 
-	if CheckEntityLimit(ply, 'prop_physics') then 
+	if CheckEntityLimit(ply, 'prop_physics') or CheckModelLimit(ply, model) then 
 		LogTry(ply, '#log_prop', model, 'prop_physics')
 		return false 
 	end
@@ -609,11 +634,11 @@ function SpawnFunctions.PlayerSpawnEffect(ply, model)
 		return false 
 	end
 
-	if CheckEntityLimit(ply, 'prop_effect') then 
+	if CheckEntityLimit(ply, 'prop_effect') or CheckModelLimit(ply, model) then 
 		LogTry(ply, '#log_effect', model, 'prop_effect')
 		return false 
 	end
-
+	
 	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
 		LogTry(ply, '#log_effect', model, 'prop_effect')
 		DPP.Notify(ply, DPP.PPhrase(ply, 'spam_removed'), 1)
@@ -629,9 +654,8 @@ end
 function SpawnFunctions.PlayerSpawnObject(ply, model)
 	DPP.AssertArguments('PlayerSpawnObject', {{ply, 'Player'}, {model, 'string'}})
 
-	if DPP.IsModelBlocked(model, ply, 'prop_physics') then 
+	if DPP.IsModelBlocked(model, ply, 'prop_physics') or CheckModelLimit(ply, model) then 
 		LogTry(ply, '#log_obj', model, 'prop_physics')
-		DPP.Notify(ply, DPP.PPhrase(ply, 'model_blacklisted'), 1)
 		return false 
 	end
 
@@ -649,8 +673,8 @@ end
 
 function SpawnFunctions.PlayerSpawnRagdoll(ply, model)
 	DPP.AssertArguments('PlayerSpawnRagdoll', {{ply, 'Player'}, {model, 'string'}})
-
-	if DPP.IsModelBlocked(model, ply) then 
+	
+	if DPP.IsModelBlocked(model, ply) or CheckModelLimit(ply, model) then 
 		LogTry(ply, '#log_ragdoll', model, 'prop_ragdoll')
 		return false 
 	end
@@ -670,12 +694,7 @@ end
 function SpawnFunctions.PlayerSpawnVehicle(ply, model, class)
 	DPP.AssertArguments('PlayerSpawnVehicle', {{ply, 'Player'}, {model, 'string'}, {class, 'string'}})
 
-	if DPP.IsModelBlocked(model, ply) then 
-		LogTry(ply, '#log_vehicle', model, class)
-		return false 
-	end
-
-	if CheckEntityLimit(ply, class) then 
+	if DPP.IsModelBlocked(model, ply) or CheckModelLimit(ply, model) or CheckEntityLimit(ply, class) then 
 		LogTry(ply, '#log_vehicle', model, class)
 		return false 
 	end

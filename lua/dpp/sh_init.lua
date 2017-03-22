@@ -690,6 +690,12 @@ DPP.Settings = {
 		desc = 'Enable entity limits list'
 	},
 
+	['model_limits_enable'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Enable model limits list'
+	},
+
 	['sbox_limits_enable'] = {
 		type = 'bool',
 		value = '1',
@@ -846,6 +852,7 @@ DPP.Settings = {
 DPP.BlockedEntities = DPP.BlockedEntities or {}
 DPP.WhitelistedEntities = DPP.WhitelistedEntities or {}
 DPP.EntsLimits = DPP.EntsLimits or {}
+DPP.ModelsLimits = DPP.ModelsLimits or {}
 DPP.SBoxLimits = DPP.SBoxLimits or {}
 DPP.ConstrainsLimits = DPP.ConstrainsLimits or {}
 DPP.RestrictedTypes = DPP.RestrictedTypes or {}
@@ -965,12 +972,6 @@ DPP.CSettings = {
 		type = 'bool',
 		value = '0',
 		desc = 'Disable "fast block" options in property menus',
-	},
-
-	['no_load_messages'] = {
-		type = 'bool',
-		value = '1',
-		desc = 'I con\'t want to see "list reloaded" in my console',
 	},
 
 	['no_physgun_display'] = {
@@ -1473,6 +1474,21 @@ end
 function DPP.GetEntityLimit(class, group)
 	if not DPP.GetConVar('ent_limits_enable') then return DPP_NO_LIMIT_DEFINED end
 	local T = DPP.EntsLimits[class]
+
+	if T then
+		if not T[group] then
+			return DPP_NO_LIMIT_DEFINED
+		else
+			return tonumber(T[group])
+		end
+	else
+		return DPP_NO_LIMIT_DEFINED
+	end
+end
+
+function DPP.GetModelLimit(model, group)
+	if not DPP.GetConVar('model_limits_enable') then return DPP_NO_LIMIT_DEFINED end
+	local T = DPP.ModelsLimits[model]
 
 	if T then
 		if not T[group] then

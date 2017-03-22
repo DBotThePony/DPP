@@ -1112,9 +1112,7 @@ end)
 
 net.Receive('DPP.PlayerList', function()
 	DPP.PlayerList = net.ReadTable()
-
 	hook.Run('DPP.PlayerListChanged', DPP.PlayerList)
-	if not DPP.PlayerConVar(_, 'no_load_messages') then DPP.Message('Player list changed, reloading') end
 end)
 
 net.Receive('DPP.Log', function()

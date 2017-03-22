@@ -565,7 +565,6 @@ local ClientVars = {
 	'no_toolgun_display',
 	'no_hud_in_vehicle',
 	'no_scrambling_text',
-	'no_load_messages',
 	'no_touch',
 	'no_player_touch',
 	'no_touch_world',
@@ -1524,6 +1523,111 @@ local function OpenLimitEditPanel(class)
 	frame:MakePopup()
 end
 
+local function OpenMLimitEditPanel(model)
+	local t = DPP.ModelsLimits[model] or {}
+
+	local frame = vgui.Create('DFrame')
+	frame:SetTitle(P('modifying', model))
+	SettingsClass.ApplyFrameStyle(frame)
+	local scroll = frame:Add('DScrollPanel')
+	local canvas = scroll:GetCanvas()
+	
+	scroll:Dock(TOP)
+	scroll:SetHeight(400)
+	
+	local lab = frame:Add('DLabel')
+	lab:SetTextColor(SettingsClass.TextColor)
+	lab:SetText(P('elimit_tip'))
+	lab:Dock(TOP)
+	lab:SizeToContents()
+	
+	local groups = DPP.GetGroups()
+	local Panels = {}
+	
+	for k, v in pairs(t) do
+		if not DPP.HasValueLight(groups, k) then
+			table.insert(groups, k)
+		end
+	end
+
+	for k, v in pairs(groups) do
+		local l = canvas:Add('DLabel')
+		local p = canvas:Add('DTextEntry')
+		table.insert(Panels, p)
+		p.Group = v
+		l:Dock(TOP)
+		l:SetText(v)
+		l:SetTextColor(SettingsClass.TextColor)
+		p:Dock(TOP)
+		p:SetText(t[v] or '-1')
+		p.OriginalValue = (t[v] or '-1')
+	end
+	
+	local CustomEnter
+	
+	do
+		local l = canvas:Add('DLabel')
+		local gentry = canvas:Add('DTextEntry')
+		local p = canvas:Add('DTextEntry')
+		table.insert(Panels, p)
+		p.Group = ''
+		
+		l:Dock(TOP)
+		l:SetText(P('cami_tip'))
+		l:SetTextColor(SettingsClass.TextColor)
+		l:SizeToContents()
+
+		gentry:Dock(TOP)
+		gentry:SetText('')
+		
+		gentry.p = p
+		
+		p:Dock(TOP)
+		p:SetText('-1')
+		p.OriginalValue = '-1'
+		
+		CustomEnter = gentry
+	end
+
+	local apply = frame:Add('DButton')
+	apply:Dock(BOTTOM)
+	apply:SetText(P('apply'))
+	SettingsClass.ApplyButtonStyle(apply)
+
+	function apply.DoClick()
+		CustomEnter.p.Group = CustomEnter:GetText()
+		t = {}
+
+		for k, v in pairs(Panels) do
+			if v.Group == '' then continue end
+			local n = tonumber(v:GetText())
+			if not n then continue end
+			if tonumber(v.OriginalValue) == n then continue end
+
+			if n >= 0 then
+				RunConsoleCommand('dpp_addmodellimit', model, v.Group, n)
+			else
+				RunConsoleCommand('dpp_removemodellimit', model, v.Group)
+			end
+		end
+
+		frame:Close()
+	end
+
+	local discard = frame:Add('DButton')
+	discard:Dock(BOTTOM)
+	discard:SetText(P('discard'))
+	SettingsClass.ApplyButtonStyle(discard)
+
+	function discard.DoClick()
+		frame:Close()
+	end
+
+	frame:SetSize(300, 550)
+	frame:Center()
+	frame:MakePopup()
+end
+
 local function BuildLimitsList(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
@@ -1604,6 +1708,88 @@ local function BuildLimitsList(Panel)
 	SettingsClass.ApplyButtonStyle(Apply)
 
 	ConVarCheckbox(Panel, 'ent_limits_enable')
+end
+
+function SettingsClass.BuildModelLimitsList(Panel)
+	if not IsValid(Panel) then return end
+	Panel:Clear()
+	SettingsClass.SetupBackColor(Panel)
+	DPP.SettingsClass.ModelLimitsPanel = Panel
+
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SetText(P('model_limit_note'))
+	Lab:SizeToContents()
+
+	local list = vgui.Create('DListView', Panel)
+	Panel:AddItem(list)
+
+	list:SetHeight(600)
+	list:AddColumn(P('model'))
+	list:AddColumn(P('Group'))
+	list:AddColumn(P('Limit'))
+
+	local L = DPP.ModelsLimits
+
+	for k, v in pairs(L) do
+		for group, limit in pairs(v) do
+			list:AddLine(k, group, limit)
+		end
+	end
+
+	list.OnRowRightClick = function(self, line)
+		local val = self:GetLine(line):GetValue(1)
+		local group = self:GetLine(line):GetValue(2)
+		local limit = self:GetLine(line):GetValue(3)
+
+		local menu = vgui.Create('DMenu')
+		menu:AddOption(P('clipboard', P('model')), function()
+			SetClipboardText(val)
+		end):SetIcon(table.Random(SettingsClass.TagIcons))
+
+		menu:AddOption(P('eedit_limit'), function()
+			OpenMLimitEditPanel(val)
+		end):SetIcon(SettingsClass.EditIcon)
+
+		menu:AddOption(P('remove_limit'), function()
+			RunConsoleCommand('dpp_removemodellimit', val, group)
+		end):SetIcon(SettingsClass.RemoveIcon)
+
+		menu:Open()
+	end
+
+	local entry = vgui.Create('DTextEntry', Panel)
+	Panel:AddItem(entry)
+	local Apply = Panel:Button(P('edit_limit'))
+	Apply.DoClick = function()
+		OpenMLimitEditPanel(entry:GetText())
+	end
+	SettingsClass.ApplyButtonStyle(Apply)
+
+	local Apply = Panel:Button(P('remove_limit'))
+	Apply.DoClick = function()
+		RunConsoleCommand('dpp_addmodellimit', entry:GetText())
+	end
+	SettingsClass.ApplyButtonStyle(Apply)
+
+	local Apply = Panel:Button(P('action_looking_at', P('edit_limit')))
+	Apply.DoClick = function()
+		local ent = LocalPlayer():GetEyeTrace().Entity
+		if not IsValid(ent) then return end
+		OpenMLimitEditPanel(ent:GetModel())
+	end
+	SettingsClass.ApplyButtonStyle(Apply)
+
+	local Apply = Panel:Button(P('action_looking_at', P('remove_limit')))
+	Apply.DoClick = function()
+		local ent = LocalPlayer():GetEyeTrace().Entity
+		if not IsValid(ent) then return end
+		RunConsoleCommand('dpp_removemodellimit', ent:GetModel())
+	end
+	SettingsClass.ApplyButtonStyle(Apply)
+
+	ConVarCheckbox(Panel, 'model_limits_enable')
 end
 
 local function RemoveAllSLimits(class)
@@ -3294,6 +3480,7 @@ local function PopulateToolMenu()
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.APropKill', P('menu_propkill'), '', '', BuildAPropKillVarsPanel)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.APanel', P('menu_antispam'), '', '', BuildAntispamPanel)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.Limits', P('menu_elimits'), '', '', BuildLimitsList)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.MLimits', P('menu_mlimits'), '', '', SettingsClass.BuildModelLimitsList)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.SLimits', P('menu_slimits'), '', '', BuildSLimitsList)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.CLimits', P('menu_climits'), '', '', BuildCLimitsList)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_blacklists'), 'DPP.ModelList', P('menu_mblacklist'), '', '', BuildModelsList)
@@ -3330,8 +3517,16 @@ hook.Add('DPP.EntsLimitsUpdated', 'DPP.Menu', function()
 	BuildLimitsList(DPP.SettingsClass.LimitsPanel)
 end)
 
+hook.Add('DPP.ModelsLimitsUpdated', 'DPP.Menu', function()
+	SettingsClass.BuildModelLimitsList(DPP.SettingsClass.ModelLimitsPanel)
+end)
+
 hook.Add('DPP.EntsLimitsReloaded', 'DPP.Menu', function()
 	BuildLimitsList(DPP.SettingsClass.LimitsPanel)
+end)
+
+hook.Add('DPP.ModelsLimitsReloaded', 'DPP.Menu', function()
+	SettingsClass.BuildModelLimitsList(DPP.SettingsClass.ModelLimitsPanel)
 end)
 
 hook.Add('DPP.SBoxLimitsUpdated', 'DPP.Menu', function()
