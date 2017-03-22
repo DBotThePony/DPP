@@ -601,6 +601,31 @@ function SpawnFunctions.PlayerSpawnProp(ply, model)
 	end
 end
 
+function SpawnFunctions.PlayerSpawnEffect(ply, model)
+	DPP.AssertArguments('PlayerSpawnEffect', {{ply, 'Player'}, {model, 'string'}})
+
+	if DPP.IsModelBlocked(model, ply) then 
+		LogTry(ply, '#log_effect', model, 'prop_effect')
+		return false 
+	end
+
+	if CheckEntityLimit(ply, 'prop_effect') then 
+		LogTry(ply, '#log_effect', model, 'prop_effect')
+		return false 
+	end
+
+	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
+		LogTry(ply, '#log_effect', model, 'prop_effect')
+		DPP.Notify(ply, DPP.PPhrase(ply, 'spam_removed'), 1)
+		return false 
+	end
+
+	if not CheckBlocked2(ply, model) then 
+		LogTry(ply, '#log_effect', model, 'prop_effect')
+		return false 
+	end
+end
+
 function SpawnFunctions.PlayerSpawnObject(ply, model)
 	DPP.AssertArguments('PlayerSpawnObject', {{ply, 'Player'}, {model, 'string'}})
 
