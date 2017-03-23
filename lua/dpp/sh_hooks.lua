@@ -565,11 +565,9 @@ function DPP.OverrideCounts()
 		local defaultLimit = CVars_Cache[limit]:GetInt()
 		local limitToUse = math.floor(dppLimit ~= 0 and dppLimit or defaultLimit)
 		
-		if limitToUse == 0 then return false end -- ConVars
 		if limitToUse == -1 then return true end
-		if limitToUse <= -2 then return false end
 
-		if self:GetCount(limit) >= limitToUse then
+		if limitToUse == 0 or limitToUse <= -2 or self:GetCount(limit) >= limitToUse then
 			if SERVER then self:LimitHit(limit) end
 			return false
 		end
