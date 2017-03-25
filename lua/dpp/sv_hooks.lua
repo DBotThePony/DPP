@@ -517,7 +517,7 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog, ignoreAntispa
 		return false
 	end
 
-	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, ent:GetModel()) then 
+	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, ent:GetModel() or '') then 
 		LogTryPost(ply, '#log_sent', ent)
 		SafeRemoveEntity(ent)
 		return false
