@@ -207,6 +207,7 @@ end
 
 local function CheckModelLimit(ply, model)
 	if not DPP.IsEnabled() then return false end
+	if not model or model == '' then return false end
 	model = model:lower()
 	
 	local limit = DPP.GetModelLimit(model, ply:GetUserGroup())
