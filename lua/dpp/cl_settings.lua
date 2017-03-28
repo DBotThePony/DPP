@@ -3408,6 +3408,144 @@ local function BuildFriendsPanel(Panel)
 	SettingsClass.ApplyButtonStyle(Apply)
 end
 
+function SettingsClass.BuildFactoryResetPanel(Panel)
+	if not IsValid(Panel) then return end
+	Panel:Clear()
+	SettingsClass.SetupBackColor(Panel)
+	
+	DPP.SettingsClass.FactoryResetPanel = Panel
+
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	local Text = P('reset_gui_1')
+	Lab:SetText(Text)
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SizeToContents()
+	Lab:SetTooltip(Text)
+	
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	local Text = P('reset_gui_hall')
+	Lab:SetText(Text)
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SizeToContents()
+	Lab:SetTooltip(Text)
+	
+	local button = Panel:Button('DButton')
+	button:SetText(P('reset_gui_all'))
+	SettingsClass.SetButtonAccess(button, 'factoryreset')
+	SettingsClass.ApplyButtonStyle(button)
+	button.DoClick = function()
+		Derma_Query(P('reset_gui_all'), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_factoryreset') end, 'CANCEL', function() end)
+	end
+	
+	local button = Panel:Button('DButton')
+	button:SetText(P('reset_gui_cvars'))
+	SettingsClass.SetButtonAccess(button, 'freset_cvars')
+	SettingsClass.ApplyButtonStyle(button)
+	button.DoClick = function()
+		Derma_Query(P('reset_gui_cvars'), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_freset_cvars') end, 'CANCEL', function() end)
+	end
+	
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	local Text = P('reset_gui_hint_generic')
+	Lab:SetText(Text)
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SizeToContents()
+	Lab:SetTooltip(Text)
+	
+	for k, val in pairs{'freset_limits', 'freset_mlimits', 'freset_slimits', 'freset_climits', 'freset_models'} do
+		local button = Panel:Button('DButton')
+		button:SetText(P('reset_gui_' .. val))
+		SettingsClass.SetButtonAccess(button, val)
+		SettingsClass.ApplyButtonStyle(button)
+		button.DoClick = function()
+			Derma_Query(P('reset_gui_' .. val), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_' .. val) end, 'CANCEL', function() end)
+		end
+	end
+	
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	local Text = P('reset_gui_hint_combined')
+	Lab:SetText(Text)
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SizeToContents()
+	Lab:SetTooltip(Text)
+	
+	for k, val in pairs{'freset_blocked', 'freset_exclude', 'freset_restrictions'} do
+		local button = Panel:Button('DButton')
+		button:SetText(P('reset_gui_' .. val))
+		SettingsClass.SetButtonAccess(button, val)
+		SettingsClass.ApplyButtonStyle(button)
+		button.DoClick = function()
+			Derma_Query(P('reset_gui_' .. val), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_' .. val) end, 'CANCEL', function() end)
+		end
+	end
+	
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	local Text = P('reset_gui_hint_separate')
+	Lab:SetText(Text)
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SizeToContents()
+	Lab:SetTooltip(Text)
+	
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	local Text = P('reset_gui_hint_block')
+	Lab:SetText(Text)
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SizeToContents()
+	Lab:SetTooltip(Text)
+	
+	for k, v in pairs(DPP.BlockTypes) do
+		local button = Panel:Button('DButton')
+		button:SetText(P('reset_gui_b' .. k))
+		SettingsClass.SetButtonAccess(button, 'freset_blocked_' .. k)
+		SettingsClass.ApplyButtonStyle(button)
+		button.DoClick = function()
+			Derma_Query(P('reset_gui_b' .. k), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_freset_blocked_' .. k) end, 'CANCEL', function() end)
+		end
+	end
+	
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	local Text = P('reset_gui_hint_exclude')
+	Lab:SetText(Text)
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SizeToContents()
+	Lab:SetTooltip(Text)
+	
+	for k, v in pairs(DPP.WhitelistTypes) do
+		local button = Panel:Button('DButton')
+		button:SetText(P('reset_gui_e' .. k))
+		SettingsClass.SetButtonAccess(button, 'freset_exclude_' .. k)
+		SettingsClass.ApplyButtonStyle(button)
+		button.DoClick = function()
+			Derma_Query(P('reset_gui_e' .. k), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_freset_exclude_' .. k) end, 'CANCEL', function() end)
+		end
+	end
+	
+	local Lab = vgui.Create('DLabel', Panel)
+	Panel:AddItem(Lab)
+	local Text = P('reset_gui_hint_restricts')
+	Lab:SetText(Text)
+	Lab:SetTextColor(SettingsClass.TextColor)
+	Lab:SizeToContents()
+	Lab:SetTooltip(Text)
+	
+	for k, v in pairs(DPP.RestrictTypes) do
+		local button = Panel:Button('DButton')
+		button:SetText(P('reset_gui_r' .. k))
+		SettingsClass.SetButtonAccess(button, 'freset_restrictions_' .. k)
+		SettingsClass.ApplyButtonStyle(button)
+		button.DoClick = function()
+			Derma_Query(P('reset_gui_r' .. k), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_freset_restrictions_' .. k) end, 'CANCEL', function() end)
+		end
+	end
+end
+
 local function About(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
@@ -3486,6 +3624,7 @@ local function PopulateToolMenu()
 	spawnmenu.AddToolMenuOption('DPP', P('menu_blacklists'), 'DPP.ModelList', P('menu_mblacklist'), '', '', BuildModelsList)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.PPPanel', P('menu_pcontrols'), '', '', BuildPlayerProtectionPanel)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.Utilities', P('utilities'), '', '', BuildToolsPanel)
+	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.FReset', P('reset_gui_button'), '', '', SettingsClass.BuildFactoryResetPanel)
 
 	for k, v in pairs(DPP.BlockTypes) do
 		spawnmenu.AddToolMenuOption('DPP', P('menu_blacklists'), 'DPP.' .. k, P('menu_blacklist', P('menu_' .. k)), '', '', PanelsFunctions[k])
