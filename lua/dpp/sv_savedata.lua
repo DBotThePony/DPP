@@ -199,20 +199,28 @@ function DPP.AddBlockedModel(model)
 	DPP.BlockedModels[model] = true
 	DPP.Query('REPLACE INTO dpp_blockedmodels (MODEL) VALUES ("' .. model .. '")')
 
-	net.Start('DPP.ModelsInsert')
-	net.WriteString(model)
-	net.WriteBool(true)
-	net.Broadcast()
+	if not DPP.SUPPRESS_INSERT_CALLS then
+		net.Start('DPP.ModelsInsert')
+		net.WriteString(model)
+		net.WriteBool(true)
+		net.Broadcast()
+	end
+	
+	timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 end
 
 function DPP.RemoveBlockedModel(model)
 	DPP.BlockedModels[model] = nil
 	DPP.Query('DELETE FROM dpp_blockedmodels WHERE MODEL = "' .. model .. '"')
 
-	net.Start('DPP.ModelsInsert')
-	net.WriteString(model)
-	net.WriteBool(false)
-	net.Broadcast()
+	if not DPP.SUPPRESS_INSERT_CALLS then
+		net.Start('DPP.ModelsInsert')
+		net.WriteString(model)
+		net.WriteBool(false)
+		net.Broadcast()
+	end
+	
+	timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 end
 
 DPP.ManipulateCommands = {
@@ -274,11 +282,13 @@ for k, v in pairs(DPP.BlockTypes) do
 		ent = ent:lower():Trim()
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 
-		net.Start('DPP.ListsInsert')
-		net.WriteString(k)
-		net.WriteString(ent)
-		net.WriteBool(true)
-		net.Broadcast()
+		if not DPP.SUPPRESS_INSERT_CALLS then
+			net.Start('DPP.ListsInsert')
+			net.WriteString(k)
+			net.WriteString(ent)
+			net.WriteBool(true)
+			net.Broadcast()
+		end
 
 		DPP.BlockedEntities[k][ent] = true
 		DPP.Query('REPLACE INTO dpp_blockedentities' .. k .. ' (ENTITY) VALUES ("' .. ent .. '")')
@@ -289,11 +299,13 @@ for k, v in pairs(DPP.BlockTypes) do
 		if DPP.HasValueLight(blockedEnts, ent) then return end
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 
-		net.Start('DPP.ListsInsert')
-		net.WriteString(k)
-		net.WriteString(ent)
-		net.WriteBool(false)
-		net.Broadcast()
+		if not DPP.SUPPRESS_INSERT_CALLS then
+			net.Start('DPP.ListsInsert')
+			net.WriteString(k)
+			net.WriteString(ent)
+			net.WriteBool(false)
+			net.Broadcast()
+		end
 
 		DPP.BlockedEntities[k][ent] = nil
 		DPP.Query('DELETE FROM dpp_blockedentities' .. k .. ' WHERE ENTITY = "' .. ent .. '"')
@@ -324,11 +336,13 @@ for k, v in pairs(DPP.WhitelistTypes) do
 		if DPP.HasValueLight(blockedEnts, ent) then return end
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 
-		net.Start('DPP.WListsInsert')
-		net.WriteString(k)
-		net.WriteString(ent)
-		net.WriteBool(true)
-		net.Broadcast()
+		if not DPP.SUPPRESS_INSERT_CALLS then
+			net.Start('DPP.WListsInsert')
+			net.WriteString(k)
+			net.WriteString(ent)
+			net.WriteBool(true)
+			net.Broadcast()
+		end
 
 		DPP.WhitelistedEntities[k][ent] = true
 		DPP.Query('REPLACE INTO dpp_whitelistentities' .. k .. ' (ENTITY) VALUES ("' .. ent .. '")')
@@ -382,13 +396,15 @@ for k, v in pairs(DPP.RestrictTypes) do
 		
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 
-		net.Start('DPP.RListsInsert')
-		net.WriteString(k)
-		net.WriteString(class)
-		net.WriteBool(true)
-		net.WriteTable(myGroups)
-		net.WriteBool(DPP.RestrictedTypes[k][class].iswhite)
-		net.Broadcast()
+		if not DPP.SUPPRESS_INSERT_CALLS then
+			net.Start('DPP.RListsInsert')
+			net.WriteString(k)
+			net.WriteString(class)
+			net.WriteBool(true)
+			net.WriteTable(myGroups)
+			net.WriteBool(DPP.RestrictedTypes[k][class].iswhite)
+			net.Broadcast()
+		end
 		
 		DPP.Query(string.format('REPLACE INTO dpp_restricted' .. k .. ' (CLASS, GROUPS, IS_WHITE) VALUES (%q, \'%s\', %q)', class, util.TableToJSON(myGroups), DPP.RestrictedTypes[k][class].iswhite and '1' or '0'))
 	end
@@ -397,13 +413,15 @@ for k, v in pairs(DPP.RestrictTypes) do
 		class = class:lower():Trim()
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 
-		net.Start('DPP.RListsInsert')
-		net.WriteString(k)
-		net.WriteString(class)
-		net.WriteBool(true)
-		net.WriteTable(groups)
-		net.WriteBool(isWhite)
-		net.Broadcast()
+		if not DPP.SUPPRESS_INSERT_CALLS then
+			net.Start('DPP.RListsInsert')
+			net.WriteString(k)
+			net.WriteString(class)
+			net.WriteBool(true)
+			net.WriteTable(groups)
+			net.WriteBool(isWhite)
+			net.Broadcast()
+		end
 
 		DPP.RestrictedTypes[k][class] = {
 			groups = groups,
@@ -422,12 +440,14 @@ for k, v in pairs(DPP.RestrictTypes) do
 		
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 
-		net.Start('DPP.RListsInsert_Player')
-		net.WriteString(k)
-		net.WriteString(steamid)
-		net.WriteString(class)
-		net.WriteBool(true)
-		net.Broadcast()
+		if not DPP.SUPPRESS_INSERT_CALLS then
+			net.Start('DPP.RListsInsert_Player')
+			net.WriteString(k)
+			net.WriteString(steamid)
+			net.WriteString(class)
+			net.WriteBool(true)
+			net.Broadcast()
+		end
 
 		table.insert(DPP.RestrictedTypes_SteamID[k][steamid], class)
 
@@ -443,12 +463,14 @@ for k, v in pairs(DPP.RestrictTypes) do
 		
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 
-		net.Start('DPP.RListsInsert_Player')
-		net.WriteString(k)
-		net.WriteString(steamid)
-		net.WriteString(class)
-		net.WriteBool(false)
-		net.Broadcast()
+		if not DPP.SUPPRESS_INSERT_CALLS then
+			net.Start('DPP.RListsInsert_Player')
+			net.WriteString(k)
+			net.WriteString(steamid)
+			net.WriteString(class)
+			net.WriteBool(false)
+			net.Broadcast()
+		end
 
 		DPP.PopFromArray(DPP.RestrictedTypes_SteamID[k][steamid], class)
 
@@ -459,11 +481,13 @@ for k, v in pairs(DPP.RestrictTypes) do
 		class = class:lower():Trim()
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 
-		net.Start('DPP.RListsInsert')
-		net.WriteString(k)
-		net.WriteString(class)
-		net.WriteBool(false)
-		net.Broadcast()
+		if not DPP.SUPPRESS_INSERT_CALLS then
+			net.Start('DPP.RListsInsert')
+			net.WriteString(k)
+			net.WriteString(class)
+			net.WriteBool(false)
+			net.Broadcast()
+		end
 
 		DPP.RestrictedTypes[k][class] = nil
 		DPP.Query('DELETE FROM dpp_restricted' .. k .. ' WHERE CLASS = "' .. class .. '"')
@@ -539,10 +563,12 @@ function DPP.AddEntityLimit(class, group, val)
 	DPP.EntsLimits[class] = DPP.EntsLimits[class] or {}
 	DPP.EntsLimits[class][group] = val
 
-	net.Start('DPP.LListsInsert')
-	net.WriteString(class)
-	net.WriteTable(DPP.EntsLimits[class])
-	net.Broadcast()
+	if not DPP.SUPPRESS_INSERT_CALLS then
+		net.Start('DPP.LListsInsert')
+		net.WriteString(class)
+		net.WriteTable(DPP.EntsLimits[class])
+		net.Broadcast()
+	end
 
 	DPP.Query(string.format('REPLACE INTO dpp_entitylimits (CLASS, UGROUP, ULIMIT) VALUES (%q, %q, %q)', class, group, val))
 
@@ -562,10 +588,12 @@ function DPP.RemoveEntityLimit(class, group)
 		DPP.Query(string.format('DELETE FROM dpp_entitylimits WHERE CLASS = %q', class))
 	end
 
-	net.Start('DPP.LListsInsert')
-	net.WriteString(class)
-	net.WriteTable(DPP.EntsLimits[class])
-	net.Broadcast()
+	if not DPP.SUPPRESS_INSERT_CALLS then
+		net.Start('DPP.LListsInsert')
+		net.WriteString(class)
+		net.WriteTable(DPP.EntsLimits[class])
+		net.Broadcast()
+	end
 
 	timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 end
@@ -577,10 +605,12 @@ function DPP.AddModelLimit(model, group, val)
 	DPP.ModelsLimits[model] = DPP.ModelsLimits[model] or {}
 	DPP.ModelsLimits[model][group] = val
 
-	net.Start('DPP.MLListsInsert')
-	net.WriteString(model)
-	net.WriteTable(DPP.ModelsLimits[model])
-	net.Broadcast()
+	if not DPP.SUPPRESS_INSERT_CALLS then
+		net.Start('DPP.MLListsInsert')
+		net.WriteString(model)
+		net.WriteTable(DPP.ModelsLimits[model])
+		net.Broadcast()
+	end
 
 	DPP.Query(string.format('REPLACE INTO dpp_modellimits (MODEL, UGROUP, ULIMIT) VALUES (%q, %q, %q)', model, group, val))
 
@@ -600,10 +630,12 @@ function DPP.RemoveModelLimit(model, group)
 		DPP.Query(string.format('DELETE FROM dpp_modellimits WHERE MODEL = %q', model))
 	end
 
-	net.Start('DPP.MLListsInsert')
-	net.WriteString(model)
-	net.WriteTable(DPP.ModelsLimits[model])
-	net.Broadcast()
+	if not DPP.SUPPRESS_INSERT_CALLS then
+		net.Start('DPP.MLListsInsert')
+		net.WriteString(model)
+		net.WriteTable(DPP.ModelsLimits[model])
+		net.Broadcast()
+	end
 
 	timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 end
@@ -616,10 +648,12 @@ function DPP.AddSBoxLimit(class, group, val)
 	DPP.SBoxLimits[class] = DPP.SBoxLimits[class] or {}
 	DPP.SBoxLimits[class][group] = val
 
-	net.Start('DPP.SListsInsert')
-	net.WriteString(class)
-	net.WriteTable(DPP.SBoxLimits[class])
-	net.Broadcast()
+	if not DPP.SUPPRESS_INSERT_CALLS then
+		net.Start('DPP.SListsInsert')
+		net.WriteString(class)
+		net.WriteTable(DPP.SBoxLimits[class])
+		net.Broadcast()
+	end
 
 	DPP.Query(string.format('REPLACE INTO dpp_sboxlimits (CLASS, UGROUP, ULIMIT) VALUES (%q, %q, %q)', class, group, val))
 
@@ -634,10 +668,12 @@ function DPP.AddConstLimit(class, group, val)
 	DPP.ConstrainsLimits[class] = DPP.ConstrainsLimits[class] or {}
 	DPP.ConstrainsLimits[class][group] = val
 
-	net.Start('DPP.CListsInsert')
-	net.WriteString(class)
-	net.WriteTable(DPP.ConstrainsLimits[class])
-	net.Broadcast()
+	if not DPP.SUPPRESS_INSERT_CALLS then
+		net.Start('DPP.CListsInsert')
+		net.WriteString(class)
+		net.WriteTable(DPP.ConstrainsLimits[class])
+		net.Broadcast()
+	end
 
 	DPP.Query(string.format('REPLACE INTO dpp_constlimits (CLASS, UGROUP, ULIMIT) VALUES (%q, %q, %q)', class, group, val))
 
@@ -657,10 +693,12 @@ function DPP.RemoveSBoxLimit(class, group)
 		DPP.Query(string.format('DELETE FROM dpp_sboxlimits WHERE CLASS = %q', class))
 	end
 
-	net.Start('DPP.SListsInsert')
-	net.WriteString(class)
-	net.WriteTable(DPP.SBoxLimits[class] or {})
-	net.Broadcast()
+	if not DPP.SUPPRESS_INSERT_CALLS then
+		net.Start('DPP.SListsInsert')
+		net.WriteString(class)
+		net.WriteTable(DPP.SBoxLimits[class] or {})
+		net.Broadcast()
+	end
 
 	timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 end
@@ -678,10 +716,12 @@ function DPP.RemoveConstLimit(class, group)
 		DPP.Query(string.format('DELETE FROM dpp_constlimits WHERE CLASS = %q', class))
 	end
 
-	net.Start('DPP.CListsInsert')
-	net.WriteString(class)
-	net.WriteTable(DPP.ConstrainsLimits[class] or {})
-	net.Broadcast()
+	if not DPP.SUPPRESS_INSERT_CALLS then
+		net.Start('DPP.CListsInsert')
+		net.WriteString(class)
+		net.WriteTable(DPP.ConstrainsLimits[class] or {})
+		net.Broadcast()
+	end
 
 	timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 end

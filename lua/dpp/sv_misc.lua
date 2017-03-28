@@ -67,6 +67,8 @@ concommand.Add('dpp_importurs', function(ply, cmd, args)
 	local Ragdolls = R.ragdoll
 
 	local imported = 0
+	
+	DPP.SUPPRESS_INSERT_CALLS = true
 
 	for k, v in pairs(URS_Import) do
 		local tab = R[k]
@@ -136,8 +138,11 @@ concommand.Add('dpp_importurs', function(ply, cmd, args)
 			end
 		end
 	end
+	
+	DPP.SUPPRESS_INSERT_CALLS = false
 
 	if not isTest then
+		timer.Create('DPP.BroadcastLists', 1, 1, DPP.BroadcastLists)
 		DPP.SimpleLog(IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' Imported Restrictions and Limits from URS. Total items imported: ' .. imported)
 	else
 		FakePrint(ply, 'Total items: ' .. imported)
@@ -181,6 +186,8 @@ concommand.Add('dpp_importurm', function(ply, cmd, args)
 	L = L or {}
 
 	local imported = 0
+	
+	DPP.SUPPRESS_INSERT_CALLS = true
 
 	for userGroup, rData in pairs(R) do
 		for rType, rList in pairs(rData) do
@@ -236,7 +243,10 @@ concommand.Add('dpp_importurm', function(ply, cmd, args)
 		end
 	end
 	
+	DPP.SUPPRESS_INSERT_CALLS = false
+	
 	if not isTest then
+		timer.Create('DPP.BroadcastLists', 1, 1, DPP.BroadcastLists)
 		DPP.SimpleLog(IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' Imported Restrictions and Limits from URM. Total items imported: ' .. imported)
 	else
 		FakePrint(ply, 'Total items: ' .. imported)
@@ -264,6 +274,8 @@ concommand.Add('dpp_importfpp', function(ply, cmd, args)
 
 		local count = 0
 
+		DPP.SUPPRESS_INSERT_CALLS = true
+		
 		for k, row in pairs(data) do
 			local model = row.model
 
@@ -275,11 +287,14 @@ concommand.Add('dpp_importfpp', function(ply, cmd, args)
 				DPP.AddBlockedModel(model)
 			end
 		end
+		
+		DPP.SUPPRESS_INSERT_CALLS = false
 
 		if isTest then
 			FakePrint(ply, '[DPP] ----------------- End of model list test. Total: ' .. count)
 			FakePrint(ply, '[DPP] Note: This is a test, to commit changes type dpp_importfpp 1')
 		else
+			timer.Create('DPP.BroadcastLists', 1, 1, DPP.BroadcastLists)
 			DPP.SimpleLog(IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' Imported FPP blocked models. Total items imported: ' .. count)
 		end
 	end)
@@ -289,6 +304,8 @@ concommand.Add('dpp_importfpp', function(ply, cmd, args)
 
 		local count = 0
 
+		DPP.SUPPRESS_INSERT_CALLS = false
+		
 		for k, row in pairs(data) do
 			local Type = FPP_Blocked[row.var]
 			if not Type then continue end
@@ -301,11 +318,14 @@ concommand.Add('dpp_importfpp', function(ply, cmd, args)
 				DPP['AddBlockedEntity' .. Type](row.setting)
 			end
 		end
+		
+		DPP.SUPPRESS_INSERT_CALLS = true
 
 		if isTest then
 			FakePrint(ply, '[DPP] ----------------- End of entity list test Total: ' .. count)
 			FakePrint(ply, '[DPP] Note: This is a test, to commit changes type dpp_importfpp 1')
 		else
+			timer.Create('DPP.BroadcastLists', 1, 1, DPP.BroadcastLists)
 			DPP.SimpleLog(IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' Imported FPP blocked entities. Total items imported: ' .. count)
 		end
 	end)
@@ -314,6 +334,8 @@ concommand.Add('dpp_importfpp', function(ply, cmd, args)
 		if not data then return end
 
 		local count = 0
+		
+		DPP.SUPPRESS_INSERT_CALLS = true
 
 		for k, row in pairs(data) do
 			local tool = row.toolname
@@ -336,11 +358,14 @@ concommand.Add('dpp_importfpp', function(ply, cmd, args)
 				DPP.RestrictTool(tool, admins, true)
 			end
 		end
+		
+		DPP.SUPPRESS_INSERT_CALLS = false
 
 		if isTest then
 			FakePrint(ply, '[DPP] ----------------- End of tool list test Total: ' .. count)
 			FakePrint(ply, '[DPP] Note: This is a test, to commit changes type dpp_importfpp 1')
 		else
+			timer.Create('DPP.BroadcastLists', 1, 1, DPP.BroadcastLists)
 			DPP.SimpleLog(IsValid(ply) and ply or 'Console', Color(200, 200, 200), ' Imported FPP restricted tools. Total tools imported: ' .. count)
 		end
 	end)
