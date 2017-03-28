@@ -272,7 +272,6 @@ end
 for k, v in pairs(DPP.BlockTypes) do
 	DPP['AddBlockedEntity' .. v] = function(ent)
 		ent = ent:lower():Trim()
-		if DPP.HasValueLight(blockedEnts, ent) then return end
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 
 		net.Start('DPP.ListsInsert')
@@ -998,7 +997,6 @@ for k, v in pairs(DPP.BlockTypes) do
 	DPP['Reset' .. v .. 'BlockedList'] = function(noCall)
 		DPP.BlockedEntities[k] = {}
 		DPP.Query('DELETE FROM dpp_blockedentities' .. k)
-		timer.Create('DPP.BroadcastLists', 1, 1, DPP.BroadcastLists)
 		timer.Create('DPP.InitializeDefaultBlock', 1, 1, DPP.InitializeDefaultBlock)
 		DPP.DoEcho(ResetWarning, '#reset_blocklist_' .. k)
 		
