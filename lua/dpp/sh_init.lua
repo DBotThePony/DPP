@@ -1988,6 +1988,16 @@ function DPP.TFormat(arg)
 	return repack
 end
 
+function DPP.ResetConVars()
+	if CLIENT then return end
+	
+	for k, val in pairs(DPP.Settings) do
+		RunConsoleCommand('dpp_' .. k, val.value)
+	end
+	
+	DPP.DoEcho(Color(215, 45, 45), '#reset_cvars')
+end
+
 function DPP.Format(...)
 	return DPP.TFormat{...}
 end

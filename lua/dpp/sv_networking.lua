@@ -61,6 +61,15 @@ util.AddNetworkString('DPP.InspectEntity')
 
 util.AddNetworkString('DPP.UpdateLang')
 
+util.AddNetworkString('DPP.ResetBlockedModels')
+util.AddNetworkString('DPP.ResetLimits')
+util.AddNetworkString('DPP.ResetMLimits')
+util.AddNetworkString('DPP.ResetSLimits')
+util.AddNetworkString('DPP.ResetCLimits')
+util.AddNetworkString('DPP.ResetBlockedList')
+util.AddNetworkString('DPP.ResetExcludedList')
+util.AddNetworkString('DPP.ResetRestrictions')
+
 local entMeta = FindMetaTable('Entity')
 
 function entMeta:SetDPPVar(var, val)

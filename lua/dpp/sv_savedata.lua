@@ -133,9 +133,10 @@ function DPP.CreateTables()
 end
 
 local Gray = Color(200, 200, 200)
+local ResetWarning = Color(215, 45, 45)
 
---FPP is blocking that entities because they are logical
---And should be NEVER touched by player entity in any way
+-- FPP is blocking that entities because they are logical
+-- And should be NEVER touched by player entity in any way
 local blockedEnts = {
 	'ai_network',
 	'ambient_generic',
@@ -253,6 +254,19 @@ function DPP.LoadBlockedModels()
 			DPP.BlockedModels[v.MODEL] = true
 		end
 	end)
+end
+
+function DPP.ResetBlockedModels()
+	DPP.BlockedModels = {}
+	DPP.Query('DELETE FROM dpp_blockedmodels')
+	DPP.DoEcho(ResetWarning, '#reset_modellist')
+	net.Start('DPP.ResetBlockedModels')
+	net.Broadcast()
+end
+
+DPP.ManipulateCommands.freset_models = function(ply, cmd, args)
+	DPP.NotifyLog{ResetWarning, ply, ResetWarning, '#reset_command_models'}
+	DPP.ResetBlockedModels()
 end
 
 for k, v in pairs(DPP.BlockTypes) do
@@ -686,6 +700,19 @@ function DPP.LoadLimits()
 	end)
 end
 
+function DPP.ResetLimits()
+	DPP.EntsLimits = {}
+	DPP.Query('DELETE FROM dpp_entitylimits')
+	DPP.DoEcho(ResetWarning, '#reset_limits')
+	net.Start('DPP.ResetLimits')
+	net.Broadcast()
+end
+
+DPP.ManipulateCommands.freset_limits = function(ply, cmd, args)
+	DPP.NotifyLog{ResetWarning, ply, ResetWarning, '#reset_command_limits'}
+	DPP.ResetLimits()
+end
+
 function DPP.LoadMLimits()
 	DPP.ModelsLimits = {}
 	
@@ -697,6 +724,19 @@ function DPP.LoadMLimits()
 			DPP.ModelsLimits[row.MODEL][row.UGROUP] = row.ULIMIT
 		end
 	end)
+end
+
+function DPP.ResetMLimits()
+	DPP.ModelsLimits = {}
+	DPP.Query('DELETE FROM dpp_modellimits')
+	DPP.DoEcho(ResetWarning, '#reset_modellimits')
+	net.Start('DPP.ResetMLimits')
+	net.Broadcast()
+end
+
+DPP.ManipulateCommands.freset_mlimits = function(ply, cmd, args)
+	DPP.NotifyLog{ResetWarning, ply, ResetWarning, '#reset_command_mlimits'}
+	DPP.ResetMLimits()
 end
 
 function DPP.LoadSLimits()
@@ -711,6 +751,19 @@ function DPP.LoadSLimits()
 	end)
 end
 
+function DPP.ResetSLimits()
+	DPP.SBoxLimits = {}
+	DPP.Query('DELETE FROM dpp_sboxlimits')
+	DPP.DoEcho(ResetWarning, '#reset_sboxlimits')
+	net.Start('DPP.ResetSLimits')
+	net.Broadcast()
+end
+
+DPP.ManipulateCommands.freset_slimits = function(ply, cmd, args)
+	DPP.NotifyLog{ResetWarning, ply, ResetWarning, '#reset_command_slimits'}
+	DPP.ResetSLimits()
+end
+
 function DPP.LoadCLimits()
 	DPP.ConstrainsLimits = {}
 	DPP.Query('SELECT * FROM dpp_constlimits', function(data)
@@ -721,6 +774,19 @@ function DPP.LoadCLimits()
 			DPP.ConstrainsLimits[row.CLASS][row.UGROUP] = row.ULIMIT
 		end
 	end)
+end
+
+function DPP.ResetCLimits()
+	DPP.ConstrainsLimits = {}
+	DPP.Query('DELETE FROM dpp_constlimits')
+	DPP.DoEcho(ResetWarning, '#reset_constlimits')
+	net.Start('DPP.ResetCLimits')
+	net.Broadcast()
+end
+
+DPP.ManipulateCommands.freset_climits = function(ply, cmd, args)
+	DPP.NotifyLog{ResetWarning, ply, ResetWarning, '#reset_command_climits'}
+	DPP.ResetCLimits()
 end
 
 local Last = 0
@@ -915,6 +981,178 @@ function DPP.InitializeDefaultBlock()
 	end
 end
 
+function DPP.LoadBlockedLists()
+	for k, v in pairs(DPP.BlockTypes) do
+		DPP.BlockedEntities[k] = {}
+		
+		DPP.Query('SELECT * FROM dpp_blockedentities' .. k, function(data)
+			if not data then return end
+			for a, b in pairs(data) do
+				DPP.BlockedEntities[k][b.ENTITY] = true
+			end
+		end)
+	end
+end
+
+for k, v in pairs(DPP.BlockTypes) do
+	DPP['Reset' .. v .. 'BlockedList'] = function(noCall)
+		DPP.BlockedEntities[k] = {}
+		DPP.Query('DELETE FROM dpp_blockedentities' .. k)
+		timer.Create('DPP.BroadcastLists', 1, 1, DPP.BroadcastLists)
+		timer.Create('DPP.InitializeDefaultBlock', 1, 1, DPP.InitializeDefaultBlock)
+		DPP.DoEcho(ResetWarning, '#reset_blocklist_' .. k)
+		
+		net.Start('DPP.ResetBlockedList')
+		net.WriteString(k)
+		net.Broadcast()
+	end
+	
+	DPP.ManipulateCommands['freset_blocked_' .. k] = function(ply, cmd, args)
+		DPP.NotifyLog{ResetWarning, ply, ResetWarning, '#reset_command_blocked_' .. k}
+		DPP['Reset' .. v .. 'BlockedList']()
+	end
+end
+
+function DPP.ResetBlockedLists()
+	for k, v in pairs(DPP.BlockTypes) do
+		DPP['Reset' .. v .. 'BlockedList']()
+	end
+end
+
+DPP.ManipulateCommands.freset_blocked = function(ply, cmd, args)
+	DPP.NotifyLog{ResetWarning, ply, ResetWarning, '#reset_command_blocked'}
+	DPP.ResetBlockedLists()
+end
+
+function DPP.LoadExcludedLists()
+	for k, v in pairs(DPP.WhitelistTypes) do
+		DPP.WhitelistedEntities[k] = {}
+		
+		DPP.Query('SELECT * FROM dpp_whitelistentities' .. k, function(data)
+			if not data then return end
+			for a, b in pairs(data) do
+				DPP.WhitelistedEntities[k][b.ENTITY] = true
+			end
+		end)
+	end
+end
+
+for k, v in pairs(DPP.WhitelistTypes) do
+	DPP['Reset' .. v .. 'ExcludedList'] = function(noCall)
+		DPP.WhitelistedEntities[k] = {}
+		DPP.Query('DELETE FROM dpp_whitelistentities' .. k)
+		timer.Create('DPP.BroadcastLists', 1, 1, DPP.BroadcastLists)
+		DPP.DoEcho(ResetWarning, '#reset_excludelist_' .. k)
+		
+		net.Start('DPP.ResetExcludedList')
+		net.WriteString(k)
+		net.Broadcast()
+	end
+	
+	DPP.ManipulateCommands['freset_exclude_' .. k] = function(ply, cmd, args)
+		DPP.NotifyLog{ResetWarning, ply, ResetWarning, '#reset_command_exclude_' .. k}
+		DPP['Reset' .. v .. 'ExcludedList']()
+	end
+end
+
+function DPP.ResetExcludedLists()
+	for k, v in pairs(DPP.WhitelistTypes) do
+		DPP['Reset' .. v .. 'ExcludedList']()
+	end
+end
+
+DPP.ManipulateCommands.freset_exclude = function(ply, cmd, args)
+	DPP.NotifyLog{ResetWarning, ply, ResetWarning, '#reset_command_excluded'}
+	DPP.ResetExcludedLists()
+end
+
+function DPP.LoadRestrictions()
+	for k, v in pairs(DPP.RestrictTypes) do
+		DPP.RestrictedTypes[k] = {}
+		
+		DPP.Query('SELECT * FROM dpp_restricted' .. k, function(data)
+			if not data then return end
+
+			for a, b in pairs(data) do
+				DPP.RestrictedTypes[k][b.CLASS] = {
+					groups = util.JSONToTable(b.GROUPS),
+					iswhite = tobool(b.IS_WHITE)
+				}
+			end
+		end)
+		
+		DPP.RestrictedTypes_SteamID[k] = {}
+		
+		DPP.Query('SELECT * FROM dpp_restricted' .. k .. '_ply', function(data)
+			if not data then return end
+			
+			for i, row in ipairs(data) do
+				DPP.RestrictedTypes_SteamID[k][row.STEAMID] = DPP.RestrictedTypes_SteamID[k][row.STEAMID] or {}
+				table.insert(DPP.RestrictedTypes_SteamID[k][row.STEAMID], row.CLASS)
+			end
+		end)
+	end
+end
+
+for k, v in pairs(DPP.RestrictTypes) do
+	DPP['Reset' .. v .. 'Restrictions'] = function(noCall)
+		DPP.RestrictedTypes[k] = {}
+		DPP.RestrictedTypes_SteamID[k] = {}
+		DPP.Query('DELETE FROM dpp_restricted' .. k)
+		DPP.Query('DELETE FROM dpp_restricted' .. k .. '_ply')
+		timer.Create('DPP.BroadcastLists', 1, 1, DPP.BroadcastLists)
+		DPP.DoEcho(ResetWarning, '#reset_restrictlist_' .. k)
+		
+		net.Start('DPP.ResetRestrictions')
+		net.WriteString(k)
+		net.Broadcast()
+	end
+	
+	DPP.ManipulateCommands['freset_restrictions_' .. k] = function(ply, cmd, args)
+		DPP.NotifyLog{ResetWarning, ply, ResetWarning, '#reset_command_restrictions_' .. k}
+		DPP['Reset' .. v .. 'Restrictions']()
+	end
+end
+
+function DPP.ResetRestrictions()
+	for k, v in pairs(DPP.RestrictTypes) do
+		DPP['Reset' .. v .. 'Restrictions']()
+	end
+end
+
+DPP.ManipulateCommands.freset_restrictions = function(ply, cmd, args)
+	DPP.NotifyLog{ResetWarning, ply, ResetWarning, '#reset_command_restrictions'}
+	DPP.ResetRestrictions()
+end
+
+function DPP.FactoryReset()
+	DPP.Message(ResetWarning, '----------------------------------------')
+	DPP.Message(ResetWarning, '#reset_1')
+	DPP.Message(ResetWarning, '#reset_2')
+	DPP.Message(ResetWarning, '#reset_3')
+	DPP.Message(ResetWarning, '----------------------------------------')
+	
+	DPP.ResetRestrictions()
+	DPP.ResetBlockedLists()
+	DPP.ResetExcludedLists()
+	DPP.ResetConVars()
+	DPP.ResetCLimits()
+	DPP.ResetSLimits()
+	DPP.ResetMLimits()
+	DPP.ResetLimits()
+	DPP.ResetBlockedModels()
+end
+
+DPP.ManipulateCommands.freset_cvars = function(ply, cmd, args)
+	DPP.NotifyLog{ResetWarning, ply, ResetWarning, '#reset_command_cvars'}
+	DPP.ResetConVars()
+end
+
+DPP.ManipulateCommands.factoryreset = function(ply, cmd, args)
+	DPP.NotifyLog{ResetWarning, ply, ResetWarning, '#reset_command_total'}
+	DPP.FactoryReset()
+end
+
 local function WrapFunction(func, id)
 	local function ProceedFunc(ply, ...)
 		local status, notify, notifyLevel = func(ply, ...)
@@ -954,52 +1192,10 @@ function DPP.ContinueDatabaseStartup()
 	DPP.LoadSLimits()
 	DPP.LoadCLimits()
 	DPP.LoadCVars()
-
-	for k, v in pairs(DPP.BlockTypes) do
-		DPP.BlockedEntities[k] = {}
-		local data = DPP.Query('SELECT * FROM dpp_blockedentities' .. k, function(data)
-			if not data then return end
-			for a, b in pairs(data) do
-				DPP.BlockedEntities[k][b.ENTITY] = true
-			end
-		end)
-	end
-
-	for k, v in pairs(DPP.WhitelistTypes) do
-		DPP.WhitelistedEntities[k] = {}
-		local data = DPP.Query('SELECT * FROM dpp_whitelistentities' .. k, function(data)
-			if not data then return end
-			for a, b in pairs(data) do
-				DPP.WhitelistedEntities[k][b.ENTITY] = true
-			end
-		end)
-	end
-
-	for k, v in pairs(DPP.RestrictTypes) do
-		DPP.RestrictedTypes[k] = {}
-		
-		local data = DPP.Query('SELECT * FROM dpp_restricted' .. k, function(data)
-			if not data then return end
-
-			for a, b in pairs(data) do
-				DPP.RestrictedTypes[k][b.CLASS] = {
-					groups = util.JSONToTable(b.GROUPS),
-					iswhite = tobool(b.IS_WHITE)
-				}
-			end
-		end)
-		
-		DPP.RestrictedTypes_SteamID[k] = {}
-		
-		local data = DPP.Query('SELECT * FROM dpp_restricted' .. k .. '_ply', function(data)
-			if not data then return end
-			
-			for i, row in ipairs(data) do
-				DPP.RestrictedTypes_SteamID[k][row.STEAMID] = DPP.RestrictedTypes_SteamID[k][row.STEAMID] or {}
-				table.insert(DPP.RestrictedTypes_SteamID[k][row.STEAMID], row.CLASS)
-			end
-		end)
-	end
+	
+	DPP.LoadBlockedLists()
+	DPP.LoadExcludedLists()
+	DPP.LoadRestrictions()
 
 	DPP.FindInfoEntities()
 	DPP.InitializeDefaultBlock()

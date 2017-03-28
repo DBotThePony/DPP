@@ -190,10 +190,22 @@ DPP.ClientReceiveFuncs = {
 		hook.Run('DPP.BlockedEntitiesReloaded', str, DPP.BlockedEntities[str])
 	end,
 
+	ResetBlockedList = function()
+		local str = net.ReadString()
+		DPP.BlockedEntities[str] = {}
+		hook.Run('DPP.BlockedEntitiesReloaded', str, DPP.BlockedEntities[str])
+	end,
+
 	RLists = function()
 		local str = net.ReadString()
 		DPP.RestrictedTypes[str] = ReadRestrictions()
-		hook.Run('DPP.BlockedEntitiesReloaded', str, DPP.RestrictedTypes[str])
+		hook.Run('DPP.RestrictedTypesReloaded', str, DPP.RestrictedTypes[str])
+	end,
+
+	ResetRestrictions = function()
+		local str = net.ReadString()
+		DPP.RestrictedTypes[str] = {}
+		hook.Run('DPP.RestrictedTypesReloaded', str, DPP.RestrictedTypes[str])
 	end,
 
 	WLists = function()
@@ -202,8 +214,19 @@ DPP.ClientReceiveFuncs = {
 		hook.Run('DPP.WhitelistedEntitiesReloaded', str, DPP.WhitelistedEntities[str])
 	end,
 
+	ResetExcludedList = function()
+		local str = net.ReadString()
+		DPP.WhitelistedEntities[str] = {}
+		hook.Run('DPP.WhitelistedEntitiesReloaded', str, DPP.WhitelistedEntities[str])
+	end,
+
 	ModelLists = function()
 		DPP.BlockedModels = ReadInvertedTable()
+		hook.Run('DPP.BlockedModelListReloaded', DPP.BlockedModels)
+	end,
+
+	ResetBlockedModels = function()
+		DPP.BlockedModels = {}
 		hook.Run('DPP.BlockedModelListReloaded', DPP.BlockedModels)
 	end,
 
@@ -212,8 +235,18 @@ DPP.ClientReceiveFuncs = {
 		hook.Run('DPP.EntsLimitsReloaded', DPP.EntsLimits)
 	end,
 
+	ResetLimits = function()
+		DPP.EntsLimits = {}
+		hook.Run('DPP.EntsLimitsReloaded', DPP.EntsLimits)
+	end,
+
 	MLLists = function()
 		DPP.ModelsLimits = ReadGenericLimits()
+		hook.Run('DPP.ModelsLimitsReloaded', DPP.EntsLimits)
+	end,
+
+	ResetMLimits = function()
+		DPP.ModelsLimits = {}
 		hook.Run('DPP.ModelsLimitsReloaded', DPP.EntsLimits)
 	end,
 
@@ -222,8 +255,18 @@ DPP.ClientReceiveFuncs = {
 		hook.Run('DPP.EntsLimitsReloaded', DPP.SBoxLimits)
 	end,
 
+	ResetSLimits = function()
+		DPP.SBoxLimits = {}
+		hook.Run('DPP.EntsLimitsReloaded', DPP.SBoxLimits)
+	end,
+
 	CLists = function()
 		DPP.ConstrainsLimits = ReadGenericLimits()
+		hook.Run('DPP.ConstrainsLimitsReloaded', DPP.ConstrainsLimits)
+	end,
+
+	ResetCLimits = function()
+		DPP.ConstrainsLimits = {}
 		hook.Run('DPP.ConstrainsLimitsReloaded', DPP.ConstrainsLimits)
 	end,
 
