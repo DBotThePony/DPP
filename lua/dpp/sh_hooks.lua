@@ -39,11 +39,11 @@ end
 
 function DPP.CanDamage(ply, ent, ignoreEnt)
 	if not DPP.GetConVar('enable_damage') then return true end
-	if DPP.IsEntityBlockedDamage(ent:GetClass()) then 
+	if DPP.IsEntityBlockedDamage(ent:GetClass() or '') then 
 		return false, DPP.GetPhrase('damage_blocked')
 	end
 
-	if DPP.IsEntityWhitelistedDamage(ent:GetClass()) then
+	if DPP.IsEntityWhitelistedDamage(ent:GetClass() or '') then
 		return true, DPP.GetPhrase('entity_excluded_d')
 	end
 	
@@ -204,11 +204,11 @@ end
 function DPP.CanPhysgun(ply, ent)
 	if not DPP.GetConVar('enable_physgun') then return true end
 
-	if DPP.IsEntityBlockedPhysgun(ent:GetClass(), ply) then 
+	if DPP.IsEntityBlockedPhysgun(ent:GetClass() or '', ply) then 
 		return false, DPP.GetPhrase('physgun_blocked')
 	end
 
-	if DPP.IsEntityWhitelistedPhysgun(ent:GetClass()) then
+	if DPP.IsEntityWhitelistedPhysgun(ent:GetClass() or '') then
 		return true, DPP.GetPhrase('entity_excluded')
 	end
 
@@ -233,11 +233,11 @@ end
 function DPP.CanGravgun(ply, ent)
 	if not DPP.GetConVar('enable_gravgun') then return true end
 
-	if DPP.IsEntityBlockedGravgun(ent:GetClass(), ply) then
+	if DPP.IsEntityBlockedGravgun(ent:GetClass() or '', ply) then
 		return false, DPP.GetPhrase('gravgun_blocked')
 	end
 
-	if DPP.IsEntityWhitelistedGravgun(ent:GetClass()) then
+	if DPP.IsEntityWhitelistedGravgun(ent:GetClass() or '') then
 		return true, DPP.GetPhrase('entity_excluded')
 	end
 
@@ -259,6 +259,7 @@ end
 
 function DPP.CanGravgunPunt(ply, ent)
 	if DPP.GetConVar('player_cant_punt') then return false end
+	if not IsValid(ply) then return false end
 	
 	local can = GiveEntityChance(ent, 'CanGravgunPunt', ply)
 	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
@@ -311,11 +312,11 @@ function DPP.CanTool(ply, ent, mode)
 		return true
 	end
 
-	if DPP.IsEntityBlockedTool(ent:GetClass(), ply) then
+	if DPP.IsEntityBlockedTool(ent:GetClass() or '', ply) then
 		return false, DPP.GetPhrase('toolgun_blocked')
 	end
 
-	if mode ~= 'remover' and DPP.IsEntityWhitelistedTool(ent:GetClass()) then
+	if mode ~= 'remover' and DPP.IsEntityWhitelistedTool(ent:GetClass() or '') then
 		return true, DPP.GetPhrase('entity_excluded')
 	end
 
@@ -386,7 +387,7 @@ function DPP.CanProperty(ply, str, ent)
 	if string.sub(str, 1, 4) == 'dpp.' then return true, DPP.GetPhrase('dpp_property') end
 
 	--Make check before
-	if DPP.IsEntityBlockedTool(ent:GetClass(), ply) then
+	if DPP.IsEntityBlockedTool(ent:GetClass() or '', ply) then
 		return false, DPP.GetPhrase('toolgun_blocked')
 	end
 
@@ -398,7 +399,7 @@ function DPP.CanProperty(ply, str, ent)
 		return true, DPP.GetPhrase('property_excluded')
 	end
 
-	if str ~= 'remover' and DPP.IsEntityWhitelistedProperty(ent:GetClass()) then
+	if str ~= 'remover' and DPP.IsEntityWhitelistedProperty(ent:GetClass() or '') then
 		return true, DPP.GetPhrase('entity_excluded')
 	end
 	
@@ -413,11 +414,11 @@ function DPP.PlayerUse(ply, ent)
 	if DPP.GetConVar('disable_use_world') and not DPP.IsOwned(ent) then return true, DPP.GetPhrase('owned_by_world') end
 	DPP.AssertArguments('DPP.PlayerUse', {{ply, 'Player'}, {ent, 'AnyEntity'}})
 
-	if DPP.IsEntityBlockedUse(ent:GetClass(), ply) then
+	if DPP.IsEntityBlockedUse(ent:GetClass() or '', ply) then
 		return false, DPP.GetPhrase('use_blocked')
 	end
 
-	if DPP.IsEntityWhitelistedUse(ent:GetClass()) then
+	if DPP.IsEntityWhitelistedUse(ent:GetClass() or '') then
 		return true, DPP.GetPhrase('entity_excluded')
 	end
 	
