@@ -86,10 +86,9 @@ function DPP.PhysgunTouch(ply, ent)
 end
 
 function DPP.GravGunPuntTouch(ply, ent)
+	if not IsValid(ent) then return end
 	DPP.CheckUpForGrabs(ent, ply)
-
 	if DPP.CanGravgunPunt(ply, ent) == false then return false end
-
 	DPP.UnghostIfPossible(ent)
 end
 
