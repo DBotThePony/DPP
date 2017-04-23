@@ -259,7 +259,7 @@ end
 
 function DPP.CanGravgunPunt(ply, ent)
 	if DPP.GetConVar('player_cant_punt') then return false end
-	if not IsValid(ply) then return false end
+	if not IsValid(ply) then return end
 	
 	local can = GiveEntityChance(ent, 'CanGravgunPunt', ply)
 	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
