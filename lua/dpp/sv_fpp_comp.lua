@@ -144,13 +144,15 @@ local commandsCoverage = {
 			return DPP.Commands.cleardisconnected(ply, cmd, args)
 		end
 
-		local num = tonumber(args[1])
-		if not num then return false, {'#com_invalid_target'}, NOTIFY_ERROR end
-		local target = Player(num)
-		if not IsValid(target) then return false, {'#com_invalid_target'}, NOTIFY_ERROR end
+		DPP.CheckAccess(ply, 'clearplayer', function()
+			local num = tonumber(args[1])
+			if not num then return false, {'#com_invalid_target'}, NOTIFY_ERROR end
+			local target = Player(num)
+			if not IsValid(target) then return false, {'#com_invalid_target'}, NOTIFY_ERROR end
 
-		DPP.ClearPlayerEntities(target)
-		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, ' cleared all ', target, Gray, '#com_ply_ents'}
+			DPP.ClearPlayerEntities(target)
+			DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, ' cleared all ', target, Gray, '#com_ply_ents'}
+		end)
 	end
 }
 
