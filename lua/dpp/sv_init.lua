@@ -29,7 +29,6 @@ AddCSLuaFile('cl_networking.lua')
 AddCSLuaFile('cl_init.lua')
 AddCSLuaFile('cl_settings.lua')
 
-include('sv_fpp_comp.lua')
 include('sv_functions.lua')
 
 DPP.PropListing = DPP.PropListing or {}
@@ -527,3 +526,5 @@ end)
 include('sv_hooks.lua')
 include('sv_commands.lua')
 include('sv_misc.lua')
+
+include('sv_fpp_comp.lua')

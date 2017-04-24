@@ -118,3 +118,46 @@ end
 function FPP.PlayerInitialSpawn(ply)
 	DPP.PlayerInitialSpawn(ply)
 end
+
+local function WrapCommand(func, id)
+	return function(ply, ...)
+		local status, notify, notifyLevel = func(ply, ...)
+
+		if status then return end
+		if not notify then return end
+
+		if IsValid(ply) then
+			DPP.Notify(ply, notify, notifyLevel)
+		else
+			DPP.Message(unpack(notify))
+		end
+	end
+end
+
+local Gray = Color(200, 200, 200)
+
+local commandsCoverage = {
+	cleanup = function(ply, cmd, args)
+		if not args[1] then return false, {'#com_invalid_target'}, NOTIFY_ERROR end
+
+		if args[1]:Trim():lower() == 'disconnected' then
+			return DPP.Commands.cleardisconnected(ply, cmd, args)
+		end
+
+		local num = tonumber(args[1])
+		if not num then return false, {'#com_invalid_target'}, NOTIFY_ERROR end
+		local target = Player(num)
+		if not IsValid(target) then return false, {'#com_invalid_target'}, NOTIFY_ERROR end
+
+		DPP.ClearPlayerEntities(target)
+		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, ' cleared all ', target, Gray, '#com_ply_ents'}
+	end
+}
+
+DPP.FPPCommands = commandsCoverage
+
+for k, v in pairs(commandsCoverage) do
+	commandsCoverage[k] = WrapCommand(v)
+	print(v, commandsCoverage[k])
+	concommand.Add('fpp_' .. k, commandsCoverage[k])
+end
