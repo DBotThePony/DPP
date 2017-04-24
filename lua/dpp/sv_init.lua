@@ -128,7 +128,31 @@ function DPP.GetContstrainType(ent)
 end
 
 function DPP.SetOwner(ent, ply)
-	--if ent:IsConstraint() then return end --Constraint can't have an owner
+	if ply == nil then
+		ply = NULL
+	end
+
+	if ent == nil then
+		ent = NULL
+	end
+
+	if not IsEntity(ent) or not IsValid(ent) then
+		DPP.ThrowError('Bad argument #1 to DPP.SetOwner (entity expected, got ' .. type(ent) .. ')', DPP.FindBestLevel())
+	end
+
+	local Type = type(ply)
+
+	if Type == 'number' then
+		local entPly = Entity(ply)
+		local entPly2 = Player(ply)
+
+		ply = IsValid(entPly) and entPly or IsValid(entPly2) and entPly2 or NULL
+	elseif Type == 'string' then
+		DPP.ThrowError('Bad argument #2 to DPP.SetOwner (player numberid/player entity expected, got string)', DPP.FindBestLevel())
+	elseif Type == 'boolean' then
+		DPP.ThrowError('Bad argument #2 to DPP.SetOwner (player numberid/player entity expected, got boolean)', DPP.FindBestLevel())
+	end
+
 	local old = DPP.GetOwner(ent)
 	ent:SetDPPVar('Owner', ply)
 

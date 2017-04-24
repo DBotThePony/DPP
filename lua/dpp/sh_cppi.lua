@@ -15,14 +15,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
---CPPI
-
-if CPPI then
-	-- Someone wants nuclear bomb by installing two PP on server.
-	-- We will try to deal with that!
-	if CPPI.GetName and CPPI.GetName() ~= 'DBot Prop Protection' then return end
-end
-
 CPPI_NOTIMPLEMENTED = 9020
 CPPI_DEFER = 9030
 
@@ -43,7 +35,7 @@ end
 local entMeta = FindMetaTable('Entity')
 local plyMeta = FindMetaTable('Player')
 
---Object Oriented Model
+-- Object Oriented Model
 
 plyMeta.CPPIGetFriends = DPP.GetFriendTableCPPI
 
@@ -109,7 +101,7 @@ end
 
 entMeta.CPPIIsOwned = DPP.IsOwned
 
---Generic check
+-- Generic check
 entMeta.CPPICanTouch = DPP.CanTouch
 
 hook.Add('DPP.AssignOwnership', 'DPP.CPPI', function(ply, ent)
@@ -120,7 +112,7 @@ hook.Add('DPP.CanTouch', 'DPP.CPPI', function(ply, ent)
 	return hook.Run('CPPICanTouch', ply, ent)
 end)
 
---Procedual model
+-- Procedual model
 
 CPPI.GetFriends = DPP.GetFriendTableCPPI
 
@@ -186,5 +178,5 @@ end
 
 CPPI.IsOwned = DPP.IsOwned
 
---Generic check
+-- Generic check
 CPPI.CanTouch = DPP.CanTouch
