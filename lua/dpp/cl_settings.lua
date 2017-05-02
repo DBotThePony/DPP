@@ -3998,7 +3998,7 @@ table.insert(BlockedPropetries, {
 	PHRASE = 'property_add_blocked_models',
 
 	Filter = function(self, ent, ply)
-		if DPP.PlayerConVar(_, 'no_block_options') then return end
+		if DPP.PlayerConVar(nil, 'no_block_options') then return end
 		if not IsValid(ent) then return false end
 		if not Access('addblockedmodel') then return false end
 		if DPP.IsModelEvenBlocked(ent:GetModel()) then return false end
@@ -4016,7 +4016,7 @@ table.insert(BlockedPropetries, {
 	PHRASE = 'property_remove_blocked_models',
 	
 	Filter = function(self, ent, ply)
-		if DPP.PlayerConVar(_, 'no_block_options') then return false end
+		if DPP.PlayerConVar(nil, 'no_block_options') then return false end
 		if not IsValid(ent) then return false end
 		if not Access('removeblockedmodel') then return false end
 		if not DPP.IsModelEvenBlocked(ent:GetModel()) then return false end
@@ -4037,7 +4037,7 @@ for k, v in pairs(DPP.BlockTypes) do
 
 		Filter = function(self, ent, ply)
 			if not Access('addblockedentity' .. k) then return end
-			if DPP.PlayerConVar(_, 'no_block_options') then return false end
+			if DPP.PlayerConVar(nil, 'no_block_options') then return false end
 			if DPP['IsEvenBlocked' .. v](ent:GetClass(), ply) then return false end
 			return true
 		end,
@@ -4055,7 +4055,7 @@ for k, v in pairs(DPP.BlockTypes) do
 
 		Filter = function(self, ent, ply)
 			if not Access('removeblockedentity' .. k) then return end
-			if DPP.PlayerConVar(_, 'no_block_options') then return false end
+			if DPP.PlayerConVar(nil, 'no_block_options') then return false end
 			if not DPP['IsEvenBlocked' .. v](ent:GetClass(), ply) then return false end
 			return true
 		end,
@@ -4148,7 +4148,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 		Filter = function(self, ent, ply)
 			if not Access('restrict' .. k) then return end
-			if DPP.PlayerConVar(_, 'no_restrict_options') then return false end
+			if DPP.PlayerConVar(nil, 'no_restrict_options') then return false end
 			local type = DPP.GetEntityType(ent)
 			if type ~= k then return false end
 			if DPP['IsEvenRestricted' .. v](ent:GetClass()) then return false end
@@ -4168,7 +4168,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 		Filter = function(self, ent, ply)
 			if not Access('unrestrict' .. k) then return end
-			if DPP.PlayerConVar(_, 'no_restrict_options') then return false end
+			if DPP.PlayerConVar(nil, 'no_restrict_options') then return false end
 			local type = DPP.GetEntityType(ent)
 			if type ~= k then return false end
 			if not DPP['IsEvenRestricted' .. v](ent:GetClass()) then return false end
@@ -4188,7 +4188,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 		Filter = function(self, ent, ply)
 			if not Access('restrict' .. k) then return end
-			if DPP.PlayerConVar(_, 'no_restrict_options') then return false end
+			if DPP.PlayerConVar(nil, 'no_restrict_options') then return false end
 			local type = DPP.GetEntityType(ent)
 			if type ~= k then return false end
 			if not DPP['IsEvenRestricted' .. v](ent:GetClass()) then return false end
@@ -4288,7 +4288,7 @@ do
 
 		Filter = function(self, ent, ply)
 			if not Access('restrict' .. k) then return end
-			if DPP.PlayerConVar(_, 'no_restrict_options') then return end
+			if DPP.PlayerConVar(nil, 'no_restrict_options') then return end
 			if not IsValid(ent) then return false end
 			if not ply:IsSuperAdmin() then return false end
 			if DPP['IsEvenRestricted' .. v](ent:GetModel()) then return false end
@@ -4309,7 +4309,7 @@ do
 
 		Filter = function(self, ent, ply)
 			if not Access('unrestrict' .. k) then return end
-			if DPP.PlayerConVar(_, 'no_restrict_options') then return end
+			if DPP.PlayerConVar(nil, 'no_restrict_options') then return end
 			if not IsValid(ent) then return false end
 			if not ply:IsSuperAdmin() then return false end
 			if not DPP['IsEvenRestricted' .. v](ent:GetModel()) then return false end
@@ -4328,7 +4328,7 @@ do
 
 		Filter = function(self, ent, ply)
 			if not Access('restrict' .. k) then return end
-			if DPP.PlayerConVar(_, 'no_restrict_options') then return end
+			if DPP.PlayerConVar(nil, 'no_restrict_options') then return end
 			if not IsValid(ent) then return false end
 			if not ply:IsSuperAdmin() then return false end
 			if not DPP['IsEvenRestricted' .. v](ent:GetModel()) then return false end
