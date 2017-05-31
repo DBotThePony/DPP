@@ -318,7 +318,7 @@ local function CheckAfter(ply, ent, forceVerbose, ignoreAntispam)
 	if IsValid(ent) and not DPP.IsOwned(ent) or not IsValid(DPP.GetOwner(ent)) then --Wow, we spawned entity without calling spawning hook!
 		if ent:GetClass() == 'prop_physics' then
 			SpawnFunctions.PlayerSpawnedProp(ply, ent:GetModel(), ent, hide, ignoreAntispam)
-		elseif ent:IsNPC() then
+		elseif ent:IsNPC() or DPP.IsNextBot(ent) then
 			SpawnFunctions.PlayerSpawnedNPC(ply, ent, hide, ignoreAntispam)
 		elseif ent:IsRagdoll() then
 			SpawnFunctions.PlayerSpawnedRagdoll(ply, ent:GetModel(), ent, hide, ignoreAntispam)

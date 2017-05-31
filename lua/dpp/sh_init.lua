@@ -128,6 +128,10 @@ function DPP.IsEntity(obj)
 	return EntityTypes[type(obj)] ~= nil
 end
 
+function DPP.IsNextBot(obj)
+	return obj.Type == 'nextbot' or type(obj) == 'NextBot'
+end
+
 local RED = Color(255, 0, 0)
 
 function DPP.ThrowError(str, level, notabug)
@@ -323,7 +327,13 @@ DPP.Settings = {
 	['can_touch_world'] = {
 		type = 'bool',
 		value = '0',
-		desc = 'Players can touch world entites',
+		desc = 'Players can touch world **owned** entities',
+	},
+
+	['can_touch_world_created'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Players can touch world **created** entities',
 	},
 
 	['log_spawns'] = {
@@ -371,7 +381,13 @@ DPP.Settings = {
 	['can_admin_touch_world'] = {
 		type = 'bool',
 		value = '1',
-		desc = 'Admins can touch world entities',
+		desc = 'Admins can touch world **owned** entities',
+	},
+
+	['can_admin_touch_world_created'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Admins can touch world **created** entities',
 	},
 
 	['can_admin_physblocked'] = {
@@ -1751,13 +1767,24 @@ function DPP.CanTouchWorld(ply, ent)
 		GetTouchAccess2(ply)
 	end
 
-	local canAdmin = DPP.GetConVar('can_admin_touch_world')
-	local can = DPP.GetConVar('can_touch_world')
+	if not ent:DPPVar('createdbymap') then
+		local canAdmin = DPP.GetConVar('can_admin_touch_world')
+		local can = DPP.GetConVar('can_touch_world')
 
-	if not WorldTouchAccess[ply].result then
-		return can
+		if not WorldTouchAccess[ply].result then
+			return can
+		else
+			return can or canAdmin
+		end
 	else
-		return can or canAdmin
+		local canAdmin = DPP.GetConVar('can_admin_touch_world_created')
+		local can = DPP.GetConVar('can_touch_world_created')
+
+		if not WorldTouchAccess[ply].result then
+			return can
+		else
+			return can or canAdmin
+		end
 	end
 end
 

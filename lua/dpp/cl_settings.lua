@@ -522,8 +522,10 @@ local SortedConVars = {
 	'toolgun_player',
 	'toolgun_player_admin',
 	'can_admin_touch_world',
-	'admin_can_everything',
+	'can_admin_touch_world_created',
 	'can_touch_world',
+	'can_touch_world_created',
+	'admin_can_everything',
 
 	'clear_disconnected',
 	'clear_disconnected_admin',

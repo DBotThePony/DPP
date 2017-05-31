@@ -491,6 +491,23 @@ DPP.SetVarCommand = function(ply, cmd, args)
 	DPP.CheckAccess(ply, 'setvar', SetVarProceed, ply, cmd, args)
 end
 
+function DPP.UpdateCreatedByMap()
+	for i, ent in pairs(ents.GetAll()) do
+		ent:SetDPPVar('createdbymap', ent.CreatedByMap and ent:CreatedByMap() or false)
+	end
+end
+
+timer.Simple(0, DPP.UpdateCreatedByMap)
+
+hook.Add('Think', 'DPP.UpdateCreatedByMap', function()
+	DPP.UpdateCreatedByMap()
+	hook.Remove('Think', 'DPP.UpdateCreatedByMap')
+end)
+
+hook.Add('PostCleanupMap', 'DPP.UpdateCreatedByMap', function()
+	timer.Simple(0.5, DPP.UpdateCreatedByMap)
+end)
+
 net.Receive('DPP.ReloadFiendList', function(len, ply)
 	ply.DPP_Friends = net.ReadTable()
 	DPP.RecalculateCPPIFriendTable(ply)

@@ -76,7 +76,7 @@ function entMeta:SetDPPVar(var, val)
 	var = var:lower()
 	local data, isGlobal = DPP.GetNetworkDataTable(self)
 	
-	if isGlobal then
+	if isGlobal and data[var] ~= val then
 		local uid = self:EntIndex()
 		net.Start('DPP.NetworkedVar')
 		net.WriteUInt(DPP.NetworkVars[var].NetworkID, 6)

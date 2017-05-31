@@ -171,6 +171,8 @@ function DPP.GetEntityType(ent)
 		return 'weapon'
 	elseif ent.IsConstraint and ent:IsConstraint() then
 		return 'constraint'
+	elseif ent.Type == 'nextbot' then
+		return 'npc'
 	else
 		return 'sent'
 	end

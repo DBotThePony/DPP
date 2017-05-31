@@ -92,6 +92,13 @@ DPP.NetworkVars = {
 		type = 'boolean',
 		default = false,
 	},
+
+	['createdbymap'] = {
+		send = net.WriteBool,
+		receive = net.ReadBool,
+		type = 'boolean',
+		default = false,
+	},
 }
 
 DPP.NetworkVars.fallback = table.Copy(DPP.NetworkVars.owner)
