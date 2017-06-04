@@ -43,6 +43,16 @@ function DPP.SetGhosted(ent, status)
 	local can = hook.Run('DPP_SetGhosted', ent, status)
 	if can == false then return end
 
+	local invalidPhys = Entity(0):GetPhysicsObject()
+	local physObjects = {}
+
+	for i = 0, ent:GetPhysicsObjectCount() - 1 do
+		local phys = ent:GetPhysicsObjectNum(i)
+		if phys ~= invalidPhys then
+			table.insert(physObjects, phys)
+		end
+	end
+
 	if status then
 		ent:SetDPPVar('IsGhosted', true)
 
@@ -54,10 +64,11 @@ function DPP.SetGhosted(ent, status)
 		ent:SetCollisionGroup(COLLISION_GROUP_WORLD)
 
 		local phys = ent:GetPhysicsObject()
+		ent.DPP_OldCollisions = {}
 
-		if IsValid(phys) and phys ~= Entity(0):GetPhysicsObject() then
+		for i, phys in pairs(physObjects) do
 			phys:EnableMotion(false)
-			ent.DPP_OldCollisions = phys:IsCollisionEnabled()
+			ent.DPP_OldCollisions[i] = phys:IsCollisionEnabled()
 			phys:Sleep()
 			phys:EnableCollisions(false)
 		end
@@ -70,9 +81,13 @@ function DPP.SetGhosted(ent, status)
 
 		local phys = ent:GetPhysicsObject()
 
-		if IsValid(phys) and phys ~= Entity(0):GetPhysicsObject() then
+		for i, phys in pairs(physObjects) do
 			phys:EnableMotion(true)
-			if ent.DPP_OldCollisions then phys:EnableCollisions(ent.DPP_OldCollisions) end
+
+			if ent.DPP_OldCollisions[i] ~= nil then
+				phys:EnableCollisions(ent.DPP_OldCollisions[i])
+			end
+
 			phys:Wake()
 		end
 	end
