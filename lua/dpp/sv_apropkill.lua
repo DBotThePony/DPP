@@ -58,8 +58,10 @@ local WhitelistProps = {
 
 local GRAY = Color(200, 200, 200)
 
-local function ProceedCrush(ent)
+local function ProceedCrush(ent, dmg)
 	if not DPP.IsOwned(ent) then return end
+	if ent:IsRagdoll() and not IsValid(dmg:GetAttacker()) then return end
+
 	ent._DPP_LastPhysicsDamage = ent._DPP_LastPhysicsDamage or 0
 	ent._DPP_LastPhysicsDamage_Counter = ent._DPP_LastPhysicsDamage_Counter or 0
 	
@@ -83,14 +85,14 @@ local function ProceedCrushingChecks(ent, dmg)
 	if dmg:GetDamageType() ~= DMG_CRUSH then return end
 	local attacker, inflictor = dmg:GetAttacker(), dmg:GetInflictor()
 	
-	ProceedCrush(ent)
+	ProceedCrush(ent, dmg)
 	
 	if IsValid(attacker) and attacker:GetClass():sub(1, 5) == 'prop_' and not attacker:IsNPC() and not attacker:IsPlayer() and not attacker:IsVehicle() then
-		ProceedCrush(attacker)
+		ProceedCrush(attacker, dmg)
 	end
 	
 	if inflictor ~= attacker and IsValid(inflictor) and inflictor:GetClass():sub(1, 5) == 'prop_' and not inflictor:IsNPC() and not inflictor:IsPlayer() and not inflictor:IsVehicle() then
-		ProceedCrush(inflictor)
+		ProceedCrush(inflictor, dmg)
 	end
 end
 
