@@ -1010,7 +1010,7 @@ local function HUDPaint()
 	if DPP.GetConVar('disable_huds') and DPP.LocalConVar('hud_obey_server') then return end
 	if LocalPlayer():InVehicle() and DPP.PlayerConVar(nil, 'no_hud_in_vehicle') then return end
 
-	if not LocalPlayer():ShouldDrawLocalPlayer() and not LocalPlayer():InVehicle() then
+	if (not DPP.LocalConVar('fancy_hud_obey_server') or not DPP.GetConVar('disable_fancy_displays')) and not LocalPlayer():ShouldDrawLocalPlayer() and not LocalPlayer():InVehicle() then
 		local AWeapon = LocalPlayer():GetActiveWeapon()
 
 		if IsValid(AWeapon) then

@@ -832,6 +832,12 @@ DPP.Settings = {
 		desc = 'Tell clients that server preffers DPP HUD to be disabled'
 	},
 	
+	['disable_fancy_displays'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Tell clients that server preffers DPP Fancy Display to be disabled'
+	},
+	
 	-- Transfer options
 	
 	['transfer_enable'] = {
@@ -1069,6 +1075,12 @@ DPP.CSettings = {
 		type = 'bool',
 		value = '1',
 		desc = 'Disable DPP HUD if server wants so',
+	},
+	
+	['fancy_hud_obey_server'] = {
+		type = 'bool',
+		value = '1',
+		desc = 'Disable DPP Fancy Display if server wants so',
 	},
 }
 
