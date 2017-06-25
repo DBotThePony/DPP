@@ -87,12 +87,14 @@ local function ProceedCrushingChecks(ent, dmg)
 	
 	ProceedCrush(ent, dmg)
 	
-	if IsValid(attacker) and attacker:GetClass():sub(1, 5) == 'prop_' and not attacker:IsNPC() and not attacker:IsPlayer() and not attacker:IsVehicle() then
-		ProceedCrush(attacker, dmg)
-	end
-	
-	if inflictor ~= attacker and IsValid(inflictor) and inflictor:GetClass():sub(1, 5) == 'prop_' and not inflictor:IsNPC() and not inflictor:IsPlayer() and not inflictor:IsVehicle() then
-		ProceedCrush(inflictor, dmg)
+	if ent:GetClass() ~= 'prop_physics' or not IsValid(dmg:GetAttacker()) or not dmg:GetAttacker():IsRagdoll() then
+		if IsValid(attacker) and attacker:GetClass():sub(1, 5) == 'prop_' and not attacker:IsNPC() and not attacker:IsPlayer() and not attacker:IsVehicle() then
+			ProceedCrush(attacker, dmg)
+		end
+		
+		if inflictor ~= attacker and IsValid(inflictor) and inflictor:GetClass():sub(1, 5) == 'prop_' and not inflictor:IsNPC() and not inflictor:IsPlayer() and not inflictor:IsVehicle() then
+			ProceedCrush(inflictor, dmg)
+		end
 	end
 end
 
