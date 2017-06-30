@@ -215,7 +215,7 @@ function DPP.IsModelBlocked(model, ply, nonotify)
 	if not DPP.GetConVar('enable_blocked') then return false end
 	if not DPP.GetConVar('model_blacklist') then return false end
 	local white = DPP.GetConVar('model_whitelist')
-	if white and DPP.GetConVar('modelwhitelist_bypass') and ply:IsAdmin() then return false end
+	if white and DPP.GetConVar('model_whitelist_bypass') and ply:IsAdmin() then return false end
 	local status = DPP.BlockedModels[model] ~= nil
 
 	if white then status = not status end
