@@ -700,6 +700,12 @@ DPP.Settings = {
 		desc = 'Model blacklist is a whitelist',
 	},
 
+	['model_whitelist_bypass'] = {
+		type = 'bool',
+		value = '0',
+		desc = 'Admins can bypass model whitelist',
+	},
+
 	['ent_limits_enable'] = {
 		type = 'bool',
 		value = '1',

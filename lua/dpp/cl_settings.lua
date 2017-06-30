@@ -1418,6 +1418,8 @@ local function BuildModelsList(Panel)
 	SettingsClass.ApplyButtonStyle(Apply)
 
 	ConVarCheckbox(Panel, 'model_blacklist')
+	ConVarCheckbox(Panel, 'model_whitelist')
+	ConVarCheckbox(Panel, 'model_whitelist_bypass')
 	ConVarCheckbox(Panel, 'prop_auto_ban')
 	ConVarSlider(Panel, 'prop_auto_ban_size')
 end
