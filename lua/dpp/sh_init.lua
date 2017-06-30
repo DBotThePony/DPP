@@ -1814,7 +1814,7 @@ function DPP.CanTouch(ply, ent, mode)
 
 	local model = ent:GetModel()
 	if model then
-		if DPP.IsModelBlocked(model) then
+		if DPP.IsModelBlocked(model, ply, true) then
 			return false, GetPhrase('model_is_blacklisted')
 		end
 	end
