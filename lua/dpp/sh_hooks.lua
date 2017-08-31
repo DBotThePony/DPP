@@ -54,6 +54,10 @@ function DPP.CanDamage(ply, ent, ignoreEnt)
 	DPP.UpdateConstrainedWith(ent)
 	local with = DPP.GetConstrainedWith(ent)
 
+	if DPP.GetConVar('disable_damage_world') and not DPP.IsOwned(ent) then
+		return true
+	end
+
 	local adv = DPP.GetConVar('allow_damage_vehicles')
 	local ads = DPP.GetConVar('allow_damage_sent')
 	local adn = DPP.GetConVar('allow_damage_npc')
