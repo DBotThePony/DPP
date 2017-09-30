@@ -111,11 +111,11 @@ DPP.NetworkVars = {
 DPP.NetworkVars.fallback = table.Copy(DPP.NetworkVars.owner)
 
 function DPP.RegisterNetworkVar(id, send, receive, type, default)
-	return DLib.nw.pool('dpp_' .. id, send, receive, type, default)
+	return DLib.nw.pool('dpp_' .. id, send, receive, default)
 end
 
 for k, v in pairs(DPP.NetworkVars) do
-	DLib.nw.pool('dpp_' .. k, v.send, v.receive, v.type, v.default)
+	DLib.nw.pool('dpp_' .. k, v.send, v.receive, v.default)
 end
 
 function DPP.GetConstrainedTable(ent)
