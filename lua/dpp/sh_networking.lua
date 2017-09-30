@@ -1,19 +1,27 @@
 
---[[
-Copyright (C) 2016-2017 DBot
+-- Copyright (C) 2016-2017 DBot
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+--     http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-]]
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
+
+local entMeta = FindMetaTable('Entity')
+
+function entMeta:DPPVar(var, ifNothing)
+	return self:DLibVar('dpp_' .. var, ifNothing)
+end
+
+function entMeta:SetDPPVar(var, val)
+	return self:SetDLibVar('dpp_' .. var, val)
+end
 
 local function FlippedFunc(func, arg)
 	return function(arg1)
@@ -21,7 +29,6 @@ local function FlippedFunc(func, arg)
 	end
 end
 
-DPP.NETWORK_DB = DPP.NETWORK_DB or {}
 DPP.NetworkVars = {
 	['owner'] = {
 		send = function(val)
@@ -103,125 +110,30 @@ DPP.NetworkVars = {
 
 DPP.NetworkVars.fallback = table.Copy(DPP.NetworkVars.owner)
 
-local nextId = 1
+function DPP.RegisterNetworkVar(id, send, receive, type, default)
+	return DLib.nw.RegisterNetworkVar(id, send, receive, type, default)
+end
 
 for k, v in pairs(DPP.NetworkVars) do
-	local nk = k:lower()
-	v.ID = k
-	v.NetworkID = nextId
-	nextId = nextId + 1
-
-	DPP.NetworkVars[k] = nil
-	DPP.NetworkVars[nk] = v
-end
-
-function DPP.RegisterNetworkVar(id, send, receive, type, default)
-	id = id:lower()
-	DPP.NetworkVars[id] = {
-		send = send,
-		receive = receive,
-		type = type,
-		default = default,
-		ID = id,
-		NetworkID = nextId,
-	}
-
-	nextId = nextId + 1
-
-	DPP.Assert(nextId < 64, 'Maximal of DPP networked vars reached!', 1, true)
-end
-
-local entMeta = FindMetaTable('Entity')
-
-function entMeta:DPPVar(var, ifNothing)
-	var = var:lower()
-	local uid = self:EntIndex()
-
-	if uid > 0 then
-		local data = DPP.NETWORK_DB[uid]
-
-		if not data or data[var] == nil then
-			if ifNothing ~= nil then
-				return ifNothing
-			else
-				return DPP.NetworkVars[var].default
-			end
-		end
-
-		return data[var]
-	else
-		self.DPPVars = self.DPPVars or {}
-
-		if self.DPPVars[var] == nil then
-			if ifNothing ~= nil then
-				return ifNothing
-			else
-				return DPP.NetworkVars[var].default
-			end
-		end
-
-		return self.DPPVars[var]
-	end
-end
-
-function DPP.GetNetworkDataTable(self)
-	local uid = self:EntIndex()
-	
-	if uid > 0 then
-		DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
-		return DPP.NETWORK_DB[uid], true
-	else
-		self.DPPVars = self.DPPVars or {}
-		return self.DPPVars, false
-	end
+	DLib.nw.pool(k, v.send, v.receive, v.type, v.default)
 end
 
 function DPP.GetConstrainedTable(ent)
-	local data = DPP.GetNetworkDataTable(ent)
+	local data = DLib.nw.GetNetworkDataTable(ent)
 	data._DPP_Constrained = data._DPP_Constrained or {}
 	return data._DPP_Constrained
 end
 
-local function OnEntityCreated(ent)
-	local uid = ent:EntIndex()
-	if uid <= 0 then return end
-
-	timer.Simple(0, function()
-		timer.Simple(0, function() --Skip two frames
-			if not ent.__DPP_Vars_Save then return end
-			DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
-			local data = DPP.NETWORK_DB[uid]
-
-			local rep = ent.__DPP_Vars_Save --Store
-
-			for k, v in pairs(rep) do
-				if data[k] ~= nil then continue end
-				if not DPP.NetworkVars[k:lower()] then continue end --Old network variable
-				ent:SetDPPVar(k, v)
-			end
-		end)
-	end)
-end
-
-function DPP.WriteStringList(tab)
-	net.WriteUInt(#tab, 16)
-
-	for k, v in ipairs(tab) do
-		net.WriteString(v)
-	end
-end
-
-function DPP.ReadStringList()
-	local count = net.ReadUInt(16)
-
-	local reply = {}
-
-	for i = 1, count do
-		table.insert(reply, net.ReadString())
-	end
-
-	return reply
-end
+DPP.WriteStringList = net.WriteStringArray
+DPP.ReadStringList = net.ReadStringArray
+DPP.WriteVarchar = net.WriteString
+DPP.ReadVarchar = net.ReadString
+DPP.WriteBigInt = net.WriteBigint
+DPP.ReadBigInt = net.ReadBigint
+DPP.WriteEntityArray = net.WriteEntityArray
+DPP.ReadEntityArray = net.ReadEntityArray
+DPP.WriteArray = net.WriteArray
+DPP.ReadArray = net.ReadArray
 
 function DPP.AssignConVarNetworkIDs()
 	local nextID = 1
@@ -230,66 +142,6 @@ function DPP.AssignConVarNetworkIDs()
 		DPP.Settings[k].NetworkID = nextID
 		nextID = nextID + 1
 	end
-end
-
-function DPP.WriteVarchar(str)
-	local len = math.Clamp(#str, 0, 255)
-	net.WriteUInt(len, 8)
-	
-	for k, v in ipairs{string.byte(str, 1, len)} do
-		net.WriteUInt(v, 8)
-	end
-end
-
-function DPP.ReadVarchar()
-	local len = net.ReadUInt(8)
-	
-	local str = ''
-	
-	for i = 1, len do
-		str = str .. string.char(net.ReadUInt(8))
-	end
-	
-	return str
-end
-
-function DPP.WriteBigInt(num, base)
-	base = base or 63
-	local reply = {}
-	local signed = num < 0
-	num = math.abs(num)
-	
-	while num > 0 do
-		local div = num % 2
-		num = (num - div) / 2
-		table.insert(reply, div)
-	end
-	
-	for i = 1, base do
-		net.WriteBit(reply[base - i + 1] or 0)
-	end
-	
-	net.WriteBool(signed)
-end
-
-local preProcessed = {}
-
-for i = 1, 127 do
-	preProcessed[i] = 2 ^ (i - 1)
-end
-
-function DPP.ReadBigInt(base)
-	base = base or 63
-	local reply = {}
-	local output = 0
-	
-	for i = 1, base do
-		output = output + preProcessed[base - i + 1] * net.ReadBit()
-	end
-	
-	local signed = net.ReadBool()
-	
-	return not signed and output or -output
 end
 
 DPP_NETTYPE_NUMBER = 1
@@ -346,54 +198,15 @@ function DPP.ReadMessageTable()
 	return reply
 end
 
-hook.Add('OnEntityCreated', 'DPP.Networking', OnEntityCreated)
+hook.Add('DLib.EntityVarsChanges', 'DPP', function(self, var, val)
+	if var:sub(1, 4) == 'dpp_' then
+		return hook.Run('DPP_EntityVarsChanges', self, var:sub(5), val)
+	end
+end)
+
 hook.Add('DPP_ConVarRegistered', function()
 	timer.Create('DPP.OnConVarRegisteredNetworkUpdate', 0, 1, DPP.AssignConVarNetworkIDs)
 end)
-
-function DPP.WriteEntityArray(tab)
-	net.WriteUInt(#tab, 16)
-	
-	for k, v in pairs(tab) do
-		net.WriteBool(v:IsValid())
-		net.WriteUInt(v:EntIndex(), 12)
-	end
-end
-
-function DPP.ReadEntityArray()
-	local count = net.ReadUInt(16)
-	local read = {}
-	
-	for i = 1, count do
-		local shouldValid = net.ReadBool()
-		local get = Entity(net.ReadUInt(12))
-		
-		if (shouldValid and IsValid(get)) or (not shouldValid and not IsValid(get)) then
-			table.insert(read, get)
-		end
-	end
-	
-	return read
-end
-
-function DPP.WriteArray(tab)
-	net.WriteUInt(#tab, 16)
-	
-	for k, v in pairs(tab) do
-		net.WriteType(v)
-	end
-end
-
-function DPP.ReadArray()
-	local count = net.ReadUInt(16)
-	local read = {}
-	
-	for i = 1, count do
-		table.insert(read, net.ReadType())
-	end
-	
-	return read
-end
 
 if CLIENT then
 	include('cl_networking.lua')

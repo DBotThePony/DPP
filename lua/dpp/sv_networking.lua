@@ -52,10 +52,6 @@ util.AddNetworkString('DPP.LimitHit')
 
 util.AddNetworkString('DPP.NetworkedConVar')
 util.AddNetworkString('DPP.NetworkedConVarFull')
-util.AddNetworkString('DPP.NetworkedVar')
-util.AddNetworkString('DPP.NetworkedEntityVars')
-util.AddNetworkString('DPP.NetworkedVarFull')
-util.AddNetworkString('DPP.NetworkedRemove')
 
 util.AddNetworkString('DPP.InspectEntity')
 
@@ -70,129 +66,21 @@ util.AddNetworkString('DPP.ResetBlockedList')
 util.AddNetworkString('DPP.ResetExcludedList')
 util.AddNetworkString('DPP.ResetRestrictions')
 
-local entMeta = FindMetaTable('Entity')
-
-function entMeta:SetDPPVar(var, val)
-	var = var:lower()
-	local data, isGlobal = DPP.GetNetworkDataTable(self)
-	
-	if isGlobal and data[var] ~= val then
-		local uid = self:EntIndex()
-		net.Start('DPP.NetworkedVar')
-		net.WriteUInt(DPP.NetworkVars[var].NetworkID, 6)
-		net.WriteUInt(uid, 12) --4096 should be enough
-		DPP.NetworkVars[var].send(val)
-		net.Broadcast()
-	end
-	
-	data[var] = val
-
-	hook.Run('DPP_EntityVarsChanges', self, var, val)
-end
-
-local Clients = {}
-
-local function SendTo(ply, tosend)
-	if not IsValid(ply) then
-		Clients[ply] = nil
-		return
-	end
-
-	local uid = table.remove(tosend)
-	if not uid then
-		Clients[ply] = nil
-		return
-	end
-
-	local data = DPP.NETWORK_DB[uid]
-	if not data then return end --???
-
-	net.Start('DPP.NetworkedEntityVars')
-	net.WriteUInt(uid, 12) --4096 should be enough
-	net.WriteUInt(table.Count(data), 6) --Quite bigger than max number of vars
-	data._DPP_Constrained = data._DPP_Constrained or {}
-	DPP.WriteArray(data._DPP_Constrained)
-
-	for var, val in pairs(data) do
-		if type(var) ~= 'string' then continue end
-		if type(val) == 'table' then continue end
-		if not DPP.NetworkVars[var] then continue end
-		net.WriteUInt(DPP.NetworkVars[var].NetworkID, 6)
-		DPP.NetworkVars[var].send(val)
-	end
-
-	net.Send(ply)
-end
-
-local RED = Color(200, 100, 100)
-
-local function NetworkError(Message)
-	DPP.SimpleLog(RED, Message .. '\n' .. debug.traceback())
-	DPP.SimpleLog(RED, '#net_error_2')
-end
-
-local function SendTimer()
-	for i = 1, 5 do
-		for ply, tosend in pairs(Clients) do
-			xpcall(SendTo, NetworkError, ply, tosend)
-		end
-	end
-end
-
 local Gray = Color(200, 200, 200)
 
-local function NetworkedVarFull(len, ply, auto)
-	ply.DPP_NetowrkingFullLast = ply.DPP_NetowrkingFullLast or 0
-	if ply.DPP_NetowrkingFullLast > CurTime() then return false end
-	ply.DPP_NetowrkingFullLast = CurTime() + 10
-
+hook.Add('DLib.NetworkedVarFull', 'DPP', function(ply, auto)
 	DPP.BroadcastLists(ply)
 	DPP.SendConVarsTo(ply)
 
 	if not auto then
-		DPP.SimpleLog(ply, Gray, '#net_auto')
+		DLib.SimpleLog(ply, Gray, '#net_auto')
 	end
+end)
 
-	local reply = {}
-
-	for uid, data in pairs(DPP.NETWORK_DB) do
-		table.insert(reply, uid)
-	end
-
-	Clients[ply] = reply
-	return true
-end
-
-local function EntityRemoved(ent)
-	local euid = ent:EntIndex()
-
-	for ply, tosend in pairs(Clients) do
-		for i, uid in pairs(tosend) do
-			if uid == euid then
-				tosend[i] = nil
-				break
-			end
-		end
-	end
-
-	DPP.NETWORK_DB[euid] = nil
-	net.Start('DPP.NetworkedRemove')
-	net.WriteUInt(euid, 12) --4096 should be enough
-	net.Broadcast()
-end
-
-local function command(ply)
-	if not IsValid(ply) then DPP.Message('Are you serious?') return end
-
-	local reply = NetworkedVarFull(nil, ply, true)
-
-	if not reply then
-		DPP.Notify(ply, '#net_must_wait')
-	else
-		DPP.Notify(ply, '#accepted')
-		DPP.SimpleLog(ply, Gray, '#net_manual')
-	end
-end
+hook.Add('DLib.PreNWSendVars', 'DPP', function(ply, data)
+	data._DPP_Constrained = data._DPP_Constrained or {}
+	net.WriteArray(data._DPP_Constrained)
+end)
 
 local function WriteEasy(data, val)
 	if data.bool then
@@ -237,7 +125,3 @@ function DPP.SendConstrained(ent)
 	net.Broadcast()
 end
 
-hook.Add('EntityRemoved', 'DPP.Networking', EntityRemoved)
-net.Receive('DPP.NetworkedVarFull', NetworkedVarFull)
-timer.Create('DPP.NetworkedVarFull', 0.1, 0, SendTimer)
-concommand.Add('dpp_requestnetupdate', command)

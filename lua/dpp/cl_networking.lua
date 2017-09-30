@@ -15,79 +15,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
-local entMeta = FindMetaTable('Entity')
-
-function entMeta:SetDPPVar(var, val)
-	var = var:lower()
-	local data = DPP.GetNetworkDataTable(self)
-	data[var] = val
-	hook.Run('DPP_EntityVarsChanges', self, var, val)
-end
-
-local function NetworkedVar()
-	local id = net.ReadUInt(6)
-
-	local data, var
-
-	for k, v in pairs(DPP.NetworkVars) do
-		if v.NetworkID ~= id then continue end
-		data = v
-		var = k
-		break
-	end
-
-	if not data then return end
-
-	local uid = net.ReadUInt(12)
-	DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
-	DPP.NETWORK_DB[uid][var] = data.receive()
-
-	local Ent = Entity(uid)
-	if IsValid(Ent) then
-		hook.Run('DPP_EntityVarsChanges', Ent, var, Ent:DPPVar(var))
-	else
-		hook.Run('DPP_EntityVarsChangesRaw', uid, var, DPP.NETWORK_DB[uid][var])
-	end
-end
-
-local function NetworkedEntityVars()
-	local uid = net.ReadUInt(12)
-	local count = net.ReadUInt(6)
-
-	DPP.NETWORK_DB[uid] = DPP.NETWORK_DB[uid] or {}
-	DPP.NETWORK_DB[uid]._DPP_Constrained = DPP.ReadArray()
-
-	for i = 1, count do
-		local id = net.ReadUInt(6)
-
-		local data, var
-
-		for k, v in pairs(DPP.NetworkVars) do
-			if v.NetworkID ~= id then continue end
-			data = v
-			var = k
-			break
-		end
-
-		if not data then continue end
-
-		DPP.NETWORK_DB[uid][var] = data.receive()
-	end
-end
-
-local function NetworkedRemove()
-	local uid = net.ReadUInt(12)
-	DPP.NETWORK_DB[uid] = nil
-end
-
-local Initialize = false
-
-local function KeyPress()
-	Initialize = true
-	hook.Remove('KeyPress', 'DPP.Networking')
-	net.Start('DPP.NetworkedVarFull')
-	net.SendToServer()
-end
+hook.Add('DLib.PreNWReceiveVars', 'DPP', function(uid, nwdata)
+	nwdata._DPP_Constrained = net.ReadArray()
+end)
 
 local function GetConVarByNetworkID(id)
 	for k, v in pairs(DPP.Settings) do
@@ -410,7 +340,3 @@ end
 
 net.Receive('DPP.NetworkedConVarFull', ConVarReceivedFull)
 net.Receive('DPP.NetworkedConVar', ConVarReceived)
-net.Receive('DPP.NetworkedEntityVars', NetworkedEntityVars)
-net.Receive('DPP.NetworkedVar', NetworkedVar)
-net.Receive('DPP.NetworkedRemove', NetworkedRemove)
-hook.Add('KeyPress', 'DPP.Networking', KeyPress)

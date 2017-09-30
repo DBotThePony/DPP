@@ -135,7 +135,6 @@ function DPP.UpdateConstrainedWith(ent)
 	for k, v in pairs(ent.DPP_ConstrainedWith) do
 		if not IsValid(k) then
 			ent.DPP_ConstrainedWith[k] = nil
-			continue
 		end
 	end
 end
@@ -204,8 +203,9 @@ function DPP.GetPlayerList()
 	end
 
 	for k, v in pairs(DPP.PlayerList) do
-		if UIDTableHasValue(r, v.UID) then continue end
-		table.insert(r, v)
+		if not UIDTableHasValue(r, v.UID) then 
+			table.insert(r, v)
+		end
 	end
 
 	return r
@@ -318,9 +318,10 @@ local function RecursiveFunc(tab, what, to)
 		if v == what then
 			tab[k] = to
 		elseif type(v) == 'table' then
-			if MEM_TABLE_CACHE[v] then continue end -- Prevent recursion
-			MEM_TABLE_CACHE[v] = true
-			RecursiveFunc(v, what, to)
+			if not MEM_TABLE_CACHE[v] then
+				MEM_TABLE_CACHE[v] = true
+				RecursiveFunc(v, what, to)
+			end
 		end
 		
 		if DPP.IsEntity(v) and not v:IsPlayer() then
