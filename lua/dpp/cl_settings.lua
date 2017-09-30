@@ -739,7 +739,7 @@ local function BuildCVarPanel(Panel)
 	SettingsClass.CVarsPanel = Panel
 
 	SettingsClass.ApplyButtonStyle(Panel:Button(P('remove_my_ents'), 'dpp_clearself'))
-	SettingsClass.ApplyButtonStyle(Panel:Button(P('request_net_update'), 'dpp_requestnetupdate'))
+	SettingsClass.ApplyButtonStyle(Panel:Button(P('request_net_update'), 'dlib_nw'))
 
 	for k, v in pairs(ClientVars) do
 		if not DPP.CSettings[v].bool then continue end
