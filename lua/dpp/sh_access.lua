@@ -15,8 +15,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ]]
 
-include('sh_cami.lua')
-
 DPP.Access = DPP.Access or {}
 DPP.CAMIPrivTable = DPP.CAMIPrivTable or {}
 
