@@ -457,8 +457,7 @@ function DPP.PlayerDisconnected(ply)
 end
 
 function DPP.PlayerPhrase(ply, id, ...)
-	ply._DPP_CURRENT_LANG = ply._DPP_CURRENT_LANG or 'en'
-	return DPP.PhraseByLang(ply._DPP_CURRENT_LANG, id, ...)
+	return DPP.langObject:getPlayer(ply, id, ...)
 end
 
 DPP.PPhrase = DPP.PlayerPhrase
@@ -535,9 +534,6 @@ net.Receive('DPP.ConVarChanged', function(len, ply)
 	DPP.PlayerConVar(ply, var) --Enough to rebroadcast cvar
 end)
 
-net.Receive('DPP.UpdateLang', function(len, ply)
-	ply._DPP_CURRENT_LANG = net.ReadString()
-end)
 
 include('sv_hooks.lua')
 include('sv_commands.lua')

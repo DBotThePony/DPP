@@ -45,10 +45,9 @@ function DPP.FindBestLevel()
 		last.L = current
 		current = current + 1
 
-		if string.find(info.short_src, 'dpp') then continue end
-		if string.find(info.short_src, 'hook') then continue end
-
-		break
+		if not string.find(info.short_src, 'dpp') and not string.find(info.short_src, 'hook') then
+			break
+		end
 	end
 
 	return last.L
@@ -1565,44 +1564,30 @@ function DPP.GetConstLimit(class, group)
 	end
 end
 
---Yes, gmod_language is shared
-local LangCVar
-local LastLanguage
-local LangSetup = false
+DPP.langObject = DLib.lang.Create()
+
+hook.Add('DLib.LanguageChanged', 'DPP.LanguageChanged', function()
+	hook.Run('DPP.LanguageChanged')
+end)
 
 function DPP.PhraseByLang(lang, id, ...)
-	DPP.Phrases[lang] = DPP.Phrases[lang] or {}
-	local phrase = DPP.Phrases[lang][id] or DPP.Phrases.en[id]
-	if not phrase then error('Invalid phrase: ' .. id) end
-	return string.format(phrase, ...)
+	return DPP.langObject:getByLang(lang, id, ...)
 end
 
 function DPP.PhraseByLangSafe(lang, id, ...)
-	DPP.Phrases[lang] = DPP.Phrases[lang] or {}
-	local phrase = DPP.Phrases[lang][id] or DPP.Phrases.en[id]
-	if not phrase then return '%' .. id .. '%' end
-	local status, result = pcall(string.format, phrase, ...)
-	
-	if status then
-		return result
-	else
-		return '%' .. id .. '%'
-	end
+	return DPP.langObject:getByLangSafe(lang, id, ...)
 end
 
 function DPP.GetPhrase(id, ...)
-	if not LangSetup then DPP.UpdateLang() end
-	return DPP.PhraseByLang(DPP.CURRENT_LANG, id, ...)
+	return DPP.langObject:get(id, ...)
 end
 
 function DPP.GetPhraseSafe(id, ...)
-	if not LangSetup then DPP.UpdateLang() end
-	return DPP.PhraseByLangSafe(DPP.CURRENT_LANG, id, ...)
+	return DPP.langObject:getSafe(id, ...)
 end
 
 function DPP.PhraseExists(id)
-	local phrase = DPP.Phrases[DPP.CURRENT_LANG][id] or DPP.Phrases.en[id]
-	return phrase and true or false
+	return DPP.langObject:exists(id)
 end
 
 local GetPhrase = DPP.GetPhrase
@@ -1610,36 +1595,20 @@ local GetPhrase = DPP.GetPhrase
 DPP.GetPhraseByLang = DPP.PhraseByLang
 
 function DPP.RegisterPhrase(lang, id, str)
-	DPP.Phrases[lang] = DPP.Phrases[lang] or {}
-	DPP.Phrases[lang][id] = str
+	return DPP.langObject:register(lang, id, str)
 end
 
 function DPP.RegisterPhraseList(lang, array)
-	for k, v in pairs(array) do
-		DPP.RegisterPhrase(lang, k, v)
-	end
+	return DPP.langObject:registerArray(lang, array)
 end
 
 --For quickly looking for missing phrases
 function DPP.MissingPhrases(lang)
-	DPP.Phrases[lang] = DPP.Phrases[lang] or {}
-	local reply = {}
-	
-	for k, v in pairs(DPP.Phrases.en) do
-		if not DPP.Phrases[lang][k] then
-			reply[k] = v
-		end
-	end
-	
-	return reply
+	return DPP.langObject:missing(lang)
 end
 
 function DPP.PrintMissingPhrases(lang)
-	local reply = DPP.MissingPhrases(lang)
-	
-	for k, v in SortedPairs(reply) do
-		print(k .. ' = \'' .. v:Replace('\n', '\\n') .. '\',')
-	end
+	return DPP.langObject:printMissing(lang)
 end
 
 for k, v in pairs(DPP.Settings) do
@@ -1666,23 +1635,6 @@ end
 for k, v in pairs(DPP.WhitelistTypes) do
 	DPP.RegisterPhrase('en', 'exclude_' .. k, v)
 end
-
---We can send language only at it's change, but for safety - always send language
-function DPP.UpdateLang()
-	LangSetup = true
-	LangCVar = LangCVar or GetConVar('gmod_language')
-	DPP.CURRENT_LANG = LangCVar:GetString():lower()
-	if LastLanguage ~= DPP.CURRENT_LANG then hook.Call('DPP.LanguageChanged') end
-	LastLanguage = DPP.CURRENT_LANG
-	
-	if CLIENT then
-		net.Start('DPP.UpdateLang')
-		net.WriteString(DPP.CURRENT_LANG)
-		net.SendToServer()
-	end
-end
-
-timer.Create('DPP.UpdateLang', 5, 0, DPP.UpdateLang)
 
 include('sh_lang.lua')
 
