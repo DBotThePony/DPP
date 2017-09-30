@@ -73,7 +73,7 @@ hook.Add('DLib.NetworkedVarFull', 'DPP', function(ply, auto)
 	DPP.SendConVarsTo(ply)
 
 	if not auto then
-		DLib.SimpleLog(ply, Gray, '#net_auto')
+		DPP.SimpleLog(ply, Gray, '#net_auto')
 	end
 end)
 
