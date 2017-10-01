@@ -770,7 +770,7 @@ do
 		local c = CurTime()
 		
 		for i, ent in ipairs(touched) do
-			DPP.GetNetworkDataTable(ent)._DPP_Constrained = owners2
+			DLib.nw.GetNetworkDataTable(ent)._DPP_Constrained = owners2
 			ent._DPP_LastRecalc = c
 			ent._DPP_RecalcLastResult = result
 		end

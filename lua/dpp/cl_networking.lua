@@ -328,7 +328,7 @@ DPP.ClientReceiveFuncs = {
 
 		for k, v in pairs(Ents) do
 			if IsValid(v) then
-				DPP.GetNetworkDataTable(v)._DPP_Constrained = Owners
+				DLib.nw.GetNetworkDataTable(v)._DPP_Constrained = Owners
 			end
 		end
 	end
