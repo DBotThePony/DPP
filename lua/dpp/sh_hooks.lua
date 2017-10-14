@@ -69,14 +69,13 @@ function DPP.CanDamage(ply, ent, ignoreEnt)
 	ignoreEnt = ignoreEnt or {}
 
 	for k, v in pairs(with) do
-		if k == ent then continue end
-		if table.HasValue(ignoreEnt, k) then continue end
+		if k ~= ent and not table.HasValue(ignoreEnt, k) then
+			table.insert(ignoreEnt, ent)
+			local can, Reason = DPP.CanDamage(ply, k, ignoreEnt)
 
-		table.insert(ignoreEnt, ent)
-		local can, Reason = DPP.CanDamage(ply, k, ignoreEnt)
-
-		if can ~= false then
-			return true, Reason
+			if can ~= false then
+				return true, Reason
+			end
 		end
 	end
 	
@@ -147,11 +146,10 @@ function DPP.ToolgunTouch(ply, tr, mode)
 			local Name, Value = debug.getlocal(i, 1)
 			
 			if not Name then break end
-			if not isentity(Value) then continue end
-			if not IsValid(Value) then continue end
-			if not Value:IsWeapon() then continue end
-			Should = true
-			break
+			if isentity(Value) and IsValid(Value) and Value:IsWeapon() then
+				Should = true
+				break
+			end
 		end
 
 		if Should and CTime + val ~= ply._DPP_LastToolgunUse then
@@ -293,6 +291,37 @@ local ropeModes = {
 	['muscle'] = true,
 }
 
+local PlayersTouchAccess = {}
+
+local function GetTouchAccess1(ply)
+	PlayersTouchAccess[ply] = {
+		expires = math.huge,
+		waiting = true,
+	}
+	
+	DPP.HaveAccess(ply, 'touchother', function(result)
+		PlayersTouchAccess[ply] = {
+			result = result,
+			expires = CurTime() + 10,
+			waiting = false,
+		}
+	end)
+end
+
+timer.Create('DPP.ClearPlayersTouchAccessTool', 1, 0, function()
+	local ctime = CurTime()
+
+	for k, v in pairs(PlayersTouchAccess) do
+		if not IsValid(k) then
+			PlayersTouchAccess[k] = nil
+		else
+			if v.expires < ctime and not v.waiting then
+				GetTouchAccess1(k)
+			end
+		end
+	end
+end)
+
 function DPP.CanTool(ply, ent, mode)
 	if not DPP.GetConVar('enable_tool') then return true, DPP.GetPhrase('protection_disabled') end
 	DPP.AssertArguments('DPP.CanTool', {{ply, 'Player'}, {ent, 'AnyEntity'}, {mode, 'string'}})
@@ -328,10 +357,21 @@ function DPP.CanTool(ply, ent, mode)
 	end
 
 	if ent:IsPlayer() then
+		if PlayersTouchAccess[ply] == nil then
+			GetTouchAccess1(ply)
+		end
+		
 		local can1 = DPP.GetConVar('toolgun_player')
 		local can2 = DPP.GetConVar('toolgun_player_admin')
+		local isadmin
 
-		if ply:IsAdmin() then
+		if PlayersTouchAccess[ply] then
+			isadmin = PlayersTouchAccess[ply].result
+		else
+			isadmin = ply:IsAdmin()
+		end
+
+		if isadmin then
 			if can2 then return false, DPP.GetPhrase('no_toolgun_player') end
 		else
 			if can1 then return false, DPP.GetPhrase('no_toolgun_player') end
