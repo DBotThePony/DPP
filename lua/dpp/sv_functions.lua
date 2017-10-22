@@ -20,14 +20,14 @@ local GhostColor = Color(255, 255, 255, 224)
 function DPP.SetOwnerFull(ent, owner, knownOwner)
 	knownOwner = knownOwner or DPP.GetOwner(ent)
 	DPP.SetOwner(ent, owner)
-	
+
 	for k, ent2 in ipairs(ent.__DPP_BundledEntities) do
 		if IsValid(ent2) then
 			DPP.SetOwner(ent2, owner)
 			DPP.TableRecursiveReplace(ent2:GetTable(), knownOwner, owner)
 		end
 	end
-	
+
 	DPP.TableRecursiveReplace(ent:GetTable(), knownOwner, owner)
 end
 
@@ -143,17 +143,17 @@ end
 function DPP.ListModelCounts(ply)
 	DPP.RefreshPropList()
 	local reply = {}
-	
+
 	for k, ent in pairs(DPP.PropListing) do
 		if DPP.GetOwner(ent) == ply then
 			local m = ent:GetModel()
-			
+
 			if m then
 				reply[m] = (reply[m] or 0) + 1
 			end
 		end
 	end
-	
+
 	return reply
 end
 
@@ -207,12 +207,12 @@ function DPP.CheckAutoBlock(ent, ply)
 	if not IsValid(phys) then return true end
 	local size = phys:GetVolume()
 	if not size then return true end
-	
+
 	local mins, maxs = phys:GetAABB()
 
 	local cond = size / 1000 < DPP.GetConVar('prop_auto_ban_size') and
 		(not DPP.GetConVar('prop_auto_ban_check_aabb') or DPP.GetConVar('prop_auto_ban_minsmaxs') >= mins:Distance(maxs))
-	
+
 	if cond then return true end
 
 	local can = hook.Run('DPP_G_AutoBlockHit', ent, ply)
@@ -405,12 +405,13 @@ end
 
 function DPP.FreezePlayerEntities(ply)
 	local Ents = DPP.GetPlayerEntities(ply)
+	local worldspawn = Entity(0):GetPhysicsObject()
 
 	local reply = {}
 
 	for k, v in ipairs(Ents) do
 		local phys = v:GetPhysicsObject()
-		if IsValid(phys) then
+		if IsValid(phys) and phys ~= worldspawn then
 			phys:EnableMotion(false)
 			table.insert(reply, v)
 		end
@@ -421,12 +422,13 @@ end
 
 function DPP.UnFreezePlayerEntities(ply)
 	local Ents = DPP.GetPlayerEntities(ply)
+	local worldspawn = Entity(0):GetPhysicsObject()
 
 	local reply = {}
 
 	for k, v in ipairs(Ents) do
 		local phys = v:GetPhysicsObject()
-		if IsValid(phys) then
+		if IsValid(phys) and phys ~= worldspawn then
 			phys:EnableMotion(true)
 			table.insert(reply, v)
 		end
@@ -500,23 +502,32 @@ end
 
 function DPP.FreezeByUID(uid)
 	local Ents = DPP.GetPropsByUID(uid)
-
-	for k, v in ipairs(Ents) do
-		local phys = v:GetPhysicsObject()
-		if IsValid(phys) then
-			phys:EnableMotion(false)
-		end
-	end
-end
-
-function DPP.UnFreezeByUID(uid)
-	local Ents = DPP.GetPropsByUID(uid)
+	local worldspawn = Entity(0):GetPhysicsObject()
 
 	local reply = {}
 
 	for k, v in ipairs(Ents) do
 		local phys = v:GetPhysicsObject()
-		if IsValid(phys) then
+
+		if IsValid(phys) and phys ~= worldspawn then
+			phys:EnableMotion(false)
+			table.insert(reply, v)
+		end
+	end
+
+	return reply
+end
+
+function DPP.UnFreezeByUID(uid)
+	local Ents = DPP.GetPropsByUID(uid)
+	local worldspawn = Entity(0):GetPhysicsObject()
+
+	local reply = {}
+
+	for k, v in ipairs(Ents) do
+		local phys = v:GetPhysicsObject()
+
+		if IsValid(phys) and phys ~= worldspawn then
 			phys:EnableMotion(true)
 			table.insert(reply, v)
 		end
@@ -660,7 +671,7 @@ do
 				end
 			end
 		end
-		
+
 		for k, ent in ipairs(ent.__DPP_BundledEntities or {}) do
 			if IsValid(ent) then
 				DoSearch(ent)
@@ -706,25 +717,25 @@ do
 
 		return result
 	end
-	
+
 	local toCheck = {}
-	
+
 	function DPP.RecalcConstraintsDelay(ent)
 		if ent._DPP_LastRecalc == CurTime() then return end
 		table.insert(toCheck, {ent, CurTime()})
 	end
-	
+
 	hook.Add('Tick', 'DPP.RecalcConstraintsDelay', function()
 		local toRemove = {}
 		local cTime = CurTime()
-		
+
 		for k, data in ipairs(toCheck) do
 			if data[2] ~= cTime then
 				table.insert(toRemove, k)
 				DPP.RecalcConstraints(data[1])
 			end
 		end
-		
+
 		for i = #toRemove, 1, -1 do
 			table.remove(toCheck, toRemove[i])
 		end
@@ -768,7 +779,7 @@ do
 		end
 
 		local c = CurTime()
-		
+
 		for i, ent in ipairs(touched) do
 			DLib.nw.GetNetworkDataTable(ent)._DPP_Constrained = owners2
 			ent._DPP_LastRecalc = c
@@ -873,17 +884,15 @@ end
 
 function DPP.FreezeAllPhysObjects()
 	local i = 0
-	local worldspawn = Entity(0)
+	local worldspawn = Entity(0):GetPhysicsObject()
 
 	for k, ent in ipairs(ents.GetAll()) do
-		if ent ~= worldspawn then
-			local phys = ent:GetPhysicsObject()
-			
-			if IsValid(phys) then
-				phys:Sleep()
-				phys:EnableMotion(false)
-				i = i + 1
-			end
+		local phys = ent:GetPhysicsObject()
+
+		if IsValid(phys) and worldspawn ~= phys then
+			phys:Sleep()
+			phys:EnableMotion(false)
+			i = i + 1
 		end
 	end
 
@@ -964,7 +973,7 @@ function DPP.ReportEntities()
 		end
 
 		local solid = ent:GetSolid()
-		local bymap = ent:CreatedByMap() 
+		local bymap = ent:CreatedByMap()
 
 		if not bymap then
 			for i, str in ipairs(BlacklistEntities) do
