@@ -873,13 +873,18 @@ end
 
 function DPP.FreezeAllPhysObjects()
 	local i = 0
+	local worldspawn = Entity(0)
 
 	for k, ent in ipairs(ents.GetAll()) do
-		local phys = ent:GetPhysicsObject()
-		if not IsValid(phys) then continue end
-		phys:Sleep()
-		phys:EnableMotion(false)
-		i = i + 1
+		if ent ~= worldspawn then
+			local phys = ent:GetPhysicsObject()
+			
+			if IsValid(phys) then
+				phys:Sleep()
+				phys:EnableMotion(false)
+				i = i + 1
+			end
+		end
 	end
 
 	return i
