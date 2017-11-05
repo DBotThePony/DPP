@@ -204,7 +204,7 @@ hook.Add('DLib.EntityVarsChanges', 'DPP', function(self, var, val)
 	end
 end)
 
-hook.Add('DPP_ConVarRegistered', function()
+hook.Add('DPP_ConVarRegistered', 'DPP', function()
 	timer.Create('DPP.OnConVarRegisteredNetworkUpdate', 0, 1, DPP.AssignConVarNetworkIDs)
 end)
 

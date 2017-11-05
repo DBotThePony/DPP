@@ -787,7 +787,9 @@ function SpawnFunctions.PlayerSpawnNPC(ply, ent)
 end
 
 for k, v in pairs(SpawnFunctions) do
-	hook.Add(k, '!DPP.SpawnHooks', v, -1)
+	if type(v) == 'function' then
+		hook.Add(k, '!DPP.SpawnHooks', v, -5)
+	end
 end
 
 local function EntityRemoved(ent)
