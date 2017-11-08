@@ -605,11 +605,11 @@ local function pointInsideBox(point, mins, maxs)
 		mins.z < point.z and point.z < maxs.z
 end
 
-local fov, zfar, znear, ignoreCalcView
+local lastCalcView
 
-hook.Add('CalcView', 'DPP.checkCalcView', function(ply, _, _, fov2, zfar2, znear2)
-	if ignoreCalcView then return end
-	fov, zfar, znear = fov2, zfar2, znear2
+hook.AddPostModifier('CalcView', 'DPP.checkCalcView', function(newData)
+	lastCalcView = newData
+	return newData
 end)
 
 -- DHUD/2 Code
@@ -633,12 +633,9 @@ local function HUDThink()
 	local ply = SelectPlayer()
 	
 	if ply:ShouldDrawLocalPlayer() and fov then
-		ignoreCalcView = true
-		local view = hook.Run('CalcView', ply, ply:EyePos(), ply:EyeAngles(), fov, zfar, znear)
-		ignoreCalcView = false
-		view = view or {}
-		epos = view.origin or ply:EyePos()
-		eang = view.angles or ply:EyeAngles()
+		lastCalcView = lastCalcView or {}
+		epos = lastCalcView.origin or ply:EyePos()
+		eang = lastCalcView.angles or ply:EyeAngles()
 		ignoreNearest = true
 	else
 		epos = ply:EyePos()
