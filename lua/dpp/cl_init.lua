@@ -136,43 +136,43 @@ end
 function DPP.LoadFriends()
 	local FILE = 'dpp/friends.txt'
 	local out = {}
-	
+
 	if file.Exists(FILE, 'DATA') then
 		local content = file.Read(FILE, 'DATA')
 		local parse = util.JSONToTable(content)
-		
+
 		if parse then
 			for k, v in pairs(parse) do
 				DPP.SaveFriendData(k, v)
 			end
 		end
-		
+
 		file.Delete(FILE)
 	end
-	
+
 	local reply = sql.Query('SELECT * FROM dpp_friends')
-	
+
 	for i, row in ipairs(reply or {}) do
 		out[row.STEAMID] = {
 			nick = row.NICKNAME,
 		}
-		
+
 		local decode = util.JSONToTable(row.MODES)
-		
+
 		if decode then
 			table.Merge(out[row.STEAMID], decode)
 		end
 	end
-	
+
 	DPP.ClientFriends = out
-	
+
 	for k, v in pairs(out) do
 		DPP.CheckFriendArgs(v)
 	end
-	
+
 	DPP.Message(DPP.GetPhrase('friends_loaded'))
 	timer.Simple(0, DPP.RefreshFriends)
-	
+
 	return out
 end
 
@@ -180,7 +180,7 @@ timer.Simple(0, DPP.LoadFriends)
 
 function DPP.SaveFriends()
 	sql.Query('DELETE FROM dpp_friends')
-	
+
 	for k, v in pairs(DPP.ClientFriends) do
 		DPP.SaveFriendData(k, v)
 	end
@@ -189,7 +189,7 @@ end
 function DPP.SaveFriendData(steamid, tab)
 	local validModes = table.Copy(tab)
 	validModes.nick = nil
-	
+
 	sql.Query(string.format('REPLACE INTO dpp_friends (STEAMID, NICKNAME, MODES) VALUES (%s, %s, %s)', SQLStr(steamid), SQLStr(tab.nick or 'unknown'), SQLStr(util.TableToJSON(validModes))))
 end
 
@@ -387,16 +387,16 @@ end)
 
 concommand.Add('dpp_importfppbuddies', function(ply)
 	local friends = sql.Query('SELECT * FROM `FPP_Buddies`')
-	
+
 	if not friends then return end
-	
+
 	for k, row in ipairs(friends) do
 		local steamid = row.steamid
-		
+
 		if DPP.ClientFriends[steamid] then
 			continue
 		end
-		
+
 		DPP.ClientFriends[steamid] = {
 			use = tobool(row.playeruse),
 			toolgun = tobool(row.toolgun),
@@ -405,13 +405,13 @@ concommand.Add('dpp_importfppbuddies', function(ply)
 			damage = tobool(row.entitydamage),
 			nick = row.name or '<FPP Buddy>',
 		}
-		
+
 		DPP.CheckFriendArgs(DPP.ClientFriends[steamid])
-		
+
 		DPP.SaveFriend(steamid)
 		DPP.Message(DPP.GetPhrase('friend_added_fpp', row.name or steamid))
 	end
-	
+
 	DPP.Message(DPP.GetPhrase('friend_added'))
 
 	DPP.RecalculateCPPIFriendTable(LocalPlayer())
@@ -617,7 +617,7 @@ local function SelectPlayer()
 	local ply = LocalPlayer()
 	if not IsValid(ply) then return ply end
 	local obs = ply:GetObserverTarget()
-	
+
 	if IsValid(obs) and obs:IsPlayer() then
 		return obs
 	else
@@ -631,8 +631,8 @@ local function HUDThink()
 	local epos, eang
 	local ignoreNearest = false
 	local ply = SelectPlayer()
-	
-	if ply:ShouldDrawLocalPlayer() and fov then
+
+	if ply:ShouldDrawLocalPlayer() then
 		lastCalcView = lastCalcView or {}
 		epos = lastCalcView.origin or ply:EyePos()
 		eang = lastCalcView.angles or ply:EyeAngles()
@@ -640,28 +640,28 @@ local function HUDThink()
 	else
 		epos = ply:EyePos()
 		eang = ply:EyeAngles()
-		
+
 		if ply:InVehicle() then
 			eang = eang + ply:GetVehicle():GetAngles()
 		end
 	end
-	
+
 	hitPos = epos
 	hitAngle = eang
-	
+
 	local tr = util.TraceLine{
 		mask = MASK_ALL,
 		filter = function(hitEntity)
 			if not hitEntity:IsValid() then return true end
 			if not ignoreNearest and hitEntity == ply then return false end
 			if ignoreNearest and (pointInsideBox(epos, hitEntity:WorldSpaceAABB()) or epos:DistToSqr(hitEntity:GetPos()) < 400) then return false end
-			
+
 			return true
 		end,
 		start = epos,
 		endpos = epos + eang:Forward() * 16000
 	}
-	
+
 	traceEntity = tr.Entity
 end
 
@@ -1043,7 +1043,7 @@ local function CreateFix()
 		DPP.ScreenshotPanelHack:SetRenderInScreenshots(DPP.LocalConVar('draw_in_screenshots', false))
 		return
 	end
-	
+
 	local newPnl = vgui.Create('EditablePanel')
 	DPP.ScreenshotPanelHack = newPnl
 	newPnl:SetRenderInScreenshots(false)
@@ -1076,13 +1076,13 @@ function DPP.Notify(message, Type)
 		DPP.Message(unpack(message))
 
 		local str = ''
-		
+
 		for k, v in pairs(message) do
 			if type(v) == 'string' then
 				if v:sub(1, 6) == '<STEAM' then
 					continue
 				end
-				
+
 				str = str .. v
 			end
 		end
@@ -1140,7 +1140,7 @@ end)
 
 net.Receive('DPP.InspectEntity', function()
 	DPP.Notify(DPP.PreprocessPhrases('#look_into_console'), NOTIFY_GENERIC)
-	
+
 	local ply = LocalPlayer()
 	local tr = util.TraceLine{
 		start = ply:EyePos(),
@@ -1148,11 +1148,11 @@ net.Receive('DPP.InspectEntity', function()
 		mask = MASK_ALL,
 		filter = ply
 	}
-	
+
 	DPP.Message('#inspect_client')
-	
+
 	local ent = tr.Entity
-	
+
 	if not IsValid(ent) then
 		DPP.Message('#inspect_noentity')
 	else
@@ -1163,7 +1163,7 @@ net.Receive('DPP.InspectEntity', function()
 		DPP.Message('#inspect_hp', color_white, DPP.ToString(ent:Health()))
 		DPP.Message('#inspect_mhp', color_white, DPP.ToString(ent:GetMaxHealth()))
 		DPP.Message('#inspect_owner', color_white, DPP.ToString(DPP.GetOwner(ent)))
-		
+
 		DPP.Message('#inspect_model', color_white, DPP.ToString(ent:GetModel()))
 		DPP.Message('#inspect_skin', color_white, DPP.ToString(ent:GetSkin()))
 		DPP.Message('#inspect_bodygroups', color_white, DPP.ToString(table.Count(ent:GetBodyGroups() or {})))
