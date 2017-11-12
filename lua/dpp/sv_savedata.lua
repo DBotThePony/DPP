@@ -226,7 +226,7 @@ end
 DPP.ManipulateCommands = {
 	addblockedmodel = function(ply, cmd, args)
 		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_model'}, NOTIFY_ERROR end
-		args[1] = args[1]:lower():Trim()
+		args[1] = args[1]:lower():Trim():Replace('\x04', '')
 		if DPP.BlockedModels[args[1]] then return false, {'#saveload_model_already_y'} end
 		DPP.AddBlockedModel(args[1])
 		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#saveload_added', color_white, args[1], Gray, '#saveload_to', '#saveload_bmodels'}
@@ -234,7 +234,7 @@ DPP.ManipulateCommands = {
 
 	removeblockedmodel = function(ply, cmd, args)
 		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_model'}, NOTIFY_ERROR end
-		args[1] = args[1]:lower():Trim()
+		args[1] = args[1]:lower():Trim():Replace('\x04', '')
 		if not DPP.BlockedModels[args[1]] then return false, {'#saveload_model_already_n'} end
 		DPP.RemoveBlockedModel(args[1])
 		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#saveload_removed', color_white, args[1], Gray, '#saveload_from', '#saveload_bmodels'}
@@ -279,7 +279,7 @@ end
 
 for k, v in pairs(DPP.BlockTypes) do
 	DPP['AddBlockedEntity' .. v] = function(ent)
-		ent = ent:lower():Trim()
+		ent = ent:lower():Trim():Replace('\x04', '')
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 
 		if not DPP.SUPPRESS_INSERT_CALLS then
@@ -295,7 +295,7 @@ for k, v in pairs(DPP.BlockTypes) do
 	end
 
 	DPP['RemoveBlockedEntity' .. v] = function(ent)
-		ent = ent:lower():Trim()
+		ent = ent:lower():Trim():Replace('\x04', '')
 		if DPP.HasValueLight(blockedEnts, ent) then return end
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 
@@ -313,7 +313,7 @@ for k, v in pairs(DPP.BlockTypes) do
 
 	DPP.ManipulateCommands['addblockedentity' .. k] = function(ply, cmd, args)
 		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_class'}, NOTIFY_ERROR end
-		args[1] = args[1]:lower():Trim()
+		args[1] = args[1]:lower():Trim():Replace('\x04', '')
 		if DPP.BlockedEntities[k][args[1]] then return false, {'#saveload_entity_already_y'} end
 		if DPP.HasValueLight(blockedEnts, args[1]) then return false, {'#saveload_unable_to_add'}, NOTIFY_ERROR end
 		DPP['AddBlockedEntity' .. v](args[1])
@@ -322,7 +322,7 @@ for k, v in pairs(DPP.BlockTypes) do
 
 	DPP.ManipulateCommands['removeblockedentity' .. k] = function(ply, cmd, args)
 		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_class'}, NOTIFY_ERROR end
-		args[1] = args[1]:lower():Trim()
+		args[1] = args[1]:lower():Trim():Replace('\x04', '')
 		if not DPP.BlockedEntities[k][args[1]] then return false, {'#saveload_entity_already_n'} end
 		if DPP.HasValueLight(blockedEnts, args[1]) then return false, {'#saveload_unable_to_remove'}, NOTIFY_ERROR end
 		DPP['RemoveBlockedEntity' .. v](args[1])
@@ -332,7 +332,7 @@ end
 
 for k, v in pairs(DPP.WhitelistTypes) do
 	DPP['AddWhitelistedEntity' .. v] = function(ent)
-		ent = ent:lower():Trim()
+		ent = ent:lower():Trim():Replace('\x04', '')
 		if DPP.HasValueLight(blockedEnts, ent) then return end
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 
@@ -349,7 +349,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 	end
 
 	DPP['RemoveWhitelistedEntity' .. v] = function(ent)
-		ent = ent:lower():Trim()
+		ent = ent:lower():Trim():Replace('\x04', '')
 		if DPP.HasValueLight(blockedEnts, ent) then return end
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 
@@ -365,7 +365,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 
 	DPP.ManipulateCommands['addwhitelistedentity' .. k] = function(ply, cmd, args)
 		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_class'}, NOTIFY_ERROR end
-		args[1] = args[1]:lower():Trim()
+		args[1] = args[1]:lower():Trim():Replace('\x04', '')
 		if DPP.WhitelistedEntities[k][args[1]] then return false, {'#saveload_eentity_already_y'} end
 		if DPP.HasValueLight(blockedEnts, args[1]) then return false, {'You can not add that entity to exclude list'}, NOTIFY_ERROR end
 		DPP['AddWhitelistedEntity' .. v](args[1])
@@ -374,7 +374,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 
 	DPP.ManipulateCommands['removewhitelistedentity' .. k] = function(ply, cmd, args)
 		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_class'}, NOTIFY_ERROR end
-		args[1] = args[1]:lower():Trim()
+		args[1] = args[1]:lower():Trim():Replace('\x04', '')
 		if not DPP.WhitelistedEntities[k][args[1]] then return false, {'#saveload_eentity_already_n'} end
 		DPP['RemoveWhitelistedEntity' .. v](args[1])
 		DPP.NotifyLog{IsValid(ply) and ply or '#Console', Gray, '#saveload_removed', color_white, args[1], Gray, '#saveload_from', color_white, '#exclude_' .. k, Gray, '#saveload_excludedents'}
@@ -383,7 +383,7 @@ end
 
 for k, v in pairs(DPP.RestrictTypes) do
 	DPP['AppendRestrict' .. v] = function(class, group)
-		class = class:lower():Trim()
+		class = class:lower():Trim():Replace('\x04', '')
 		
 		if not DPP.RestrictedTypes[k][class] then
 			DPP['Restrict' .. v](class, {group}, false)
@@ -410,7 +410,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 	end
 	
 	DPP['Restrict' .. v] = function(class, groups, isWhite)
-		class = class:lower():Trim()
+		class = class:lower():Trim():Replace('\x04', '')
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 
 		if not DPP.SUPPRESS_INSERT_CALLS then
@@ -432,7 +432,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 	end
 	
 	DPP['Restrict' .. v .. 'Player'] = function(ply, class)
-		class = class:lower():Trim()
+		class = class:lower():Trim():Replace('\x04', '')
 		local steamid = DPP.IsEntity(ply) and ply:SteamID() or ply
 		
 		DPP.RestrictedTypes_SteamID[k][steamid] = DPP.RestrictedTypes_SteamID[k][steamid] or {}
@@ -455,7 +455,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 	end
 	
 	DPP['UnRestrict' .. v .. 'Player'] = function(ply, class)
-		class = class:lower():Trim()
+		class = class:lower():Trim():Replace('\x04', '')
 		local steamid = DPP.IsEntity(ply) and ply:SteamID() or ply
 		
 		DPP.RestrictedTypes_SteamID[k][steamid] = DPP.RestrictedTypes_SteamID[k][steamid] or {}
@@ -478,7 +478,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 	end
 
 	DPP['UnRestrict' .. v] = function(class, groups)
-		class = class:lower():Trim()
+		class = class:lower():Trim():Replace('\x04', '')
 		timer.Create('DPP.BroadcastLists', 10, 1, DPP.BroadcastLists)
 
 		if not DPP.SUPPRESS_INSERT_CALLS then
@@ -498,7 +498,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		if not args[2] then return false, {'#saveload_command_message_2'}, NOTIFY_ERROR end --No groups allowed
 		if not args[3] or args[3]:Trim() == '' then return false, {'#saveload_command_message_3'}, NOTIFY_ERROR end
 
-		local class = args[1]:lower():Trim()
+		local class = args[1]:lower():Trim():Replace('\x04', '')
 		local groups = string.Explode(',', args[2])
 		local isWhite = tobool(args[3])
 		local old = DPP.RestrictedTypes[k][class]
@@ -518,7 +518,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 	DPP.ManipulateCommands['unrestrict' .. k] = function(ply, cmd, args)
 		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_command_message_4'}, NOTIFY_ERROR end
 
-		local class = args[1]:lower():Trim()
+		local class = args[1]:lower():Trim():Replace('\x04', '')
 
 		DPP['UnRestrict' .. v](class)
 
@@ -529,7 +529,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_command_message_1ply'}, NOTIFY_ERROR end
 		if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_command_message_2ply'}, NOTIFY_ERROR end
 
-		local class = args[2]:lower():Trim()
+		local class = args[2]:lower():Trim():Replace('\x04', '')
 		local steamid = args[1]:Trim()
 		
 		DPP.RestrictedTypes_SteamID[k][steamid] = DPP.RestrictedTypes_SteamID[k][steamid] or {}
@@ -544,7 +544,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_command_message_1ply'}, NOTIFY_ERROR end
 		if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_command_message_2ply'}, NOTIFY_ERROR end
 
-		local class = args[2]:lower():Trim()
+		local class = args[2]:lower():Trim():Replace('\x04', '')
 		local steamid = args[1]:Trim()
 		
 		DPP.RestrictedTypes_SteamID[k][steamid] = DPP.RestrictedTypes_SteamID[k][steamid] or {}
@@ -558,7 +558,7 @@ end
 
 function DPP.AddEntityLimit(class, group, val)
 	if not val then return end
-	class = class:lower():Trim()
+	class = class:lower():Trim():Replace('\x04', '')
 	val = math.max(val, 1)
 	DPP.EntsLimits[class] = DPP.EntsLimits[class] or {}
 	DPP.EntsLimits[class][group] = val
@@ -576,7 +576,7 @@ function DPP.AddEntityLimit(class, group, val)
 end
 
 function DPP.RemoveEntityLimit(class, group)
-	class = class:lower():Trim()
+	class = class:lower():Trim():Replace('\x04', '')
 
 	if group then
 		DPP.EntsLimits[class] = DPP.EntsLimits[class] or {}
@@ -600,7 +600,7 @@ end
 
 function DPP.AddModelLimit(model, group, val)
 	if not val then return end
-	model = model:lower():Trim()
+	model = model:lower():Trim():Replace('\x04', '')
 	val = math.max(val, 1)
 	DPP.ModelsLimits[model] = DPP.ModelsLimits[model] or {}
 	DPP.ModelsLimits[model][group] = val
@@ -618,7 +618,7 @@ function DPP.AddModelLimit(model, group, val)
 end
 
 function DPP.RemoveModelLimit(model, group)
-	model = model:lower():Trim()
+	model = model:lower():Trim():Replace('\x04', '')
 
 	if group then
 		DPP.ModelsLimits[model] = DPP.ModelsLimits[model] or {}
@@ -643,7 +643,7 @@ end
 function DPP.AddSBoxLimit(class, group, val)
 	if not val then return end
 
-	class = class:lower():Trim()
+	class = class:lower():Trim():Replace('\x04', '')
 
 	DPP.SBoxLimits[class] = DPP.SBoxLimits[class] or {}
 	DPP.SBoxLimits[class][group] = val
@@ -663,7 +663,7 @@ end
 function DPP.AddConstLimit(class, group, val)
 	if not val then return end
 
-	class = class:lower():Trim()
+	class = class:lower():Trim():Replace('\x04', '')
 
 	DPP.ConstrainsLimits[class] = DPP.ConstrainsLimits[class] or {}
 	DPP.ConstrainsLimits[class][group] = val
@@ -681,7 +681,7 @@ function DPP.AddConstLimit(class, group, val)
 end
 
 function DPP.RemoveSBoxLimit(class, group)
-	class = class:lower():Trim()
+	class = class:lower():Trim():Replace('\x04', '')
 
 	if group then
 		DPP.SBoxLimits[class] = DPP.SBoxLimits[class] or {}
@@ -704,7 +704,7 @@ function DPP.RemoveSBoxLimit(class, group)
 end
 
 function DPP.RemoveConstLimit(class, group)
-	class = class:lower():Trim()
+	class = class:lower():Trim():Replace('\x04', '')
 
 	if group then
 		DPP.ConstrainsLimits[class] = DPP.ConstrainsLimits[class] or {}
@@ -835,7 +835,7 @@ DPP.ManipulateCommands.addentitylimit = function(ply, cmd, args)
 	if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_command_message_2'}, NOTIFY_ERROR end
 	if not args[3] or args[3]:Trim() == '' then return false, {'#saveload_invalid_limit', ' (#3)'}, NOTIFY_ERROR end
 
-	local class = args[1]:lower():Trim()
+	local class = args[1]:lower():Trim():Replace('\x04', '')
 	local group = args[2]
 	local num = tonumber(args[3])
 
@@ -854,7 +854,7 @@ DPP.ManipulateCommands.removeentitylimit = function(ply, cmd, args)
 	if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_class', ' (#1)'}, NOTIFY_ERROR end
 	if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_command_message_2'}, NOTIFY_ERROR end
 
-	local class = args[1]:lower():Trim()
+	local class = args[1]:lower():Trim():Replace('\x04', '')
 	local group = args[2]
 	if not DPP.EntsLimits[class] then return false, {'#saveload_limit_not_exists'} end
 	if not DPP.EntsLimits[class][group] then return false, {'#saveload_glimit_not_exists'} end
@@ -873,7 +873,7 @@ DPP.ManipulateCommands.addmodellimit = function(ply, cmd, args)
 	if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_command_message_2'}, NOTIFY_ERROR end
 	if not args[3] or args[3]:Trim() == '' then return false, {'#saveload_invalid_limit', ' (#3)'}, NOTIFY_ERROR end
 
-	local model = args[1]:lower():Trim()
+	local model = args[1]:lower():Trim():Replace('\x04', '')
 	local group = args[2]
 	local num = tonumber(args[3])
 
@@ -892,7 +892,7 @@ DPP.ManipulateCommands.removemodellimit = function(ply, cmd, args)
 	if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_model', ' (#1)'}, NOTIFY_ERROR end
 	if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_command_message_2'}, NOTIFY_ERROR end
 
-	local model = args[1]:lower():Trim()
+	local model = args[1]:lower():Trim():Replace('\x04', '')
 	local group = args[2]
 	if not DPP.ModelsLimits[model] then return false, {'#saveload_mlimit_not_exists'} end
 	if not DPP.ModelsLimits[model][group] then return false, {'#saveload_glimit_not_exists'} end
@@ -911,7 +911,7 @@ DPP.ManipulateCommands.addsboxlimit = function(ply, cmd, args)
 	if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_invalid_group', ' (#2)'}, NOTIFY_ERROR end
 	if not args[3] or args[3]:Trim() == '' then return false, {'#saveload_invalid_limit', ' (#3)'}, NOTIFY_ERROR end
 
-	local class = args[1]:lower():Trim()
+	local class = args[1]:lower():Trim():Replace('\x04', '')
 	local group = args[2]
 	local num = tonumber(args[3])
 
@@ -929,7 +929,7 @@ DPP.ManipulateCommands.addconstlimit = function(ply, cmd, args)
 	if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_invalid_group', ' (#2)'}, NOTIFY_ERROR end
 	if not args[3] or args[3]:Trim() == '' then return false, {'#saveload_invalid_limit', ' (#3)'}, NOTIFY_ERROR end
 
-	local class = args[1]:lower():Trim()
+	local class = args[1]:lower():Trim():Replace('\x04', '')
 	local group = args[2]
 	local num = tonumber(args[3])
 
@@ -946,7 +946,7 @@ DPP.ManipulateCommands.removesboxlimit = function(ply, cmd, args)
 	if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_climit', ' (#1)'}, NOTIFY_ERROR end
 	if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_invalid_group', ' (#2)'}, NOTIFY_ERROR end
 
-	local class = args[1]:lower():Trim()
+	local class = args[1]:lower():Trim():Replace('\x04', '')
 	local group = args[2]
 	if not DPP.SBoxLimits[class] then return false, {'#saveload_limit_not_exists'} end
 	if not DPP.SBoxLimits[class][group] then return false, {'#saveload_limit_not_exists'} end
@@ -962,7 +962,7 @@ DPP.ManipulateCommands.removeconstlimit = function(ply, cmd, args)
 	if not args[1] or args[1]:Trim() == '' then return false, {'#saveload_invalid_climit', ' (#1)'}, NOTIFY_ERROR end
 	if not args[2] or args[2]:Trim() == '' then return false, {'#saveload_invalid_group', ' (#2)'}, NOTIFY_ERROR end
 
-	local class = args[1]:lower():Trim()
+	local class = args[1]:lower():Trim():Replace('\x04', '')
 	local group = args[2]
 	if not DPP.ConstrainsLimits[class] then return false, {'#saveload_limit_not_exists'} end
 	if not DPP.ConstrainsLimits[class][group] then return false, {'#saveload_limit_not_exists'} end
