@@ -56,24 +56,11 @@ end
 
 function DPP.IsFriend(ply, ply2, mode)
 	if ply == ply2 then return true end
-	local t = DPP.GetFriendTable(ply2)
-
 	if mode then
-		if not t[ply] then return false end
-		return t[ply][mode] ~= false --???, i would return true if mode does not exist or ply2 is a generic friend to ply
+		return ply:CheckDLibFriendIn(ply2, 'dpp_' .. mode)
+	else
+		return ply:CheckDLibFriend(ply2)
 	end
-
-	if not t[ply] then return false end
-	local hit = false
-
-	for k, v in pairs(t[ply]) do
-		if v then
-			hit = true
-			break
-		end
-	end
-
-	return hit
 end
 
 function DPP.IsPlayerInEntity(ply, ent) --From DLib

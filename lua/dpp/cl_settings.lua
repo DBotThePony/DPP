@@ -208,15 +208,15 @@ hook.Add('Think', 'DPP.LazyListPopulate', function()
 			SettingsClass.PopulateQueue[list] = nil
 			continue
 		end
-		
+
 		for i = 0, 21 do
 			local row = table.remove(data, 1)
-			
+
 			if not row then
 				SettingsClass.PopulateQueue[list] = nil
 				break
 			end
-			
+
 			list:AddLine(unpack(row))
 		end
 	end
@@ -346,12 +346,12 @@ function Style.AccessButtonPaint(self, w, h)
 	if self.AccessVar and not SettingsClass.Accesses[self.AccessVar] then
 		draw.NoTexture()
 		surface.SetDrawColor(Style.AccessDeniedColor)
-		
+
 		for k, v in ipairs(Style.ButtonStrip) do
 			surface.DrawPoly(v)
 		end
 	end
-	
+
 	if self.accessPaint then
 		self.accessPaint(self, w, h)
 	end
@@ -369,7 +369,7 @@ function SettingsClass.ApplyButtonStyle(panel)
 	panel.Think = Style.ScramblingCharsThinkButton
 
 	timer.Simple(0, function() if IsValid(panel) then panel:SetTextColor(color_white) end end)
-	
+
 	return panel
 end
 
@@ -408,11 +408,11 @@ Style.AccessDeniedColorCheckbox = Color(0, 0, 0)
 function Style.CheckBoxPaint(self, w, h)
 	surface.SetDrawColor(SettingsClass.Glow)
 	surface.DrawRect(0, 0, self.CurrentArrowMove, h)
-	
+
 	if self.AccessVar and not SettingsClass.Accesses[self.AccessVar] then
 		draw.NoTexture()
 		surface.SetDrawColor(Style.AccessDeniedColor)
-		
+
 		for k, v in ipairs(Style.CheckBoxStrip) do
 			surface.DrawPoly(v)
 		end
@@ -436,7 +436,7 @@ function Style.CheckBoxButtonPaint(self, w, h)
 
 	surface.SetDrawColor(isChecked and SettingsClass.Checked or SettingsClass.UnChecked)
 	surface.DrawRect(2, 2, w - 4, h - 4)
-	
+
 	if self.AccessVar and not SettingsClass.Accesses[self.AccessVar] then
 		draw.NoTexture()
 		surface.SetDrawColor(Style.AccessDeniedColorCheckbox)
@@ -462,12 +462,12 @@ function Style.SliderPaint(self, w, h)
 	if not SettingsClass.Accesses.setvar then
 		draw.NoTexture()
 		surface.SetDrawColor(Style.AccessDeniedColor)
-		
+
 		for k, v in ipairs(Style.CheckBoxStrip) do
 			surface.DrawPoly(v)
 		end
 	end
-	
+
 	if self.oldPaint then self.oldPaint(self, w, h) end
 end
 
@@ -606,7 +606,7 @@ function SettingsClass.ConVarSlider(Panel, var)
 	SettingsClass.ApplySliderStyle(Slider)
 	Slider:SetTooltip(P('scvar_base', P('cvar_' .. var), var))
 	Slider:SetValue(DPP.GetConVar(var))
-	
+
 	Slider.OnValueChanged = function()
 		local val = tonumber(Slider:GetValue())
 
@@ -618,7 +618,7 @@ function SettingsClass.ConVarSlider(Panel, var)
 
 		timer.Create('DPP.Change' .. var, 1, 1, function()
 			RunConsoleCommand('dpp_setvar', var, tostring(val))
-			
+
 			if IsValid(Slider) then
 				Slider:SetValue(val)
 			end
@@ -797,7 +797,7 @@ local function BuildCVarPanel(Panel)
 			mixer['SetConVar' .. k](mixer, data[1] .. '_' .. v)
 		end
 	end
-	
+
 	local lab = vgui.Create('DLabel', Panel)
 	local text = P('display_customization_position')
 	Panel:AddItem(lab)
@@ -862,17 +862,17 @@ local function BuildMiscVarsPanel(Panel)
 			ConVarSlider(Panel, b)
 		end
 	end
-	
+
 	local lab = Label('')
 	Panel:AddItem(lab)
-	
+
 	for i, var in ipairs(SettingsClass.MiscVarsLoggingVars) do
 		ConVarCheckbox(Panel, var)
 	end
-	
+
 	local lab = Label('')
 	Panel:AddItem(lab)
-	
+
 	for i, var in ipairs(SettingsClass.BuddiesVars) do
 		ConVarCheckbox(Panel, var)
 	end
@@ -939,13 +939,13 @@ local function BuildPlayerList(Panel)
 
 	local button = SettingsClass.ApplyButtonStyle(Panel:Button(P('delete_ents'), 'dpp_clearmap'))
 	SettingsClass.SetButtonAccess(button, 'clearmap')
-	
+
 	local button = SettingsClass.ApplyButtonStyle(Panel:Button(P('freeze_all'), 'dpp_freezeall'))
 	SettingsClass.SetButtonAccess(button, 'freezeall')
-	
+
 	local button = SettingsClass.ApplyButtonStyle(Panel:Button(P('freeze_all_phys'), 'dpp_freezephys'))
 	SettingsClass.SetButtonAccess(button, 'freezephys')
-	
+
 	local button = SettingsClass.ApplyButtonStyle(Panel:Button(P('delete_disconnected'), 'dpp_cleardisconnected'))
 	SettingsClass.SetButtonAccess(button, 'cleardisconnected')
 
@@ -1042,21 +1042,21 @@ local function BuildFallbackList(Panel)
 
 	for k, v in ipairs(plys) do
 		if v == ply then continue end
-		
+
 		local pnl = vgui.Create('EditablePanel', Panel)
 		Panel:AddItem(pnl)
-		
+
 		local Avatar = pnl:Add('DPP_Avatar')
 		Avatar:SetPlayer(v, 32)
 		Avatar:Dock(LEFT)
 		Avatar:SetSize(24, 24)
-		
+
 		local Button = pnl:Add('DButton')
 		Button:SetText(P('menu_set_fallbackto', v:Nick()))
 		Button:SetConsoleCommand('dpp_fallbackto', v:UserID())
 		Button:SetTooltip(P('menu_player_tip', v:Nick(), v:SteamID(), v:SteamID64(), v:GetFriendStatus() == 'friend' and 'true' or 'false'))
 		Button:Dock(FILL)
-		
+
 		SettingsClass.ApplyButtonStyle(Button)
 	end
 
@@ -1071,21 +1071,21 @@ local function BuildFallbackList(Panel)
 
 	for k, v in ipairs(plys) do
 		if v == ply then continue end
-		
+
 		local pnl = vgui.Create('EditablePanel', Panel)
 		Panel:AddItem(pnl)
-		
+
 		local Avatar = pnl:Add('DPP_Avatar')
 		Avatar:SetPlayer(v, 32)
 		Avatar:Dock(LEFT)
 		Avatar:SetSize(24, 24)
-		
+
 		local Button = pnl:Add('DButton')
 		Button:SetText(P('menu_transferto', v:Nick()))
 		Button:SetConsoleCommand('dpp_transfertoplayer_all', v:UserID())
 		Button:SetTooltip(P('menu_player_tip', v:Nick(), v:SteamID(), v:SteamID64(), v:GetFriendStatus() == 'friend' and 'true' or 'false'))
 		Button:Dock(FILL)
-		
+
 		SettingsClass.ApplyButtonStyle(Button)
 	end
 end
@@ -1133,14 +1133,14 @@ local function BuildPlayerProtectionPanel(Panel)
 			checkbox:Dock(TOP)
 			checkbox:DockMargin(0, 2, 0, 0)
 		end
-		
+
 		local collapse = vgui.Create('DCollapsibleCategory', Panel)
 		Panel:AddItem(collapse)
 		collapse:SetContents(contents)
 		collapse:SetLabel(v:Nick())
 		collapse:SetExpanded(false)
 		collapse.Header:SetContentAlignment(5)
-		
+
 		local Avatar = vgui.Create('DPP_Avatar', collapse.Header)
 		Avatar:Dock(LEFT)
 		Avatar:SetSize(20, 20)
@@ -1317,7 +1317,7 @@ function SettingsClass.UpdateModelsListGUI()
 		end
 	end
 
-	canvas:SetSize(w * SettingsClass.ModelsSpacingX, (ch + 1) * SettingsClass.ModelsSpacingY) 
+	canvas:SetSize(w * SettingsClass.ModelsSpacingX, (ch + 1) * SettingsClass.ModelsSpacingY)
 	Panel.scroll:InvalidateLayout()
 end
 
@@ -1346,7 +1346,7 @@ end
 function FUNCTIONS.ModelListClick(self, line)
 	local val = self:GetLine(line):GetValue(1)
 	local allvals = DPP.Helpers.CreateArrayFromLines(self:GetSelected(), 1)
-	
+
 	local menu = vgui.Create('DMenu')
 
 	menu:AddOption(P('clipboard', P('model')), function()
@@ -1378,7 +1378,7 @@ local function BuildModelsList(Panel)
 	for k, v in SortedPairs(L) do
 		table.insert(lazy, {k})
 	end
-	
+
 	SettingsClass.LazyListPopulate(list, lazy)
 
 	list.OnRowRightClick = FUNCTIONS.ModelListClick
@@ -1432,19 +1432,19 @@ local function OpenLimitEditPanel(class)
 	SettingsClass.ApplyFrameStyle(frame)
 	local scroll = frame:Add('DScrollPanel')
 	local canvas = scroll:GetCanvas()
-	
+
 	scroll:Dock(TOP)
 	scroll:SetHeight(400)
-	
+
 	local lab = frame:Add('DLabel')
 	lab:SetTextColor(SettingsClass.TextColor)
 	lab:SetText(P('elimit_tip'))
 	lab:Dock(TOP)
 	lab:SizeToContents()
-	
+
 	local groups = DPP.GetGroups()
 	local Panels = {}
-	
+
 	for k, v in pairs(t) do
 		if not DPP.HasValueLight(groups, k) then
 			table.insert(groups, k)
@@ -1463,16 +1463,16 @@ local function OpenLimitEditPanel(class)
 		p:SetText(t[v] or '-1')
 		p.OriginalValue = (t[v] or '-1')
 	end
-	
+
 	local CustomEnter
-	
+
 	do
 		local l = canvas:Add('DLabel')
 		local gentry = canvas:Add('DTextEntry')
 		local p = canvas:Add('DTextEntry')
 		table.insert(Panels, p)
 		p.Group = ''
-		
+
 		l:Dock(TOP)
 		l:SetText(P('cami_tip'))
 		l:SetTextColor(SettingsClass.TextColor)
@@ -1480,13 +1480,13 @@ local function OpenLimitEditPanel(class)
 
 		gentry:Dock(TOP)
 		gentry:SetText('')
-		
+
 		gentry.p = p
-		
+
 		p:Dock(TOP)
 		p:SetText('-1')
 		p.OriginalValue = '-1'
-		
+
 		CustomEnter = gentry
 	end
 
@@ -1537,19 +1537,19 @@ local function OpenMLimitEditPanel(model)
 	SettingsClass.ApplyFrameStyle(frame)
 	local scroll = frame:Add('DScrollPanel')
 	local canvas = scroll:GetCanvas()
-	
+
 	scroll:Dock(TOP)
 	scroll:SetHeight(400)
-	
+
 	local lab = frame:Add('DLabel')
 	lab:SetTextColor(SettingsClass.TextColor)
 	lab:SetText(P('elimit_tip'))
 	lab:Dock(TOP)
 	lab:SizeToContents()
-	
+
 	local groups = DPP.GetGroups()
 	local Panels = {}
-	
+
 	for k, v in pairs(t) do
 		if not DPP.HasValueLight(groups, k) then
 			table.insert(groups, k)
@@ -1568,16 +1568,16 @@ local function OpenMLimitEditPanel(model)
 		p:SetText(t[v] or '-1')
 		p.OriginalValue = (t[v] or '-1')
 	end
-	
+
 	local CustomEnter
-	
+
 	do
 		local l = canvas:Add('DLabel')
 		local gentry = canvas:Add('DTextEntry')
 		local p = canvas:Add('DTextEntry')
 		table.insert(Panels, p)
 		p.Group = ''
-		
+
 		l:Dock(TOP)
 		l:SetText(P('cami_tip'))
 		l:SetTextColor(SettingsClass.TextColor)
@@ -1585,13 +1585,13 @@ local function OpenMLimitEditPanel(model)
 
 		gentry:Dock(TOP)
 		gentry:SetText('')
-		
+
 		gentry.p = p
-		
+
 		p:Dock(TOP)
 		p:SetText('-1')
 		p.OriginalValue = '-1'
-		
+
 		CustomEnter = gentry
 	end
 
@@ -1818,7 +1818,7 @@ local function OpenSLimitEditPanel(class)
 	SettingsClass.ApplyFrameStyle(frame)
 	local scroll = frame:Add('DScrollPanel')
 	local canvas = scroll:GetCanvas()
-	
+
 	scroll:Dock(TOP)
 	scroll:SetHeight(400)
 
@@ -1830,7 +1830,7 @@ local function OpenSLimitEditPanel(class)
 
 	local groups = DPP.GetGroups()
 	local Panels = {}
-	
+
 	for k, v in pairs(t) do
 		if not DPP.HasValueLight(groups, k) then
 			table.insert(groups, k)
@@ -1849,16 +1849,16 @@ local function OpenSLimitEditPanel(class)
 		p:SetText(t[v] or '0')
 		p.OriginalValue = (t[v] or '0')
 	end
-	
+
 	local CustomEnter
-	
+
 	do
 		local l = canvas:Add('DLabel')
 		local gentry = canvas:Add('DTextEntry')
 		local p = canvas:Add('DTextEntry')
 		table.insert(Panels, p)
 		p.Group = ''
-		
+
 		l:Dock(TOP)
 		l:SetText(P('cami_tip'))
 		l:SetTextColor(SettingsClass.TextColor)
@@ -1866,13 +1866,13 @@ local function OpenSLimitEditPanel(class)
 
 		gentry:Dock(TOP)
 		gentry:SetText('')
-		
+
 		gentry.p = p
-		
+
 		p:Dock(TOP)
 		p:SetText('0')
 		p.OriginalValue = '0'
-		
+
 		CustomEnter = gentry
 	end
 
@@ -1923,7 +1923,7 @@ local function OpenCLimitEditPanel(class)
 	SettingsClass.ApplyFrameStyle(frame)
 	local scroll = frame:Add('DScrollPanel')
 	local canvas = scroll:GetCanvas()
-	
+
 	scroll:Dock(TOP)
 	scroll:SetHeight(400)
 
@@ -1935,7 +1935,7 @@ local function OpenCLimitEditPanel(class)
 
 	local groups = DPP.GetGroups()
 	local Panels = {}
-	
+
 	for k, v in pairs(t) do
 		if not DPP.HasValueLight(groups, k) then
 			table.insert(groups, k)
@@ -1954,16 +1954,16 @@ local function OpenCLimitEditPanel(class)
 		p:SetText(t[v] or '-1')
 		p.OriginalValue = (t[v] or '-1')
 	end
-	
+
 	local CustomEnter
-	
+
 	do
 		local l = canvas:Add('DLabel')
 		local gentry = canvas:Add('DTextEntry')
 		local p = canvas:Add('DTextEntry')
 		table.insert(Panels, p)
 		p.Group = ''
-		
+
 		l:Dock(TOP)
 		l:SetText(P('cami_tip'))
 		l:SetTextColor(SettingsClass.TextColor)
@@ -1971,13 +1971,13 @@ local function OpenCLimitEditPanel(class)
 
 		gentry:Dock(TOP)
 		gentry:SetText('')
-		
+
 		gentry.p = p
-		
+
 		p:Dock(TOP)
 		p:SetText('-1')
 		p.OriginalValue = '-1'
-		
+
 		CustomEnter = gentry
 	end
 
@@ -2163,7 +2163,7 @@ local function BuildToolsPanel(Panel)
 	Panel:Clear()
 	SettingsClass.SetupBackColor(Panel)
 	DPP.SettingsClass.ToolsPanel = Panel
-	
+
 	SettingsClass.SetButtonAccess(SettingsClass.ApplyButtonStyle(Panel:Button(P('clear_decals'), 'dpp_cleardecals')), 'cleardecals')
 	SettingsClass.SetButtonAccess(SettingsClass.ApplyButtonStyle(Panel:Button(P('report_ents'), 'dpp_entcheck')), 'entcheck')
 	SettingsClass.SetButtonAccess(SettingsClass.ApplyButtonStyle(Panel:Button(P('inspect_button'), 'dpp_inspect')), 'inspect')
@@ -2290,7 +2290,7 @@ function CustomBlockMenus.toolworld(Panel)
 	end
 
 	list.OnRowRightClick = function(self, line)
-		
+
 	end
 
 	local entry = vgui.Create('DTextEntry', Panel)
@@ -2527,7 +2527,7 @@ for k, v in pairs(DPP.BlockTypes) do
 
 		menu:Open()
 	end
-	
+
 	PanelsFunctions[k] = function(Panel)
 		if not IsValid(Panel) then return end
 		Panel:Clear()
@@ -2648,7 +2648,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 
 		menu:Open()
 	end
-	
+
 	WhitelistFunctions[k] = function(Panel)
 		if not IsValid(Panel) then return end
 		Panel:Clear()
@@ -2770,16 +2770,16 @@ for k, v in pairs(DPP.RestrictTypes) do
 		frame:SetSize(300, 450)
 		frame:Center()
 		frame:MakePopup()
-		
+
 		local scroll = frame:Add('DScrollPanel')
 		local canvas = scroll:GetCanvas()
-		
+
 		scroll:Dock(TOP)
 		scroll:SetHeight(300)
 
 		local groups = DPP.GetGroups()
 		local Panels = {}
-		
+
 		for k, data in pairs(DPP.RestrictedTypes[k]) do
 			for i, group in pairs(data.groups) do
 				if not DPP.HasValueLight(groups, group) then
@@ -2799,9 +2799,9 @@ for k, v in pairs(DPP.RestrictTypes) do
 			SettingsClass.MakeCheckboxBetter(p)
 			SettingsClass.AddScramblingChars(p.Label, p, p.Button)
 		end
-		
+
 		local CustomEnter
-		
+
 		do
 			local l = canvas:Add('DLabel')
 			local gentry = canvas:Add('DTextEntry')
@@ -2812,7 +2812,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 			p:SetTooltip(P('restrict_ctip'))
 			p:SetChecked(false)
 			p.Group = ''
-			
+
 			l:Dock(TOP)
 			l:SetText(P('cami_tip'))
 			l:SetTextColor(SettingsClass.TextColor)
@@ -2820,9 +2820,9 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 			gentry:Dock(TOP)
 			gentry:SetText('')
-			
+
 			gentry.p = p
-			
+
 			CustomEnter = gentry
 			SettingsClass.MakeCheckboxBetter(p)
 			SettingsClass.AddScramblingChars(p.Label, p, p.Button)
@@ -2844,13 +2844,13 @@ for k, v in pairs(DPP.RestrictTypes) do
 		function apply.DoClick()
 			CustomEnter.p.Group = CustomEnter:GetText()
 			t.groups = {}
-			
+
 			for k, v in pairs(Panels) do
 				if v:GetChecked() and v.Group ~= '' then
 					table.insert(t.groups, v.Group)
 				end
 			end
-			
+
 			t.iswhite = iswhite:GetChecked()
 
 			RunConsoleCommand('dpp_restrict' .. k, class, table.concat(t.groups, ','), t.iswhite and '1' or '0')
@@ -2888,7 +2888,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 		menu:Open()
 	end
-	
+
 	FUNCTIONS['RestrictTypes' .. v .. 'ListClickPlayer'] = function(self, line)
 		local steamid = self:GetLine(line):GetValue(1)
 		local class = self:GetLine(line):GetValue(2)
@@ -2898,7 +2898,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		menu:AddOption(P('clipboard', 'SteamID'), function()
 			SetClipboardText(class)
 		end):SetIcon(table.Random(SettingsClass.TagIcons))
-		
+
 		menu:AddOption(P('clipboard', P('Class')), function()
 			SetClipboardText(class)
 		end):SetIcon(table.Random(SettingsClass.TagIcons))
@@ -2909,11 +2909,11 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 		menu:Open()
 	end
-	
+
 	FUNCTIONS['RestrictTypes' .. v .. 'ListDoubleClick'] = function(self, line)
 		OpenModifyPanel(self:GetLine(line):GetValue(1))
 	end
-	
+
 	PanelsFunctions2[k] = function(Panel)
 		if not IsValid(Panel) then return end
 		Panel:Clear()
@@ -2958,41 +2958,41 @@ for k, v in pairs(DPP.RestrictTypes) do
 		ConVarCheckbox(Panel, 'restrict_' .. k .. '_white')
 		ConVarCheckbox(Panel, 'restrict_' .. k .. '_white_bypass')
 	end
-	
+
 	local function ButtonSelectClick(self)
 		if IsValid(self.entry) and IsValid(self.ply) then
 			self.entry:SetText(self.ply:SteamID())
 		end
-		
+
 		self.frame:Close()
-		
+
 		if IsValid(self.entry) then
 			self.entry:RequestFocus()
 			local x, y = self.entry:LocalToScreen(0, 0)
 			gui.SetMousePos(x + 3, y + 5)
 		end
 	end
-	
+
 	local function OpenPlayersMenu(self)
 		local frame = vgui.Create('DFrame')
 		frame:SetSize(300, 600)
 		frame:Center()
 		frame:MakePopup()
 		frame:SetTitle(P('selecting_player'))
-		
+
 		local scroll = frame:Add('DScrollPanel')
 		scroll:Dock(FILL)
 		local canvas = scroll:GetCanvas()
-		
+
 		for k, ply in ipairs(player.GetAll()) do
 			local pnl = canvas:Add('EditablePanel')
 			pnl:Dock(TOP)
-			
+
 			local Avatar = pnl:Add('DPP_Avatar')
 			Avatar:SetPlayer(ply, 32)
 			Avatar:Dock(LEFT)
 			Avatar:SetSize(24, 24)
-			
+
 			local button = pnl:Add('DButton')
 			button:SetText(ply:Nick())
 			button:Dock(FILL)
@@ -3002,10 +3002,10 @@ for k, v in pairs(DPP.RestrictTypes) do
 			button.entry = self.entry
 			SettingsClass.ApplyButtonStyle(button)
 		end
-		
+
 		gui.SetMousePos(ScrW() / 2, ScrH() / 2 - 295)
 	end
-	
+
 	SettingsClass.RestrictedByPlayerPanelFunctions[k] = function(Panel)
 		if not IsValid(Panel) then return end
 		Panel:Clear()
@@ -3023,7 +3023,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 		local L = DPP.RestrictedTypes_SteamID[k]
 		local New = {}
-		
+
 		for steamid, classes in pairs(L) do
 			for i, class in ipairs(classes) do
 				table.insert(New, {class = class, steamid = steamid})
@@ -3037,23 +3037,23 @@ for k, v in pairs(DPP.RestrictTypes) do
 		end
 
 		list.OnRowRightClick = FUNCTIONS['RestrictTypes' .. v .. 'ListClickPlayer']
-		
+
 		local button = vgui.Create('DButton', Panel)
 		button:SetText(P('selecting_player'))
 		SettingsClass.ApplyButtonStyle(button)
 		button.DoClick = OpenPlayersMenu
 		Panel:AddItem(button)
-		
+
 		local Lab = vgui.Create('DLabel', Panel)
 		Panel:AddItem(Lab)
 		Lab:SetText('SteamID')
 		Lab:SetTextColor(SettingsClass.TextColor)
 		Lab:SizeToContents()
-		
+
 		local entry_steamid = vgui.Create('DTextEntry', Panel)
 		Panel:AddItem(entry_steamid)
 		button.entry = entry_steamid
-		
+
 		local Lab = vgui.Create('DLabel', Panel)
 		Panel:AddItem(Lab)
 		Lab:SetText(P('Class'))
@@ -3095,9 +3095,9 @@ function PANEL:OnMousePressed(key)
 	self.havatar:MakePopup()
 	self.havatar:SetMouseInputEnabled(false)
 	self.havatar:SetKeyboardInputEnabled(false)
-	
+
 	if IsValid(self.ply) and self.ply:IsBot() then return end
-	
+
 	if key == MOUSE_LEFT then
 		if IsValid(self.ply) then
 			gui.OpenURL('https://steamcommunity.com/profiles/' .. self.ply:SteamID64() .. '/')
@@ -3109,18 +3109,18 @@ end
 
 function PANEL:Init()
 	self:SetCursor('hand')
-	
+
 	local avatar = self:Add('AvatarImage')
 	self.avatar = avatar
 	avatar:Dock(FILL)
-	
+
 	local havatar = vgui.Create('AvatarImage')
 	self.havatar = havatar
 	havatar:SetVisible(false)
 	havatar:SetSize(184, 184)
-	
+
 	hook.Add('OnSpawnMenuClose', self, self.AvatarHide)
-	
+
 	self:SetMouseInputEnabled(true)
 	avatar:SetMouseInputEnabled(false)
 	avatar:SetKeyboardInputEnabled(false)
@@ -3131,19 +3131,19 @@ end
 function PANEL:Think()
 	if not IsValid(self.ply) and not self.steamid then return end
 	local x, y = gui.MousePos()
-	
+
 	local hover = self:IsHovered()
-	
+
 	local w, h = ScrW(), ScrH()
-	
+
 	if x + 204 >= w then
 		x = x - 214
 	end
-	
+
 	if y + 204 >= h then
 		y = y - 214
 	end
-	
+
 	if hover then
 		if not self.hover then
 			self.hover = true
@@ -3152,7 +3152,7 @@ function PANEL:Think()
 			self.havatar:SetMouseInputEnabled(false)
 			self.havatar:SetKeyboardInputEnabled(false)
 		end
-		
+
 		self.havatar:SetPos(x + 20, y + 10)
 	else
 		if self.hover then
@@ -3165,7 +3165,7 @@ end
 
 function PANEL:SetPlayer(ply, size)
 	self.ply = ply
-	
+
 	self.avatar:SetPlayer(ply, size)
 	self.havatar:SetPlayer(ply, 184)
 end
@@ -3174,7 +3174,7 @@ function PANEL:SetSteamID(steamid, size)
 	local steamid64 = util.SteamIDTo64(steamid)
 	self.steamid = steamid
 	self.steamid64 = steamid64
-	
+
 	self.avatar:SetSteamID(steamid64, size)
 	self.havatar:SetSteamID(steamid64, 184)
 end
@@ -3190,7 +3190,7 @@ vgui.Register('DPP_Avatar', PANEL, 'EditablePanel') --Panel from DScoreBoard/2
 function SettingsClass.PlayerFriendSorter(a, b)
 	local isFA = a:GetFriendStatus() == 'friend'
 	local isFB = b:GetFriendStatus() == 'friend'
-	
+
 	if isFA and isFB then return false end
 	if isFA and not isFB then return true end
 	if not isFA and isFB then return false end
@@ -3201,14 +3201,14 @@ end
 function SettingsClass.FriendListRowDataLayout(self, parent)
 	self:ApplySchemeSettings()
 	local width, height = self:GetSize()
-	
+
 	local Nick = self.Columns[1]
 	local SteamID = self.Columns[2]
-	
+
 	local nwidth = parent:ColumnWidth(1)
 	Nick:SetPos(20, 0)
 	Nick:SetSize(nwidth - 20, height)
-	
+
 	SteamID:SetPos(nwidth, 0)
 	SteamID:SetSize(parent:ColumnWidth(2), height)
 end
@@ -3217,7 +3217,7 @@ SettingsClass.HasValueLight = DPP.HasValueLight
 
 function SettingsClass.CalculatePlaceholderColor(col)
 	local newCol = Color(255 - col.r, 255 - col.g, 255 - col.b, 255 - col.a)
-	
+
 	for k, v in pairs(newCol) do
 		if v < 127 then
 			newCol[k] = v + 100
@@ -3225,7 +3225,7 @@ function SettingsClass.CalculatePlaceholderColor(col)
 			newCol[k] = v - 100
 		end
 	end
-	
+
 	return newCol
 end
 
@@ -3235,20 +3235,20 @@ SettingsClass.QuickSearchMeta = {
 		KEY_ENTER,
 		KEY_ESCAPE,
 	},
-	
+
 	OnKeyCodeTyped = function(self, key)
 		if SettingsClass.HasValueLight(self.BlockedKeys, key) then
 			return true
 		end
 	end,
-	
+
 	Paint = function(self, w, h)
 		if self.oldPaint then
 			self.oldPaint(self, w, h)
 		end
-		
+
 		self.PlaceholderDrawColor = self.PlaceholderDrawColor or SettingsClass.CalculatePlaceholderColor(self:GetTextColor())
-		
+
 		if self:GetText() == '' then
 			surface.SetFont(self:GetFont())
 			surface.SetTextPos(3, 4)
@@ -3256,7 +3256,7 @@ SettingsClass.QuickSearchMeta = {
 			surface.DrawText(P('search_placeholder'))
 		end
 	end,
-	
+
 	OnValueChange = function(self, str)
 		self.list:Clear()
 		SettingsClass.BuildUpFriendList(self.list, str)
@@ -3268,17 +3268,17 @@ function SettingsClass.BuildUpFriendList(list, filter)
 	local shouldFilter = filter ~= ''
 	filter = filter:lower()
 	list.AvatarQueue = {}
-	
+
 	for k, v in pairs(DPP.GetLocalFriends()) do
 		if shouldFilter then
 			if not v.nick:lower():find(filter, 1, true) then continue end
 		end
-		
+
 		local Line = list:AddLine(v.nick, k)
 		Line.DataLayout = SettingsClass.FriendListRowDataLayout
-		
+
 		table.insert(list.AvatarQueue, {Line, k})
-		
+
 		Line:SetTooltip(P('menu_player_list_tip', v.nick, k, util.SteamIDTo64(k)))
 	end
 end
@@ -3286,7 +3286,7 @@ end
 function SettingsClass.ListViewThink(self)
 	local next = table.remove(self.AvatarQueue, 1)
 	if not next then return end
-	
+
 	local Avatar = next[1]:Add('DPP_Avatar')
 	Avatar:Dock(LEFT)
 	Avatar:SetSize(16, 16)
@@ -3299,9 +3299,9 @@ local function BuildFriendsPanel(Panel)
 	SettingsClass.SetupBackColor(Panel)
 
 	DPP.SettingsClass.FriendPanel = Panel
-	
+
 	local total = sql.Query('SELECT COUNT("steamid") AS `COUNT` FROM `FPP_Buddies`')
-	
+
 	if total then
 		local Lab = vgui.Create('DLabel', Panel)
 		Panel:AddItem(Lab)
@@ -3310,107 +3310,22 @@ local function BuildFriendsPanel(Panel)
 		Lab:SetTextColor(SettingsClass.TextColor)
 		Lab:SizeToContents()
 		Lab:SetTooltip(Text)
-		
+
 		local Apply = Panel:Button(P('fpp_buddies_i'))
-		
+
 		Apply.DoClick = function()
 			RunConsoleCommand('dpp_importfppbuddies')
 		end
-		
+
 		SettingsClass.ApplyButtonStyle(Apply)
 	end
-	
-	local Lab = vgui.Create('DLabel', Panel)
-	Panel:AddItem(Lab)
-	local Text = P('quick_search')
-	Lab:SetText(Text)
-	Lab:SetTextColor(SettingsClass.TextColor)
-	Lab:SizeToContents()
-	Lab:SetTooltip(Text)
-	
-	local search = vgui.Create('DTextEntry', Panel)
-	Panel:AddItem(search)
-	search.oldPaint = search.Paint
-	search:SetUpdateOnType(true)
-	
-	for k, v in pairs(SettingsClass.QuickSearchMeta) do
-		search[k] = v
-	end
 
-	local list = vgui.Create('DListView', Panel)
-	Panel:AddItem(list)
-	
-	search.list = list
+	local Apply = Panel:Button('Open DLib friends')
 
-	list:SetHeight(600)
-	list:AddColumn(P('nick'))
-	list:AddColumn(P('steamid'))
-	list.Think = SettingsClass.ListViewThink
-
-	SettingsClass.BuildUpFriendList(list, filter)
-
-	list.OnRowRightClick = function(self, line)
-		local name = self:GetLine(line):GetValue(1)
-		local steamid = self:GetLine(line):GetValue(2)
-		local menu = vgui.Create('DMenu')
-
-		menu:AddOption(P('clipboard', P('nick')), function()
-			SetClipboardText(name)
-		end):SetIcon(table.Random(SettingsClass.TagIcons))
-
-		menu:AddOption(P('clipboard', P('steamid')), function()
-			SetClipboardText(steamid)
-		end):SetIcon(table.Random(SettingsClass.TagIcons))
-
-		menu:AddOption(P('open', P('steam_profile')), function()
-			gui.OpenURL('https://steamcommunity.com/profiles/' .. util.SteamIDTo64(steamid) .. '/')
-		end):SetIcon('icon16/user.png')
-
-		menu:AddOption(P('edit_r'), function()
-			DPP.OpenFriendEditMenu(steamid)
-		end):SetIcon(SettingsClass.EditIcon)
-
-		menu:AddOption(P('remove_friend'), function()
-			DPP.RemoveFriendBySteamID(steamid)
-		end):SetIcon(SettingsClass.RemoveIcon)
-
-		menu:Open()
-	end
-
-	local plys = player.GetAll()
-	local active = DPP.GetActiveFriends()
-	
-	table.sort(plys, SettingsClass.PlayerFriendSorter)
-
-	for k, v in pairs(plys) do
-		if v == LocalPlayer() then continue end
-		if active[v] then continue end
-		
-		local pnl = vgui.Create('EditablePanel', Panel)
-		Panel:AddItem(pnl)
-		
-		local Avatar = pnl:Add('DPP_Avatar')
-		Avatar:SetPlayer(v, 32)
-		Avatar:Dock(LEFT)
-		Avatar:SetSize(24, 24)
-		
-		local b = pnl:Add('DButton')
-		b:SetText(P('add_friend', v:Nick()))
-		b:SetTooltip(P('menu_player_tip', v:Nick(), v:SteamID(), v:SteamID64(), v:GetFriendStatus() == 'friend' and 'true' or 'false'))
-		b:Dock(FILL)
-		SettingsClass.ApplyButtonStyle(b)
-		
-		b.DoClick = function()
-			DPP.OpenFriendEditMenu(v:SteamID())
-		end
-	end
-
-	local entry = vgui.Create('DTextEntry', Panel)
-	Panel:AddItem(entry)
-	local Apply = Panel:Button(P('add_steamid'))
 	Apply.DoClick = function()
-		DPP.OpenFriendEditMenu(entry:GetText())
+		RunConsoleCommand('dlib_friends')
 	end
+
 	SettingsClass.ApplyButtonStyle(Apply)
 end
 
@@ -3418,7 +3333,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
 	SettingsClass.SetupBackColor(Panel)
-	
+
 	DPP.SettingsClass.FactoryResetPanel = Panel
 
 	local Lab = vgui.Create('DLabel', Panel)
@@ -3428,7 +3343,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SizeToContents()
 	Lab:SetTooltip(Text)
-	
+
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
 	local Text = P('reset_gui_hall')
@@ -3436,7 +3351,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SizeToContents()
 	Lab:SetTooltip(Text)
-	
+
 	local button = Panel:Button('DButton')
 	button:SetText(P('reset_gui_all'))
 	SettingsClass.SetButtonAccess(button, 'factoryreset')
@@ -3444,7 +3359,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 	button.DoClick = function()
 		Derma_Query(P('reset_gui_all'), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_factoryreset') end, 'CANCEL', function() end)
 	end
-	
+
 	local button = Panel:Button('DButton')
 	button:SetText(P('reset_gui_cvars'))
 	SettingsClass.SetButtonAccess(button, 'freset_cvars')
@@ -3452,7 +3367,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 	button.DoClick = function()
 		Derma_Query(P('reset_gui_cvars'), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_freset_cvars') end, 'CANCEL', function() end)
 	end
-	
+
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
 	local Text = P('reset_gui_hint_generic')
@@ -3460,7 +3375,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SizeToContents()
 	Lab:SetTooltip(Text)
-	
+
 	for k, val in pairs{'freset_limits', 'freset_mlimits', 'freset_slimits', 'freset_climits', 'freset_models'} do
 		local button = Panel:Button('DButton')
 		button:SetText(P('reset_gui_' .. val))
@@ -3470,7 +3385,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 			Derma_Query(P('reset_gui_' .. val), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_' .. val) end, 'CANCEL', function() end)
 		end
 	end
-	
+
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
 	local Text = P('reset_gui_hint_combined')
@@ -3478,7 +3393,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SizeToContents()
 	Lab:SetTooltip(Text)
-	
+
 	for k, val in pairs{'freset_blocked', 'freset_exclude', 'freset_restrictions'} do
 		local button = Panel:Button('DButton')
 		button:SetText(P('reset_gui_' .. val))
@@ -3488,7 +3403,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 			Derma_Query(P('reset_gui_' .. val), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_' .. val) end, 'CANCEL', function() end)
 		end
 	end
-	
+
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
 	local Text = P('reset_gui_hint_separate')
@@ -3496,7 +3411,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SizeToContents()
 	Lab:SetTooltip(Text)
-	
+
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
 	local Text = P('reset_gui_hint_block')
@@ -3504,7 +3419,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SizeToContents()
 	Lab:SetTooltip(Text)
-	
+
 	for k, v in pairs(DPP.BlockTypes) do
 		local button = Panel:Button('DButton')
 		button:SetText(P('reset_gui_b' .. k))
@@ -3514,7 +3429,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 			Derma_Query(P('reset_gui_b' .. k), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_freset_blocked_' .. k) end, 'CANCEL', function() end)
 		end
 	end
-	
+
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
 	local Text = P('reset_gui_hint_exclude')
@@ -3522,7 +3437,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SizeToContents()
 	Lab:SetTooltip(Text)
-	
+
 	for k, v in pairs(DPP.WhitelistTypes) do
 		local button = Panel:Button('DButton')
 		button:SetText(P('reset_gui_e' .. k))
@@ -3532,7 +3447,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 			Derma_Query(P('reset_gui_e' .. k), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_freset_exclude_' .. k) end, 'CANCEL', function() end)
 		end
 	end
-	
+
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
 	local Text = P('reset_gui_hint_restricts')
@@ -3540,7 +3455,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 	Lab:SetTextColor(SettingsClass.TextColor)
 	Lab:SizeToContents()
 	Lab:SetTooltip(Text)
-	
+
 	for k, v in pairs(DPP.RestrictTypes) do
 		local button = Panel:Button('DButton')
 		button:SetText(P('reset_gui_r' .. k))
@@ -3591,13 +3506,13 @@ local function About(Panel)
 		gui.OpenURL('https://discord.gg/HG9eS79')
 	end
 	SettingsClass.ApplyButtonStyle(Button)
-	
+
 	local Button = Panel:Button('GitLab')
 	Button.DoClick = function()
 		gui.OpenURL('https://git.dbot.serealia.ca/dbot/dpp')
 	end
 	SettingsClass.ApplyButtonStyle(Button)
-	
+
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
 	Lab:SetText(P('about_bug'))
@@ -3617,7 +3532,7 @@ local function PopulateToolMenu()
 	spawnmenu.AddToolMenuOption('DPP', P('menu_client'), 'DPP.Friends', P('menu_friends'), '', '', BuildFriendsPanel)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_client'), 'DPP.About', P('menu_about'), '', '', About)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_client'), 'DPP.Fallback', P('menu_fallback'), '', '', BuildFallbackList)
-	
+
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.SVars', P('menu_server'), '', '', BuildSVarPanel)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.Players', P('menu_players'), '', '', BuildPlayerList)
 	spawnmenu.AddToolMenuOption('DPP', P('menu_main'), 'DPP.Misc', P('menu_server2'), '', '', BuildMiscVarsPanel)
@@ -3694,10 +3609,6 @@ hook.Add('DPP.ConstLimitsReloaded', 'DPP.Menu', function()
 	BuildSLimitsList(DPP.SettingsClass.SLimitsPanel)
 end)
 
-hook.Add('DPP.FriendsChanged', 'DPP.Menu', function()
-	BuildFriendsPanel(DPP.SettingsClass.FriendPanel)
-end)
-
 hook.Add('DPP.BlockedEntitiesReloaded', 'DPP.Menu', function(s1)
 	if PanelsFunctions[s1] then
 		PanelsFunctions[s1](DPP.SettingsClass.ValidPanels[s1])
@@ -3768,7 +3679,7 @@ hook.Add('DPP.LanguageChanged', 'DPP.Menu', function()
 	About(DPP.SettingsClass.AboutPanel)
 	BuildFallbackList(DPP.SettingsClass.FallbackPanel)
 	BuildToolsPanel(DPP.SettingsClass.ToolsPanel)
-	
+
 	if IsValid(SettingsClass.ModelsGUI) then
 		SettingsClass.BuildModelsListGUI()
 	end
@@ -3776,18 +3687,17 @@ hook.Add('DPP.LanguageChanged', 'DPP.Menu', function()
 	for k, v in pairs(PanelsFunctions2) do
 		PanelsFunctions2[k](DPP.SettingsClass.ValidPanels2[k])
 	end
-	
+
 	for k, v in pairs(WhitelistFunctions) do
 		WhitelistFunctions[k](DPP.SettingsClass.ValidPanels3[k])
 	end
-	
+
 	for k, v in pairs(PanelsFunctions) do
 		PanelsFunctions[k](DPP.SettingsClass.ValidPanels[k])
 	end
 end)
 
 net.Receive('DPP.RefreshPlayerList', function()
-	BuildFriendsPanel(DPP.SettingsClass.FriendPanel)
 	BuildPlayerList(DPP.SettingsClass.PlayerPanel)
 	BuildFallbackList(DPP.SettingsClass.FallbackPanel)
 end)
@@ -3889,7 +3799,7 @@ local CleanupPlayer = {
 		if not DPP.IsOwned(ent) then return false end
 		return true
 	end,
-	
+
 	MenuOpen = function(self, menu, ent, tr)
 		local SubMenu = menu:AddSubMenu()
 
@@ -3900,7 +3810,7 @@ local CleanupPlayer = {
 	end,
 
 	Action = function(self, ent)
-		
+
 	end,
 }
 
@@ -3961,14 +3871,14 @@ local transfertoplayer = {
 			if DPP.GetConVar('transfer_buddies') and not isAdmin and not DPP.IsFriend(ply, v) then
 				continue
 			end
-			
+
 			SubMenu:AddOption(v:Nick(), function()
 				RunConsoleCommand('dpp_transfertoplayer', v:UserID(), ent:EntIndex())
 			end)
-			
+
 			hit = true
 		end
-		
+
 		if not hit then
 			menu:Remove()
 		end
@@ -4020,7 +3930,7 @@ table.insert(BlockedPropetries, {
 	MenuLabel = 'Remove from DPP Blocked Models',
 	MenuIcon = SettingsClass.UnblockIcon,
 	PHRASE = 'property_remove_blocked_models',
-	
+
 	Filter = function(self, ent, ply)
 		if DPP.PlayerConVar(nil, 'no_block_options') then return false end
 		if not IsValid(ent) then return false end

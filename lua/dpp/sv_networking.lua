@@ -34,11 +34,9 @@ util.AddNetworkString('DPP.WListsInsert')
 util.AddNetworkString('DPP.ModelsInsert')
 util.AddNetworkString('DPP.ModelLists')
 
-util.AddNetworkString('DPP.ReloadFiendList')
 util.AddNetworkString('DPP.RefreshPlayerList')
 
 util.AddNetworkString('DPP.ConstrainedTable')
-util.AddNetworkString('DPP.ReceiveFriendList')
 util.AddNetworkString('DPP.SendConstrainedWith')
 
 util.AddNetworkString('DPP.Log')

@@ -187,22 +187,8 @@ function DPP.SetOwner(ent, ply)
 	hook.Run('DPP.AssignOwnership', ply, ent)
 end
 
-function DPP.GetFriendTable(ply)
-	return ply.DPP_Friends or {}
-end
-
-function DPP.RecalculateCPPIFriendTable(ply)
-	local tab = DPP.GetFriendTable(ply)
-	local reply = {}
-	for k, v in pairs(tab) do
-		table.insert(reply, k)
-	end
-	ply.DPP_FriendsCPPI = reply
-	return reply
-end
-
 function DPP.GetFriendTableCPPI(ply)
-	return ply.DPP_FriendsCPPI or {}
+	return ply:GetAllFriends()
 end
 
 --Don't overflow net channel when player pastes a big dupe
@@ -351,8 +337,6 @@ function DPP.PlayerInitialSpawn(ply)
 	timer.Simple(2, function()
 		if not IsValid(ply) then return end
 		DPP.FindPlayerProps(ply)
-		net.Start('DPP.ReloadFiendList')
-		net.Broadcast()
 
 		--Still would call twice rebuilding player list on client
 		net.Start('DPP.RefreshPlayerList')
@@ -504,17 +488,6 @@ end)
 
 hook.Add('PostCleanupMap', 'DPP.UpdateCreatedByMap', function()
 	timer.Simple(0.5, DPP.UpdateCreatedByMap)
-end)
-
-net.Receive('DPP.ReloadFiendList', function(len, ply)
-	ply.DPP_Friends = net.ReadTable()
-	DPP.RecalculateCPPIFriendTable(ply)
-	hook.Run('CPPIFriendsChanged', ply, DPP.GetFriendTableCPPI(ply))
-
-	net.Start('DPP.ReceiveFriendList')
-	net.WriteEntity(ply)
-	net.WriteTable(ply.DPP_Friends)
-	net.Broadcast()
 end)
 
 net.Receive('DPP.SetConVar', function(len, ply)

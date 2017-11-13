@@ -38,26 +38,38 @@ local POSITION_Y = CreateConVar('dpp_position_Y', 50, FCVAR_ARCHIVE, 'Y coordina
 language.Add('Undo_TransferedProp', 'Undo DPP Transfered Entity')
 language.Add('Undo_Owned_Prop', 'Undo DPP Owned Entity')
 
-DPP.FriendsSQLTable = [[
-	CREATE TABLE IF NOT EXISTS dpp_friends
-	(
-		STEAMID VARCHAR(32) NOT NULL,
-		NICKNAME VARCHAR(64) NOT NULL,
-		MODES VARCHAR(255) NOT NULL,
-		PRIMARY KEY (STEAMID)
-	)
-]]
+do
+	local data = sql.Query('SELECT * FROM dpp_friends')
 
-sql.Query(DPP.FriendsSQLTable)
+	if data then
+		sql.Begin()
+
+		for i, row in ipairs(data) do
+			local steamid = row.STEAMID
+			local nickname = row.NICKNAME
+			local modes = util.JSONToTable(row.MODES)
+			DLib.UpdateLastNick(steamid, nickname)
+
+			if modes then
+				local data2 = DLib.friends.LoadPlayer(steamid, true, true)
+
+				for mode, status in pairs(modes) do
+					DLib.friends.UpdateFriendType(steamid, 'dpp_' .. mode, status)
+				end
+			end
+		end
+
+		sql.Commit()
+
+		DLib.friends.Flush()
+
+		sql.Query('DROP TABLE dpp_friends')
+	end
+end
 
 DPP.ClientFriends = {}
 DPP.ActiveFriends = {}
 DPP.FriendsCPPI = {}
-
-function DPP.GetFriendTable(ply)
-	LocalPlayer().DPP_Friends = DPP.ActiveFriends
-	return ply.DPP_Friends or {}
-end
 
 function DPP.GetLocalFriends()
 	return DPP.ClientFriends
@@ -77,43 +89,8 @@ function DPP.ClientConVarChanged(var, old, new)
 	net.SendToServer()
 end
 
-function DPP.RefreshFriends()
-	if not IsValid(LocalPlayer()) then return end
-	DPP.ActiveFriends = {}
-
-	for k, v in pairs(DPP.ClientFriends) do
-		local ply = player.GetBySteamID(k)
-		if not ply then continue end
-		DPP.ActiveFriends[ply] = {}
-		table.Merge(DPP.ActiveFriends[ply], v)
-		DPP.ActiveFriends[ply].steamid = k
-		DPP.ActiveFriends[ply].nick = ply:Nick()
-		DPP.ClientFriends[k].nick = ply:Nick()
-	end
-
-	LocalPlayer().DPP_Friends = DPP.ActiveFriends
-
-	DPP.Message(DPP.GetPhrase('friends_refreshed'))
-	return DPP.ActiveFriends
-end
-
-function DPP.RecalculateCPPIFriendTable(ply)
-	ply.DPP_Friends = ply.DPP_Friends or {}
-	local tab = ply.DPP_Friends
-	tab = tab or {}
-	local reply = {}
-	for k, v in pairs(tab) do
-		table.insert(reply, k)
-	end
-	ply.DPP_FriendsCPPI = reply
-	if ply == LocalPlayer() then
-		DPP.FriendsCPPI = reply
-	end
-	return reply
-end
-
 function DPP.GetFriendTableCPPI(ply)
-	return ply.DPP_FriendsCPPI or {}
+	return ply:GetAllFriends()
 end
 
 function DPP.GetOwnerName(ent)
@@ -133,188 +110,6 @@ function DPP.CheckFriendArgs(t)
 	if t.pickup == nil then t.pickup = true end
 end
 
-function DPP.LoadFriends()
-	local FILE = 'dpp/friends.txt'
-	local out = {}
-
-	if file.Exists(FILE, 'DATA') then
-		local content = file.Read(FILE, 'DATA')
-		local parse = util.JSONToTable(content)
-
-		if parse then
-			for k, v in pairs(parse) do
-				DPP.SaveFriendData(k, v)
-			end
-		end
-
-		file.Delete(FILE)
-	end
-
-	local reply = sql.Query('SELECT * FROM dpp_friends')
-
-	for i, row in ipairs(reply or {}) do
-		out[row.STEAMID] = {
-			nick = row.NICKNAME,
-		}
-
-		local decode = util.JSONToTable(row.MODES)
-
-		if decode then
-			table.Merge(out[row.STEAMID], decode)
-		end
-	end
-
-	DPP.ClientFriends = out
-
-	for k, v in pairs(out) do
-		DPP.CheckFriendArgs(v)
-	end
-
-	DPP.Message(DPP.GetPhrase('friends_loaded'))
-	timer.Simple(0, DPP.RefreshFriends)
-
-	return out
-end
-
-timer.Simple(0, DPP.LoadFriends)
-
-function DPP.SaveFriends()
-	sql.Query('DELETE FROM dpp_friends')
-
-	for k, v in pairs(DPP.ClientFriends) do
-		DPP.SaveFriendData(k, v)
-	end
-end
-
-function DPP.SaveFriendData(steamid, tab)
-	local validModes = table.Copy(tab)
-	validModes.nick = nil
-
-	sql.Query(string.format('REPLACE INTO dpp_friends (STEAMID, NICKNAME, MODES) VALUES (%s, %s, %s)', SQLStr(steamid), SQLStr(tab.nick or 'unknown'), SQLStr(util.TableToJSON(validModes))))
-end
-
-function DPP.SaveFriend(steamid)
-	DPP.SaveFriendData(steamid, DPP.ClientFriends[steamid])
-end
-
-function DPP.SendFriends()
-	DPP.RefreshFriends()
-	DPP.Message(DPP.GetPhrase('friends_sended'))
-	net.Start('DPP.ReloadFiendList')
-	net.WriteTable(DPP.ActiveFriends)
-	net.SendToServer()
-end
-
-function DPP.AddFriend(ply, physgun, gravgun, toolgun, use, vehicle, damage, pickup)
-	if ply == LocalPlayer() then return end
-
-	local steamid = ply:SteamID()
-
-	if not istable(physgun) then
-		DPP.ClientFriends[steamid] = {
-			physgun = physgun,
-			gravgun = gravgun,
-			toolgun = toolgun,
-			use = use,
-			vehicle = vehicle,
-			damage = damage,
-			pickup = pickup,
-			nick = ply:Nick(),
-		}
-	else
-		DPP.ClientFriends[steamid] = {
-			nick = ply:Nick(),
-		}
-
-		table.Merge(DPP.ClientFriends[steamid], physgun)
-	end
-
-	DPP.CheckFriendArgs(DPP.ClientFriends[steamid])
-
-	DPP.Message(DPP.GetPhrase('friend_added'))
-
-	DPP.RecalculateCPPIFriendTable(LocalPlayer())
-	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
-	DPP.SaveFriend(steamid)
-	DPP.SendFriends()
-
-	hook.Run('DPP.FriendsChanged')
-end
-
-function DPP.AddFriendBySteamID(steamid, physgun, gravgun, toolgun, use, vehicle, damage, pickup)
-	steamid = string.upper(steamid)
-
-	local ply = player.GetBySteamID(steamid)
-	local oldNick = DPP.ClientFriends[steamid] and DPP.ClientFriends[steamid].nick or ''
-
-	if not istable(physgun) then
-		DPP.ClientFriends[steamid] = {
-			physgun = physgun,
-			gravgun = gravgun,
-			toolgun = toolgun,
-			use = use,
-			vehicle = vehicle,
-			damage = damage,
-			pickup = pickup,
-			nick = ply and ply:Nick() or oldNick,
-		}
-	else
-		DPP.ClientFriends[steamid] = {
-			nick = ply and ply:Nick() or oldNick,
-		}
-
-		table.Merge(DPP.ClientFriends[steamid], physgun)
-	end
-
-	DPP.CheckFriendArgs(DPP.ClientFriends[steamid])
-
-	DPP.Message(DPP.GetPhrase('friend_added'))
-
-	DPP.RecalculateCPPIFriendTable(LocalPlayer())
-	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
-	DPP.SaveFriend(steamid)
-	DPP.SendFriends()
-
-	hook.Run('DPP.FriendsChanged')
-end
-
-function DPP.RemoveFriend(ply)
-	if ply == LocalPlayer() then return end
-	local steamid = ply:SteamID()
-	if not DPP.ClientFriends[steamid] then
-		DPP.Message(DPP.GetPhrase('no_friend_with_steamid', steamid))
-		return
-	end
-
-	DPP.ClientFriends[steamid] = nil
-	DPP.Message(DPP.GetPhrase('friend_removed', steamid))
-
-	DPP.RecalculateCPPIFriendTable(LocalPlayer())
-	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
-	sql.Query(string.format('DELETE FROM dpp_friends WHERE STEAMID = %s', SQLStr(steamid)))
-	DPP.SendFriends()
-
-	hook.Run('DPP.FriendsChanged')
-end
-
-function DPP.RemoveFriendBySteamID(steamid)
-	if ply == LocalPlayer() then return end
-	if not DPP.ClientFriends[steamid] then
-		DPP.Message(DPP.GetPhrase('no_friend_with_steamid', steamid))
-		return
-	end
-
-	DPP.ClientFriends[steamid] = nil
-	DPP.Message(DPP.GetPhrase('friend_removed', steamid))
-
-	DPP.RecalculateCPPIFriendTable(LocalPlayer())
-	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
-	sql.Query(string.format('DELETE FROM dpp_friends WHERE STEAMID = %s', SQLStr(steamid)))
-	DPP.SendFriends()
-
-	hook.Run('DPP.FriendsChanged')
-end
-
 local function ArgBool(val)
 	if val == nil then return true end
 
@@ -324,66 +119,6 @@ local function ArgBool(val)
 	if n <= 0 then return false end
 	return true
 end
-
-concommand.Add('dpp_addfriend', function(ply, cmd, args)
-	if not args[1] then
-		DPP.Message(DPP.GetPhrase('com_invalid_target'))
-		return
-	end
-
-	local ply = string.lower(args[1])
-
-	if string.sub(ply, 1, 5) == 'steam' then
-		ply = string.upper(args[1])
-		DPP.AddFriendBySteamID(ply, ArgBool(args[2]), ArgBool(args[3]), ArgBool(args[4]), ArgBool(args[5]), ArgBool(args[6]), ArgBool(args[7]), ArgBool(args[8]))
-		return
-	end
-
-	local found
-
-	for k, v in pairs(player.GetAll()) do
-		if string.find(string.lower(v:Nick()), ply) then
-			found = v
-		end
-	end
-
-	if not found then
-		DPP.Message(DPP.GetPhrase('com_no_target'))
-		return
-	end
-
-	DPP.AddFriend(found, ArgBool(args[2]), ArgBool(args[3]), ArgBool(args[4]), ArgBool(args[5]), ArgBool(args[6]), ArgBool(args[7]), ArgBool(args[8]))
-end)
-
-concommand.Add('dpp_remfriend', function(ply, cmd, args)
-	if not args[1] then
-		DPP.Message(DPP.GetPhrase('com_invalid_target'))
-		return
-	end
-
-	local ply = string.lower(args[1])
-
-	if string.sub(ply, 1, 5) == 'steam' then
-		ply = string.upper(args[1])
-		DPP.RemoveFriendBySteamID(ply)
-		return
-	end
-
-	local found
-
-	for k, v in pairs(player.GetAll()) do
-		if string.find(string.lower(v:Nick()), ply) then
-			found = v
-		end
-	end
-
-	if not found then
-		DPP.Message(DPP.GetPhrase('com_no_target'))
-		return
-	end
-
-	DPP.RemoveFriend(found)
-end)
 
 concommand.Add('dpp_importfppbuddies', function(ply)
 	local friends = sql.Query('SELECT * FROM `FPP_Buddies`')
@@ -414,7 +149,6 @@ concommand.Add('dpp_importfppbuddies', function(ply)
 
 	DPP.Message(DPP.GetPhrase('friend_added'))
 
-	DPP.RecalculateCPPIFriendTable(LocalPlayer())
 	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
 	DPP.SendFriends()
 
@@ -1094,11 +828,6 @@ function DPP.Notify(message, Type)
 	end
 end
 
-net.Receive('DPP.ReloadFiendList', function()
-	DPP.SendFriends()
-	hook.Run('DPP.FriendsChanged')
-end)
-
 net.Receive('DPP.Notify', function()
 	DPP.Notify(DPP.PreprocessPhrases(unpack(DPP.ReadMessageTable())), net.ReadUInt(6))
 end)
@@ -1127,15 +856,6 @@ net.Receive('DPP.SendConstrainedWith', function()
 	else
 		ent.DPP_ConstrainedWith = tab
 	end
-end)
-
-net.Receive('DPP.ReceiveFriendList', function()
-	local ply = net.ReadEntity()
-	if ply == LocalPlayer() then return end
-	ply.DPP_Friends = net.ReadTable()
-
-	DPP.RecalculateCPPIFriendTable(ply)
-	hook.Run('CPPIFriendsChanged', ply, DPP.GetFriendTableCPPI(ply))
 end)
 
 net.Receive('DPP.InspectEntity', function()

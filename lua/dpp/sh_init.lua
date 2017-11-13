@@ -119,7 +119,7 @@ function DPP.ToString(obj)
 	elseif type(obj) == 'nil' then
 		return nil
 	end
-	
+
 	return tostring(obj)
 end
 
@@ -164,15 +164,15 @@ end
 
 function DPP.PopFromArray(arr, val)
 	local i
-	
+
 	for k, v in ipairs(arr) do
 		if v == val then i = k end
 	end
-	
+
 	if i then
 		table.remove(arr, i)
 	end
-	
+
 	return arr
 end
 
@@ -580,7 +580,7 @@ DPP.Settings = {
 	},
 
 	-- Too Hacky
-	
+
 	['strict_spawn_checks_atrack'] = {
 		type = 'bool',
 		value = '0',
@@ -830,45 +830,45 @@ DPP.Settings = {
 		max = 1000,
 		desc = 'Maximal distance between props maximals and minimals vectors (AABB size)'
 	},
-	
+
 	['disable_huds'] = {
 		type = 'bool',
 		value = '0',
 		desc = 'Tell clients that server preffers DPP HUD to be disabled'
 	},
-	
+
 	['disable_fancy_displays'] = {
 		type = 'bool',
 		value = '0',
 		desc = 'Tell clients that server preffers DPP Fancy Display to be disabled'
 	},
-	
+
 	-- Transfer options
-	
+
 	['transfer_enable'] = {
 		type = 'bool',
 		value = '1',
 		desc = 'Allow players to transfer anything'
 	},
-	
+
 	['transfer_single'] = {
 		type = 'bool',
 		value = '1',
 		desc = 'Allow players to transfer one entity'
 	},
-	
+
 	['transfer_all'] = {
 		type = 'bool',
 		value = '1',
 		desc = 'Allow players to transfer all his entities'
 	},
-	
+
 	['transfer_buddies'] = {
 		type = 'bool',
 		value = '1',
 		desc = 'Allow players to transfer stuff only to buddies (this does not affect admins)'
 	},
-	
+
 	['transfer_all_disc'] = {
 		type = 'bool',
 		value = '1',
@@ -1075,13 +1075,13 @@ DPP.CSettings = {
 		nosend = true,
 		desc = 'Draw owner display in screenshots',
 	},
-	
+
 	['hud_obey_server'] = {
 		type = 'bool',
 		value = '1',
 		desc = 'Disable DPP HUD if server wants so',
 	},
-	
+
 	['fancy_hud_obey_server'] = {
 		type = 'bool',
 		value = '1',
@@ -1113,7 +1113,7 @@ for k, v in pairs(DPP.Settings) do
 	v.bool = v.type == 'bool'
 	v.int = v.type == 'int'
 	v.float = v.type == 'float'
-	
+
 	hook.Run('DPP_ConVarRegistered', k, v)
 end
 
@@ -1260,7 +1260,7 @@ function DPP.AddConVar(k, tab)
 		DPP.SVars[k] = CreateConVar('dpp_' .. k, tab.value, {FCVAR_NOTIFY, FCVAR_SERVER_CAN_EXECUTE})
 		cvars.AddChangeCallback('dpp_' .. k, DPP.ConVarChanged, 'DPP')
 	end
-	
+
 	hook.Run('DPP_ConVarRegistered', k, tab)
 end
 
@@ -1310,8 +1310,8 @@ for k, v in pairs(DPP.BlockTypes) do
 			local status = DPP.BlockedEntities[k][ent] or false
 			if not status then return false end
 
-			if c then 
-				return false 
+			if c then
+				return false
 			else
 				if cA and isAdmin then
 					return false
@@ -1399,7 +1399,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		value = '1',
 		type = 'bool',
 	})
-	
+
 	local cvar1 = 'restrict_' .. k
 	local cvar2 = 'restrict_' .. k .. '_white'
 	local cvar3 = 'restrict_' .. k .. '_white_bypass'
@@ -1414,7 +1414,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		local reply = false
 		local hit = false
 		local isAdmin
-		
+
 		if DPP.IsEntity(class) then
 			class = class:GetClass():lower()
 		else
@@ -1460,7 +1460,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		if not DPP.GetConVar('enable_lists') then return false end
 		if not DPP.GetConVar(cvar4) then return false end
 		local steamid = DPP.IsEntity(ply) and ply:SteamID() or ply
-		
+
 		if not DPP.RestrictedTypes_SteamID[k][steamid] then return false end
 		return DPP.HasValueLight(DPP.RestrictedTypes_SteamID[k][steamid], class)
 	end
@@ -1471,7 +1471,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		else
 			class = class:lower()
 		end
-		
+
 		local T = DPP.RestrictedTypes[k][class]
 
 		if T then
@@ -1480,10 +1480,10 @@ for k, v in pairs(DPP.RestrictTypes) do
 			return false
 		end
 	end
-	
+
 	DPP['IsEvenRestricted' .. v .. 'Player'] = function(ply, class)
 		local steamid = DPP.IsEntity(ply) and ply:SteamID() or ply
-		
+
 		if not DPP.RestrictedTypes_SteamID[k][steamid] then return false end
 		return DPP.HasValueLight(DPP.RestrictedTypes_SteamID[k][steamid], class)
 	end
@@ -1683,7 +1683,7 @@ local function GetTouchAccess1(ply)
 		expires = math.huge,
 		waiting = true,
 	}
-	
+
 	DPP.HaveAccess(ply, 'touchother', function(result)
 		PlayersTouchAccess[ply] = {
 			result = result,
@@ -1698,7 +1698,7 @@ local function GetTouchAccess2(ply)
 		expires = math.huge,
 		waiting = true,
 	}
-	
+
 	DPP.HaveAccess(ply, 'touchworld', function(result)
 		WorldTouchAccess[ply] = {
 			result = result,
@@ -1841,10 +1841,10 @@ function DPP.CanTouch(ply, ent, mode)
 		if IsValid(owner) and owner:GetClass() == 'gmod_anchor' then continue end
 
 		if owner == ply then
-			if DPP.PlayerConVar(ply, 'no_touch') then 
-				can = false 
+			if DPP.PlayerConVar(ply, 'no_touch') then
+				can = false
 				reason = GetPhrase('dpp_no_touch_true')
-				break 
+				break
 			end
 
 			continue
@@ -1852,13 +1852,13 @@ function DPP.CanTouch(ply, ent, mode)
 
 		if not IsValid(owner) then
 			if not DPP.CanTouchWorld(ply, ent) then
-				can = false 
+				can = false
 				reason = GetPhrase('world_pp')
 				break
 			end
 
 			if DPP.PlayerConVar(ply, 'no_touch_world', false) then
-				can = false 
+				can = false
 				reason = GetPhrase('dpp_no_touch_world')
 				break
 			end
@@ -1907,14 +1907,14 @@ function DPP.FormatPlayer(ply)
 	local t = {}
 
 	table.insert(t, team.GetColor(ply:Team()))
-	
+
 	local nick = ply:Nick()
 	table.insert(t, '!#' .. nick)
-	
+
 	if ply.SteamName and ply:SteamName() ~= nick then
 		table.insert(t, ' (' .. ply:SteamName() .. ')')
 	end
-	
+
 	table.insert(t, color_white)
 	table.insert(t, '<' .. ply:SteamID() .. '>')
 
@@ -1987,11 +1987,11 @@ end
 
 function DPP.ResetConVars()
 	if CLIENT then return end
-	
+
 	for k, val in pairs(DPP.Settings) do
 		RunConsoleCommand('dpp_' .. k, val.value)
 	end
-	
+
 	DPP.DoEcho(Color(215, 45, 45), '#reset_cvars')
 end
 
@@ -2001,34 +2001,34 @@ end
 
 function DPP.PreprocessPhrases(...)
 	local repack = {}
-	
+
 	for k, v in ipairs{...} do
 		if type(v) ~= 'string' then
 			table.insert(repack, v)
 			continue
 		end
-		
+
 		if v:sub(1, 2) == '!#' then
 			table.insert(repack, v:sub(3))
 			continue
 		end
-		
+
 		if v:sub(1, 1) ~= '#' then
 			table.insert(repack, v)
 			continue
 		end
-		
+
 		local raw = v:sub(2)
 		local args = string.Explode('||', raw)
 		local id = table.remove(args, 1)
-		
+
 		if DPP.PhraseExists(id) then
 			table.insert(repack, DPP.GetPhraseSafe(id, unpack(args)))
 		else
 			table.insert(repack, '<INVALID PHRASE - ' .. id .. '>')
 		end
 	end
-	
+
 	return repack
 end
 
