@@ -62,10 +62,10 @@ function DPP.IsFriend(ply, ply2, mode)
 		if not t[ply] then return false end
 		return t[ply][mode] ~= false --???, i would return true if mode does not exist or ply2 is a generic friend to ply
 	end
-	
+
 	if not t[ply] then return false end
 	local hit = false
-	
+
 	for k, v in pairs(t[ply]) do
 		if v then
 			hit = true
@@ -203,7 +203,7 @@ function DPP.GetPlayerList()
 	end
 
 	for k, v in pairs(DPP.PlayerList) do
-		if not UIDTableHasValue(r, v.UID) then 
+		if not UIDTableHasValue(r, v.UID) then
 			table.insert(r, v)
 		end
 	end
@@ -247,11 +247,11 @@ DPP.Helpers = DPP.Helpers or {}
 
 function DPP.Helpers.CreateArrayFromLines(arr, id)
 	local reply = {}
-	
+
 	for k, v in ipairs(arr) do
 		table.insert(reply, v:GetValue(id))
 	end
-	
+
 	return reply
 end
 
@@ -313,7 +313,7 @@ local function RecursiveFunc(tab, what, to)
 	if not tab then return end
 	if MEM_TABLE_CACHE[tab] then return end
 	MEM_TABLE_CACHE[tab] = true
-	
+
 	for k, v in pairs(tab) do
 		if v == what then
 			tab[k] = to
@@ -323,7 +323,7 @@ local function RecursiveFunc(tab, what, to)
 				RecursiveFunc(v, what, to)
 			end
 		end
-		
+
 		if DPP.IsEntity(v) and not v:IsPlayer() then
 			RecursiveFunc(v:GetTable(), what, to)
 		end
@@ -346,8 +346,8 @@ function DPP.CheckUpForGrabs(ent, ply)
 	if not SERVER then return end
 	if not DPP.IsUpForGrabs(ent) then return end
 	DPP.DeleteEntityUndo(ent)
-	DPP.SetOwner(ent, ply) 
-	DPP.SetUpForGrabs(ent, false) 
+	DPP.SetOwner(ent, ply)
+	DPP.SetUpForGrabs(ent, false)
 	DPP.Notify(ply, DPP.PPhrase(ply, 'grabs_hit'))
 	undo.Create('Owned_Prop')
 	undo.AddEntity(ent)
