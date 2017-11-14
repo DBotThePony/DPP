@@ -90,16 +90,6 @@ function DPP.GetOwnerName(ent)
 	return owner:Nick()
 end
 
-function DPP.CheckFriendArgs(t)
-	if t.physgun == nil then t.physgun = true end
-	if t.gravgun == nil then t.gravgun = true end
-	if t.toolgun == nil then t.toolgun = true end
-	if t.use == nil then t.use = true end
-	if t.vehicle == nil then t.vehicle = true end
-	if t.damage == nil then t.damage = true end
-	if t.pickup == nil then t.pickup = true end
-end
-
 local function ArgBool(val)
 	if val == nil then return true end
 
@@ -112,31 +102,28 @@ end
 
 concommand.Add('dpp_importfppbuddies', function(ply)
 	local friends = sql.Query('SELECT * FROM `FPP_Buddies`')
-
 	if not friends then return end
 
 	for k, row in ipairs(friends) do
 		local steamid = row.steamid
 
-		DPP.ClientFriends[steamid] = {
-			use = tobool(row.playeruse),
-			toolgun = tobool(row.toolgun),
-			physgun = tobool(row.physgun),
-			gravgun = tobool(row.gravgun),
-			damage = tobool(row.entitydamage),
-			nick = row.name or '<FPP Buddy>',
-		}
+		DLib.friends.UpdateFriendType(steamid, 'dpp_use', tobool(row.playeruse))
+		DLib.friends.UpdateFriendType(steamid, 'dpp_toolgun', tobool(row.toolgun))
+		DLib.friends.UpdateFriendType(steamid, 'dpp_physgun', tobool(row.physgun))
+		DLib.friends.UpdateFriendType(steamid, 'dpp_gravgun', tobool(row.gravgun))
+		DLib.friends.UpdateFriendType(steamid, 'dpp_damage', tobool(row.entitydamage))
 
-		DPP.SaveFriend(steamid)
+		if row.name then
+			DLib.UpdateLastNick(steamid, row.name)
+		end
+
 		DPP.Message(DPP.GetPhrase('friend_added_fpp', row.name or steamid))
 	end
 
+	DLib.friends.Flush()
+
 	DPP.Message(DPP.GetPhrase('friend_added'))
-
-	hook.Run('CPPIFriendsChanged', LocalPlayer(), DPP.FriendsCPPI)
-	DPP.SendFriends()
-
-	hook.Run('DPP.FriendsChanged')
+	hook.Run('CPPIFriendsChanged', LocalPlayer(), LocalPlayer():GetAllFriends())
 end)
 
 local DEFAULT_FONT = 'DPP.FONT'
