@@ -67,17 +67,7 @@ do
 	end
 end
 
-DPP.ClientFriends = {}
-DPP.ActiveFriends = {}
 DPP.FriendsCPPI = {}
-
-function DPP.GetLocalFriends()
-	return DPP.ClientFriends
-end
-
-function DPP.GetActiveFriends()
-	return DPP.ActiveFriends
-end
 
 function DPP.ClientConVarChanged(var, old, new)
 	var = string.sub(var, 5)
@@ -128,10 +118,6 @@ concommand.Add('dpp_importfppbuddies', function(ply)
 	for k, row in ipairs(friends) do
 		local steamid = row.steamid
 
-		if DPP.ClientFriends[steamid] then
-			continue
-		end
-
 		DPP.ClientFriends[steamid] = {
 			use = tobool(row.playeruse),
 			toolgun = tobool(row.toolgun),
@@ -140,8 +126,6 @@ concommand.Add('dpp_importfppbuddies', function(ply)
 			damage = tobool(row.entitydamage),
 			nick = row.name or '<FPP Buddy>',
 		}
-
-		DPP.CheckFriendArgs(DPP.ClientFriends[steamid])
 
 		DPP.SaveFriend(steamid)
 		DPP.Message(DPP.GetPhrase('friend_added_fpp', row.name or steamid))

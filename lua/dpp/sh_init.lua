@@ -1126,6 +1126,22 @@ end
 DPP.CVars = {}
 DPP.SVars = {}
 
+do
+	local friends = {
+		'physgun',
+		'gravgun',
+		'toolgun',
+		'use',
+		'vehicle',
+		'damage',
+		'pickup',
+	}
+
+	for i, friend in ipairs(friends) do
+		DLib.friends.Register('dpp_' .. friend, friend:sub(1, 1):upper() .. friend:sub(2) .. ' DPP buddy', true)
+	end
+end
+
 if CLIENT then
 	function DPP.PlayerConVar(ply, var, ifUndefined)
 		local t = DPP.CSettings[var]

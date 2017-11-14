@@ -52,72 +52,6 @@ function FUNCTIONS.CCheckBoxDoClick(self)
 	RunConsoleCommand('dpp_' .. self.val, (not self.LastVal) == false and '0' or '1')
 end
 
-function DPP.OpenFriendEditMenu(steamid)
-	steamid = string.upper(steamid)
-	local t = DPP.ClientFriends[steamid] or {
-		nick = '',
-	}
-
-	DPP.CheckFriendArgs(t)
-
-	local height = 50
-
-	local frame = vgui.Create('DFrame')
-	frame:SetTitle(P('modifying', steamid))
-	SettingsClass.ApplyFrameStyle(frame)
-
-	local groups = DPP.GetGroups()
-	local Panels = {}
-
-	for k, v in pairs(t) do
-		if k == 'nick' then continue end
-		height = height + 20
-
-		local p = frame:Add('DCheckBoxLabel')
-		Panels[k] = p
-		p:Dock(TOP)
-		p:SetText(P('friend_buddy', k:gsub('^.', string.upper)))
-		p:SetChecked(v)
-		p.Type = k
-
-		SettingsClass.MakeCheckboxBetter(p)
-		p.Button.Paint = Style.CheckBoxButtonPaintClient
-		p.Paint = Style.CheckBoxPaintClient
-		SettingsClass.AddScramblingChars(p.Label, p, p.Button)
-	end
-
-	height = height + 30
-
-	local apply = frame:Add('DButton')
-	apply:Dock(BOTTOM)
-	apply:SetText(P('apply'))
-	SettingsClass.ApplyButtonStyle(apply)
-
-	function apply.DoClick()
-		local t = {}
-
-		for k, v in pairs(Panels) do
-			t[k] = v:GetChecked()
-		end
-
-		DPP.AddFriendBySteamID(steamid, t)
-		frame:Close()
-	end
-
-	local discard = frame:Add('DButton')
-	discard:Dock(BOTTOM)
-	discard:SetText(P('discard'))
-	SettingsClass.ApplyButtonStyle(discard)
-
-	function discard.DoClick()
-		frame:Close()
-	end
-
-	frame:SetSize(300, height)
-	frame:Center()
-	frame:MakePopup()
-end
-
 function DPP.OpenShareMenu(ent)
 	if DPP.GetOwner(ent) ~= LocalPlayer() then return end
 	local t = DPP.GetSharedTable(ent)
@@ -3227,60 +3161,6 @@ function SettingsClass.CalculatePlaceholderColor(col)
 	end
 
 	return newCol
-end
-
-SettingsClass.QuickSearchMeta = {
-	BlockedKeys = {
-		KEY_BACKSLASH,
-		KEY_ENTER,
-		KEY_ESCAPE,
-	},
-
-	OnKeyCodeTyped = function(self, key)
-		if SettingsClass.HasValueLight(self.BlockedKeys, key) then
-			return true
-		end
-	end,
-
-	Paint = function(self, w, h)
-		if self.oldPaint then
-			self.oldPaint(self, w, h)
-		end
-
-		self.PlaceholderDrawColor = self.PlaceholderDrawColor or SettingsClass.CalculatePlaceholderColor(self:GetTextColor())
-
-		if self:GetText() == '' then
-			surface.SetFont(self:GetFont())
-			surface.SetTextPos(3, 4)
-			surface.SetTextColor(self.PlaceholderDrawColor)
-			surface.DrawText(P('search_placeholder'))
-		end
-	end,
-
-	OnValueChange = function(self, str)
-		self.list:Clear()
-		SettingsClass.BuildUpFriendList(self.list, str)
-	end,
-}
-
-function SettingsClass.BuildUpFriendList(list, filter)
-	filter = filter or ''
-	local shouldFilter = filter ~= ''
-	filter = filter:lower()
-	list.AvatarQueue = {}
-
-	for k, v in pairs(DPP.GetLocalFriends()) do
-		if shouldFilter then
-			if not v.nick:lower():find(filter, 1, true) then continue end
-		end
-
-		local Line = list:AddLine(v.nick, k)
-		Line.DataLayout = SettingsClass.FriendListRowDataLayout
-
-		table.insert(list.AvatarQueue, {Line, k})
-
-		Line:SetTooltip(P('menu_player_list_tip', v.nick, k, util.SteamIDTo64(k)))
-	end
 end
 
 function SettingsClass.ListViewThink(self)
