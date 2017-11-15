@@ -739,29 +739,8 @@ end
 
 local LastPanelUpdate = 0
 
-local function CreateFix()
-	if IsValid(DPP.ScreenshotPanelHack) then
-		if LastPanelUpdate > CurTime() then return end
-		LastPanelUpdate = CurTime() + 1
-		DPP.ScreenshotPanelHack:SetSize(ScrW(), ScrH())
-		DPP.ScreenshotPanelHack:SetPos(0, 0)
-		DPP.ScreenshotPanelHack:SetRenderInScreenshots(DPP.LocalConVar('draw_in_screenshots', false))
-		return
-	end
-
-	local newPnl = vgui.Create('EditablePanel')
-	DPP.ScreenshotPanelHack = newPnl
-	newPnl:SetRenderInScreenshots(false)
-	newPnl:SetSize(ScrW(), ScrH())
-	newPnl:SetPos(0, 0)
-	newPnl:SetMouseInputEnabled(false)
-	newPnl:SetKeyboardInputEnabled(false)
-	newPnl:KillFocus()
-	newPnl:SetVisible(true)
-	newPnl.Paint = HUDPaint
-end
-
 hook.Add('Think', 'DPP.HUDThink', HUDThink)
+hook.Add('HUDDrawHidden', 'DPP.HUDThink', HUDPaint)
 
 local LastSound = 0
 
@@ -784,11 +763,9 @@ function DPP.Notify(message, Type)
 
 		for k, v in pairs(message) do
 			if type(v) == 'string' then
-				if v:sub(1, 6) == '<STEAM' then
-					continue
+				if v:sub(1, 6) ~= '<STEAM' then
+					str = str .. v
 				end
-
-				str = str .. v
 			end
 		end
 
@@ -925,8 +902,6 @@ function DPP.ReplacePropertyFuncs()
 		DPP.Message('Failed to override property menu')
 	end
 end
-
-hook.Add('HUDPaint', 'DPP.Hooks', CreateFix)
 
 concommand.Add('dpp_printmissingphrases', function(_, _, args)
 	DPP.PrintMissingPhrases(args[1] or DPP.CURRENT_LANG)
