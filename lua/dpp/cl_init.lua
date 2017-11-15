@@ -698,12 +698,6 @@ local function DrawNearToolgun()
 	cam.End3D()
 end
 
-local LastRenderFrame = 0
-
-if IsValid(DPP.ScreenshotPanelHack) then
-	DPP.ScreenshotPanelHack:Remove()
-end
-
 local function HUDPaint()
 	local can = hook.Run('CanDrawDPPHUD')
 	if can == false then return end
