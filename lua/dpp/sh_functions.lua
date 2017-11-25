@@ -57,9 +57,9 @@ end
 function DPP.IsFriend(ply, ply2, mode)
 	if ply == ply2 then return true end
 	if mode then
-		return ply:CheckDLibFriendIn(ply2, 'dpp_' .. mode)
+		return ply:CheckDLibFriendIn2(ply2, 'dpp_' .. mode)
 	else
-		return ply:CheckDLibFriend(ply2)
+		return ply:CheckDLibFriend2(ply2)
 	end
 end
 
