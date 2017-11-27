@@ -27,17 +27,17 @@ local en = {
 	modifying = 'Modifying %s',
 	sharing = 'Share settings of %s',
 	unshare = 'Uncheck all and apply',
-	
+
 	remove_my_ents = 'Remove entities owned by me',
 	display_customization_color = 'Display colours customization',
 	display_customization = 'Display customization',
 	display_x = 'X coordinate (percent) on screen for owner display',
 	display_y = 'Y coordinate (percent) on screen for owner display',
-	
+
 	clear_decals = 'Clear decals',
 	report_ents = 'Collect and print info about entities',
 	delete_ents = 'Delete all player owned entities',
-	
+
 	freeze_all = 'Freeze all player owned entities',
 	freeze_all_phys = 'Freeze all valid physics objects',
 	delete_disconnected = 'Delete entities owned by disconnected players',
@@ -106,19 +106,19 @@ local en = {
 	about_bug = 'Can we have a free bug report please?\nPlease?!',
 	about_issues = 'DPP issues page',
 	display_customization_colors = 'Display colours customization',
-	
+
 	remove_exclude = 'Remove from exclude list',
 	add_exclude_all = 'Add that entity to ALL exclude lists',
 	remove_exclude_all = 'Remove that entity from ALL exclude lists',
-	
+
 	add_exclude_looking_at = 'Add the entity you are looking at to the exclude list',
 	add_exclude_looking_at_all = 'Add the entity you are looking at to ALL exclude lists',
 	remove_exclude_looking_at = 'Remove the entity you are looking at from the exclude list',
 	remove_exclude_looking_at_all = 'Remove the entity you are looking at from ALL exclude lists',
-	
+
 	toolmode_exclude_tip = [[
-This list defines toolgun modes that is allowed to be 
-used on ANY entity. For example, if you add "remover" 
+This list defines toolgun modes that is allowed to be
+used on ANY entity. For example, if you add "remover"
 there, anyone can remove any entity using remover toolgun.
 REMEMBER: Blacklists are ALWAYS have higher priority
 than other lists! That means excluded tool modes
@@ -134,9 +134,9 @@ any whitelist!
 ]],
 
 	property_exclude_tip = [[
-This list defines property types that is allowed to be 
-used on ANY entity. For example, if you add "remover" 
-there,  anyone can remove any entity using property menus. 
+This list defines property types that is allowed to be
+used on ANY entity. For example, if you add "remover"
+there,  anyone can remove any entity using property menus.
 To see all property classes, type use button below.
 REMEMBER: Blacklists are ALWAYS have higher priority
 than other lists! That means excluded property
@@ -149,7 +149,7 @@ entities.
 	add_property = 'Add Property',
 	remove_property = 'Remove Property',
 	tool_exclude = '\nNOTE FOR TOOLGUN: "remover" still can\'t be used\non whitelisted entities.',
-	
+
 	--Core messages
 	model_is_blacklisted = 'Model is in the blacklist',
 	is_shared = 'Shared %s',
@@ -168,7 +168,7 @@ entities.
 	props_up_for_grabs = "%s's props are now up for grabs!",
 	disconnected_player = 'Disconnected player',
 	up_for_grabs = 'Up for grabs!',
-	
+
 	--Hooks messages
 	owned_by_world = 'Owned by world',
 	no_toolgun_player = 'Player toolgun is disabled',
@@ -189,19 +189,19 @@ entities.
 	toolgun_antispam = 'Toolgun spam',
 	damage_allowed = 'Damage allowed',
 	damage_blocked = 'Damage blocked',
-	
+
 	e2adv_func_restricted_s = '(SERVERSIDE) DPP: Function is restricted: %s()',
 	e2adv_func_restricted = 'DPP: Function is restricted: %s()',
-	
+
 	--Server hooks messages
 	unable_to_unfreeze = 'Unable to unfreeze: You are trying un freeze %s entities at once (%s max)!',
 	physgun_reload_disabled = 'Physgun unfreeze is disabled on this server',
 	physgun_reload_wait = 'You must wait %s seconds before trying to unfreeze again',
-	
+
 	e2_func_restricted = 'DPP: Function is restricted: %s()',
 	spam_removed = 'Prop is removed due to spam',
 	spam_ghosted = 'Prop is ghosted due to spam',
-	
+
 	vehicle_restricted = 'Vehicle is restricted',
 	model_restricted = 'Model is restricted',
 	weapon_restricted = 'Weapon is restricted',
@@ -209,13 +209,13 @@ entities.
 	entity_restricted = 'Entity is restricted',
 	entity_limit_hit = 'You hit %q limit!',
 	model_limit_hit = 'You hit %q limit!',
-	
+
 	--Serverside functions
 	ghosted_big = 'Prop is ghosted because it is too big.',
 	prop_autoban = 'Prop is too big for ya.',
 	stuck_hit = 'It seems that this prop is stuck in another.',
 	grabs_hit = 'You now own this prop',
-	
+
 	--Report
 	report_summary = '------------ SUMMARY',
 	report_owners = '------------ OWNERS',
@@ -234,7 +234,7 @@ entities.
 	report_have = ' have ',
 	report_espawned = ' entities spawned!',
 	report_entitites = ' entities!',
-	
+
 	report_1 = 'Total Entities on server:',
 	report_2 = 'Total owned entities:',
 	report_3 = 'Total unowned entities:',
@@ -244,7 +244,7 @@ entities.
 	report_7 = 'Total entities that can move:',
 	report_8 = 'Total entities that is moving:',
 	report_9 = 'Entities skipped:',
-	
+
 	--Logging
 	log_spawned = ' spawned ',
 	log_tried = ' tried ',
@@ -254,7 +254,7 @@ entities.
 	log_created_constraint = ' created constraint ',
 	log_constraint_between = ' between %s and %s',
 	log_unknown = '<unknown>',
-	
+
 	log_not_avaliable = 'N/A',
 	log_npc = '(NPC)',
 	log_effect = '(Effect)',
@@ -264,12 +264,12 @@ entities.
 	log_swep = '(SWEP)',
 	log_vehicle = '(Vehicle)',
 	log_obj = '(Object/Generic)',
-	
+
 	log_tried_t = 'to use tool ',
 	log_tool_used = ' used/tried to use tool ',
 	log_tool_on = ' on ',
 	log_tool_on_f = '%s on %s',
-	
+
 	--Commands
 	com_decals = ' cleared decals',
 	com_no_target = 'No valid target found',
@@ -318,7 +318,7 @@ entities.
 	com_to = ' to ',
 	com_cvar_set_1 = ' set convar ',
 	look_into_console = 'Look into console',
-	
+
 	--Client commands
 	no_friend_with_steamid = 'There is no friend with id %s!',
 	friend_removed = 'Friend %s was removed',
@@ -327,7 +327,7 @@ entities.
 	friends_loaded = 'Friend list loaded...',
 	friends_refreshed = 'Friend list refreshed',
 	friends_sended = 'Sending friend list to server',
-	
+
 	--Property menus
 	property_cleanup = 'Cleanup props of owner',
 	property_share = 'Share this prop',
@@ -341,7 +341,7 @@ entities.
 	property_add_restrict = 'Add to %q DPP restrictions list',
 	property_remove_restrict = 'Remove from %q DPP restrictions list',
 	property_modify_restrict = 'Modify DPP %q restriction...',
-	
+
 	--Misc messages
 	prop_stuck_in_player = 'It seems that this prop is stuck in someone',
 	net_must_wait = 'You must wait before request full network pocket again!',
@@ -351,7 +351,7 @@ entities.
 	net_error_2 = 'If you thinks this is DPP problem, report on BitBucket and tell how did you got this.',
 	accepted = 'Accepted',
 	saving_cvars = 'Saving console variables into database...',
-	
+
 	--Tool menu
 	menu_server = 'Server Variables',
 	menu_server2 = 'Secondary Server Variables',
@@ -371,7 +371,7 @@ entities.
 	menu_blacklist = '%s blacklist',
 	menu_exclude = '%s exclude list',
 	menu_restricts = '%s Restrictions',
-	
+
 	menu_tool = 'Tool',
 	menu_physgun = 'Physgun',
 	menu_use = 'Use',
@@ -390,23 +390,23 @@ entities.
 	menu_pickup = 'Pickups',
 	menu_e2function = 'E2 Functions',
 	menu_e2afunction = 'E2 Advanced Functions',
-	
+
 	menu_main = 'Main options',
 	menu_blacklists = 'Blacklists',
 	menu_exclude_lists = 'Exclude lists',
 	menu_restrictions = 'Restrictions',
 	menu_restrictions_ply = 'Restrictions per SteamID',
-	
+
 	menu_set_fallbackto = 'Set Fallback to %s',
 	menu_transferto = 'Transfer ownership of ALL props to %s',
-	
+
 	menu_player_tip = 'Player nickname: %s\nPlayer SteamID: %s\nPlayer SteamID64: %s\nIs your friend: %s',
 	menu_player_list_tip = 'Player nickname: %s\nPlayer SteamID: %s\nPlayer SteamID64: %s',
 	steam_profile = 'Steam profile',
 	open = 'Open %s',
 	quick_search = 'Quick search by nickname',
 	search_placeholder = 'Search...',
-	
+
 	--Some texts
 	main_note = 'DPP was created by DBot\nNOTE "Main Power Switch" disables blacklists \nand protection modules, but not restrictions.',
 	strict_property_note = [[
@@ -423,10 +423,10 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	givechance_Entity = 'Entity ',
 	givechance_desc = ' THROW NEXT EXCPETION WHILE CALLING %q FUNCTION: ',
 	givechance_returned = 'Entity controls protection by itself',
-	
+
 	Console = 'Server',
 	request_net_update = 'Request DPP network refresh',
-	
+
 	--Manipulation commands
 	saveload_added = ' added ',
 	saveload_removed = ' removed ',
@@ -460,16 +460,16 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	saveload_limit_not_exists = 'Limit for class does not exists',
 	saveload_mlimit_not_exists = 'Limit for model does not exists',
 	saveload_glimit_not_exists = 'Limit for group does not exists',
-	
+
 	saveload_command_message_1 = 'Invalid class to restrict (#1)',
 	saveload_command_message_2 = 'Invalid group(s). Groups are seperated by comma, without spaces (#2)',
 	saveload_command_message_2ply = 'Invalid SteamID (#2)',
 	saveload_command_message_3 = 'Invalid argument "is white list" (#3)',
 	saveload_command_message_4 = 'Invalid class to unrestrict',
-	
+
 	menu_misc_moved = 'Generic options was moved to "Utilities" panel',
 	utilities = 'Utilities',
-	
+
 	inspect_button = 'Inspect entity you are looking at',
 	inspect_client = '--CLIENT--',
 	inspect_server = '--SERVER--',
@@ -484,56 +484,56 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	inspect_bodygroups = 'Entity bodygroup count: ',
 	inspect_table = 'Entity values in :GetTable() :',
 	inspect_noentity = 'Entity is not valid',
-	
+
 	restricts_updated = '(SILENT) You updated restricts for %s',
-	
+
 	font = 'Font',
 	cust_display_background = 'Owner display background color',
 	cust_display_can = 'Color when can touch',
 	cust_display_cant = 'Color when can not touch',
 	display_customization_position = 'Owner display position',
-	
+
 	friend_buddy = 'Friend in %q protection',
 	share_type = 'Share in %q protection module',
-	
+
 	crazy_physics = 'Crazy physics detected, next prop have crazy physics: ',
 	crazy_physics2 = ' that belongs to ',
 	crazy_physics3 = ', ghosting it.',
-	
+
 	cami_tip = "Can't find your custom group here?\nYou can enter a custom one here!\n(that happens if admin mod doesn't support CAMI\nor it's CAMI support is bad)",
-	
+
 	plyrestrict_already_not_restricted = 'This is not restricted from that player!',
 	plyrestrict_already_restricted = 'This is already restricted from that player!',
 	plyrestrict_from = ' from SteamID ',
 	selecting_player = 'Select a player...',
 	remove_r = 'Remove restriction',
-	
+
 	saveload_command_message_1ply = 'Invalid SteamID (#1)',
 	saveload_command_message_2ply = 'Invalid Class (#2)',
 	restrict_ctip = 'Restriction for group entered above',
-	
+
 	model_blacklisted = 'Model is blacklisted',
-	
+
 	fpp_buddies = 'There is %s buddies in your FPP friends list!',
 	fpp_buddies_i = 'Click here to import FPP buddies',
 	friend_added_fpp = 'FPP buddy %s added as friend',
-	
+
 	transfer_disabled = 'Transfering is entriely disabled',
 	transfer_fdisabled = 'Owner fallback is disabled',
 	transfer_adisabled = 'Transfering of everything is disabled',
 	transfer_edisabled = 'Transfering of single entity is disabled',
 	transfer_buddy = 'You must be in buddy list of target player',
 	transfer_spam = 'Stop transfer spam',
-	
+
 	confirm = 'Confirm?',
-	
+
 	reset_modellist = 'MODEL LIST RESET REQUIRED',
 	reset_limits = 'LIMITS LIST RESET REQUIRED',
 	reset_modellimits = 'MODEL LIMITS LIST RESET REQUIRED',
 	reset_sboxlimits = 'SANDBOX LIMITS LIST RESET REQUIRED',
 	reset_constlimits = 'CONSTRAINTS LIMITS LIST RESET REQUIRED',
 	reset_cvars = 'CONSOLE VARIABLES RESET REQUIRED',
-	
+
 	reset_blocklist_use = 'USE BLOCK LIST RESET REQUIRED',
 	reset_blocklist_physgun = 'PHYSGUN BLOCK LIST RESET REQUIRED',
 	reset_blocklist_tool = 'TOOL BLOCK LIST RESET REQUIRED',
@@ -560,7 +560,7 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	reset_restrictlist_sent = 'SENTs RESTRICTIONS LIST RESET REQUIRED',
 	reset_restrictlist_e2function = 'E2 FUNCTIONS RESTRICTIONS LIST RESET REQUIRED',
 	reset_restrictlist_model = 'MODEL RESTRICTIONS LIST RESET REQUIRED',
-	
+
 	reset_1 = 'FACTORY RESET WAS REQUIRED',
 	reset_2 = 'IT WILL: RESET CONSOLE VARIABLES, LIMITS,',
 	reset_3 = 'RESTRICTIONS (player, group), EXCLUDE LISTS',
@@ -574,7 +574,7 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	reset_command_slimits = ' has launched sandbox limits list factory reset!',
 	reset_command_climits = ' has launched constraints limits list factory reset!',
 	reset_command_cvars = ' has launched console variables factory reset!',
-	
+
 	reset_command_blocked_use = ' has launched use blocklist factory reset!',
 	reset_command_blocked_physgun = ' has launched physgun blocklist factory reset!',
 	reset_command_blocked_tool = ' has launched tool blocklist factory reset!',
@@ -601,32 +601,32 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	reset_command_restrictions_sent = ' has launched SENTs restriction list factory reset!',
 	reset_command_restrictions_e2function = ' has launched E2 Functions restriction list factory reset!',
 	reset_command_restrictions_model = ' has launched model restriction list factory reset!',
-	
+
 	reset_gui_1 = 'STAHP!\nSTAHP!\nSTAHP!\nSTAHP!\nI don\'t think you wish to go there\nThis page has buttons for doing a FACTORY RESET!\nIf you want to reseting a group of stuff\nyou can do it from here.',
-	
+
 	reset_gui_all = 'FULL FACTORY RESET',
 	reset_gui_cvars = 'Reset server ConVars',
 	reset_gui_generic = 'ARE YOU SURE?',
 	reset_gui_button = 'Factory Reset',
 	reset_gui_hall = 'Button below resets ALL stuff',
-	
+
 	reset_gui_hint_generic = 'Generic stuff',
 	reset_gui_hint_combined = 'Combined reset',
 	reset_gui_hint_separate = 'Selective reset',
 	reset_gui_hint_block = 'Blocklists reset buttons',
 	reset_gui_hint_exclude = 'Exclude lists reset buttons',
 	reset_gui_hint_restricts = 'Restricts lists reset buttons',
-	
+
 	reset_gui_freset_limits = 'Reset Entity Limits',
 	reset_gui_freset_mlimits = 'Reset Models Limits',
 	reset_gui_freset_slimits = 'Reset SandBox Limits',
 	reset_gui_freset_climits = 'Reset Constraints Limits',
 	reset_gui_freset_models = 'Reset Blocked Models',
-	
+
 	reset_gui_freset_blocked = 'Reset blocklists',
 	reset_gui_freset_exclude = 'Reset exclude lists',
 	reset_gui_freset_restrictions = 'Reset restrictions',
-	
+
 	reset_gui_buse = 'Reset use blocklist',
 	reset_gui_bphysgun = 'Reset physgun blocklist',
 	reset_gui_btool = 'Reset tool blocklist',
@@ -666,7 +666,7 @@ local ru = {
 	apply = 'Применить',
 	discard = 'Отмена',
 	modifying = 'Изменение %s',
-	
+
 	--Console Variables
 	cvar_admin_can_everything = 'Админы могут трогать энтити других игроков',
 	cvar_advanced_spawn_checks = 'Улучшенные проверки создания (для WAC Aircraft, SCars, т.д.)',
@@ -824,21 +824,21 @@ local ru = {
 	cvar_whitelist_tool = 'Включить лист исключений инструментов',
 	cvar_whitelist_toolmode = 'Включить лист исключений режимов инструментов',
 	cvar_whitelist_use = 'Включить лист исключений используемых',
-	
+
 	--Options
 	sharing = 'Шаринг %s',
 	unshare = 'Снять все галочки и применить',
-	
+
 	remove_my_ents = 'Удалить собственные энтити',
 	display_customization_color = 'Настройка цвета отображения',
 	display_customization = 'Настройки отображения',
 	display_x = 'X координата (процент) на экране для позиции отображения владельца',
 	display_y = 'Y координата (процент) на экране для позиции отображения владельца',
-	
+
 	clear_decals = 'Очистить декали',
 	report_ents = 'Подсчитать и вывести статистику о энтити на карте',
 	delete_ents = 'Удалить энтити игроков',
-	
+
 	freeze_all = 'Заморозить все физические объекты игроков',
 	freeze_all_phys = 'Заморозить все физические объекты',
 	delete_disconnected = 'Удалить энтити отключившихся игроков',
@@ -905,16 +905,16 @@ local ru = {
 	about_bug = 'Можна бесплатный баг репорт, позя?\nПОЗЯ?!',
 	about_issues = 'Страница ошибок DPP',
 	display_customization_colors = 'Настройка цветов отображения',
-	
+
 	remove_exclude = 'Убрать из листа исключений',
 	add_exclude_all = 'Добавить энтити во ВСЕ листы исключений',
 	remove_exclude_all = 'Удалить энтити из ВСЕХ листов исключений',
-	
+
 	add_exclude_looking_at = 'Добавить энтити на которое вы смотрите в лист исключений',
 	add_exclude_looking_at_all = 'Добавить энтити на которое вы смотрите во ВСЕ листы исключений',
 	remove_exclude_looking_at = 'Убрать энтити на которое вы смотрите в лист исключений',
 	remove_exclude_looking_at_all = 'Убрать энтити на которое вы смотрите во ВСЕ листы исключений',
-	
+
 	toolmode_exclude_tip = [[
 Этот лист устанавливает, какие режимы инструмента
 можно использовать на ЛЮБОМ энтити. К примеру, если
@@ -950,7 +950,7 @@ local ru = {
 	add_property = 'Добавить свойство',
 	remove_property = 'Убрать свойство',
 	tool_exclude = '\nПРИМЕЧАНИЕ: "remover" всё равно не может быть использован\nна энтити в данном листе',
-	
+
 	--Core messages
 	model_is_blacklisted = 'Модель в чёрном списке',
 	is_shared = 'Зашарено в режиме %q',
@@ -968,7 +968,7 @@ local ru = {
 	props_up_for_grabs = "%s's пропы теперь могут быт присвоены!",
 	disconnected_player = 'Отключившийся игрок',
 	up_for_grabs = 'Можно присвоить!',
-	
+
 	--Hooks messages
 	owned_by_world = 'Нет владельца',
 	no_toolgun_player = 'Нельзя использовать на игроке',
@@ -989,35 +989,35 @@ local ru = {
 	toolgun_antispam = 'Спам инструментом',
 	damage_allowed = 'Урон разрешён',
 	damage_blocked = 'Урон заблокирован',
-	
+
 	e2adv_func_restricted_s = '(СЕРВЕРНАЯ СТОРОНА) DPP: Функция ограничена: %s()',
 	e2adv_func_restricted = 'DPP: Функция ограничена: %s()',
-	
+
 	--Server hooks messages
 	unable_to_unfreeze = 'Невозможно размрозить: Вы пытаетесь разморозить %s энтити (%s максимум)!',
 	physgun_reload_disabled = 'Pазморозка таким способом отключена на сервере',
 	physgun_reload_wait = 'Вы должны подождать ещё %s секунд преджде чем попробовать снова',
-	
+
 	e2_func_restricted = 'DPP: Функция ограничена: %s()',
 	spam_removed = 'Проп стал призраком из-за спама',
 	spam_ghosted = 'Проп был удалён из-за спама',
-	
+
 	vehicle_restricted = 'Машина ограничена',
 	model_restricted = 'Модель ограничена',
 	weapon_restricted = 'Оружие ограничено',
 	npc_restricted = 'NPC ограничено',
 	entity_restricted = 'Энтити огранично',
 	entity_limit_hit = 'Вы достигли лимит %q!',
-	
+
 	--Serverside functions
 	ghosted_big = 'Проп стал призраком из-за его размеров.',
 	prop_autoban = 'Проп слишком большой для тебя.',
 	stuck_hit = 'Возможно, Ваш проп застрял в другом пропе.',
 	grabs_hit = 'Теперь вы владелец этого пропа',
-	
+
 	limit_action = 'Добавить/Изменить/Удалить лимит',
 	not_a_owner = 'Не является владельцем',
-	
+
 	--Report
 	report_summary = '------------ ИТОГО',
 	report_owners = '------------ ВЛАДЕЛЬЦЫ',
@@ -1036,7 +1036,7 @@ local ru = {
 	report_have = ' имеет ',
 	report_espawned = ' энтити создано!',
 	report_entitites = ' энтити!',
-	
+
 	report_1 = 'Всего энтити on server:',
 	report_2 = 'Всего созданных энтити:',
 	report_3 = 'Всего энтити без владельца:',
@@ -1046,7 +1046,7 @@ local ru = {
 	report_7 = 'Всего энтити которые могут двигатся:',
 	report_8 = 'Всего энтити которые двигаются:',
 	report_9 = 'Энтити пропущено:',
-	
+
 	--Logging
 	log_spawned = ' создал ',
 	log_tried = ' попытался ',
@@ -1056,12 +1056,12 @@ local ru = {
 	log_created_constraint = ' создал соединение ',
 	log_constraint_between = ' между %s и %s',
 	log_unknown = '<неизвестно>',
-	
+
 	log_tried_t = 'использовать инструмент  ',
 	log_tool_used = ' использовал/попытался использовать инструмент ',
 	log_tool_on = ' на ',
 	log_tool_on_f = '%s на %s',
-	
+
 	log_not_avaliable = 'Н/Д',
 	log_npc = '(NPC)',
 	log_effect = '(Эффект)',
@@ -1071,7 +1071,7 @@ local ru = {
 	log_swep = '(Оружие)',
 	log_vehicle = '(Транспорт)',
 	log_obj = '(Объект/Общее)',
-	
+
 	--Commands
 	com_decals = ' очистил декали',
 	com_no_target = 'Не найдено подходящей цели',
@@ -1120,7 +1120,7 @@ local ru = {
 	com_to = ' <цели/ему/к/на> ',
 	com_cvar_set_1 = ' установил переменную ',
 	look_into_console = 'Посмотрите в свою консоль разработчика',
-	
+
 	--Client commands
 	no_friend_with_steamid = 'Нет друзей с ID %s!',
 	friend_removed = 'Друг %s удалён',
@@ -1129,7 +1129,7 @@ local ru = {
 	friends_loaded = 'Список друзей загружен...',
 	friends_refreshed = 'Список друзей обновлён',
 	friends_sended = 'Список друзей отправлен на сервер',
-	
+
 	--Property menus
 	property_cleanup = 'Очистить энтити у владельца',
 	property_share = 'Зашарить',
@@ -1143,7 +1143,7 @@ local ru = {
 	property_add_restrict = 'Добавить в %q DPP лист ограничений',
 	property_remove_restrict = 'Удалить из %q DPP листа ограничений',
 	property_modify_restrict = 'Изменить DPP %q ограничение...',
-	
+
 	--Misc messages
 	prop_stuck_in_player = 'Ваш проп застрял в другом игроке',
 	net_must_wait = 'Вы должны подождать прежде чем запрашивать полный пакет обновления сети снова!',
@@ -1153,7 +1153,7 @@ local ru = {
 	net_error_2 = 'Если вы думаете, что это ошибка в DPP, дайте мне знать, оставив тикет на баг трекере DPP на BitBucket, и, пожалуйста, расскажите как вы получили данную ошибку.',
 	accepted = 'Принято',
 	saving_cvars = 'Сохраняю значения переменных сервера в базу данных...',
-	
+
 	--Tool menu
 	menu_server = 'Серверные переенные',
 	menu_server2 = 'Вторичные серверные переменные',
@@ -1172,7 +1172,7 @@ local ru = {
 	menu_blacklist = '%q чёрный лист',
 	menu_exclude = '%q лист исключений',
 	menu_restricts = '%q ограничения',
-	
+
 	menu_tool = 'Инструменты',
 	menu_physgun = 'Физган',
 	menu_use = 'Использование',
@@ -1190,22 +1190,22 @@ local ru = {
 	menu_propertyt = 'Класс свойства',
 	menu_e2function = 'E2 Функции',
 	menu_e2afunction = 'E2 Advanced Функции',
-	
+
 	menu_main = 'Основные настройки',
 	menu_blacklists = 'Чёрные листы',
 	menu_exclude_lists = 'Листы исключений',
 	menu_restrictions = 'Ограничения',
-	
+
 	menu_player_tip = 'Имя игрока: %s\nSteamID игрока: %s\nSteamID64 игрока: %s\nЯвляется ли вашим другом: %s',
 	menu_player_list_tip = 'Имя игрока: %s\nSteamID игрока: %s\nSteamID64 игрока: %s',
 	steam_profile = 'Профиль Steam',
 	open = 'Открыть %s',
 	quick_search = 'Быстрый поиск по имени игрока в списке друзей',
 	search_placeholder = 'Поиск...',
-	
+
 	menu_set_fallbackto = 'Выбрать наследника - %s',
 	menu_transferto = 'Передать ВСЕ свои энтити игроку %s',
-	
+
 	--Some texts
 	main_note = 'DPP создан DBot\nВНИМАНИЕ - "Главный рубильник" отключает черные листы\nи защитные модули, но не ограничения.',
 	strict_property_note = [[
@@ -1300,15 +1300,15 @@ local ru = {
 	priv_unrestrictswep = 'Может убирать оружия из листа ограничений',
 	priv_unrestricttool = 'Может убирать режимы инструментов из листа ограничений',
 	priv_unrestrictvehicle = 'Может убирать транспорт из листа ограничений',
-	
+
 	givechance_error = 'ВНИМАНИЕ! ЭНТИТИ БРОСИЛО ИСКЛЮЧЕНИЕ. ',
 	givechance_Entity = 'Энтити ',
 	givechance_desc = ' БРОСИЛО СЛЕДУЮЩЕЕ ИСКЛЮЧЕНИЕ ВО ВРЕМЯ ВЫЗОВА %q: ',
 	givechance_returned = 'Энтити управляет своей защитой',
-	
+
 	Console = 'Сервер',
 	request_net_update = 'Запросить обновление сети DPP',
-	
+
 	--Manipulation commands
 	saveload_added = ' добавил ',
 	saveload_removed = ' убрал ',
@@ -1338,15 +1338,15 @@ local ru = {
 	saveload_slimits = ' sandbox лимиты для ',
 	saveload_climits = ' лимиты соединений для ',
 	saveload_limit_not_exists = 'Лимит для данного класса не существует',
-	
+
 	saveload_command_message_1 = 'Неверный класс для ограничения (#1)',
 	saveload_command_message_2 = 'Неверные групп(ы). Группы разделены запятой (,), без пробелов (#2)',
 	saveload_command_message_3 = 'Неверный аргумент к "является белым листом" (#3)',
 	saveload_command_message_4 = 'Неверный класс для убирания ограничения',
-	
+
 	menu_misc_moved = 'Общие кнопки были перемещены в "Утилиты"',
 	utilities = 'Утилиты',
-	
+
 	inspect_button = 'Проверить энтити на которое Вы смотрите',
 	inspect_client = '--КЛИЕНТ--',
 	inspect_server = '--СЕРВЕР--',
@@ -1361,7 +1361,7 @@ local ru = {
 	inspect_bodygroups = 'Количество изменяемых частей Энтити: ',
 	inspect_table = 'Количество записей в :GetTable() Энтити:',
 	inspect_noentity = 'Неверное Энтити',
-	
+
 	block_damage = 'Урон',
 	block_gravgun = 'Гравипушка',
 	block_physgun = 'Физпушка',
@@ -1392,7 +1392,7 @@ local ru = {
 	restricted_swep = 'Оружие',
 	restricted_vehicle = 'Транспорт',
 	restricts_updated = '(БЕЗ ОПОВЕЩЕНИЙ ДРУГИМ) Вы обновили ограничения на %s',
-	
+
 	ccvar_disable_damage_protection = 'Отключить защиту от урона для моих энтити',
 	ccvar_disable_gravgun_protection = 'Отключить защиту гравипушки для моих энтити',
 	ccvar_disable_physgun_protection = 'Отключить защиту физпушки для моих энтити',
@@ -1414,7 +1414,6 @@ local ru = {
 	ccvar_no_physgun_display = 'Отключить красивое отображения информации на физпушке',
 	ccvar_no_player_touch = 'Я не хочу трогать других игроков (если администратор)',
 	ccvar_no_restrict_options = 'Отключить опции быстрого ограничения в меню свойств',
-	ccvar_no_scrambling_text = 'Отключить перемешивающийся текст',
 	ccvar_no_toolgun_display = 'Отключить красивое отображения информации на инструменте',
 	ccvar_no_touch = 'Я не хочу трогать энтити владелец которых - я',
 	ccvar_no_touch_other = 'Я не хочу трогать энтити других игроков',
@@ -1426,7 +1425,7 @@ local ru = {
 	cust_display_cant = 'Цвет текста когда нельзя трогать',
 	display_customization_position = 'Позиция панели',
 	font = 'Шрифт',
-	
+
 	ccvar_disable_pickup_protection = 'Отключить защиту для подбираемых моих энтити',
 	friend_buddy = 'Является другом в режиме %q',
 	protmode_damage = 'Урон',
@@ -1440,7 +1439,7 @@ local ru = {
 
 	cvar_strict_spawn_checks_atrack = '[ОБЖИГАЮЩЕ НЕСТАБИЛЬНО] Отслеживать таблицы энтити на изменения.\nЭто самый пик всех отслеживаний.\nЭТА ОПЦИЯ ЛОМАЕТ ЗАЩИТУ СОЕДИНЕННЫХ\nИНСТРУМЕНТОМ ЭНТИТИ. АКТИВИРУЙТЕ НА СВОЙ СТРАХ И РИСК',
 	priv_freezephys = 'Может ли заморозить все физические объекты',
-	
+
 	crazy_physics = 'Обнаружен неверный физический объект: ',
 	crazy_physics2 = ' который принадлежит ',
 	crazy_physics3 = ', делаю объект призраком.',
@@ -1449,9 +1448,9 @@ local ru = {
 	cvar_log_spawns_nname = 'Записывать сетевой класс и ID энтити',
 	cvar_log_spawns_pmodel = 'Записывать модели только у пропов',
 	cvar_log_spawns_type = 'Записывать типь энтити',
-	
+
 	cami_tip = "Не можете найти свою группу?\nВы можете написать её тут!\n(обычно это случается когда модификация администрирования\nне поддерживает CAMI или её поддержка крайне плохая\nCAMI - Common Admin Mod Interface, Общий интерфейс модификации администрирования)",
-	
+
 	cvar_restrict_e2afunction_ply = 'Включить ограничения для определнных игроков на функции Extression 2 Advanced',
 	cvar_restrict_e2function_ply = 'Включить ограничения для определнных игроков на функции Extression 2',
 	cvar_restrict_model_ply = 'Включить ограничения для определнных игроков на модели',
@@ -1502,11 +1501,11 @@ local ru = {
 	saveload_command_message_1ply = 'Неверный SteamID (#1)',
 	saveload_command_message_2ply = 'Неверный класс (#2)',
 	selecting_player = 'Выбрать игрока...',
-	
+
 	model_blacklisted = 'Модель находится в чёрном списке',
-	
+
 	confirm = 'Подтвердить?',
-	
+
 	ccvar_hud_obey_server = 'Отключать HUD если сервер того желает',
 	cvar_disable_huds = 'Отключить HUD у игроков',
 	cvar_model_limits_enable = 'Включить лимиты моделей',

@@ -288,7 +288,6 @@ local ClientVars = {
 	'no_physgun_display',
 	'no_toolgun_display',
 	'no_hud_in_vehicle',
-	'no_scrambling_text',
 	'no_touch',
 	'no_player_touch',
 	'no_touch_world',

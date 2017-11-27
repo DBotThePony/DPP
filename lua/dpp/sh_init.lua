@@ -959,12 +959,6 @@ DPP.CSettings = {
 		desc = 'Font (1 for default)',
 	},
 
-	['no_scrambling_text'] = {
-		type = 'bool',
-		value = '1',
-		desc = 'Disable scrambling text',
-	},
-
 	['hide_hud'] = {
 		type = 'bool',
 		value = '0',
