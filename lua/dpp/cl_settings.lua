@@ -15,10 +15,6 @@
 
 DPP.SettingsClass = DPP.SettingsClass or {}
 
-local function lazyfix(panel)
-	return panel
-end
-
 local SettingsClass = DPP.SettingsClass
 local P = DPP.GetPhrase
 local FUNCTIONS = {}
@@ -83,7 +79,6 @@ function DPP.OpenShareMenu(ent)
 	local apply = frame:Add('DButton')
 	apply:Dock(BOTTOM)
 	apply:SetText(P('apply'))
-	lazyfix(apply)
 
 	function apply.DoClick()
 		if IsValid(ent) then
@@ -99,7 +94,6 @@ function DPP.OpenShareMenu(ent)
 	local discard = frame:Add('DButton')
 	discard:Dock(BOTTOM)
 	discard:SetText(P('discard'))
-	lazyfix(discard)
 
 	function discard.DoClick()
 		frame:Close()
@@ -108,7 +102,6 @@ function DPP.OpenShareMenu(ent)
 	local unselectall = frame:Add('DButton')
 	unselectall:Dock(BOTTOM)
 	unselectall:SetText(P('unshare'))
-	lazyfix(unselectall)
 
 	function unselectall.DoClick()
 		if IsValid(ent) then
@@ -460,8 +453,8 @@ local function BuildCVarPanel(Panel)
 	Panel:SetSkin(DLib.GetSkin(Panel))
 	SettingsClass.CVarsPanel = Panel
 
-	lazyfix(Panel:Button(P('remove_my_ents'), 'dpp_clearself'))
-	lazyfix(Panel:Button(P('request_net_update'), 'dlib_nw'))
+	Panel:Button(P('remove_my_ents'), 'dpp_clearself')
+	Panel:Button(P('request_net_update'), 'dlib_nw')
 
 	for k, v in pairs(ClientVars) do
 		if DPP.CSettings[v].bool then
@@ -657,16 +650,16 @@ local function BuildPlayerList(Panel)
 	Lab:SizeToContents()
 	Lab:SetTooltip(TopText)
 
-	local button = lazyfix(Panel:Button(P('delete_ents'), 'dpp_clearmap'))
+	local button = Panel:Button(P('delete_ents'), 'dpp_clearmap')
 	SettingsClass.SetButtonAccess(button, 'clearmap')
 
-	local button = lazyfix(Panel:Button(P('freeze_all'), 'dpp_freezeall'))
+	local button = Panel:Button(P('freeze_all'), 'dpp_freezeall')
 	SettingsClass.SetButtonAccess(button, 'freezeall')
 
-	local button = lazyfix(Panel:Button(P('freeze_all_phys'), 'dpp_freezephys'))
+	local button = Panel:Button(P('freeze_all_phys'), 'dpp_freezephys')
 	SettingsClass.SetButtonAccess(button, 'freezephys')
 
-	local button = lazyfix(Panel:Button(P('delete_disconnected'), 'dpp_cleardisconnected'))
+	local button = Panel:Button(P('delete_disconnected'), 'dpp_cleardisconnected')
 	SettingsClass.SetButtonAccess(button, 'cleardisconnected')
 
 	for k, v in pairs(DPP.GetPlayerList()) do
@@ -684,7 +677,6 @@ local function BuildPlayerList(Panel)
 		Button:SetWidth(48)
 		Button:SetText(P('action_unfreeze'))
 		Button:SetConsoleCommand('dpp_unfreezebyuid', v.UID)
-		lazyfix(Button)
 		SettingsClass.SetButtonAccess(Button, 'unfreezebyuid')
 
 		local Button = vgui.Create('DButton', pnl)
@@ -692,7 +684,6 @@ local function BuildPlayerList(Panel)
 		Button:SetWidth(48)
 		Button:SetText(P('action_freeze'))
 		Button:SetConsoleCommand('dpp_freezebyuid', v.UID)
-		lazyfix(Button)
 		SettingsClass.SetButtonAccess(Button, 'freezebyuid')
 
 		local Button = vgui.Create('DButton', pnl)
@@ -700,7 +691,6 @@ local function BuildPlayerList(Panel)
 		Button:SetWidth(48)
 		Button:SetText(P('action_delete'))
 		Button:SetConsoleCommand('dpp_clearbyuid', v.UID)
-		lazyfix(Button)
 		SettingsClass.SetButtonAccess(Button, 'clearbyuid')
 	end
 end
@@ -777,7 +767,6 @@ local function BuildFallbackList(Panel)
 		Button:SetTooltip(P('menu_player_tip', v:Nick(), v:SteamID(), v:SteamID64(), v:GetFriendStatus() == 'friend' and 'true' or 'false'))
 		Button:Dock(FILL)
 
-		lazyfix(Button)
 		::CONTINUE::
 	end
 
@@ -785,8 +774,6 @@ local function BuildFallbackList(Panel)
 	Panel:AddItem(lab)
 
 	local Button = Panel:Button(P('owning_fallback_r'), 'dpp_removefallbackto')
-	lazyfix(Button)
-
 	local lab = Label('!!!DANGER!!!')
 	Panel:AddItem(lab)
 
@@ -807,7 +794,6 @@ local function BuildFallbackList(Panel)
 		Button:SetTooltip(P('menu_player_tip', v:Nick(), v:SteamID(), v:SteamID64(), v:GetFriendStatus() == 'friend' and 'true' or 'false'))
 		Button:Dock(FILL)
 
-		lazyfix(Button)
 		::CONTINUE::
 	end
 end
@@ -1106,7 +1092,6 @@ local function BuildModelsList(Panel)
 
 	local Apply = Panel:Button(P('visual_list'))
 	Apply.DoClick = SettingsClass.BuildModelsListGUI
-	lazyfix(Apply)
 
 	local entry = vgui.Create('DTextEntry', Panel)
 	Panel:AddItem(entry)
@@ -1114,13 +1099,11 @@ local function BuildModelsList(Panel)
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_addblockedmodel', entry:GetText())
 	end
-	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('remove_model'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_removeblockedmodel', entry:GetText())
 	end
-	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('action_looking_at', P('add_model')))
 	Apply.DoClick = function()
@@ -1128,7 +1111,6 @@ local function BuildModelsList(Panel)
 		if not IsValid(ent) then return end
 		RunConsoleCommand('dpp_addblockedmodel', ent:GetModel())
 	end
-	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('action_looking_at', P('remove_model')))
 	Apply.DoClick = function()
@@ -1136,7 +1118,6 @@ local function BuildModelsList(Panel)
 		if not IsValid(ent) then return end
 		RunConsoleCommand('dpp_removeblockedmodel', ent:GetModel())
 	end
-	lazyfix(Apply)
 
 	ConVarCheckbox(Panel, 'model_blacklist')
 	ConVarCheckbox(Panel, 'model_whitelist')
@@ -1214,7 +1195,6 @@ local function OpenLimitEditPanel(class)
 	local apply = frame:Add('DButton')
 	apply:Dock(BOTTOM)
 	apply:SetText(P('apply'))
-	lazyfix(apply)
 
 	function apply.DoClick()
 		CustomEnter.p.Group = CustomEnter:GetText()
@@ -1241,7 +1221,6 @@ local function OpenLimitEditPanel(class)
 	local discard = frame:Add('DButton')
 	discard:Dock(BOTTOM)
 	discard:SetText(P('discard'))
-	lazyfix(discard)
 
 	function discard.DoClick()
 		frame:Close()
@@ -1321,7 +1300,6 @@ local function OpenMLimitEditPanel(model)
 	local apply = frame:Add('DButton')
 	apply:Dock(BOTTOM)
 	apply:SetText(P('apply'))
-	lazyfix(apply)
 
 	function apply.DoClick()
 		CustomEnter.p.Group = CustomEnter:GetText()
@@ -1348,7 +1326,6 @@ local function OpenMLimitEditPanel(model)
 	local discard = frame:Add('DButton')
 	discard:Dock(BOTTOM)
 	discard:SetText(P('discard'))
-	lazyfix(discard)
 
 	function discard.DoClick()
 		frame:Close()
@@ -1414,13 +1391,11 @@ local function BuildLimitsList(Panel)
 	Apply.DoClick = function()
 		OpenLimitEditPanel(entry:GetText())
 	end
-	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('remove_limit'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_removeentitylimit', entry:GetText())
 	end
-	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('action_looking_at', P('edit_limit')))
 	Apply.DoClick = function()
@@ -1428,7 +1403,6 @@ local function BuildLimitsList(Panel)
 		if not IsValid(ent) then return end
 		OpenLimitEditPanel(ent:GetClass())
 	end
-	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('action_looking_at', P('remove_limit')))
 	Apply.DoClick = function()
@@ -1436,7 +1410,6 @@ local function BuildLimitsList(Panel)
 		if not IsValid(ent) then return end
 		RunConsoleCommand('dpp_removeentitylimit', ent:GetClass())
 	end
-	lazyfix(Apply)
 
 	ConVarCheckbox(Panel, 'ent_limits_enable')
 end
@@ -1496,13 +1469,11 @@ function SettingsClass.BuildModelLimitsList(Panel)
 	Apply.DoClick = function()
 		OpenMLimitEditPanel(entry:GetText())
 	end
-	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('remove_limit'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_addmodellimit', entry:GetText())
 	end
-	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('action_looking_at', P('edit_limit')))
 	Apply.DoClick = function()
@@ -1510,7 +1481,6 @@ function SettingsClass.BuildModelLimitsList(Panel)
 		if not IsValid(ent) then return end
 		OpenMLimitEditPanel(ent:GetModel())
 	end
-	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('action_looking_at', P('remove_limit')))
 	Apply.DoClick = function()
@@ -1518,7 +1488,6 @@ function SettingsClass.BuildModelLimitsList(Panel)
 		if not IsValid(ent) then return end
 		RunConsoleCommand('dpp_removemodellimit', ent:GetModel())
 	end
-	lazyfix(Apply)
 
 	ConVarCheckbox(Panel, 'model_limits_enable')
 end
@@ -1604,7 +1573,6 @@ local function OpenSLimitEditPanel(class)
 	local apply = frame:Add('DButton')
 	apply:Dock(BOTTOM)
 	apply:SetText(P('apply'))
-	lazyfix(apply)
 
 	function apply.DoClick()
 		CustomEnter.p.Group = CustomEnter:GetText()
@@ -1631,7 +1599,6 @@ local function OpenSLimitEditPanel(class)
 	local discard = frame:Add('DButton')
 	discard:Dock(BOTTOM)
 	discard:SetText(P('discard'))
-	lazyfix(discard)
 
 	function discard.DoClick()
 		frame:Close()
@@ -1711,7 +1678,6 @@ local function OpenCLimitEditPanel(class)
 	local apply = frame:Add('DButton')
 	apply:Dock(BOTTOM)
 	apply:SetText(P('apply'))
-	lazyfix(apply)
 
 	function apply.DoClick()
 		CustomEnter.p.Group = CustomEnter:GetText()
@@ -1738,7 +1704,6 @@ local function OpenCLimitEditPanel(class)
 	local discard = frame:Add('DButton')
 	discard:Dock(BOTTOM)
 	discard:SetText(P('discard'))
-	lazyfix(discard)
 
 	function discard.DoClick()
 		frame:Close()
@@ -1811,7 +1776,6 @@ local function BuildSLimitsList(Panel)
 	Apply.DoClick = function()
 		OpenSLimitEditPanel(entry:GetText())
 	end
-	lazyfix(Apply)
 
 	ConVarCheckbox(Panel, 'sbox_limits_enable')
 end
@@ -1878,7 +1842,6 @@ local function BuildCLimitsList(Panel)
 	Apply.DoClick = function()
 		OpenCLimitEditPanel(entry:GetText())
 	end
-	lazyfix(Apply)
 
 	ConVarCheckbox(Panel, 'const_limits_enable')
 end
@@ -1893,9 +1856,9 @@ local function BuildToolsPanel(Panel)
 	Panel:SetSkin(DLib.GetSkin(Panel))
 	DPP.SettingsClass.ToolsPanel = Panel
 
-	SettingsClass.SetButtonAccess(lazyfix(Panel:Button(P('clear_decals'), 'dpp_cleardecals')), 'cleardecals')
-	SettingsClass.SetButtonAccess(lazyfix(Panel:Button(P('report_ents'), 'dpp_entcheck')), 'entcheck')
-	SettingsClass.SetButtonAccess(lazyfix(Panel:Button(P('inspect_button'), 'dpp_inspect')), 'inspect')
+	SettingsClass.SetButtonAccess(Panel:Button(P('clear_decals'), 'dpp_cleardecals'), 'cleardecals')
+	SettingsClass.SetButtonAccess(Panel:Button(P('report_ents'), 'dpp_entcheck'), 'entcheck')
+	SettingsClass.SetButtonAccess(Panel:Button(P('inspect_button'), 'dpp_inspect'), 'inspect')
 end
 
 local PanelsFunctions = {}
@@ -2028,13 +1991,11 @@ function CustomBlockMenus.toolworld(Panel)
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_addblockedentity' .. k, entry:GetText())
 	end
-	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('remove_tool_mode'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_removeblockedentity' .. k, entry:GetText())
 	end
-	lazyfix(Apply)
 
 	ConVarCheckbox(Panel, 'blacklist_' .. k)
 	ConVarCheckbox(Panel, 'blacklist_' .. k .. '_white')
@@ -2101,7 +2062,6 @@ do
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
 		apply:SetText(P('apply'))
-		lazyfix(apply)
 
 		function apply.DoClick()
 			Apply(Panels)
@@ -2111,7 +2071,6 @@ do
 		local discard = frame:Add('DButton')
 		discard:Dock(BOTTOM)
 		discard:SetText(P('discard'))
-		lazyfix(discard)
 
 		function discard.DoClick()
 			frame:Close()
@@ -2138,7 +2097,6 @@ function CustomWhiteMenus.propertyt(Panel)
 
 	local Button = Panel:Button(P('properties_list'))
 	Button.DoClick = DPP.BuildPropertiesMenu
-	lazyfix(Button)
 
 	local list = vgui.Create('DListView', Panel)
 	Panel:AddItem(list)
@@ -2166,13 +2124,11 @@ function CustomWhiteMenus.propertyt(Panel)
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_addwhitelistedentity' .. k, entry:GetText())
 	end
-	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('remove_property'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_removewhitelistedentity' .. k, entry:GetText())
 	end
-	lazyfix(Apply)
 
 	ConVarCheckbox(Panel, 'whitelist_' .. k)
 end
@@ -2220,13 +2176,11 @@ function CustomWhiteMenus.toolmode(Panel)
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_addwhitelistedentity' .. k, entry:GetText())
 	end
-	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('remove_tool_mode'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_removewhitelistedentity' .. k, entry:GetText())
 	end
-	lazyfix(Apply)
 
 	ConVarCheckbox(Panel, 'whitelist_' .. k)
 end
@@ -2293,25 +2247,21 @@ for k, v in pairs(DPP.BlockTypes) do
 		Apply.DoClick = function()
 			RunConsoleCommand('dpp_addblockedentity' .. k, entry:GetText())
 		end
-		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('remove_entity'))
 		Apply.DoClick = function()
 			RunConsoleCommand('dpp_removeblockedentity' .. k, entry:GetText())
 		end
-		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('add_to_all_blacklists_this'))
 		Apply.DoClick = function()
 			ADD_ALL(entry:GetText())
 		end
-		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('remove_from_all_blacklists_this'))
 		Apply.DoClick = function()
 			REMOVE_ALL(entry:GetText())
 		end
-		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('add_blacklist_looking_at'))
 		Apply.DoClick = function()
@@ -2319,7 +2269,6 @@ for k, v in pairs(DPP.BlockTypes) do
 			if not IsValid(ent) then return end
 			RunConsoleCommand('dpp_addblockedentity' .. k, ent:GetClass())
 		end
-		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('remove_blacklist_looking_at'))
 		Apply.DoClick = function()
@@ -2327,7 +2276,6 @@ for k, v in pairs(DPP.BlockTypes) do
 			if not IsValid(ent) then return end
 			RunConsoleCommand('dpp_removeblockedentity' .. k, ent:GetClass())
 		end
-		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('add_blacklist_looking_at_all'))
 		Apply.DoClick = function()
@@ -2335,7 +2283,6 @@ for k, v in pairs(DPP.BlockTypes) do
 			if not IsValid(ent) then return end
 			ADD_ALL(ent:GetClass())
 		end
-		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('remove_blacklist_looking_at_all'))
 		Apply.DoClick = function()
@@ -2343,7 +2290,6 @@ for k, v in pairs(DPP.BlockTypes) do
 			if not IsValid(ent) then return end
 			REMOVE_ALL(ent:GetClass())
 		end
-		lazyfix(Apply)
 
 		ConVarCheckbox(Panel, 'blacklist_' .. k)
 		ConVarCheckbox(Panel, 'blacklist_' .. k .. '_white')
@@ -2428,25 +2374,21 @@ for k, v in pairs(DPP.WhitelistTypes) do
 		Apply.DoClick = function()
 			RunConsoleCommand('dpp_addwhitelistedentity' .. k, entry:GetText())
 		end
-		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('remove_entity'))
 		Apply.DoClick = function()
 			RunConsoleCommand('dpp_removewhitelistedentity' .. k, entry:GetText())
 		end
-		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('add_exclude_all'))
 		Apply.DoClick = function()
 			ADD_ALL_W(entry:GetText())
 		end
-		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('remove_exclude_all'))
 		Apply.DoClick = function()
 			REMOVE_ALL_W(entry:GetText())
 		end
-		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('add_exclude_looking_at'))
 		Apply.DoClick = function()
@@ -2454,7 +2396,6 @@ for k, v in pairs(DPP.WhitelistTypes) do
 			if not IsValid(ent) then return end
 			RunConsoleCommand('dpp_addwhitelistedentity' .. k, ent:GetClass())
 		end
-		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('add_exclude_looking_at_all'))
 		Apply.DoClick = function()
@@ -2462,7 +2403,6 @@ for k, v in pairs(DPP.WhitelistTypes) do
 			if not IsValid(ent) then return end
 			RunConsoleCommand('dpp_removewhitelistedentity' .. k, ent:GetClass())
 		end
-		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('remove_exclude_looking_at'))
 		Apply.DoClick = function()
@@ -2470,7 +2410,6 @@ for k, v in pairs(DPP.WhitelistTypes) do
 			if not IsValid(ent) then return end
 			ADD_ALL_W(ent:GetClass())
 		end
-		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('remove_exclude_looking_at_all'))
 		Apply.DoClick = function()
@@ -2478,7 +2417,6 @@ for k, v in pairs(DPP.WhitelistTypes) do
 			if not IsValid(ent) then return end
 			REMOVE_ALL_W(ent:GetClass())
 		end
-		lazyfix(Apply)
 
 		ConVarCheckbox(Panel, 'whitelist_' .. k)
 	end
@@ -2573,7 +2511,6 @@ for k, v in pairs(DPP.RestrictTypes) do
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
 		apply:SetText(P('apply'))
-		lazyfix(apply)
 
 		function apply.DoClick()
 			CustomEnter.p.Group = CustomEnter:GetText()
@@ -2594,7 +2531,6 @@ for k, v in pairs(DPP.RestrictTypes) do
 		local discard = frame:Add('DButton')
 		discard:Dock(BOTTOM)
 		discard:SetText(P('discard'))
-		lazyfix(discard)
 
 		function discard.DoClick()
 			frame:Close()
@@ -2686,7 +2622,6 @@ for k, v in pairs(DPP.RestrictTypes) do
 		Apply.DoClick = function()
 			OpenModifyPanel(entry:GetText(), true)
 		end
-		lazyfix(Apply)
 
 		ConVarCheckbox(Panel, 'restrict_' .. k)
 		ConVarCheckbox(Panel, 'restrict_' .. k .. '_white')
@@ -2734,8 +2669,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 			button.frame = frame
 			button.ply = ply
 			button.entry = self.entry
-			lazyfix(button)
-		end
+				end
 
 		gui.SetMousePos(ScrW() / 2, ScrH() / 2 - 295)
 	end
@@ -2774,8 +2708,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 		local button = vgui.Create('DButton', Panel)
 		button:SetText(P('selecting_player'))
-		lazyfix(button)
-		button.DoClick = OpenPlayersMenu
+			button.DoClick = OpenPlayersMenu
 		Panel:AddItem(button)
 
 		local Lab = vgui.Create('DLabel', Panel)
@@ -2801,13 +2734,11 @@ for k, v in pairs(DPP.RestrictTypes) do
 		Apply.DoClick = function()
 			RunConsoleCommand('dpp_restrict' .. k .. '_ply', entry_steamid:GetText(), entry_class:GetText())
 		end
-		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('remove_r'))
 		Apply.DoClick = function()
 			RunConsoleCommand('dpp_unrestrict' .. k .. '_ply', entry_steamid:GetText(), entry_class:GetText())
 		end
-		lazyfix(Apply)
 
 		ConVarCheckbox(Panel, 'restrict_' .. k .. '_ply')
 	end
@@ -2997,8 +2928,7 @@ local function BuildFriendsPanel(Panel)
 			RunConsoleCommand('dpp_importfppbuddies')
 		end
 
-		lazyfix(Apply)
-	end
+		end
 
 	local Apply = Panel:Button('Open DLib friends')
 
@@ -3006,7 +2936,6 @@ local function BuildFriendsPanel(Panel)
 		RunConsoleCommand('dlib_friends')
 	end
 
-	lazyfix(Apply)
 end
 
 function SettingsClass.BuildFactoryResetPanel(Panel)
@@ -3035,7 +2964,6 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 	local button = Panel:Button('DButton')
 	button:SetText(P('reset_gui_all'))
 	SettingsClass.SetButtonAccess(button, 'factoryreset')
-	lazyfix(button)
 	button.DoClick = function()
 		Derma_Query(P('reset_gui_all'), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_factoryreset') end, 'CANCEL', function() end)
 	end
@@ -3043,7 +2971,6 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 	local button = Panel:Button('DButton')
 	button:SetText(P('reset_gui_cvars'))
 	SettingsClass.SetButtonAccess(button, 'freset_cvars')
-	lazyfix(button)
 	button.DoClick = function()
 		Derma_Query(P('reset_gui_cvars'), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_freset_cvars') end, 'CANCEL', function() end)
 	end
@@ -3060,8 +2987,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 		local button = Panel:Button('DButton')
 		button:SetText(P('reset_gui_' .. val))
 		SettingsClass.SetButtonAccess(button, val)
-		lazyfix(button)
-		button.DoClick = function()
+			button.DoClick = function()
 			Derma_Query(P('reset_gui_' .. val), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_' .. val) end, 'CANCEL', function() end)
 		end
 	end
@@ -3078,8 +3004,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 		local button = Panel:Button('DButton')
 		button:SetText(P('reset_gui_' .. val))
 		SettingsClass.SetButtonAccess(button, val)
-		lazyfix(button)
-		button.DoClick = function()
+			button.DoClick = function()
 			Derma_Query(P('reset_gui_' .. val), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_' .. val) end, 'CANCEL', function() end)
 		end
 	end
@@ -3104,8 +3029,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 		local button = Panel:Button('DButton')
 		button:SetText(P('reset_gui_b' .. k))
 		SettingsClass.SetButtonAccess(button, 'freset_blocked_' .. k)
-		lazyfix(button)
-		button.DoClick = function()
+			button.DoClick = function()
 			Derma_Query(P('reset_gui_b' .. k), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_freset_blocked_' .. k) end, 'CANCEL', function() end)
 		end
 	end
@@ -3122,8 +3046,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 		local button = Panel:Button('DButton')
 		button:SetText(P('reset_gui_e' .. k))
 		SettingsClass.SetButtonAccess(button, 'freset_exclude_' .. k)
-		lazyfix(button)
-		button.DoClick = function()
+			button.DoClick = function()
 			Derma_Query(P('reset_gui_e' .. k), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_freset_exclude_' .. k) end, 'CANCEL', function() end)
 		end
 	end
@@ -3140,8 +3063,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 		local button = Panel:Button('DButton')
 		button:SetText(P('reset_gui_r' .. k))
 		SettingsClass.SetButtonAccess(button, 'freset_restrictions_' .. k)
-		lazyfix(button)
-		button.DoClick = function()
+			button.DoClick = function()
 			Derma_Query(P('reset_gui_r' .. k), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_freset_restrictions_' .. k) end, 'CANCEL', function() end)
 		end
 	end
@@ -3172,7 +3094,6 @@ local function About(Panel)
 	Button.DoClick = function()
 		gui.OpenURL('http://steamcommunity.com/sharedfiles/filedetails/?id=659044893')
 	end
-	lazyfix(Button)
 
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
@@ -3185,13 +3106,11 @@ local function About(Panel)
 	Button.DoClick = function()
 		gui.OpenURL('https://discord.gg/HG9eS79')
 	end
-	lazyfix(Button)
 
 	local Button = Panel:Button('GitLab')
 	Button.DoClick = function()
 		gui.OpenURL('https://git.dbot.serealia.ca/dbot/dpp')
 	end
-	lazyfix(Button)
 
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
@@ -3204,7 +3123,6 @@ local function About(Panel)
 	Button.DoClick = function()
 		gui.OpenURL('https://git.dbot.serealia.ca/dbot/dpp/issues')
 	end
-	lazyfix(Button)
 end
 
 local function PopulateToolMenu()
@@ -3707,7 +3625,6 @@ for k, v in pairs(DPP.RestrictTypes) do
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
 		apply:SetText(P('apply'))
-		lazyfix(apply)
 
 		function apply.DoClick()
 			t.groups = {}
@@ -3725,7 +3642,6 @@ for k, v in pairs(DPP.RestrictTypes) do
 		local discard = frame:Add('DButton')
 		discard:Dock(BOTTOM)
 		discard:SetText(P('discard'))
-		lazyfix(discard)
 
 		function discard.DoClick()
 			frame:Close()
@@ -3844,7 +3760,6 @@ do
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
 		apply:SetText(P('apply'))
-		lazyfix(apply)
 
 		function apply.DoClick()
 			t.groups = {}
@@ -3862,7 +3777,6 @@ do
 		local discard = frame:Add('DButton')
 		discard:Dock(BOTTOM)
 		discard:SetText(P('discard'))
-		lazyfix(discard)
 
 		function discard.DoClick()
 			frame:Close()
