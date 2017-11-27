@@ -1,21 +1,23 @@
 
---[[
-Copyright (C) 2016-2017 DBot
+-- Copyright (C) 2016-2017 DBot
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+-- Licensed under the Apache License, Version 2.0 (the "License");
+-- you may not use this file except in compliance with the License.
+-- You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+--     http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-]]
+-- Unless required by applicable law or agreed to in writing, software
+-- distributed under the License is distributed on an "AS IS" BASIS,
+-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-- See the License for the specific language governing permissions and
+-- limitations under the License.
 
 DPP.SettingsClass = DPP.SettingsClass or {}
+
+local function lazyfix(panel)
+	return panel
+end
 
 local SettingsClass = DPP.SettingsClass
 local P = DPP.GetPhrase
@@ -37,8 +39,6 @@ function FUNCTIONS.CheckBoxThink(self)
 end
 
 function FUNCTIONS.CheckBoxDoClick(self)
-	if not LocalPlayer():IsSuperAdmin() then return end
-
 	RunConsoleCommand('dpp_setvar', self.val, tobool(self.LastVal) and '0' or '1')
 end
 
@@ -60,7 +60,7 @@ function DPP.OpenShareMenu(ent)
 
 	local frame = vgui.Create('DFrame')
 	frame:SetTitle(P('sharing', tostring(ent)))
-	SettingsClass.ApplyFrameStyle(frame)
+	frame:SetSkin(DLib.GetSkin(frame))
 
 	local groups = DPP.GetGroups()
 	local Panels = {}
@@ -76,9 +76,6 @@ function DPP.OpenShareMenu(ent)
 		p.Type = k
 
 		SettingsClass.MakeCheckboxBetter(p)
-		p.Button.Paint = Style.CheckBoxButtonPaintClient
-		p.Paint = Style.CheckBoxPaintClient
-		SettingsClass.AddScramblingChars(p.Label, p, p.Button)
 	end
 
 	height = height + 50
@@ -86,7 +83,7 @@ function DPP.OpenShareMenu(ent)
 	local apply = frame:Add('DButton')
 	apply:Dock(BOTTOM)
 	apply:SetText(P('apply'))
-	SettingsClass.ApplyButtonStyle(apply)
+	lazyfix(apply)
 
 	function apply.DoClick()
 		if IsValid(ent) then
@@ -102,7 +99,7 @@ function DPP.OpenShareMenu(ent)
 	local discard = frame:Add('DButton')
 	discard:Dock(BOTTOM)
 	discard:SetText(P('discard'))
-	SettingsClass.ApplyButtonStyle(discard)
+	lazyfix(discard)
 
 	function discard.DoClick()
 		frame:Close()
@@ -111,7 +108,7 @@ function DPP.OpenShareMenu(ent)
 	local unselectall = frame:Add('DButton')
 	unselectall:Dock(BOTTOM)
 	unselectall:SetText(P('unshare'))
-	SettingsClass.ApplyButtonStyle(unselectall)
+	lazyfix(unselectall)
 
 	function unselectall.DoClick()
 		if IsValid(ent) then
@@ -189,95 +186,6 @@ for x = 0, 15 do
 	})
 end
 
-function Style.ScramblingCharsThink(self)
-	if DPP.PlayerConVar(nil, 'no_scrambling_text') then return end
-	local isHovered = IsValid(hoverPanel) and hoverPanel:IsHovered() or IsValid(hoverPanel2) and hoverPanel2:IsHovered() or self:IsHovered()
-
-	if isHovered and not self.IsScrambling and not self.AfterScramble then
-		self.IsScrambling = true
-		self.OriginalText = self:GetText()
-		self.CurrentChar = 1
-		self.Chars = #self.OriginalText
-		self.NextChar = CurTime() + 0.1
-	end
-
-	if not isHovered and self.AfterScramble then
-		self.AfterScramble = false
-	end
-
-	if self.IsScrambling and self.NextChar < CurTime() then
-		if self.Chars >= self.CurrentChar then
-			local t = string.sub(self.OriginalText, 1, self.CurrentChar) .. table.Random(SettingsClass.Chars) .. table.Random(SettingsClass.Chars) .. table.Random(SettingsClass.Chars) .. string.sub(self.OriginalText, self.CurrentChar + 3)
-			self:SetText(t)
-			self:SizeToContents()
-			self.CurrentChar = self.CurrentChar + 1
-		else
-			self:SetText(self.OriginalText)
-			self.IsScrambling = false
-			self.AfterScramble = true
-			self:SizeToContents()
-		end
-	end
-
-	if self.oldThink then self.oldThink(self) end
-end
-
-function Style.ScramblingCharsThinkButton(self)
-	if DPP.PlayerConVar(nil, 'no_scrambling_text') then return end
-	local isHovered = IsValid(hoverPanel) and hoverPanel:IsHovered() or IsValid(hoverPanel2) and hoverPanel2:IsHovered() or self:IsHovered()
-
-	if isHovered and not self.IsScrambling and not self.AfterScramble then
-		self.IsScrambling = true
-		self.OriginalText = self:GetText()
-		self.CurrentChar = 1
-		self.Chars = #self.OriginalText
-		self.NextChar = CurTime() + 0.1
-	end
-
-	if not isHovered and self.AfterScramble then
-		self.AfterScramble = false
-	end
-
-	if self.IsScrambling and self.NextChar < CurTime() then
-		if self.Chars >= self.CurrentChar then
-			local t = string.sub(self.OriginalText, 1, self.CurrentChar) .. table.Random(SettingsClass.Chars) .. table.Random(SettingsClass.Chars) .. table.Random(SettingsClass.Chars) .. string.sub(self.OriginalText, self.CurrentChar + 3)
-			self:SetText(t)
-			--self:SizeToContents()
-			self.CurrentChar = self.CurrentChar + 1
-		else
-			self:SetText(self.OriginalText)
-			self.IsScrambling = false
-			self.AfterScramble = true
-			--self:SizeToContents()
-		end
-	end
-
-	if self.oldThink then self.oldThink(self) end
-end
-
-function SettingsClass.AddScramblingChars(panel, hoverPanel, hoverPanel2)
-	local oldThink = panel.Think
-	panel.hoverPanel = hoverPanel
-	panel.hoverPanel2 = hoverPanel2
-	panel.Think = Style.ScramblingCharsThink
-end
-
-function Style.NeonButtonPaint(self, w, h)
-	self.Neon = self.Neon or 0
-
-	if not self:IsDown() then
-		draw.RoundedBox(0, 0, 0,w, h,Color(self.Neon, self.Neon, self.Neon, 150))
-	else
-		draw.RoundedBox(0, 0, 0,w, h,Color(200, 200, 200, 150))
-	end
-
-	if self:IsHovered() then
-		self.Neon = math.min(self.Neon + 5 * (66 / (1/FrameTime())), 150)
-	else
-		self.Neon = math.max(self.Neon - 5 * (66 / (1/FrameTime())), 0)
-	end
-end
-
 function Style.AccessButtonPaint(self, w, h)
 	if self.AccessVar and not SettingsClass.Accesses[self.AccessVar] then
 		draw.NoTexture()
@@ -300,23 +208,6 @@ function SettingsClass.SetButtonAccess(panel, accessName)
 	return panel
 end
 
-function SettingsClass.ApplyButtonStyle(panel)
-	panel.Paint = Style.NeonButtonPaint
-	panel.Think = Style.ScramblingCharsThinkButton
-
-	timer.Simple(0, function() if IsValid(panel) then panel:SetTextColor(color_white) end end)
-
-	return panel
-end
-
-function Style.FramePaint(self, w, h)
-	draw.RoundedBox(0, 0, 0, w, h, SettingsClass.FrameColor)
-end
-
-function SettingsClass.ApplyFrameStyle(frame)
-	frame.Paint = Style.FramePaint
-end
-
 surface.CreateFont('DPP.CheckBox', {
 	font = 'Tahoma',
 	weight = 800,
@@ -325,116 +216,17 @@ surface.CreateFont('DPP.CheckBox', {
 
 SettingsClass.CheckBoxShift = -5
 
-function Style.CheckBoxThink(self)
-	local isHovered = self.Label:IsHovered() or self.Button:IsHovered() or self:IsHovered()
-
-	self.IMyX = self:GetSize()
-	if isHovered then
-		self.CurrentArrowMove = math.Clamp(self.CurrentArrowMove + 1000 / (1/FrameTime()), -10, self.IMyX)
-	else
-		self.CurrentArrowMove = math.Clamp(self.CurrentArrowMove - 1000 / (1/FrameTime()), -10, self.IMyX)
-	end
-
-	if self.oldThink then self.oldThink() end
-end
-
 Style.AccessDeniedColor = Color(200, 100, 100, 150)
 Style.AccessDeniedColorCheckbox = Color(0, 0, 0)
 
-function Style.CheckBoxPaint(self, w, h)
-	surface.SetDrawColor(SettingsClass.Glow)
-	surface.DrawRect(0, 0, self.CurrentArrowMove, h)
-
-	if self.AccessVar and not SettingsClass.Accesses[self.AccessVar] then
-		draw.NoTexture()
-		surface.SetDrawColor(Style.AccessDeniedColor)
-
-		for k, v in ipairs(Style.CheckBoxStrip) do
-			surface.DrawPoly(v)
-		end
-	end
-
-	self.oldPaint(w, h)
-end
-
-function Style.CheckBoxPaintClient(self, w, h)
-	surface.SetDrawColor(SettingsClass.Glow)
-	surface.DrawRect(0, 0, self.CurrentArrowMove, h)
-
-	self.oldPaint(w, h)
-end
-
-function Style.CheckBoxButtonPaint(self, w, h)
-	local isChecked = self:GetChecked()
-
-	surface.SetDrawColor(SettingsClass.CheckBox)
-	surface.DrawRect(0, 0, w, h)
-
-	surface.SetDrawColor(isChecked and SettingsClass.Checked or SettingsClass.UnChecked)
-	surface.DrawRect(2, 2, w - 4, h - 4)
-
-	if self.AccessVar and not SettingsClass.Accesses[self.AccessVar] then
-		draw.NoTexture()
-		surface.SetDrawColor(Style.AccessDeniedColorCheckbox)
-		surface.DrawPoly{
-			{x = w - 2, y = 2},
-			{x = w - 2, y = h - 2},
-			{x = 2, y = h - 2},
-		}
-	end
-end
-
-function Style.CheckBoxButtonPaintClient(self, w, h)
-	local isChecked = self:GetChecked()
-
-	surface.SetDrawColor(SettingsClass.CheckBox)
-	surface.DrawRect(0, 0, w, h)
-
-	surface.SetDrawColor(isChecked and SettingsClass.Checked or SettingsClass.UnChecked)
-	surface.DrawRect(2, 2, w - 4, h - 4)
-end
-
-function Style.SliderPaint(self, w, h)
-	if not SettingsClass.Accesses.setvar then
-		draw.NoTexture()
-		surface.SetDrawColor(Style.AccessDeniedColor)
-
-		for k, v in ipairs(Style.CheckBoxStrip) do
-			surface.DrawPoly(v)
-		end
-	end
-
-	if self.oldPaint then self.oldPaint(self, w, h) end
-end
-
 function SettingsClass.MakeCheckboxBetter(panel)
 	panel.oldThink = panel.Think
-	panel.oldPaint = panel.Paint
 
 	panel.CurrentArrowMove = 0
 	panel.SizeOfArrow = 0
 
 	panel.Label:SetTextColor(SettingsClass.TextColor)
 	panel.Think = Style.CheckBoxThink
-	panel.Paint = Style.CheckBoxPaint
-
-	panel.Button.Paint = Style.CheckBoxButtonPaint
-end
-
-function SettingsClass.PaintBackground(s, w, h)
-	surface.SetDrawColor(SettingsClass.Background)
-	surface.DrawRect(0, 0, w, h)
-end
-
-function SettingsClass.SetupBackColor(Panel)
-	Panel.Paint = SettingsClass.PaintBackground
-end
-
-function SettingsClass.ApplySliderStyle(Slider)
-	Slider.Label:SetTextColor(SettingsClass.TextColor)
-	Slider.TextArea:SetTextColor(SettingsClass.TextColor)
-	Slider.oldPaint = Slider.Paint
-	Slider.Paint = Style.SliderPaint
 end
 
 local SortedConVars = {
@@ -539,7 +331,6 @@ function SettingsClass.ConVarSlider(Panel, var)
 	local v = DPP.Settings[var]
 
 	local Slider = Panel:NumSlider(P('cvar_' .. var), nil, v.min or 0, v.max or 100, 1)
-	SettingsClass.ApplySliderStyle(Slider)
 	Slider:SetTooltip(P('scvar_base', P('cvar_' .. var), var))
 	Slider:SetValue(DPP.GetConVar(var))
 
@@ -575,7 +366,6 @@ function SettingsClass.ConVarCheckbox(Panel, idx)
 	checkbox:SetTooltip(P('scvar_base', P('cvar_' .. idx), idx))
 	checkbox.AccessVar = 'setvar'
 	checkbox.Button.AccessVar = 'setvar'
-	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 	SettingsClass.MakeCheckboxBetter(checkbox)
 end
 
@@ -606,7 +396,7 @@ local function BuildSVarPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
 	Panel:Dock(FILL)
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 	SettingsClass.ServerVarsPanel = Panel
 
 	local Lab = vgui.Create('DLabel', Panel)
@@ -659,11 +449,7 @@ function SettingsClass.ClientConVarCheckbox(Panel, idx)
 	checkbox.Button.val = idx
 	checkbox.Button.DoClick = FUNCTIONS.CCheckBoxDoClick
 	checkbox.Button.Think = FUNCTIONS.CCheckBoxThink
-	checkbox:SetTooltip(P('scvar_base', P('ccvar_' .. idx), idx))
-	SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 	SettingsClass.MakeCheckboxBetter(checkbox)
-	checkbox.Paint = Style.CheckBoxPaintClient
-	checkbox.Button.Paint = Style.CheckBoxButtonPaintClient
 
 	return checkbox
 end
@@ -671,11 +457,11 @@ end
 local function BuildCVarPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 	SettingsClass.CVarsPanel = Panel
 
-	SettingsClass.ApplyButtonStyle(Panel:Button(P('remove_my_ents'), 'dpp_clearself'))
-	SettingsClass.ApplyButtonStyle(Panel:Button(P('request_net_update'), 'dlib_nw'))
+	lazyfix(Panel:Button(P('remove_my_ents'), 'dpp_clearself'))
+	lazyfix(Panel:Button(P('request_net_update'), 'dlib_nw'))
 
 	for k, v in pairs(ClientVars) do
 		if DPP.CSettings[v].bool then
@@ -745,8 +531,6 @@ local function BuildCVarPanel(Panel)
 	lab:SetTooltip(text)
 
 	local Slider = Panel:NumSlider(P('display_x'), nil, 0, 100)
-	SettingsClass.ApplySliderStyle(Slider)
-	Slider.Paint = Slider.oldPaint
 	Slider:SetTooltip(P('display_x'))
 	Slider:SetValue(POSITION_X:GetFloat())
 	Slider.OnValueChanged = function()
@@ -754,8 +538,6 @@ local function BuildCVarPanel(Panel)
 	end
 
 	local Slider = Panel:NumSlider(P('display_y'), nil, 0, 100)
-	SettingsClass.ApplySliderStyle(Slider)
-	Slider.Paint = Slider.oldPaint
 	Slider:SetTooltip(P('display_y'))
 	Slider:SetValue(POSITION_Y:GetFloat())
 	Slider.OnValueChanged = function()
@@ -789,7 +571,7 @@ SettingsClass.BuddiesVars = {
 local function BuildMiscVarsPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 	SettingsClass.MiscVarsPanel = Panel
 
 	for a, b in ipairs(MiscConVars) do
@@ -819,7 +601,7 @@ end
 local function BuildAPropKillVarsPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 	DPP.SettingsClass.APropKillVarsPanel = Panel
 
 	for a, b in pairs(APropKillVars) do
@@ -835,7 +617,7 @@ end
 local function BuildAntispamPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 	SettingsClass.AntispamPanel = Panel
 
 	SettingsClass.ConVarCheckbox(Panel, 'check_sizes')
@@ -863,7 +645,7 @@ SettingsClass.Accesses.clearbyuid = false
 local function BuildPlayerList(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 
 	DPP.SettingsClass.PlayerPanel = Panel
 
@@ -875,16 +657,16 @@ local function BuildPlayerList(Panel)
 	Lab:SizeToContents()
 	Lab:SetTooltip(TopText)
 
-	local button = SettingsClass.ApplyButtonStyle(Panel:Button(P('delete_ents'), 'dpp_clearmap'))
+	local button = lazyfix(Panel:Button(P('delete_ents'), 'dpp_clearmap'))
 	SettingsClass.SetButtonAccess(button, 'clearmap')
 
-	local button = SettingsClass.ApplyButtonStyle(Panel:Button(P('freeze_all'), 'dpp_freezeall'))
+	local button = lazyfix(Panel:Button(P('freeze_all'), 'dpp_freezeall'))
 	SettingsClass.SetButtonAccess(button, 'freezeall')
 
-	local button = SettingsClass.ApplyButtonStyle(Panel:Button(P('freeze_all_phys'), 'dpp_freezephys'))
+	local button = lazyfix(Panel:Button(P('freeze_all_phys'), 'dpp_freezephys'))
 	SettingsClass.SetButtonAccess(button, 'freezephys')
 
-	local button = SettingsClass.ApplyButtonStyle(Panel:Button(P('delete_disconnected'), 'dpp_cleardisconnected'))
+	local button = lazyfix(Panel:Button(P('delete_disconnected'), 'dpp_cleardisconnected'))
 	SettingsClass.SetButtonAccess(button, 'cleardisconnected')
 
 	for k, v in pairs(DPP.GetPlayerList()) do
@@ -902,7 +684,7 @@ local function BuildPlayerList(Panel)
 		Button:SetWidth(48)
 		Button:SetText(P('action_unfreeze'))
 		Button:SetConsoleCommand('dpp_unfreezebyuid', v.UID)
-		SettingsClass.ApplyButtonStyle(Button)
+		lazyfix(Button)
 		SettingsClass.SetButtonAccess(Button, 'unfreezebyuid')
 
 		local Button = vgui.Create('DButton', pnl)
@@ -910,7 +692,7 @@ local function BuildPlayerList(Panel)
 		Button:SetWidth(48)
 		Button:SetText(P('action_freeze'))
 		Button:SetConsoleCommand('dpp_freezebyuid', v.UID)
-		SettingsClass.ApplyButtonStyle(Button)
+		lazyfix(Button)
 		SettingsClass.SetButtonAccess(Button, 'freezebyuid')
 
 		local Button = vgui.Create('DButton', pnl)
@@ -918,7 +700,7 @@ local function BuildPlayerList(Panel)
 		Button:SetWidth(48)
 		Button:SetText(P('action_delete'))
 		Button:SetConsoleCommand('dpp_clearbyuid', v.UID)
-		SettingsClass.ApplyButtonStyle(Button)
+		lazyfix(Button)
 		SettingsClass.SetButtonAccess(Button, 'clearbyuid')
 	end
 end
@@ -943,7 +725,7 @@ end
 local function BuildFallbackList(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 
 	DPP.SettingsClass.FallbackPanel = Panel
 
@@ -995,7 +777,7 @@ local function BuildFallbackList(Panel)
 		Button:SetTooltip(P('menu_player_tip', v:Nick(), v:SteamID(), v:SteamID64(), v:GetFriendStatus() == 'friend' and 'true' or 'false'))
 		Button:Dock(FILL)
 
-		SettingsClass.ApplyButtonStyle(Button)
+		lazyfix(Button)
 		::CONTINUE::
 	end
 
@@ -1003,7 +785,7 @@ local function BuildFallbackList(Panel)
 	Panel:AddItem(lab)
 
 	local Button = Panel:Button(P('owning_fallback_r'), 'dpp_removefallbackto')
-	SettingsClass.ApplyButtonStyle(Button)
+	lazyfix(Button)
 
 	local lab = Label('!!!DANGER!!!')
 	Panel:AddItem(lab)
@@ -1025,7 +807,7 @@ local function BuildFallbackList(Panel)
 		Button:SetTooltip(P('menu_player_tip', v:Nick(), v:SteamID(), v:SteamID64(), v:GetFriendStatus() == 'friend' and 'true' or 'false'))
 		Button:Dock(FILL)
 
-		SettingsClass.ApplyButtonStyle(Button)
+		lazyfix(Button)
 		::CONTINUE::
 	end
 end
@@ -1045,7 +827,7 @@ end
 local function BuildPlayerProtectionPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 
 	DPP.SettingsClass.PPPanel = Panel
 
@@ -1066,7 +848,6 @@ local function BuildPlayerProtectionPanel(Panel)
 			checkbox.Button.Think = SettingsClass.PlayerProtectionCheckboxThink
 			checkbox:SetTooltip(desc)
 
-			SettingsClass.AddScramblingChars(checkbox.Label, checkbox, checkbox.Button)
 			SettingsClass.MakeCheckboxBetter(checkbox)
 			checkbox.AccessVar = 'toggleplayerprotect'
 			checkbox.Button.AccessVar = 'toggleplayerprotect'
@@ -1303,7 +1084,7 @@ end
 local function BuildModelsList(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 	DPP.SettingsClass.ModelPanel = Panel
 
 	local list = vgui.Create('DListView', Panel)
@@ -1325,7 +1106,7 @@ local function BuildModelsList(Panel)
 
 	local Apply = Panel:Button(P('visual_list'))
 	Apply.DoClick = SettingsClass.BuildModelsListGUI
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	local entry = vgui.Create('DTextEntry', Panel)
 	Panel:AddItem(entry)
@@ -1333,13 +1114,13 @@ local function BuildModelsList(Panel)
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_addblockedmodel', entry:GetText())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('remove_model'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_removeblockedmodel', entry:GetText())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('action_looking_at', P('add_model')))
 	Apply.DoClick = function()
@@ -1347,7 +1128,7 @@ local function BuildModelsList(Panel)
 		if not IsValid(ent) then return end
 		RunConsoleCommand('dpp_addblockedmodel', ent:GetModel())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('action_looking_at', P('remove_model')))
 	Apply.DoClick = function()
@@ -1355,7 +1136,7 @@ local function BuildModelsList(Panel)
 		if not IsValid(ent) then return end
 		RunConsoleCommand('dpp_removeblockedmodel', ent:GetModel())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	ConVarCheckbox(Panel, 'model_blacklist')
 	ConVarCheckbox(Panel, 'model_whitelist')
@@ -1369,7 +1150,7 @@ local function OpenLimitEditPanel(class)
 
 	local frame = vgui.Create('DFrame')
 	frame:SetTitle(P('modifying', class))
-	SettingsClass.ApplyFrameStyle(frame)
+	frame:SetSkin(DLib.GetSkin(frame))
 	local scroll = frame:Add('DScrollPanel')
 	local canvas = scroll:GetCanvas()
 
@@ -1433,7 +1214,7 @@ local function OpenLimitEditPanel(class)
 	local apply = frame:Add('DButton')
 	apply:Dock(BOTTOM)
 	apply:SetText(P('apply'))
-	SettingsClass.ApplyButtonStyle(apply)
+	lazyfix(apply)
 
 	function apply.DoClick()
 		CustomEnter.p.Group = CustomEnter:GetText()
@@ -1460,7 +1241,7 @@ local function OpenLimitEditPanel(class)
 	local discard = frame:Add('DButton')
 	discard:Dock(BOTTOM)
 	discard:SetText(P('discard'))
-	SettingsClass.ApplyButtonStyle(discard)
+	lazyfix(discard)
 
 	function discard.DoClick()
 		frame:Close()
@@ -1476,7 +1257,7 @@ local function OpenMLimitEditPanel(model)
 
 	local frame = vgui.Create('DFrame')
 	frame:SetTitle(P('modifying', model))
-	SettingsClass.ApplyFrameStyle(frame)
+	frame:SetSkin(DLib.GetSkin(frame))
 	local scroll = frame:Add('DScrollPanel')
 	local canvas = scroll:GetCanvas()
 
@@ -1540,7 +1321,7 @@ local function OpenMLimitEditPanel(model)
 	local apply = frame:Add('DButton')
 	apply:Dock(BOTTOM)
 	apply:SetText(P('apply'))
-	SettingsClass.ApplyButtonStyle(apply)
+	lazyfix(apply)
 
 	function apply.DoClick()
 		CustomEnter.p.Group = CustomEnter:GetText()
@@ -1567,7 +1348,7 @@ local function OpenMLimitEditPanel(model)
 	local discard = frame:Add('DButton')
 	discard:Dock(BOTTOM)
 	discard:SetText(P('discard'))
-	SettingsClass.ApplyButtonStyle(discard)
+	lazyfix(discard)
 
 	function discard.DoClick()
 		frame:Close()
@@ -1581,7 +1362,7 @@ end
 local function BuildLimitsList(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 	DPP.SettingsClass.LimitsPanel = Panel
 
 	local Lab = vgui.Create('DLabel', Panel)
@@ -1633,13 +1414,13 @@ local function BuildLimitsList(Panel)
 	Apply.DoClick = function()
 		OpenLimitEditPanel(entry:GetText())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('remove_limit'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_removeentitylimit', entry:GetText())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('action_looking_at', P('edit_limit')))
 	Apply.DoClick = function()
@@ -1647,7 +1428,7 @@ local function BuildLimitsList(Panel)
 		if not IsValid(ent) then return end
 		OpenLimitEditPanel(ent:GetClass())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('action_looking_at', P('remove_limit')))
 	Apply.DoClick = function()
@@ -1655,7 +1436,7 @@ local function BuildLimitsList(Panel)
 		if not IsValid(ent) then return end
 		RunConsoleCommand('dpp_removeentitylimit', ent:GetClass())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	ConVarCheckbox(Panel, 'ent_limits_enable')
 end
@@ -1663,7 +1444,7 @@ end
 function SettingsClass.BuildModelLimitsList(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 	DPP.SettingsClass.ModelLimitsPanel = Panel
 
 	local Lab = vgui.Create('DLabel', Panel)
@@ -1715,13 +1496,13 @@ function SettingsClass.BuildModelLimitsList(Panel)
 	Apply.DoClick = function()
 		OpenMLimitEditPanel(entry:GetText())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('remove_limit'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_addmodellimit', entry:GetText())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('action_looking_at', P('edit_limit')))
 	Apply.DoClick = function()
@@ -1729,7 +1510,7 @@ function SettingsClass.BuildModelLimitsList(Panel)
 		if not IsValid(ent) then return end
 		OpenMLimitEditPanel(ent:GetModel())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('action_looking_at', P('remove_limit')))
 	Apply.DoClick = function()
@@ -1737,7 +1518,7 @@ function SettingsClass.BuildModelLimitsList(Panel)
 		if not IsValid(ent) then return end
 		RunConsoleCommand('dpp_removemodellimit', ent:GetModel())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	ConVarCheckbox(Panel, 'model_limits_enable')
 end
@@ -1759,7 +1540,7 @@ local function OpenSLimitEditPanel(class)
 
 	local frame = vgui.Create('DFrame')
 	frame:SetTitle(P('modifying', class))
-	SettingsClass.ApplyFrameStyle(frame)
+	frame:SetSkin(DLib.GetSkin(frame))
 	local scroll = frame:Add('DScrollPanel')
 	local canvas = scroll:GetCanvas()
 
@@ -1823,7 +1604,7 @@ local function OpenSLimitEditPanel(class)
 	local apply = frame:Add('DButton')
 	apply:Dock(BOTTOM)
 	apply:SetText(P('apply'))
-	SettingsClass.ApplyButtonStyle(apply)
+	lazyfix(apply)
 
 	function apply.DoClick()
 		CustomEnter.p.Group = CustomEnter:GetText()
@@ -1850,7 +1631,7 @@ local function OpenSLimitEditPanel(class)
 	local discard = frame:Add('DButton')
 	discard:Dock(BOTTOM)
 	discard:SetText(P('discard'))
-	SettingsClass.ApplyButtonStyle(discard)
+	lazyfix(discard)
 
 	function discard.DoClick()
 		frame:Close()
@@ -1866,7 +1647,7 @@ local function OpenCLimitEditPanel(class)
 
 	local frame = vgui.Create('DFrame')
 	frame:SetTitle(P('modifying', class))
-	SettingsClass.ApplyFrameStyle(frame)
+	frame:SetSkin(DLib.GetSkin(frame))
 	local scroll = frame:Add('DScrollPanel')
 	local canvas = scroll:GetCanvas()
 
@@ -1930,7 +1711,7 @@ local function OpenCLimitEditPanel(class)
 	local apply = frame:Add('DButton')
 	apply:Dock(BOTTOM)
 	apply:SetText(P('apply'))
-	SettingsClass.ApplyButtonStyle(apply)
+	lazyfix(apply)
 
 	function apply.DoClick()
 		CustomEnter.p.Group = CustomEnter:GetText()
@@ -1957,7 +1738,7 @@ local function OpenCLimitEditPanel(class)
 	local discard = frame:Add('DButton')
 	discard:Dock(BOTTOM)
 	discard:SetText(P('discard'))
-	SettingsClass.ApplyButtonStyle(discard)
+	lazyfix(discard)
 
 	function discard.DoClick()
 		frame:Close()
@@ -1971,7 +1752,7 @@ end
 local function BuildSLimitsList(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 	DPP.SettingsClass.SLimitsPanel = Panel
 
 	local Lab = vgui.Create('DLabel', Panel)
@@ -2030,7 +1811,7 @@ local function BuildSLimitsList(Panel)
 	Apply.DoClick = function()
 		OpenSLimitEditPanel(entry:GetText())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	ConVarCheckbox(Panel, 'sbox_limits_enable')
 end
@@ -2038,7 +1819,7 @@ end
 local function BuildCLimitsList(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 	DPP.SettingsClass.CLimitsPanel = Panel
 
 	local Lab = vgui.Create('DLabel', Panel)
@@ -2097,7 +1878,7 @@ local function BuildCLimitsList(Panel)
 	Apply.DoClick = function()
 		OpenCLimitEditPanel(entry:GetText())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	ConVarCheckbox(Panel, 'const_limits_enable')
 end
@@ -2109,12 +1890,12 @@ SettingsClass.Accesses.inspect = false
 local function BuildToolsPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 	DPP.SettingsClass.ToolsPanel = Panel
 
-	SettingsClass.SetButtonAccess(SettingsClass.ApplyButtonStyle(Panel:Button(P('clear_decals'), 'dpp_cleardecals')), 'cleardecals')
-	SettingsClass.SetButtonAccess(SettingsClass.ApplyButtonStyle(Panel:Button(P('report_ents'), 'dpp_entcheck')), 'entcheck')
-	SettingsClass.SetButtonAccess(SettingsClass.ApplyButtonStyle(Panel:Button(P('inspect_button'), 'dpp_inspect')), 'inspect')
+	SettingsClass.SetButtonAccess(lazyfix(Panel:Button(P('clear_decals'), 'dpp_cleardecals')), 'cleardecals')
+	SettingsClass.SetButtonAccess(lazyfix(Panel:Button(P('report_ents'), 'dpp_entcheck')), 'entcheck')
+	SettingsClass.SetButtonAccess(lazyfix(Panel:Button(P('inspect_button'), 'dpp_inspect')), 'inspect')
 end
 
 local PanelsFunctions = {}
@@ -2216,7 +1997,7 @@ function CustomBlockMenus.toolworld(Panel)
 	local v = 'ToolgunWorld'
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 	ValidPanels[k] = Panel
 
 	local list = vgui.Create('DListView', Panel)
@@ -2247,13 +2028,13 @@ function CustomBlockMenus.toolworld(Panel)
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_addblockedentity' .. k, entry:GetText())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('remove_tool_mode'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_removeblockedentity' .. k, entry:GetText())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	ConVarCheckbox(Panel, 'blacklist_' .. k)
 	ConVarCheckbox(Panel, 'blacklist_' .. k .. '_white')
@@ -2285,7 +2066,7 @@ do
 		frame:Center()
 		frame:MakePopup()
 		frame:SetTitle(P('property_types_edit'))
-		SettingsClass.ApplyFrameStyle(frame)
+		frame:SetSkin(DLib.GetSkin(frame))
 
 		local ScrollPanel = frame:Add('DScrollPanel')
 		ScrollPanel:Dock(FILL)
@@ -2320,7 +2101,7 @@ do
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
 		apply:SetText(P('apply'))
-		SettingsClass.ApplyButtonStyle(apply)
+		lazyfix(apply)
 
 		function apply.DoClick()
 			Apply(Panels)
@@ -2330,7 +2111,7 @@ do
 		local discard = frame:Add('DButton')
 		discard:Dock(BOTTOM)
 		discard:SetText(P('discard'))
-		SettingsClass.ApplyButtonStyle(discard)
+		lazyfix(discard)
 
 		function discard.DoClick()
 			frame:Close()
@@ -2344,7 +2125,7 @@ function CustomWhiteMenus.propertyt(Panel)
 
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 	ValidPanels3[k] = Panel
 
 	local toptext = P('property_exclude_tip')
@@ -2357,7 +2138,7 @@ function CustomWhiteMenus.propertyt(Panel)
 
 	local Button = Panel:Button(P('properties_list'))
 	Button.DoClick = DPP.BuildPropertiesMenu
-	SettingsClass.ApplyButtonStyle(Button)
+	lazyfix(Button)
 
 	local list = vgui.Create('DListView', Panel)
 	Panel:AddItem(list)
@@ -2385,13 +2166,13 @@ function CustomWhiteMenus.propertyt(Panel)
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_addwhitelistedentity' .. k, entry:GetText())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('remove_property'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_removewhitelistedentity' .. k, entry:GetText())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	ConVarCheckbox(Panel, 'whitelist_' .. k)
 end
@@ -2402,7 +2183,7 @@ function CustomWhiteMenus.toolmode(Panel)
 
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 	ValidPanels3[k] = Panel
 
 	local toptext = P('toolmode_exclude_tip')
@@ -2439,13 +2220,13 @@ function CustomWhiteMenus.toolmode(Panel)
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_addwhitelistedentity' .. k, entry:GetText())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	local Apply = Panel:Button(P('remove_tool_mode'))
 	Apply.DoClick = function()
 		RunConsoleCommand('dpp_removewhitelistedentity' .. k, entry:GetText())
 	end
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 
 	ConVarCheckbox(Panel, 'whitelist_' .. k)
 end
@@ -2483,7 +2264,7 @@ for k, v in pairs(DPP.BlockTypes) do
 	PanelsFunctions[k] = function(Panel)
 		if not IsValid(Panel) then return end
 		Panel:Clear()
-		SettingsClass.SetupBackColor(Panel)
+		Panel:SetSkin(DLib.GetSkin(Panel))
 		ValidPanels[k] = Panel
 
 		local list = vgui.Create('DListView', Panel)
@@ -2512,25 +2293,25 @@ for k, v in pairs(DPP.BlockTypes) do
 		Apply.DoClick = function()
 			RunConsoleCommand('dpp_addblockedentity' .. k, entry:GetText())
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('remove_entity'))
 		Apply.DoClick = function()
 			RunConsoleCommand('dpp_removeblockedentity' .. k, entry:GetText())
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('add_to_all_blacklists_this'))
 		Apply.DoClick = function()
 			ADD_ALL(entry:GetText())
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('remove_from_all_blacklists_this'))
 		Apply.DoClick = function()
 			REMOVE_ALL(entry:GetText())
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('add_blacklist_looking_at'))
 		Apply.DoClick = function()
@@ -2538,7 +2319,7 @@ for k, v in pairs(DPP.BlockTypes) do
 			if not IsValid(ent) then return end
 			RunConsoleCommand('dpp_addblockedentity' .. k, ent:GetClass())
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('remove_blacklist_looking_at'))
 		Apply.DoClick = function()
@@ -2546,7 +2327,7 @@ for k, v in pairs(DPP.BlockTypes) do
 			if not IsValid(ent) then return end
 			RunConsoleCommand('dpp_removeblockedentity' .. k, ent:GetClass())
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('add_blacklist_looking_at_all'))
 		Apply.DoClick = function()
@@ -2554,7 +2335,7 @@ for k, v in pairs(DPP.BlockTypes) do
 			if not IsValid(ent) then return end
 			ADD_ALL(ent:GetClass())
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('remove_blacklist_looking_at_all'))
 		Apply.DoClick = function()
@@ -2562,7 +2343,7 @@ for k, v in pairs(DPP.BlockTypes) do
 			if not IsValid(ent) then return end
 			REMOVE_ALL(ent:GetClass())
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		ConVarCheckbox(Panel, 'blacklist_' .. k)
 		ConVarCheckbox(Panel, 'blacklist_' .. k .. '_white')
@@ -2606,7 +2387,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 	WhitelistFunctions[k] = function(Panel)
 		if not IsValid(Panel) then return end
 		Panel:Clear()
-		SettingsClass.SetupBackColor(Panel)
+		Panel:SetSkin(DLib.GetSkin(Panel))
 		ValidPanels3[k] = Panel
 
 		local toptext = P('exclude_tip', k, k, k) --KKK :\
@@ -2647,25 +2428,25 @@ for k, v in pairs(DPP.WhitelistTypes) do
 		Apply.DoClick = function()
 			RunConsoleCommand('dpp_addwhitelistedentity' .. k, entry:GetText())
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('remove_entity'))
 		Apply.DoClick = function()
 			RunConsoleCommand('dpp_removewhitelistedentity' .. k, entry:GetText())
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('add_exclude_all'))
 		Apply.DoClick = function()
 			ADD_ALL_W(entry:GetText())
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('remove_exclude_all'))
 		Apply.DoClick = function()
 			REMOVE_ALL_W(entry:GetText())
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('add_exclude_looking_at'))
 		Apply.DoClick = function()
@@ -2673,7 +2454,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 			if not IsValid(ent) then return end
 			RunConsoleCommand('dpp_addwhitelistedentity' .. k, ent:GetClass())
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('add_exclude_looking_at_all'))
 		Apply.DoClick = function()
@@ -2681,7 +2462,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 			if not IsValid(ent) then return end
 			RunConsoleCommand('dpp_removewhitelistedentity' .. k, ent:GetClass())
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('remove_exclude_looking_at'))
 		Apply.DoClick = function()
@@ -2689,7 +2470,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 			if not IsValid(ent) then return end
 			ADD_ALL_W(ent:GetClass())
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('remove_exclude_looking_at_all'))
 		Apply.DoClick = function()
@@ -2697,7 +2478,7 @@ for k, v in pairs(DPP.WhitelistTypes) do
 			if not IsValid(ent) then return end
 			REMOVE_ALL_W(ent:GetClass())
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		ConVarCheckbox(Panel, 'whitelist_' .. k)
 	end
@@ -2722,7 +2503,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 		local frame = vgui.Create('DFrame')
 		frame:SetTitle(P('modifying', class))
-		SettingsClass.ApplyFrameStyle(frame)
+		frame:SetSkin(DLib.GetSkin(frame))
 		frame:SetSize(300, 450)
 		frame:Center()
 		frame:MakePopup()
@@ -2753,7 +2534,6 @@ for k, v in pairs(DPP.RestrictTypes) do
 			p.Group = v
 
 			SettingsClass.MakeCheckboxBetter(p)
-			SettingsClass.AddScramblingChars(p.Label, p, p.Button)
 		end
 
 		local CustomEnter
@@ -2781,7 +2561,6 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 			CustomEnter = gentry
 			SettingsClass.MakeCheckboxBetter(p)
-			SettingsClass.AddScramblingChars(p.Label, p, p.Button)
 		end
 
 		local iswhite = canvas:Add('DCheckBoxLabel')
@@ -2790,12 +2569,11 @@ for k, v in pairs(DPP.RestrictTypes) do
 		iswhite:SetChecked(t.iswhite)
 
 		SettingsClass.MakeCheckboxBetter(iswhite)
-		SettingsClass.AddScramblingChars(iswhite.Label, iswhite, iswhite.Button)
 
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
 		apply:SetText(P('apply'))
-		SettingsClass.ApplyButtonStyle(apply)
+		lazyfix(apply)
 
 		function apply.DoClick()
 			CustomEnter.p.Group = CustomEnter:GetText()
@@ -2816,7 +2594,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		local discard = frame:Add('DButton')
 		discard:Dock(BOTTOM)
 		discard:SetText(P('discard'))
-		SettingsClass.ApplyButtonStyle(discard)
+		lazyfix(discard)
 
 		function discard.DoClick()
 			frame:Close()
@@ -2873,7 +2651,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 	PanelsFunctions2[k] = function(Panel)
 		if not IsValid(Panel) then return end
 		Panel:Clear()
-		SettingsClass.SetupBackColor(Panel)
+		Panel:SetSkin(DLib.GetSkin(Panel))
 
 		ValidPanels2[k] = Panel
 
@@ -2908,7 +2686,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		Apply.DoClick = function()
 			OpenModifyPanel(entry:GetText(), true)
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		ConVarCheckbox(Panel, 'restrict_' .. k)
 		ConVarCheckbox(Panel, 'restrict_' .. k .. '_white')
@@ -2956,7 +2734,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 			button.frame = frame
 			button.ply = ply
 			button.entry = self.entry
-			SettingsClass.ApplyButtonStyle(button)
+			lazyfix(button)
 		end
 
 		gui.SetMousePos(ScrW() / 2, ScrH() / 2 - 295)
@@ -2965,7 +2743,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 	SettingsClass.RestrictedByPlayerPanelFunctions[k] = function(Panel)
 		if not IsValid(Panel) then return end
 		Panel:Clear()
-		SettingsClass.SetupBackColor(Panel)
+		Panel:SetSkin(DLib.GetSkin(Panel))
 
 		SettingsClass.RestrictedByPlayerPanelFunctionsValidPanels[k] = Panel
 
@@ -2996,7 +2774,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 		local button = vgui.Create('DButton', Panel)
 		button:SetText(P('selecting_player'))
-		SettingsClass.ApplyButtonStyle(button)
+		lazyfix(button)
 		button.DoClick = OpenPlayersMenu
 		Panel:AddItem(button)
 
@@ -3023,13 +2801,13 @@ for k, v in pairs(DPP.RestrictTypes) do
 		Apply.DoClick = function()
 			RunConsoleCommand('dpp_restrict' .. k .. '_ply', entry_steamid:GetText(), entry_class:GetText())
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		local Apply = Panel:Button(P('remove_r'))
 		Apply.DoClick = function()
 			RunConsoleCommand('dpp_unrestrict' .. k .. '_ply', entry_steamid:GetText(), entry_class:GetText())
 		end
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 
 		ConVarCheckbox(Panel, 'restrict_' .. k .. '_ply')
 	end
@@ -3198,7 +2976,7 @@ end
 local function BuildFriendsPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 
 	DPP.SettingsClass.FriendPanel = Panel
 
@@ -3219,7 +2997,7 @@ local function BuildFriendsPanel(Panel)
 			RunConsoleCommand('dpp_importfppbuddies')
 		end
 
-		SettingsClass.ApplyButtonStyle(Apply)
+		lazyfix(Apply)
 	end
 
 	local Apply = Panel:Button('Open DLib friends')
@@ -3228,13 +3006,13 @@ local function BuildFriendsPanel(Panel)
 		RunConsoleCommand('dlib_friends')
 	end
 
-	SettingsClass.ApplyButtonStyle(Apply)
+	lazyfix(Apply)
 end
 
 function SettingsClass.BuildFactoryResetPanel(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 
 	DPP.SettingsClass.FactoryResetPanel = Panel
 
@@ -3257,7 +3035,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 	local button = Panel:Button('DButton')
 	button:SetText(P('reset_gui_all'))
 	SettingsClass.SetButtonAccess(button, 'factoryreset')
-	SettingsClass.ApplyButtonStyle(button)
+	lazyfix(button)
 	button.DoClick = function()
 		Derma_Query(P('reset_gui_all'), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_factoryreset') end, 'CANCEL', function() end)
 	end
@@ -3265,7 +3043,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 	local button = Panel:Button('DButton')
 	button:SetText(P('reset_gui_cvars'))
 	SettingsClass.SetButtonAccess(button, 'freset_cvars')
-	SettingsClass.ApplyButtonStyle(button)
+	lazyfix(button)
 	button.DoClick = function()
 		Derma_Query(P('reset_gui_cvars'), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_freset_cvars') end, 'CANCEL', function() end)
 	end
@@ -3282,7 +3060,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 		local button = Panel:Button('DButton')
 		button:SetText(P('reset_gui_' .. val))
 		SettingsClass.SetButtonAccess(button, val)
-		SettingsClass.ApplyButtonStyle(button)
+		lazyfix(button)
 		button.DoClick = function()
 			Derma_Query(P('reset_gui_' .. val), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_' .. val) end, 'CANCEL', function() end)
 		end
@@ -3300,7 +3078,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 		local button = Panel:Button('DButton')
 		button:SetText(P('reset_gui_' .. val))
 		SettingsClass.SetButtonAccess(button, val)
-		SettingsClass.ApplyButtonStyle(button)
+		lazyfix(button)
 		button.DoClick = function()
 			Derma_Query(P('reset_gui_' .. val), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_' .. val) end, 'CANCEL', function() end)
 		end
@@ -3326,7 +3104,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 		local button = Panel:Button('DButton')
 		button:SetText(P('reset_gui_b' .. k))
 		SettingsClass.SetButtonAccess(button, 'freset_blocked_' .. k)
-		SettingsClass.ApplyButtonStyle(button)
+		lazyfix(button)
 		button.DoClick = function()
 			Derma_Query(P('reset_gui_b' .. k), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_freset_blocked_' .. k) end, 'CANCEL', function() end)
 		end
@@ -3344,7 +3122,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 		local button = Panel:Button('DButton')
 		button:SetText(P('reset_gui_e' .. k))
 		SettingsClass.SetButtonAccess(button, 'freset_exclude_' .. k)
-		SettingsClass.ApplyButtonStyle(button)
+		lazyfix(button)
 		button.DoClick = function()
 			Derma_Query(P('reset_gui_e' .. k), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_freset_exclude_' .. k) end, 'CANCEL', function() end)
 		end
@@ -3362,7 +3140,7 @@ function SettingsClass.BuildFactoryResetPanel(Panel)
 		local button = Panel:Button('DButton')
 		button:SetText(P('reset_gui_r' .. k))
 		SettingsClass.SetButtonAccess(button, 'freset_restrictions_' .. k)
-		SettingsClass.ApplyButtonStyle(button)
+		lazyfix(button)
 		button.DoClick = function()
 			Derma_Query(P('reset_gui_r' .. k), P('reset_gui_generic'), 'YES', function() RunConsoleCommand('dpp_freset_restrictions_' .. k) end, 'CANCEL', function() end)
 		end
@@ -3373,7 +3151,7 @@ local function About(Panel)
 	if not IsValid(Panel) then return end
 	Panel:Clear()
 
-	SettingsClass.SetupBackColor(Panel)
+	Panel:SetSkin(DLib.GetSkin(Panel))
 	SettingsClass.AboutPanel = Panel
 
 	local Lab = vgui.Create('DLabel', Panel)
@@ -3394,7 +3172,7 @@ local function About(Panel)
 	Button.DoClick = function()
 		gui.OpenURL('http://steamcommunity.com/sharedfiles/filedetails/?id=659044893')
 	end
-	SettingsClass.ApplyButtonStyle(Button)
+	lazyfix(Button)
 
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
@@ -3407,13 +3185,13 @@ local function About(Panel)
 	Button.DoClick = function()
 		gui.OpenURL('https://discord.gg/HG9eS79')
 	end
-	SettingsClass.ApplyButtonStyle(Button)
+	lazyfix(Button)
 
 	local Button = Panel:Button('GitLab')
 	Button.DoClick = function()
 		gui.OpenURL('https://git.dbot.serealia.ca/dbot/dpp')
 	end
-	SettingsClass.ApplyButtonStyle(Button)
+	lazyfix(Button)
 
 	local Lab = vgui.Create('DLabel', Panel)
 	Panel:AddItem(Lab)
@@ -3426,7 +3204,7 @@ local function About(Panel)
 	Button.DoClick = function()
 		gui.OpenURL('https://git.dbot.serealia.ca/dbot/dpp/issues')
 	end
-	SettingsClass.ApplyButtonStyle(Button)
+	lazyfix(Button)
 end
 
 local function PopulateToolMenu()
@@ -3901,7 +3679,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 
 		local frame = vgui.Create('DFrame')
 		frame:SetTitle('Modifying' .. class)
-		SettingsClass.ApplyFrameStyle(frame)
+		frame:SetSkin(DLib.GetSkin(frame))
 
 		local groups = DPP.GetGroups()
 		local Panels = {}
@@ -3916,7 +3694,6 @@ for k, v in pairs(DPP.RestrictTypes) do
 			p.Group = v
 
 			SettingsClass.MakeCheckboxBetter(p)
-			SettingsClass.AddScramblingChars(p.Label, p, p.Button)
 		end
 
 		height = height + 30
@@ -3926,12 +3703,11 @@ for k, v in pairs(DPP.RestrictTypes) do
 		iswhite:SetChecked(t.iswhite)
 
 		SettingsClass.MakeCheckboxBetter(iswhite)
-		SettingsClass.AddScramblingChars(iswhite.Label, iswhite, iswhite.Button)
 
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
 		apply:SetText(P('apply'))
-		SettingsClass.ApplyButtonStyle(apply)
+		lazyfix(apply)
 
 		function apply.DoClick()
 			t.groups = {}
@@ -3949,7 +3725,7 @@ for k, v in pairs(DPP.RestrictTypes) do
 		local discard = frame:Add('DButton')
 		discard:Dock(BOTTOM)
 		discard:SetText(P('discard'))
-		SettingsClass.ApplyButtonStyle(discard)
+		lazyfix(discard)
 
 		function discard.DoClick()
 			frame:Close()
@@ -4040,7 +3816,7 @@ do
 
 		local frame = vgui.Create('DFrame')
 		frame:SetTitle(P('modifying', class))
-		SettingsClass.ApplyFrameStyle(frame)
+		frame:SetSkin(DLib.GetSkin(frame))
 
 		local groups = DPP.GetGroups()
 		local Panels = {}
@@ -4055,7 +3831,6 @@ do
 			p.Group = v
 
 			SettingsClass.MakeCheckboxBetter(p)
-			SettingsClass.AddScramblingChars(p.Label, p, p.Button)
 		end
 
 		height = height + 30
@@ -4065,12 +3840,11 @@ do
 		iswhite:SetChecked(t.iswhite)
 
 		SettingsClass.MakeCheckboxBetter(iswhite)
-		SettingsClass.AddScramblingChars(iswhite.Label, iswhite, iswhite.Button)
 
 		local apply = frame:Add('DButton')
 		apply:Dock(BOTTOM)
 		apply:SetText(P('apply'))
-		SettingsClass.ApplyButtonStyle(apply)
+		lazyfix(apply)
 
 		function apply.DoClick()
 			t.groups = {}
@@ -4088,7 +3862,7 @@ do
 		local discard = frame:Add('DButton')
 		discard:Dock(BOTTOM)
 		discard:SetText(P('discard'))
-		SettingsClass.ApplyButtonStyle(discard)
+		lazyfix(discard)
 
 		function discard.DoClick()
 			frame:Close()
