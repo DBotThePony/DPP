@@ -140,7 +140,7 @@ hook.Add('Think', 'DPP.LazyListPopulate', function()
 	for list, data in pairs(SettingsClass.PopulateQueue) do
 		if not IsValid(list) then
 			SettingsClass.PopulateQueue[list] = nil
-			continue
+			goto CONTINUE
 		end
 
 		for i = 0, 21 do
@@ -153,6 +153,8 @@ hook.Add('Think', 'DPP.LazyListPopulate', function()
 
 			list:AddLine(unpack(row))
 		end
+
+		::CONTINUE::
 	end
 end)
 
@@ -676,8 +678,9 @@ local function BuildCVarPanel(Panel)
 	SettingsClass.ApplyButtonStyle(Panel:Button(P('request_net_update'), 'dlib_nw'))
 
 	for k, v in pairs(ClientVars) do
-		if not DPP.CSettings[v].bool then continue end
-		SettingsClass.ClientConVarCheckbox(Panel, v)
+		if DPP.CSettings[v].bool then
+			SettingsClass.ClientConVarCheckbox(Panel, v)
+		end
 	end
 
 	local FontBox, Lab = Panel:ComboBox(P('font'))
@@ -701,8 +704,9 @@ local function BuildCVarPanel(Panel)
 	lab:SetTooltip(text)
 
 	for k, v in pairs(SettingsClass.ClientVars2) do
-		if not DPP.CSettings[v].bool then continue end
-		SettingsClass.ClientConVarCheckbox(Panel, v)
+		if DPP.CSettings[v].bool then
+			SettingsClass.ClientConVarCheckbox(Panel, v)
+		end
 	end
 
 	local lab = vgui.Create('DLabel', Panel)
@@ -975,7 +979,7 @@ local function BuildFallbackList(Panel)
 	table.sort(plys, SettingsClass.PlayerFriendSorter)
 
 	for k, v in ipairs(plys) do
-		if v == ply then continue end
+		if v == ply then goto CONTINUE end
 
 		local pnl = vgui.Create('EditablePanel', Panel)
 		Panel:AddItem(pnl)
@@ -992,6 +996,7 @@ local function BuildFallbackList(Panel)
 		Button:Dock(FILL)
 
 		SettingsClass.ApplyButtonStyle(Button)
+		::CONTINUE::
 	end
 
 	local lab = Label('')
@@ -1004,7 +1009,7 @@ local function BuildFallbackList(Panel)
 	Panel:AddItem(lab)
 
 	for k, v in ipairs(plys) do
-		if v == ply then continue end
+		if v == ply then goto CONTINUE end
 
 		local pnl = vgui.Create('EditablePanel', Panel)
 		Panel:AddItem(pnl)
@@ -1021,6 +1026,7 @@ local function BuildFallbackList(Panel)
 		Button:Dock(FILL)
 
 		SettingsClass.ApplyButtonStyle(Button)
+		::CONTINUE::
 	end
 end
 
@@ -1434,16 +1440,18 @@ local function OpenLimitEditPanel(class)
 		t = {}
 
 		for k, v in pairs(Panels) do
-			if v.Group == '' then continue end
+			if v.Group == '' then goto CONTINUE end
 			local n = tonumber(v:GetText())
-			if not n then continue end
-			if tonumber(v.OriginalValue) == n then continue end
+			if not n then goto CONTINUE end
+			if tonumber(v.OriginalValue) == n then goto CONTINUE end
 
 			if n >= 0 then
 				RunConsoleCommand('dpp_addentitylimit', class, v.Group, n)
 			else
 				RunConsoleCommand('dpp_removeentitylimit', class, v.Group)
 			end
+
+			::CONTINUE::
 		end
 
 		frame:Close()
@@ -1539,16 +1547,18 @@ local function OpenMLimitEditPanel(model)
 		t = {}
 
 		for k, v in pairs(Panels) do
-			if v.Group == '' then continue end
+			if v.Group == '' then goto CONTINUE end
 			local n = tonumber(v:GetText())
-			if not n then continue end
-			if tonumber(v.OriginalValue) == n then continue end
+			if not n then goto CONTINUE end
+			if tonumber(v.OriginalValue) == n then goto CONTINUE end
 
 			if n >= 0 then
 				RunConsoleCommand('dpp_addmodellimit', model, v.Group, n)
 			else
 				RunConsoleCommand('dpp_removemodellimit', model, v.Group)
 			end
+
+			::CONTINUE::
 		end
 
 		frame:Close()
@@ -1820,16 +1830,18 @@ local function OpenSLimitEditPanel(class)
 		t = {}
 
 		for k, v in pairs(Panels) do
-			if v.Group == '' then continue end
+			if v.Group == '' then goto CONTINUE end
 			local n = tonumber(v:GetText())
-			if not n then continue end
-			if tonumber(v.OriginalValue) == n then continue end
+			if not n then goto CONTINUE end
+			if tonumber(v.OriginalValue) == n then goto CONTINUE end
 
 			if n ~= 0 then
 				RunConsoleCommand('dpp_addsboxlimit', class, v.Group, n)
 			else
 				RunConsoleCommand('dpp_removesboxlimit', class, v.Group)
 			end
+
+			::CONTINUE::
 		end
 
 		frame:Close()
@@ -1925,16 +1937,18 @@ local function OpenCLimitEditPanel(class)
 		t = {}
 
 		for k, v in pairs(Panels) do
-			if v.Group == '' then continue end
+			if v.Group == '' then goto CONTINUE end
 			local n = tonumber(v:GetText())
-			if not n then continue end
-			if tonumber(v.OriginalValue) == n then continue end
+			if not n then goto CONTINUE end
+			if tonumber(v.OriginalValue) == n then goto CONTINUE end
 
 			if n >= 0 then
 				RunConsoleCommand('dpp_addconstlimit', class, v.Group, n)
 			else
 				RunConsoleCommand('dpp_removeconstlimit', class, v.Group)
 			end
+
+			::CONTINUE::
 		end
 
 		frame:Close()
@@ -2253,13 +2267,15 @@ do
 			local status, old = v:GetChecked(), v.Val
 			local var = v.Var
 
-			if status == old then continue end
+			if status == old then goto CONTINUE end
 
 			if status then
 				RunConsoleCommand('dpp_addwhitelistedentitypropertyt', var)
 			else
 				RunConsoleCommand('dpp_removewhitelistedentitypropertyt', var)
 			end
+
+			::CONTINUE::
 		end
 	end
 
@@ -2277,7 +2293,7 @@ do
 		local Panels = {}
 
 		for k, v in SortedPairs(properties.List) do
-			if string.sub(k, 1, 4) == 'dpp.' then continue end
+			if string.sub(k, 1, 4) == 'dpp.' then goto CONTINUE end
 			local checkbox = ScrollPanel:Add('DCheckBoxLabel')
 
 			ScrollPanel:AddItem(checkbox)
@@ -2297,6 +2313,8 @@ do
 			local current = DPP.IsEvenWhitelistedPropertyType(k)
 			checkbox:SetChecked(current)
 			checkbox.Val = current
+
+			::CONTINUE::
 		end
 
 		local apply = frame:Add('DButton')
@@ -2435,7 +2453,7 @@ end
 for k, v in pairs(DPP.BlockTypes) do
 	if CustomBlockMenus[k] then
 		PanelsFunctions[k] = CustomBlockMenus[k]
-		continue
+		goto CONTINUE
 	end
 
 	FUNCTIONS['BlockTypes' .. v .. 'ListClick'] = function(self, line)
@@ -2551,12 +2569,14 @@ for k, v in pairs(DPP.BlockTypes) do
 		ConVarCheckbox(Panel, 'blacklist_' .. k .. '_player_can')
 		ConVarCheckbox(Panel, 'blacklist_' .. k .. '_admin_can')
 	end
+
+	::CONTINUE::
 end
 
 for k, v in pairs(DPP.WhitelistTypes) do
 	if CustomWhiteMenus[k] then
 		WhitelistFunctions[k] = CustomWhiteMenus[k]
-		continue
+		goto CONTINUE
 	end
 
 	FUNCTIONS['ExcludeTypes' .. v .. 'ListClick'] = function(self, line)
@@ -2681,6 +2701,8 @@ for k, v in pairs(DPP.WhitelistTypes) do
 
 		ConVarCheckbox(Panel, 'whitelist_' .. k)
 	end
+
+	::CONTINUE::
 end
 
 local function SORTER(a, b)
@@ -3648,13 +3670,14 @@ local BlockProperties = {
 		local hit = false
 
 		for k, v in SortedPairs(BlockedPropetries) do
-			if not v:Filter(ent, ply) then continue end
+			if not v:Filter(ent, ply) then goto CONTINUE end
 			hit = true
 
 			local Pnl = SubMenu:AddOption(v.MenuLabel, function()
 				v:Action(ent)
 			end)
 			Pnl:SetIcon(v.MenuIcon)
+			::CONTINUE::
 		end
 
 		if not hit then
@@ -3747,9 +3770,9 @@ local transfertoplayer = {
 		local hit = false
 
 		for k, v in ipairs(player.GetAll()) do
-			if v == ply then continue end
+			if v == ply then goto CONTINUE end
 			if DPP.GetConVar('transfer_buddies') and not isAdmin and not DPP.IsFriend(ply, v) then
-				continue
+				goto CONTINUE
 			end
 
 			SubMenu:AddOption(v:Nick(), function()
@@ -3757,6 +3780,8 @@ local transfertoplayer = {
 			end)
 
 			hit = true
+
+			::CONTINUE::
 		end
 
 		if not hit then
