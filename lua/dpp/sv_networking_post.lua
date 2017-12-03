@@ -45,7 +45,7 @@ for k, v in pairs(DPP.WhitelistedEntities) do
 		DPP.WriteStringList(DPP.NetRepack(DPP.WhitelistedEntities[k]))
 		net.Send(plys)
 	end
-	
+
 	table.insert(DPP.NetworkSendFuncs, sendfunc)
 end
 
@@ -70,7 +70,7 @@ end
 for k, v in pairs(DPP.RestrictedTypes) do
 	local function sendfunc(plys)
 		net.Start('DPP.RLists')
-		
+
 		local v = DPP.RestrictedTypes[k]
 		net.WriteString(k)
 
@@ -91,10 +91,10 @@ for k, v in pairs(DPP.RestrictedTypes) do
 	end
 
 	table.insert(DPP.NetworkSendFuncs, sendfunc)
-	
+
 	local function sendfunc(plys)
 		net.Start('DPP.RLists_Player')
-		
+
 		local v = DPP.RestrictedTypes_SteamID[k]
 		net.WriteString(k)
 
@@ -102,9 +102,9 @@ for k, v in pairs(DPP.RestrictedTypes) do
 
 		for steamid, classes in pairs(v) do
 			net.WriteString(steamid)
-			
+
 			net.WriteUInt(#classes, 8)
-			
+
 			for i2, class in ipairs(classes) do
 				net.WriteString(class)
 			end
@@ -161,6 +161,8 @@ end
 function DPP.BroadcastLists(plys)
 	local isBroadcast = plys == nil
 	plys = plys or player.GetAll()
+
+	if type(plys) == 'table' and #plys == 0 then return end
 
 	if istable(plys) then
 		for i, func in ipairs(DPP.NetworkSendFuncs) do
