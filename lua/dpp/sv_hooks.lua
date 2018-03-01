@@ -44,14 +44,14 @@ local function LogSpawn(ply, ent, type)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	
+
 	local logArgs = {}
-	
+
 	local log_spawns_model = DPP.GetConVar('log_spawns_model')
 	local log_spawns_nname = DPP.GetConVar('log_spawns_nname')
 	local log_spawns_pmodel = DPP.GetConVar('log_spawns_pmodel')
 	local isProp = ent:GetClass():sub(1, 5) == 'prop_'
-	
+
 	if not log_spawns_model and log_spawns_nname then
 		table.insert(logArgs, string.format(' <%s> ', tostring(ent)))
 	elseif (log_spawns_model and (not log_spawns_pmodel or log_spawns_pmodel and isProp)) and not log_spawns_nname then
@@ -61,11 +61,11 @@ local function LogSpawn(ply, ent, type)
 	elseif log_spawns_model and log_spawns_pmodel and not isProp and log_spawns_nname then
 		table.insert(logArgs, string.format(' <%s> ', tostring(ent)))
 	end
-	
+
 	if DPP.GetConVar('log_spawns_type') then
 		table.insert(logArgs, type or '#log_not_avaliable')
 	end
-	
+
 	logFunc(ply, SPACE, GRAY, '#log_spawned', color_white, SPACE2, ent:GetClass(), GRAY, unpack(logArgs))
 end
 
@@ -73,17 +73,17 @@ local function LogSpawnC(ply, class, type, model)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[class] then return end
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	
+
 	local logArgs = {}
-	
+
 	if DPP.GetConVar('log_spawns_model') then
 		table.insert(logArgs, string.format(' <%s> ', model or 'no model'))
 	end
-	
+
 	if DPP.GetConVar('log_spawns_type') then
 		table.insert(logArgs, type or '#log_not_avaliable')
 	end
-	
+
 	logFunc(ply, SPACE, GRAY, '#log_spawned', color_white, SPACE2, class, GRAY, unpack(logArgs))
 end
 
@@ -91,21 +91,21 @@ local function LogTry(ply, type, model, class)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[class] then return end
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	
+
 	local logArgs = {}
-	
+
 	local isProp = class:sub(1, 5) == 'prop_'
 	local log_spawns_pmodel = DPP.GetConVar('log_spawns_pmodel')
 	local log_spawns_model = DPP.GetConVar('log_spawns_model')
-	
+
 	if log_spawns_model and (not log_spawns_pmodel or log_spawns_pmodel and isProp) then
 		table.insert(logArgs, string.format(' <%s> ', model or 'no model'))
 	end
-	
+
 	if DPP.GetConVar('log_spawns_type') then
 		table.insert(logArgs, type or '#log_not_avaliable')
 	end
-	
+
 	logFunc(ply, SPACE, RED, '#log_tried', GRAY, '#log_to_spawn', SPACE2, color_white, (' %s '):format(class or 'N/A'), GRAY, unpack(logArgs))
 end
 
@@ -113,13 +113,13 @@ local function LogTryPost(ply, type, ent)
 	if not DPP.GetConVar('log_spawns') then return end
 	if IgnoreSpawn[ent:GetClass()] then return end
 	local logFunc = DPP.GetConVar('echo_spawns') and SimpleLog or LogIntoFile
-	
+
 	local logArgs = {}
 	local log_spawns_model = DPP.GetConVar('log_spawns_model')
 	local log_spawns_nname = DPP.GetConVar('log_spawns_nname')
 	local log_spawns_pmodel = DPP.GetConVar('log_spawns_pmodel')
 	local isProp = ent:GetClass():sub(1, 5) == 'prop_'
-	
+
 	if not log_spawns_model and log_spawns_nname then
 		table.insert(logArgs, string.format(' <%s> ', tostring(ent)))
 	elseif (log_spawns_model and (not log_spawns_pmodel or log_spawns_pmodel and isProp)) and not log_spawns_nname then
@@ -129,11 +129,11 @@ local function LogTryPost(ply, type, ent)
 	elseif log_spawns_model and log_spawns_pmodel and not isProp and log_spawns_nname then
 		table.insert(logArgs, string.format(' <%s> ', tostring(ent)))
 	end
-	
+
 	if DPP.GetConVar('log_spawns_type') then
 		table.insert(logArgs, type or '#log_not_avaliable')
 	end
-	
+
 	logFunc(ply, SPACE, RED, '#log_tried', GRAY, '#log_to_spawn', SPACE2, color_white, (' %s '):format(ent:GetClass()), GRAY, unpack(logArgs))
 end
 
@@ -192,7 +192,7 @@ end
 
 local function CheckEntityLimit(ply, class)
 	if not DPP.IsEnabled() then return false end
-	
+
 	local limit = DPP.GetEntityLimit(class, ply:GetUserGroup())
 	if limit <= 0 then return false end
 
@@ -209,20 +209,20 @@ local function CheckModelLimit(ply, model)
 	if not DPP.IsEnabled() then return false end
 	if not model or model == '' then return false end
 	model = model:lower()
-	
+
 	local limit = DPP.GetModelLimit(model, ply:GetUserGroup())
 	if limit < 0 then return false end
 
 	local list = DPP.ListModelCounts(ply)
-	
+
 	if list[model] == 0 then
 		DPP.Notify(ply, DPP.PPhrase(ply, 'model_limit_hit', model), 1)
 		return true
 	end
-	
+
 	if not list[model] then return false end
 	local status = list[model] + 1 > limit
-	
+
 	if status then
 		DPP.Notify(ply, DPP.PPhrase(ply, 'model_limit_hit', model), 1)
 	end
@@ -235,7 +235,7 @@ local function CheckBlocked(ply, ent)
 	if not Mod then return end
 	local model = string.lower(Mod)
 
-	if DPP.IsRestrictedModel(model, ply) or DPP.IsRestrictedModelPlayer(ply, model) then 
+	if DPP.IsRestrictedModel(model, ply) or DPP.IsRestrictedModelPlayer(ply, model) then
 		SafeRemoveEntity(ent)
 
 		if ply then
@@ -274,14 +274,14 @@ function SpawnFunctions.PlayerSpawnedNPC(ply, ent, shouldHideLog)
 	local model = ent:GetModel() or ''
 	model = model:Replace('\\', '/')
 
-	if DPP.IsRestrictedNPC(ent:GetClass(), ply) or DPP.IsRestrictedNPCPlayer(ply, ent:GetClass()) then 
+	if DPP.IsRestrictedNPC(ent:GetClass(), ply) or DPP.IsRestrictedNPCPlayer(ply, ent:GetClass()) then
 		LogTryPost(ply, 'NPC', ent)
 		DPP.Notify(ply, 'This entity is restricted', 1)
 		SafeRemoveEntity(ent)
 		return false
 	end
 
-	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, model) then 
+	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, model) then
 		LogTryPost(ply, 'NPC', ent)
 		SafeRemoveEntity(ent)
 		return false
@@ -350,7 +350,7 @@ local function undo_Finish(name)
 				CheckAfter(owner, v, true) --HOLY FUCK
 			end
 		end
-		
+
 		xpcall(hook.Run, DPP.PrintFancyError, 'UndoFinish', name, val)
 	end
 
@@ -395,7 +395,7 @@ local function cleanup_Add(ply, type, ent)
 
 		DPP.SetOwner(ent, ply)
 	end
-	
+
 	xpcall(hook.Run, DPP.PrintFancyError, 'CleanupAdd', ply, type, ent)
 
 	return DPP.oldCleanupAdd(ply, type, ent)
@@ -408,7 +408,7 @@ function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog, ignore
 	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 
-	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, model) then 
+	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, model) then
 		LogTryPost(ply, '#log_prop', ent)
 		SafeRemoveEntity(ent)
 		return false
@@ -489,7 +489,7 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog, ign
 	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 
-	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, model) then 
+	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, model) then
 		LogTryPost(ply, '#log_ragdoll', ent)
 		SafeRemoveEntity(ent)
 		return false
@@ -517,14 +517,14 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog, ignoreAntispa
 	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 
-	if DPP.IsRestrictedSENT(ent:GetClass(), ply) or DPP.IsRestrictedSENTPlayer(ply, ent:GetClass()) then 
+	if DPP.IsRestrictedSENT(ent:GetClass(), ply) or DPP.IsRestrictedSENTPlayer(ply, ent:GetClass()) then
 		LogTryPost(ply, '#log_sent', ent)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'entity_restricted'), 1)
 		SafeRemoveEntity(ent)
 		return false
 	end
 
-	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, model) then 
+	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, model) then
 		LogTryPost(ply, '#log_sent', ent)
 		SafeRemoveEntity(ent)
 		return false
@@ -552,14 +552,14 @@ function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog, ignoreAntispa
 	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 
-	if DPP.IsRestrictedSWEP(ent:GetClass(), ply) or DPP.IsRestrictedSWEPPlayer(ply, ent:GetClass()) then 
+	if DPP.IsRestrictedSWEP(ent:GetClass(), ply) or DPP.IsRestrictedSWEPPlayer(ply, ent:GetClass()) then
 		LogTryPost(ply, '#log_swep', ent)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'weapon_restricted'), 1)
 		SafeRemoveEntity(ent)
 		return false
 	end
 
-	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, model) then 
+	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, model) then
 		LogTryPost(ply, '#log_swep', ent)
 		SafeRemoveEntity(ent)
 		return false
@@ -585,14 +585,14 @@ function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog, ignoreAnti
 	if ent.DPP_SpawnTime == CurTime() then return end
 	ent.DPP_SpawnTime = CurTime()
 
-	if DPP.IsRestrictedVehicle(ent:GetClass(), ply) or DPP.IsRestrictedVehiclePlayer(ply, ent:GetClass()) then 
+	if DPP.IsRestrictedVehicle(ent:GetClass(), ply) or DPP.IsRestrictedVehiclePlayer(ply, ent:GetClass()) then
 		LogTryPost(ply, '#log_vehicle', ent)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'vehicle_restricted'), 1)
 		SafeRemoveEntity(ent)
 		return false
 	end
 
-	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, model) then 
+	if CheckEntityLimit(ply, ent:GetClass()) or CheckModelLimit(ply, model) then
 		LogTryPost(ply, '#log_vehicle', ent)
 		SafeRemoveEntity(ent)
 		return false
@@ -616,25 +616,25 @@ function SpawnFunctions.PlayerSpawnProp(ply, model)
 	DPP.AssertArguments('PlayerSpawnProp', {{ply, 'Player'}, {model, 'string'}})
 	model = model:Replace('\\', '/')
 
-	if DPP.IsModelBlocked(model, ply) then 
+	if DPP.IsModelBlocked(model, ply) then
 		LogTry(ply, '#log_prop', model, 'prop_physics')
-		return false 
+		return false
 	end
 
-	if CheckEntityLimit(ply, 'prop_physics') or CheckModelLimit(ply, model) then 
+	if CheckEntityLimit(ply, 'prop_physics') or CheckModelLimit(ply, model) then
 		LogTry(ply, '#log_prop', model, 'prop_physics')
-		return false 
+		return false
 	end
 
-	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
+	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then
 		LogTry(ply, '#log_prop', model, 'prop_physics')
 		DPP.Notify(ply, DPP.PPhrase(ply, 'spam_removed'), 1)
-		return false 
+		return false
 	end
 
-	if not CheckBlocked2(ply, model) then 
+	if not CheckBlocked2(ply, model) then
 		LogTry(ply, '#log_prop', model, 'prop_physics')
-		return false 
+		return false
 	end
 end
 
@@ -642,25 +642,25 @@ function SpawnFunctions.PlayerSpawnEffect(ply, model)
 	DPP.AssertArguments('PlayerSpawnEffect', {{ply, 'Player'}, {model, 'string'}})
 	model = model:Replace('\\', '/')
 
-	if DPP.IsModelBlocked(model, ply) then 
+	if DPP.IsModelBlocked(model, ply) then
 		LogTry(ply, '#log_effect', model, 'prop_effect')
-		return false 
+		return false
 	end
 
-	if CheckEntityLimit(ply, 'prop_effect') or CheckModelLimit(ply, model) then 
+	if CheckEntityLimit(ply, 'prop_effect') or CheckModelLimit(ply, model) then
 		LogTry(ply, '#log_effect', model, 'prop_effect')
-		return false 
+		return false
 	end
-	
-	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
+
+	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then
 		LogTry(ply, '#log_effect', model, 'prop_effect')
 		DPP.Notify(ply, DPP.PPhrase(ply, 'spam_removed'), 1)
-		return false 
+		return false
 	end
 
-	if not CheckBlocked2(ply, model) then 
+	if not CheckBlocked2(ply, model) then
 		LogTry(ply, '#log_effect', model, 'prop_effect')
-		return false 
+		return false
 	end
 end
 
@@ -668,41 +668,41 @@ function SpawnFunctions.PlayerSpawnObject(ply, model)
 	DPP.AssertArguments('PlayerSpawnObject', {{ply, 'Player'}, {model, 'string'}})
 	model = model:Replace('\\', '/')
 
-	if DPP.IsModelBlocked(model, ply) or CheckModelLimit(ply, model) then 
+	if DPP.IsModelBlocked(model, ply) or CheckModelLimit(ply, model) then
 		LogTry(ply, '#log_obj', model, 'prop_physics')
-		return false 
+		return false
 	end
 
-	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
+	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then
 		LogTry(ply, '#log_obj', model, 'prop_physics')
 		DPP.Notify(ply, DPP.PPhrase(ply, 'spam_removed'), 1)
-		return false 
+		return false
 	end
 
-	if not CheckBlocked2(ply, model) then 
+	if not CheckBlocked2(ply, model) then
 		LogTry(ply, '#log_obj', model, 'prop_physics')
-		return false 
+		return false
 	end
 end
 
 function SpawnFunctions.PlayerSpawnRagdoll(ply, model)
 	DPP.AssertArguments('PlayerSpawnRagdoll', {{ply, 'Player'}, {model, 'string'}})
 	model = model:Replace('\\', '/')
-	
-	if DPP.IsModelBlocked(model, ply) or CheckModelLimit(ply, model) then 
+
+	if DPP.IsModelBlocked(model, ply) or CheckModelLimit(ply, model) then
 		LogTry(ply, '#log_ragdoll', model, 'prop_ragdoll')
-		return false 
+		return false
 	end
 
-	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
+	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then
 		LogTry(ply, '#log_ragdoll', model, 'prop_ragdoll')
 		DPP.Notify(ply, DPP.PPhrase(ply, 'spam_removed'), 1)
-		return false 
+		return false
 	end
 
-	if not CheckBlocked2(ply, model) then 
+	if not CheckBlocked2(ply, model) then
 		LogTry(ply, '#log_ragdoll', model, 'prop_ragdoll')
-		return false 
+		return false
 	end
 end
 
@@ -710,56 +710,56 @@ function SpawnFunctions.PlayerSpawnVehicle(ply, model, class)
 	DPP.AssertArguments('PlayerSpawnVehicle', {{ply, 'Player'}, {model, 'string'}, {class, 'string'}})
 	model = model:Replace('\\', '/')
 
-	if DPP.IsModelBlocked(model, ply) or CheckModelLimit(ply, model) or CheckEntityLimit(ply, class) then 
+	if DPP.IsModelBlocked(model, ply) or CheckModelLimit(ply, model) or CheckEntityLimit(ply, class) then
 		LogTry(ply, '#log_vehicle', model, class)
-		return false 
+		return false
 	end
 
-	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then 
+	if DPP.CheckAntispam_NoEnt(ply, false, true) == DPP.ANTISPAM_INVALID then
 		LogTry(ply, '#log_vehicle', model, class)
-		DPP.Notify(ply, DPP.PPhrase('spam_removed'), 1)
-		return false 
+		DPP.Notify(ply, DPP.PPhrase(ply, 'spam_removed'), 1)
+		return false
 	end
 
-	if not CheckBlocked2(ply, model) then 
+	if not CheckBlocked2(ply, model) then
 		LogTry(ply, '#log_vehicle', model, class)
-		return false 
+		return false
 	end
 
-	if DPP.IsRestrictedVehicle(class, ply) or DPP.IsRestrictedVehiclePlayer(ply, class) then 
+	if DPP.IsRestrictedVehicle(class, ply) or DPP.IsRestrictedVehiclePlayer(ply, class) then
 		LogTry(ply, '#log_vehicle', model, class)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'vehicle_restricted'), 1)
-		return false 
+		return false
 	end
 end
 
 function SpawnFunctions.PlayerSpawnSENT(ply, ent)
 	DPP.AssertArguments('PlayerSpawnSENT', {{ply, 'Player'}, {ent, 'string'}})
 
-	if DPP.IsRestrictedSENT(ent, ply) or DPP.IsRestrictedSENTPlayer(ply, ent) then 
+	if DPP.IsRestrictedSENT(ent, ply) or DPP.IsRestrictedSENTPlayer(ply, ent) then
 		LogTry(ply, '#log_sent', 'N/A', ent)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'entity_restricted'), 1)
-		return false 
+		return false
 	end
 
-	if CheckEntityLimit(ply, ent) then 
+	if CheckEntityLimit(ply, ent) then
 		LogTry(ply, '#log_sent', model, ent)
-		return false 
+		return false
 	end
 end
 
 function SpawnFunctions.PlayerSpawnSWEP(ply, ent)
 	DPP.AssertArguments('PlayerSpawnSWEP', {{ply, 'Player'}, {ent, 'string'}})
 
-	if DPP.IsRestrictedSWEP(ent, ply) or DPP.IsRestrictedSWEPPlayer(ply, ent) then 
+	if DPP.IsRestrictedSWEP(ent, ply) or DPP.IsRestrictedSWEPPlayer(ply, ent) then
 		LogTry(ply, '#log_swep', 'N/A', ent)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'weapon_restricted'), 1)
-		return false 
+		return false
 	end
 
-	if CheckEntityLimit(ply, ent) then 
+	if CheckEntityLimit(ply, ent) then
 		LogTry(ply, '#log_swep', model, ent)
-		return false 
+		return false
 	end
 end
 
@@ -774,15 +774,15 @@ end
 function SpawnFunctions.PlayerSpawnNPC(ply, ent)
 	DPP.AssertArguments('PlayerSpawnNPC', {{ply, 'Player'}, {ent, 'string'}})
 
-	if DPP.IsRestrictedNPC(ent, ply) or DPP.IsRestrictedNPCPlayer(ply, ent) then 
+	if DPP.IsRestrictedNPC(ent, ply) or DPP.IsRestrictedNPCPlayer(ply, ent) then
 		LogTry(ply, '#log_npc', 'N/A', ent)
 		DPP.Notify(ply, DPP.PPhrase(ply, 'npc_restricted'), 1)
-		return false 
+		return false
 	end
 
-	if CheckEntityLimit(ply, ent) then 
+	if CheckEntityLimit(ply, ent) then
 		LogTry(ply, '#log_npc', 'N/A', ent)
-		return false 
+		return false
 	end
 end
 
@@ -863,14 +863,14 @@ local function Track(tab, entToTrack)
 	local meta = getmetatable(tab) or {}
 	if meta.DPP_TRACKED then return end
 	if tab.__newindex or tab.__index or meta.__newindex or meta.__index then return end
-	
+
 	local meta = {}
 	meta.DPP_TRACKED = true
 	function meta.__newindex(self, key, val)
 		rawset(self, key, val)
-		
+
 		local cTime = CurTime()
-		
+
 		local cond = not DPP.IsEntity(val) or
 			not val.GetClass or
 			val:IsPlayer() or
@@ -878,24 +878,24 @@ local function Track(tab, entToTrack)
 			not entToTrack:IsValid() or
 			not DPP.GetOwner(entToTrack):IsValid() or
 			Timestamps[val] ~= cTime
-		
+
 		if cond then return end
 
 		if val.IsConstraint and val:IsConstraint() then
 			local ent1, ent2 = val:GetConstrainedEntities()
-			
+
 			if Timestamps[ent1] ~= cTime and Timestamps[ent2] ~= cTime then
 				return
 			end
 		end
-		
+
 		CheckAfter(DPP.GetOwner(entToTrack), val, false, DPP.GetConVar('spawn_checks_noaspam'))
 		local bundled = entToTrack.__DPP_BundledEntities or {}
-		
+
 		if not DPP.HasValueLight(bundled, entToTrack) then
 			table.insert(bundled, entToTrack)
 		end
-		
+
 		if not DPP.HasValueLight(bundled, val) then
 			table.insert(bundled, val)
 		end
@@ -905,7 +905,7 @@ local function Track(tab, entToTrack)
 				table.insert(bundled, v)
 			end
 		end
-		
+
 		val.__DPP_BundledEntities = bundled
 		entToTrack.__DPP_BundledEntities = bundled
 	end
@@ -921,7 +921,7 @@ local function FindEntitiesRecursiveFunc(root, tab, stopRecursion)
 			DPP.ENTITY_TYPES[t] and
 			IsValid(v) and
 			not RECURSIVE_MEM[v]
-		
+
 		if cond then
 			RECURSIVE_MEM[v] = v
 			local eTab
@@ -930,24 +930,24 @@ local function FindEntitiesRecursiveFunc(root, tab, stopRecursion)
 			if not DPP.IsOwned(v) or v:GetClass():sub(1, 5) ~= 'prop_' then
 				eTab = v:GetTable()
 			end
-			
+
 			if eTab then
 				Track(eTab, v)
 				FindEntitiesRecursiveFunc(root, eTab)
-				
+
 				if isConstr then
 					local get = not v._DPP_FindEntitiesTab and DPP.GetAllConnectedEntities(v) or v._DPP_FindEntitiesTab
 					v._DPP_FindEntitiesTab = get
 					FindEntitiesRecursiveFunc(root, get)
 				end
 			end
-			
+
 			local sTab
-			
+
 			if v:IsNPC() or v:IsVehicle() or isConstr or v:GetClass():sub(1, 9) == 'phys_cons' then
 				sTab = v:GetSaveTable()
 			end
-			
+
 			if sTab then
 				FindEntitiesRecursiveFunc(root, sTab, true)
 			end
@@ -965,11 +965,11 @@ end
 local function FindEntitiesRecursive(root, tab)
 	FindEntitiesRecursiveFunc(root, tab)
 	local reply = {}
-	
+
 	for k, v in pairs(RECURSIVE_MEM) do
 		table.insert(reply, v)
 	end
-	
+
 	RECURSIVE_MEM = {}
 	MEM_TABLE_CACHE = {}
 	RUN_TIME = 0
@@ -985,13 +985,13 @@ function PostEntityCreated(ent, Timestamp)
 	local wasChecked = DPP.IsChekedByAntispam(ent)
 	local shouldRemove = false
 	local bundledEntities = {ent}
-	
+
 	if not ent.__DPP_BundledEntities then
 		ent.__DPP_BundledEntities = bundledEntities
 	elseif not DPP.HasValueLight(ent.__DPP_BundledEntities, ent) then
 		table.insert(ent.__DPP_BundledEntities, ent)
 	end
-	
+
 	bundledEntities = ent.__DPP_BundledEntities
 
 	local function AntispamHit(ply)
@@ -1029,9 +1029,9 @@ function PostEntityCreated(ent, Timestamp)
 					o1 = o2
 					if DPP.GetGhosted(ent2) then DPP.SetGhosted(ent1, true) end
 					CheckAfter(o2, ent1, false, spawn_checks_noaspam)
-					
+
 					ent1.__DPP_BundledEntities = bundledEntities
-					
+
 					if not DPP.HasValueLight(bundledEntities, ent1) then
 						table.insert(bundledEntities, ent1)
 					end
@@ -1041,9 +1041,9 @@ function PostEntityCreated(ent, Timestamp)
 					o2 = o1
 					if DPP.GetGhosted(ent1) then DPP.SetGhosted(ent2, true) end
 					CheckAfter(o1, ent2, false, spawn_checks_noaspam)
-					
+
 					ent2.__DPP_BundledEntities = bundledEntities
-					
+
 					if not DPP.HasValueLight(bundledEntities, ent2) then
 						table.insert(bundledEntities, ent2)
 					end
@@ -1084,7 +1084,7 @@ function PostEntityCreated(ent, Timestamp)
 				if DPP.IsOwned(v) then continue end
 				if v.DPP_CHECK_HIT == Timestamp then continue end
 				v.DPP_CHECK_HIT = Timestamp
-				
+
 				if not DPP.HasValueLight(bundledEntities, v) then
 					table.insert(bundledEntities, v)
 				end
@@ -1107,7 +1107,7 @@ function PostEntityCreated(ent, Timestamp)
 		SafeRemoveEntity(ent)
 		return
 	end
-	
+
 	for k, ent in ipairs(bundledEntities) do
 		ent.__DPP_BundledEntities = bundledEntities
 	end
@@ -1158,43 +1158,43 @@ end
 local function TimeredEntitiesSorter(check1, check2)
 	if not IsValid(check1[1]) then return end
 	if not IsValid(check2[1]) then return end
-	
+
 	local bool1 = check1[1].IsConstraint and check1[1]:IsConstraint() or check1[1]:GetClass():sub(1, 9) == 'phys_cons'
 	local bool2 = check2[1].IsConstraint and check2[1]:IsConstraint() or check2[1]:GetClass():sub(1, 9) == 'phys_cons'
-	
+
 	if bool1 == bool2 then
 		return false
 	elseif bool2 then
 		return false
 	end
-	
+
 	return true
 end
 
 local function Tick()
 	for k, ent in ipairs(PENDING_ENTS) do
 		local owner = DPP.GetOwner(ent)
-		
+
 		if IsValid(owner) then
 			DPP.CheckAntispam(owner, ent)
 		end
 	end
-	
+
 	PENDING_ENTS = {}
 
 	local toRemove = {}
 	local cTime = CurTime()
-	
+
 	-- Sorting to check constraints first
 	table.sort(TimeredEntities, TimeredEntitiesSorter)
-	
+
 	for k, data in ipairs(TimeredEntities) do
 		if data[2] ~= cTime then
 			table.insert(toRemove, k)
 			pcall(PostEntityCreated, data[1], data[2])
 		end
 	end
-	
+
 	for i = #toRemove, 1, -1 do
 		table.remove(TimeredEntities, toRemove[i])
 	end
