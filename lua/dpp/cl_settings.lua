@@ -1,4 +1,3 @@
-
 -- Copyright (C) 2016-2017 DBot
 
 -- Licensed under the Apache License, Version 2.0 (the "License");
@@ -3108,7 +3107,7 @@ local function About(Panel)
 
 	local Button = Panel:Button('GitLab')
 	Button.DoClick = function()
-		gui.OpenURL('https://git.dbot.serealia.ca/dbot/dpp')
+		gui.OpenURL('https://gitlab.com/DBotThePony/DPP')
 	end
 
 	local Lab = vgui.Create('DLabel', Panel)
@@ -3120,7 +3119,7 @@ local function About(Panel)
 
 	local Button = Panel:Button(P('about_issues'))
 	Button.DoClick = function()
-		gui.OpenURL('https://git.dbot.serealia.ca/dbot/dpp/issues')
+		gui.OpenURL('https://gitlab.com/DBotThePony/DPP/issues')
 	end
 end
 
