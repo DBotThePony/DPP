@@ -32,7 +32,7 @@ timer.Simple(0, function()
 				MsgC('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
 				MsgC(ADDON .. ' requires DLib to Run! Without DLib, ' .. ADDON .. ' would not do anything!\nGet it on workshop (or gitlab)\n')
 				MsgC('https://steamcommunity.com/sharedfiles/filedetails/?id=1153306104\n')
-				MsgC('https://gitlab.com/DBotThePony/DLibn')
+				MsgC('https://gitlab.com/DBotThePony/DLib\n')
 				MsgC('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
 			end
 		end)
