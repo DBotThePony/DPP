@@ -841,17 +841,17 @@ function DPP.ConstraintCount(ply, type)
 end
 
 function DPP.IsConstraintLimitReached(ply, type)
-	local count = DPP.GetConstLimit(type, ply:GetUserGroup())
-	if count <= 0 then return false end
-	local total = DPP.ConstraintCount(ply, type)
-	return total >= count
+	local allowed = DPP.GetConstLimit(type, ply:GetUserGroup())
+	if allowed <= 0 then return false end
+	local count = DPP.ConstraintCount(ply, type)
+	return count >= allowed
 end
 
 function DPP.IsConstraintLimitReached2(ply, type)
-	local count = DPP.GetConstLimit(type, ply:GetUserGroup())
-	if count <= 0 then return false end
-	local total = DPP.ConstraintCount(ply, type)
-	return total >= (count - 1)
+	local allowed = DPP.GetConstLimit(type, ply:GetUserGroup())
+	if allowed <= 0 then return false end
+	local count = DPP.ConstraintCount(ply, type)
+	return count > allowed
 end
 
 function DPP.PlayerConstraints(ply)
