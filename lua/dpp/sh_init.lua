@@ -1914,6 +1914,10 @@ local ConsoleColor = Color(196, 0, 255)
 local DisconnectedPlayerColor = Color(134, 255, 154)
 
 function DPP.FormatPlayer(ply)
+	if not IsValid(ply) then
+		return {color_white, '[NULL Player]'}
+	end
+
 	local t = {}
 
 	table.insert(t, team.GetColor(ply:Team()))
