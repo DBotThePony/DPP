@@ -450,7 +450,7 @@ function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide, ignoreAntispam)
 	local type = DPP.GetContstrainType(ent)
 
 	local spawned = true
-	if DPP.IsConstraintLimitReached(ply, type) then spawned = false end
+	if DPP.IsConstraintLimitReached2(ply, type) then spawned = false end
 
 	local ent1, ent2 = DPP.GetConstrainedEntities(ent)
 	local V1, V2 = IsValid(ent1), IsValid(ent2)

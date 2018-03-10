@@ -847,6 +847,13 @@ function DPP.IsConstraintLimitReached(ply, type)
 	return total >= count
 end
 
+function DPP.IsConstraintLimitReached2(ply, type)
+	local count = DPP.GetConstLimit(type, ply:GetUserGroup())
+	if count <= 0 then return false end
+	local total = DPP.ConstraintCount(ply, type)
+	return total >= (count - 1)
+end
+
 function DPP.PlayerConstraints(ply)
 	DPP.RefreshConstrainsList()
 	local t = {}
