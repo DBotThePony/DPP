@@ -353,6 +353,12 @@ local function HUDThink()
 
 	hitPos = epos
 	hitAngle = eang
+	local vehicleValid, vehicle = ply:InVehicle(), ply:GetVehicle()
+	local vehicleParent
+
+	if vehicleValid then
+		vehicleParent = vehicle:GetParent()
+	end
 
 	local tr = util.TraceLine{
 		mask = MASK_ALL,
@@ -360,6 +366,7 @@ local function HUDThink()
 			if not hitEntity:IsValid() then return true end
 			if not ignoreNearest and hitEntity == ply then return false end
 			if ignoreNearest and (pointInsideBox(epos, hitEntity:WorldSpaceAABB()) or epos:DistToSqr(hitEntity:GetPos()) < 400) then return false end
+			if vehicleValid and (hitEntity == vehicle or hitEntity == vehicleParent) then return false end
 
 			return true
 		end,
@@ -381,9 +388,7 @@ local function PostDrawHUDDefault(x, y)
 	if not IsValid(ent) then return end
 
 	local curWeapon = LocalPlayer():GetActiveWeapon()
-
 	local CanTouch, reason
-
 	local name = DPP.GetOwnerName(ent)
 
 	local isPly = false
@@ -704,10 +709,11 @@ local function HUDPaint()
 
 	if DPP.PlayerConVar(nil, 'hide_hud') then return end
 	if DPP.GetConVar('disable_huds') and DPP.LocalConVar('hud_obey_server') then return end
-	if LocalPlayer():InVehicle() and DPP.PlayerConVar(nil, 'no_hud_in_vehicle') then return end
+	local ply = LocalPlayer()
+	if ply:InVehicle() and DPP.PlayerConVar(nil, 'no_hud_in_vehicle') then return end
 
-	if (not DPP.LocalConVar('fancy_hud_obey_server') or not DPP.GetConVar('disable_fancy_displays')) and not LocalPlayer():ShouldDrawLocalPlayer() and not LocalPlayer():InVehicle() then
-		local AWeapon = LocalPlayer():GetActiveWeapon()
+	if (not DPP.LocalConVar('fancy_hud_obey_server') or not DPP.GetConVar('disable_fancy_displays')) and not ply:ShouldDrawLocalPlayer() and not ply:InVehicle() then
+		local AWeapon = ply:GetActiveWeapon()
 
 		if IsValid(AWeapon) then
 			if not DPP.PlayerConVar(nil, 'no_physgun_display') and (AWeapon:GetClass() == 'weapon_physgun' or AWeapon:GetClass() == 'weapon_physcannon') then
