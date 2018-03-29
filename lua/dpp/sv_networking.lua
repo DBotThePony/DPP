@@ -64,6 +64,8 @@ util.AddNetworkString('DPP.ResetBlockedList')
 util.AddNetworkString('DPP.ResetExcludedList')
 util.AddNetworkString('DPP.ResetRestrictions')
 
+util.AddNetworkString('DPP.CleanupTimer')
+
 local Gray = Color(200, 200, 200)
 
 hook.Add('DLib.NetworkedVarFull', 'DPP', function(ply, auto)

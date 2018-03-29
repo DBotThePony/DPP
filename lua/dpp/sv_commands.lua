@@ -484,6 +484,42 @@ DPP.Commands = {
 		return true
 	end,
 
+	cleanup = function(ply, cmd, args)
+		if not args[1] and not DPP.CLEANUP_IN_TIMER then return false, {'#no_timer_to_cancel'} end
+		local timern = tonumber(args[1])
+		if not timern or timern < 10 then return false, {'#timer_invalid_time'} end
+		timern = timern:floor()
+
+		if DPP.CLEANUP_IN_TIMER then
+			DPP.CLEANUP_IN_TIMER = false
+			net.Start('DPP.CleanupTimer')
+			net.WriteBool(false)
+			net.Broadcast()
+			timer.Remove('DPP.MapCleanupTimer')
+			DPP.NotifyLog({IsValid(ply) and ply or '#Console', Gray, '#timer_stopped'})
+			return true
+		end
+
+		DPP.CLEANUP_IN_TIMER = true
+
+		DPP.NotifyLog({IsValid(ply) and ply or '#Console', Gray, '#timer_started', timern, '#timer_started2'})
+		net.Start('DPP.CleanupTimer')
+		net.WriteBool(true)
+		net.WriteUInt16(timern)
+		net.Broadcast()
+
+		timer.Create('DPP.MapCleanupTimer', timern, 1, function()
+			DPP.CLEANUP_IN_TIMER = false
+			net.Start('DPP.CleanupTimer')
+			net.WriteBool(false)
+			net.Broadcast()
+			game.CleanUpMap()
+			DPP.NotifyLog({'#map_cleared'})
+		end)
+
+		return true
+	end,
+
 	inspect = function(ply, cmd, args)
 		if not IsValid(ply) then return false, {'You are console'} end
 

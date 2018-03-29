@@ -50,7 +50,7 @@ function DPP.HaveAccess(ply, id, callback, ...)
 	local args = {...}
 
 	local access = DPP.Access[id]
-	
+
 	if not access then
 		DPP.ThrowError('Invalid access ID: ' .. id, 1, true)
 	end
@@ -114,6 +114,7 @@ local default = {
 	entcheck = 'admin',
 	inspect = 'admin',
 	freezephys = 'admin',
+	cleanup = 'admin',
 
 	--Database manipulate commands
 	addblockedmodel = 'superadmin',
@@ -126,7 +127,7 @@ local default = {
 	removesboxlimit = 'superadmin',
 	removemodellimit = 'superadmin',
 	removeconstlimit = 'superadmin',
-	
+
 	-- Factory reset
 	factoryreset = 'superadmin',
 	freset_exclude = 'superadmin',
@@ -137,7 +138,7 @@ local default = {
 	freset_mlimits = 'superadmin',
 	freset_slimits = 'superadmin',
 	freset_climits = 'superadmin',
-	
+
 	freset_blocked_use = 'superadmin',
 	freset_blocked_physgun = 'superadmin',
 	freset_blocked_tool = 'superadmin',
@@ -196,6 +197,7 @@ local default_desc = {
 	entcheck = 'Can request entity report',
 	inspect = 'Can player "inspect" entity',
 	freezephys = 'Can freeze all valid physics objects',
+	cleanup = 'Cleanup the map',
 
 	--Database manipulate commands
 	addblockedmodel = 'Can add blocked model',
@@ -208,7 +210,7 @@ local default_desc = {
 	removesboxlimit = 'Can remove sandbox limit',
 	removemodellimit = 'Can remove model limit',
 	removeconstlimit = 'Can remove constraints limit',
-	
+
 	-- Factory reset
 	factoryreset = 'Can do full factory reset',
 	freset_exclude = 'Can reset excludes list',
@@ -219,7 +221,7 @@ local default_desc = {
 	freset_mlimits = 'Can reset model limits list',
 	freset_slimits = 'Can reset sandbox limits list',
 	freset_climits = 'Can reset constraints limits list',
-	
+
 	freset_blocked_use = 'Can reset blocked use list',
 	freset_blocked_physgun = 'Can reset blocked physgun list',
 	freset_blocked_tool = 'Can reset blocked tool list',
@@ -288,7 +290,7 @@ function DPP.RegisterRights()
 	for k, v in pairs(default) do
 		DPP.RegisterAccess(k, v, DPP.GetPhrase('priv_' .. k), 'priv_' .. k)
 	end
-	
+
 	UpdateLang()
 end
 

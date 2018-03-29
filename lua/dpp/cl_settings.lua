@@ -632,6 +632,7 @@ SettingsClass.Accesses.cleardisconnected = false
 SettingsClass.Accesses.unfreezebyuid = false
 SettingsClass.Accesses.freezebyuid = false
 SettingsClass.Accesses.clearbyuid = false
+SettingsClass.Accesses.cleanup = false
 
 local function BuildPlayerList(Panel)
 	if not IsValid(Panel) then return end
@@ -650,6 +651,9 @@ local function BuildPlayerList(Panel)
 
 	local button = Panel:Button(P('delete_ents'), 'dpp_clearmap')
 	SettingsClass.SetButtonAccess(button, 'clearmap')
+
+	local button = Panel:Button(P('cleanup_map'), 'dpp_cleanup', '60')
+	SettingsClass.SetButtonAccess(button, 'cleanup')
 
 	local button = Panel:Button(P('freeze_all'), 'dpp_freezeall')
 	SettingsClass.SetButtonAccess(button, 'freezeall')

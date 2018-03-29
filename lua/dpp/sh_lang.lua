@@ -485,6 +485,15 @@ TO BE USE ON THAT ENTITY.\nUSE WITH CAUTION
 	inspect_table = 'Entity values in :GetTable() :',
 	inspect_noentity = 'Entity is not valid',
 
+	no_timer_to_cancel = 'There is no timer to stop for!',
+	timer_invalid_time = 'Invalid time specified for timer, or it is too small',
+	timer_stopped = ' stopped the cleanup timer',
+	timer_started = ' started the cleanup timer for ',
+	timer_started2 = ' seconds',
+	map_cleared = 'Map cleaned up successfully',
+	cleanup_initated = 'MAP CLEANUP IN',
+	cleanup_map = 'CLEANUP MAP AFTER 60 SECONDS',
+
 	restricts_updated = '(SILENT) You updated restricts for %s',
 
 	font = 'Font',

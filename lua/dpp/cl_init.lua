@@ -742,6 +742,132 @@ local LastPanelUpdate = 0
 hook.Add('Think', 'DPP.HUDThink', HUDThink)
 hook.Add('HUDDrawHidden', 'DPP.HUDThink', HUDPaint)
 
+do
+	-- https://github.com/PAC3-Server/notagain/blob/master/lua/notagain/aowl/aowl.lua#L985
+	local cleanupPopups = {
+		"HURRY!", "FASTER!", "YOU WON'T MAKE IT!",
+		"QUICKLY!", "GOD YOU'RE SLOW!", "DID YOU GET EVERYTHING?!",
+		"ARE YOU SURE THAT'S EVERYTHING?!", "OH GOD!", "OH MAN!",
+		"YOU FORGOT SOMETHING!", "SAVE SAVE SAVE"
+	}
+
+	local stressSounds = {
+		Sound("vo/ravenholm/exit_hurry.wav"), Sound("vo/npc/Barney/ba_hurryup.wav"),
+		Sound("vo/Citadel/al_hurrymossman02.wav"), Sound("vo/Streetwar/Alyx_gate/al_hurry.wav"),
+		Sound("vo/ravenholm/monk_death07.wav"), Sound("vo/coast/odessa/male01/nlo_cubdeath02.wav")
+	}
+
+	local numberSounds = {
+		Sound("npc/overwatch/radiovoice/one.wav"), Sound("npc/overwatch/radiovoice/two.wav"),
+		Sound("npc/overwatch/radiovoice/three.wav"), Sound("npc/overwatch/radiovoice/four.wav"),
+		Sound("npc/overwatch/radiovoice/five.wav"), Sound("npc/overwatch/radiovoice/six.wav"),
+		Sound("npc/overwatch/radiovoice/seven.wav"), Sound("npc/overwatch/radiovoice/eight.wav"),
+		Sound("npc/overwatch/radiovoice/nine.wav")
+	}
+
+	local popupsPos = {}
+	local nextPopup = 0
+	local nextStress = 0
+	local lastNumber = 0
+	local sound
+	local popups = {}
+
+	surface.CreateFont('DPP.CleanupPopup', {
+		font = 'Roboto',
+		size = ScreenSize(20),
+		weight = 600
+	})
+
+	surface.CreateFont('DPP.CleanupTime', {
+		font = 'Roboto',
+		size = ScreenSize(15),
+		weight = 600
+	})
+
+	DPP.CLEAN_UP = false
+	DPP.CLEAN_UP_START = CurTime() - 30
+	DPP.CLEAN_UP_END = CurTime() + 30
+
+	local function HUDPaintCleanup()
+		if not DPP.CLEAN_UP then return end
+		local WIDTH = ScreenSize(140)
+		local x, y = ScrW() / 2, ScreenSize(20)
+		surface.SetDrawColor(140, 140, 140)
+		surface.DrawRect(x - WIDTH / 2, y, WIDTH, ScreenSize(15))
+
+		surface.SetDrawColor(240, 240, 240)
+		local nw = WIDTH * (1 - CurTime():progression(DPP.CLEAN_UP_START, DPP.CLEAN_UP_END))
+		surface.DrawRect(x - WIDTH / 2, y, nw, ScreenSize(15))
+
+		local timeleft = DLib.string.tformat(DPP.CLEAN_UP_END - CurTime())
+		surface.SetFont('DPP.CleanupTime')
+
+		local w, h = surface.GetTextSize(DPP.GetPhrase('cleanup_initated'))
+		surface.SetTextPos(x - w / 2, y - ScreenSize(16))
+		surface.SetTextColor(230, 230, 230)
+		surface.DrawText(DPP.GetPhrase('cleanup_initated'))
+
+		w, h = surface.GetTextSize(timeleft)
+
+		render.PushScissorRect(x - WIDTH / 2, y, x - WIDTH / 2 + nw, y + ScreenSize(15))
+		surface.SetTextPos(x - w / 2, y)
+		surface.SetTextColor(0, 0, 0)
+		surface.DrawText(timeleft)
+		render.PopScissorRect()
+
+		render.PushScissorRect(x - WIDTH / 2 + nw, y, x + WIDTH, y + ScreenSize(15))
+		surface.SetTextPos(x - w / 2, y)
+		surface.SetTextColor(255, 255, 255)
+		surface.DrawText(timeleft)
+		render.PopScissorRect()
+
+		surface.SetFont('DPP.CleanupPopup')
+		surface.SetTextColor(255, 255, 255)
+
+		for i = 1, 6 do
+			if popupsPos[i] then
+				surface.SetTextPos(popupsPos[i][1], popupsPos[i][2])
+				surface.DrawText(popups[i])
+			end
+		end
+	end
+
+	local function CleanupThink()
+		if not DPP.CLEAN_UP then
+			if sound then
+				sound:Stop()
+				sound = nil
+			end
+
+			return
+		end
+
+		if not sound then
+			sound = CreateSound(LocalPlayer(), Sound("ambient/alarms/siren.wav"))
+		end
+
+		local time = RealTime()
+
+		if nextStress < time then
+			nextStress = time + math.random(0.5, 1.25)
+			LocalPlayer():EmitSound(stressSounds[math.random(1, #stressSounds)], 60, 100, 0.7)
+		end
+
+		if nextPopup < time then
+			nextPopup = time + 0.5
+			local w, h = ScrW() - ScreenSize(200), ScrH()
+
+			for i = 1, 6 do
+				popups[i] = cleanupPopups[math.random(1, #cleanupPopups)]
+				popupsPos[i] = {math.random(0, w), math.random(0, h)}
+			end
+		end
+	end
+
+	hook.Add('HUDPaint', 'DPP.CleanupEffects', HUDPaintCleanup)
+	hook.Add('Think', 'DPP.CleanupEffects', CleanupThink)
+end
+
 local LastSound = 0
 
 function DPP.Notify(message, Type)

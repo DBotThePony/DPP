@@ -77,7 +77,7 @@ local function ReadGenericLimits()
 			local group = net.ReadString()
 			local isNegative = net.ReadBool()
 			local value = net.ReadUInt(16)
-			
+
 			if isNegative then
 				value = -value
 			end
@@ -280,48 +280,48 @@ DPP.ClientReceiveFuncs = {
 
 		hook.Run('DPP.BlockedModelListChanged', s, b)
 	end,
-	
+
 	LimitHit = function()
 		hook.Run('LimitHit', net.ReadString())
 	end,
-	
+
 	RListsInsert_Player = function()
 		local k = net.ReadString()
 		local steamid = net.ReadString()
 		local class = net.ReadString()
 		local status = net.ReadBool()
 		DPP.RestrictedTypes_SteamID[k][steamid] = DPP.RestrictedTypes_SteamID[k][steamid] or {}
-		
+
 		if status then
 			table.insert(DPP.RestrictedTypes_SteamID[k][steamid], class)
 		else
 			DPP.PopFromArray(DPP.RestrictedTypes_SteamID[k][steamid], class)
 		end
-		
+
 		hook.Run('DPP.RestrictedTypesUpdatedPlayer', k, steamid, class, status)
 	end,
-	
+
 	RLists_Player = function()
 		local k = net.ReadString()
 		local count = net.ReadUInt(16)
-		
+
 		DPP.RestrictedTypes_SteamID[k] = {}
-		
+
 		for i = 1, count do
 			local steamid = net.ReadString()
 			local classes_count = net.ReadUInt(8)
-			
+
 			DPP.RestrictedTypes_SteamID[k][steamid] = DPP.RestrictedTypes_SteamID[k][steamid] or {}
-			
+
 			for i2 = 1, classes_count do
 				local class = net.ReadString()
 				table.insert(DPP.RestrictedTypes_SteamID[k][steamid], class)
 			end
 		end
-		
+
 		hook.Run('DPP.RestrictedTypesReloadedPlayer', k)
 	end,
-	
+
 	ConstrainedTable = function()
 		local Ents = net.ReadTable()
 		local Owners = net.ReadTable()
@@ -330,6 +330,15 @@ DPP.ClientReceiveFuncs = {
 			if IsValid(v) then
 				DLib.nw.GetNetworkDataTable(v)._DPP_Constrained = Owners
 			end
+		end
+	end,
+
+	CleanupTimer = function()
+		DPP.CLEAN_UP = net.ReadBool()
+
+		if DPP.CLEAN_UP then
+			DPP.CLEAN_UP_START = CurTime()
+			DPP.CLEAN_UP_END = CurTime() + net.ReadUInt16()
 		end
 	end
 }
