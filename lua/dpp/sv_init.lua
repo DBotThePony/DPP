@@ -71,14 +71,8 @@ end
 
 function DPP.RefreshPropList()
 	for k, v in pairs(DPP.PropListing) do
-		if not IsValid(k) then
+		if not IsValid(k) or not DPP.IsOwned(k) then
 			DPP.PropListing[k] = nil
-			continue
-		end
-
-		if not DPP.IsOwned(k) then
-			DPP.PropListing[k] = nil
-			continue
 		end
 	end
 end
@@ -397,11 +391,13 @@ function DPP.PlayerDisconnected(ply)
 				local ply = player.GetByUniqueID(uid)
 				if ply then return end
 
-				for k, v in pairs(DPP.GetPropsByUID(uid)) do
+				local props = DPP.GetPropsByUID(uid)
+
+				for k, v in ipairs(props) do
 					SafeRemoveEntity(v)
 				end
 
-				if not DPP.GetConVar('no_clear_messages') then
+				if not DPP.GetConVar('no_clear_messages') and #props > 8 then
 					DPP.Notify(player.GetAll(), '#props_cleared||' .. name, 2)
 				end
 
@@ -419,11 +415,13 @@ function DPP.PlayerDisconnected(ply)
 				local ply = player.GetByUniqueID(uid)
 				if ply then return end
 
-				for k, v in pairs(DPP.GetPropsByUID(uid)) do
+				local props = DPP.GetPropsByUID(uid)
+
+				for k, v in ipairs(props) do
 					DPP.SetUpForGrabs(v, true)
 				end
 
-				if not DPP.GetConVar('no_clear_messages') then
+				if not DPP.GetConVar('no_clear_messages') and #props > 8 then
 					DPP.Notify(player.GetAll(), '#props_up_for_grabs||' .. name)
 				end
 
