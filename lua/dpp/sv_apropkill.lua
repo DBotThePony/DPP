@@ -120,12 +120,14 @@ local function EntityTakeDamage(ent, dmg)
 		if IsValid(attacker) and attacker:IsVehicle() then
 			if attacker:GetSolid() ~= SOLID_NONE and (attacker:GetCollisionGroup() == COLLISION_GROUP_NONE or attacker:GetCollisionGroup() == COLLISION_GROUP_VEHICLE) then
 				attacker:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
+				dmg:SetDamage(0)
 			end
 		end
 
 		if IsValid(inflictor) and inflictor:IsVehicle() then
 			if inflictor:GetSolid() ~= SOLID_NONE and (inflictor:GetCollisionGroup() == COLLISION_GROUP_NONE or inflictor:GetCollisionGroup() == COLLISION_GROUP_VEHICLE) then
 				inflictor:SetCollisionGroup(COLLISION_GROUP_PASSABLE_DOOR)
+				dmg:SetDamage(0)
 			end
 		end
 	end
