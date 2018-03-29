@@ -183,9 +183,10 @@ DPP.Commands = {
 		local Entities = DPP.GetAllConnectedEntities(ent)
 
 		for k, v in pairs(Entities) do
-			if not IsValid(v) then continue end --World
-			DPP.SetOwner(v, NULL)
-			DPP.DeleteEntityUndo(v)
+			if IsValid(v) then
+				DPP.SetOwner(v, NULL)
+				DPP.DeleteEntityUndo(v)
+			end
 		end
 
 		DPP.SimpleLog(ply, Gray, '#com_transfer', ent, Gray, '#com_transfer_world_c')
@@ -330,7 +331,7 @@ DPP.Commands = {
 		end
 
 		if not found or found == ply then return false, {'#com_no_target'}, NOTIFY_ERROR end
-		
+
 		if DPP.GetConVar('transfer_buddies') and not ply:IsAdmin() and not DPP.IsFriend(ply, found) then
 			return false, {'#transfer_buddy'}, NOTIFY_ERROR
 		end
@@ -367,7 +368,7 @@ DPP.Commands = {
 		end
 
 		if not found or found == ply then return false, {'#com_no_target', ' (#1)'}, NOTIFY_ERROR end
-		
+
 		if DPP.GetConVar('transfer_buddies') and not ply:IsAdmin() and not DPP.IsFriend(ply, found) then
 			return false, {'#transfer_buddy'}, NOTIFY_ERROR
 		end
@@ -390,28 +391,28 @@ DPP.Commands = {
 
 		DPP.SimpleLog(ply, Gray, '#com_transfer', color_white, ent, Gray, '#com_to', found)
 		local verbose_logging = DPP.GetConVar('verbose_logging')
-		
+
 		local toRemove = {}
-		
+
 		for k, ent2 in ipairs(ent.__DPP_BundledEntities) do
 			if IsValid(ent2) and DPP.GetOwner(ent2) == ply then
 				DPP.SetOwner(ent2, found)
 				DPP.TableRecursiveReplace(ent2:GetTable(), ply, found)
 				undo.AddEntity(ent2)
 				table.insert(toRemove, ent2)
-				
+
 				if verbose_logging then
 					DPP.SimpleLog(ply, Gray, '#com_transfer', color_white, ent2, Gray, '#com_to', found)
 				end
 			end
 		end
-		
+
 		DPP.DeleteEntityUndoByTable(toRemove)
-		
+
 		undo.Finish()
-		
+
 		DPP.TableRecursiveReplace(ent:GetTable(), ply, found)
-		
+
 		DPP.Notify(ply, DPP.Format('#com_owning_transfer', found))
 
 		return true
@@ -424,13 +425,13 @@ DPP.Commands = {
 		if not args[1] then return false, {'#com_invalid_target'}, NOTIFY_ERROR end
 
 		ply.DPP_LastFullTransfer = ply.DPP_LastFullTransfer or 0
-		
+
 		if ply.DPP_LastFullTransfer > RealTime() then
 			return false, {'#transfer_spam'}, NOTIFY_ERROR
 		end
-		
+
 		ply.DPP_LastFullTransfer = RealTime() + 30
-		
+
 		local found
 
 		if tonumber(args[1]) then
@@ -449,7 +450,7 @@ DPP.Commands = {
 		end
 
 		if not found or found == ply then return false, {'#com_no_target'}, NOTIFY_ERROR end
-		
+
 		if DPP.GetConVar('transfer_buddies') and not ply:IsAdmin() and not DPP.IsFriend(ply, found) then
 			return false, {'#transfer_buddy'}, NOTIFY_ERROR
 		end
@@ -485,20 +486,20 @@ DPP.Commands = {
 
 	inspect = function(ply, cmd, args)
 		if not IsValid(ply) then return false, {'You are console'} end
-		
+
 		local tr = util.TraceLine{
 			start = ply:EyePos(),
 			endpos = ply:EyePos() + ply:EyeAngles():Forward() * 32000,
 			mask = MASK_ALL,
 			filter = ply
 		}
-		
+
 		net.Start('DPP.InspectEntity')
 		net.Send(ply)
-		
+
 		DPP.Echo(ply, '#inspect_server')
 		local ent = tr.Entity
-		
+
 		if not IsValid(ent) then
 			DPP.Echo(ply, '#inspect_noentity')
 		else
@@ -509,7 +510,7 @@ DPP.Commands = {
 			DPP.Echo(ply, '#inspect_hp', color_white, DPP.ToString(ent:Health()))
 			DPP.Echo(ply, '#inspect_mhp', color_white, DPP.ToString(ent:GetMaxHealth()))
 			DPP.Echo(ply, '#inspect_owner', color_white, DPP.ToString(DPP.GetOwner(ent)))
-			
+
 			DPP.Echo(ply, '#inspect_model', color_white, DPP.ToString(ent:GetModel()))
 			DPP.Echo(ply, '#inspect_skin', color_white, DPP.ToString(ent:GetSkin()))
 			DPP.Echo(ply, '#inspect_bodygroups', color_white, DPP.ToString(table.Count(ent:GetBodyGroups() or {})))
@@ -528,3 +529,6 @@ for k, v in pairs(DPP.Commands) do
 end
 
 DPP.Commands.entreport = DPP.Commands.entcheck
+DPP.Commands.cleanplayer = DPP.Commands.clearplayer
+DPP.Commands.cleanplayerentities = DPP.Commands.clearplayer
+DPP.Commands.cleanupplayer = DPP.Commands.clearplayer
