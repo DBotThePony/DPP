@@ -60,19 +60,21 @@ local GRAY = Color(200, 200, 200)
 
 local function ProceedCrush(ent, dmg)
 	if not DPP.IsOwned(ent) then return end
+	if ent == dmg:GetAttacker() then return end
 	if ent:IsRagdoll() and not IsValid(dmg:GetAttacker()) then return end
+	if not ent:IsRagdoll() and IsValid(dmg:GetAttacker()) and dmg:GetAttacker():IsRagdoll() then return end
 
 	ent._DPP_LastPhysicsDamage = ent._DPP_LastPhysicsDamage or 0
 	ent._DPP_LastPhysicsDamage_Counter = ent._DPP_LastPhysicsDamage_Counter or 0
-	
+
 	if ent._DPP_LastPhysicsDamage + 1 < CurTime() then
 		ent._DPP_LastPhysicsDamage_Counter = 0
 	end
-	
+
 	ent._DPP_LastPhysicsDamage = CurTime()
-	
+
 	ent._DPP_LastPhysicsDamage_Counter = ent._DPP_LastPhysicsDamage_Counter + 1
-	
+
 	if ent._DPP_LastPhysicsDamage_Counter > 5 then
 		DPP.SimpleLog('#crazy_physics', color_white, tostring(ent), GRAY, '#crazy_physics2', DPP.GetOwner(ent), GRAY, '#crazy_physics3')
 		DPP.SetGhosted(ent, true)
@@ -84,14 +86,14 @@ local function ProceedCrushingChecks(ent, dmg)
 	if ent:GetClass():sub(1, 5) ~= 'prop_' then return end
 	if dmg:GetDamageType() ~= DMG_CRUSH then return end
 	local attacker, inflictor = dmg:GetAttacker(), dmg:GetInflictor()
-	
+
 	ProceedCrush(ent, dmg)
-	
+
 	if ent:GetClass() ~= 'prop_physics' or not IsValid(dmg:GetAttacker()) or not dmg:GetAttacker():IsRagdoll() then
 		if IsValid(attacker) and attacker:GetClass():sub(1, 5) == 'prop_' and not attacker:IsNPC() and not attacker:IsPlayer() and not attacker:IsVehicle() then
 			ProceedCrush(attacker, dmg)
 		end
-		
+
 		if inflictor ~= attacker and IsValid(inflictor) and inflictor:GetClass():sub(1, 5) == 'prop_' and not inflictor:IsNPC() and not inflictor:IsPlayer() and not inflictor:IsVehicle() then
 			ProceedCrush(inflictor, dmg)
 		end
@@ -100,11 +102,11 @@ end
 
 local function EntityTakeDamage(ent, dmg)
 	if not DPP.GetConVar('apropkill_enable') then return end
-	
+
 	if DPP.GetConVar('apropkill_crash') then
 		ProceedCrushingChecks(ent, dmg)
 	end
-	
+
 	if not DPP.GetConVar('apropkill_damage') then return end
 	if not ent:IsPlayer() then return end
 
@@ -134,7 +136,7 @@ local function EntityTakeDamage(ent, dmg)
 	local Aclass = aValid and attacker:GetClass()
 	local Iclass = iValid and inflictor:GetClass()
 
-	local cond = dmg:GetDamageType() == DMG_CRUSH and ((not Aclass or not WhitelistProps[Aclass]) and (not Iclass or not WhitelistProps[Iclass])) or 
+	local cond = dmg:GetDamageType() == DMG_CRUSH and ((not Aclass or not WhitelistProps[Aclass]) and (not Iclass or not WhitelistProps[Iclass])) or
 		(dmg:GetDamageType() == DMG_VEHICLE and DPP.GetConVar('apropkill_damage_vehicle')) or
 		(Aclass == 'prop_physics' or Aclass == 'prop_ragdoll' or Aclass == 'prop_physics_multiplayer') or
 		(Iclass == 'prop_physics' or Iclass == 'prop_ragdoll' or Iclass == 'prop_physics_multiplayer')
@@ -307,7 +309,7 @@ local function DetectAPG()
 	DPP.Message('APG Detected!')
 	DPP.Message('DPP Anti-Propkill is getting disabled!')
 	DPP.Message('-------------------------')
-	
+
 	RunConsoleCommand('dpp_setvar', 'apropkill_clampspeed', '0')
 	RunConsoleCommand('dpp_setvar', 'apropkill_nopush', '0')
 	RunConsoleCommand('dpp_setvar', 'apropkill_vehicle', '0')
