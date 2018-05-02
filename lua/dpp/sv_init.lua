@@ -364,16 +364,6 @@ function DPP.PlayerDisconnected(ply)
 
 	local userFallback = ply:DPPVar('fallback')
 
-	if IsValid(userFallback) then
-		for k, v in ipairs(props) do
-			DPP.SetOwner(v, userFallback)
-		end
-
-		DPP.SimpleLog(Gray, '#com_fallback_triggered', ply, Gray, '#com_to', userFallback)
-		DPP.Notify(userFallback, DPP.Format('#com_fallback_triggered_1', ply, Gray, '#com_fallback_triggered_2'))
-		DPP.TransferUndoTo(ply, userFallback)
-	end
-
 	timer.Simple(2, function()
 		net.Start('DPP.RefreshPlayerList')
 		net.Broadcast()
@@ -383,7 +373,16 @@ function DPP.PlayerDisconnected(ply)
 		end
 	end)
 
-	if IsValid(userFallback) then return end
+	if IsValid(userFallback) then
+		for k, v in ipairs(props) do
+			DPP.SetOwner(v, userFallback)
+		end
+
+		DPP.SimpleLog(Gray, '#com_fallback_triggered', ply, Gray, '#com_to', userFallback)
+		DPP.Notify(userFallback, DPP.Format('#com_fallback_triggered_1', ply, Gray, '#com_fallback_triggered_2'))
+		DPP.TransferUndoTo(ply, userFallback)
+		return
+	end
 
 	if clear then
 		if isAdmin and clearAdmin or not isAdmin then
