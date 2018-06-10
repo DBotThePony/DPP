@@ -1880,7 +1880,7 @@ function DPP.CanTouch(ply, ent, mode)
 			end
 
 			if not isShared or realOwner ~= owner then
-				local friend = DPP.IsFriend(ply, owner, mode)
+				local friend = DPP.IsFriend(owner, ply, mode)
 
 				if DPP.PlayerConVar(ply, 'no_touch_other', false) then
 					can = false

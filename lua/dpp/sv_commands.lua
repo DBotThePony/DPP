@@ -332,7 +332,7 @@ DPP.Commands = {
 
 		if not found or found == ply then return false, {'#com_no_target'}, NOTIFY_ERROR end
 
-		if DPP.GetConVar('transfer_buddies') and not ply:IsAdmin() and not DPP.IsFriend(ply, found) then
+		if DPP.GetConVar('transfer_buddies') and not ply:IsAdmin() and not DPP.IsFriend(found, ply) then
 			return false, {'#transfer_buddy'}, NOTIFY_ERROR
 		end
 
@@ -369,7 +369,7 @@ DPP.Commands = {
 
 		if not found or found == ply then return false, {'#com_no_target', ' (#1)'}, NOTIFY_ERROR end
 
-		if DPP.GetConVar('transfer_buddies') and not ply:IsAdmin() and not DPP.IsFriend(ply, found) then
+		if DPP.GetConVar('transfer_buddies') and not ply:IsAdmin() and not DPP.IsFriend(found, ply) then
 			return false, {'#transfer_buddy'}, NOTIFY_ERROR
 		end
 
@@ -451,7 +451,7 @@ DPP.Commands = {
 
 		if not found or found == ply then return false, {'#com_no_target'}, NOTIFY_ERROR end
 
-		if DPP.GetConVar('transfer_buddies') and not ply:IsAdmin() and not DPP.IsFriend(ply, found) then
+		if DPP.GetConVar('transfer_buddies') and not ply:IsAdmin() and not DPP.IsFriend(found, ply) then
 			return false, {'#transfer_buddy'}, NOTIFY_ERROR
 		end
 
