@@ -128,8 +128,6 @@ DPP.WriteStringList = net.WriteStringArray
 DPP.ReadStringList = net.ReadStringArray
 DPP.WriteVarchar = net.WriteString
 DPP.ReadVarchar = net.ReadString
-DPP.WriteBigInt = net.WriteBigint
-DPP.ReadBigInt = net.ReadBigint
 DPP.WriteEntityArray = net.WriteEntityArray
 DPP.ReadEntityArray = net.ReadEntityArray
 DPP.WriteArray = net.WriteArray
@@ -152,10 +150,10 @@ DPP_NETTYPE_PLAYER = 5
 
 function DPP.WriteMessageTable(tab)
 	net.WriteUInt(#tab, 8)
-	
+
 	for k, v in ipairs(tab) do
 		local T = type(v)
-		
+
 		if T == 'string' then
 			net.WriteUInt(DPP_NETTYPE_STRING, 6)
 			DPP.WriteVarchar(v)
@@ -164,7 +162,7 @@ function DPP.WriteMessageTable(tab)
 			net.WriteUInt(v:EntIndex(), 8)
 		elseif T == 'number' then
 			net.WriteUInt(DPP_NETTYPE_NUMBER, 6)
-			DPP.WriteBigInt(v)
+			net.WriteBigInt(v)
 		elseif T == 'boolean' then
 			net.WriteUInt(DPP_NETTYPE_BOOL, 6)
 			net.WriteBool(v)
@@ -178,14 +176,14 @@ end
 function DPP.ReadMessageTable()
 	local len = net.ReadUInt(8)
 	local reply = {}
-	
+
 	for i = 1, len do
 		local T = net.ReadUInt(6)
-		
+
 		if T == DPP_NETTYPE_STRING then
 			table.insert(reply, DPP.ReadVarchar())
 		elseif T == DPP_NETTYPE_NUMBER then
-			table.insert(reply, DPP.ReadBigInt())
+			table.insert(reply, net.ReadBigInt())
 		elseif T == DPP_NETTYPE_BOOL then
 			table.insert(reply, net.ReadBool())
 		elseif T == DPP_NETTYPE_PLAYER then
@@ -194,7 +192,7 @@ function DPP.ReadMessageTable()
 			table.insert(reply, net.ReadColor())
 		end
 	end
-	
+
 	return reply
 end
 
