@@ -126,8 +126,6 @@ end
 
 DPP.WriteStringList = net.WriteStringArray
 DPP.ReadStringList = net.ReadStringArray
-DPP.WriteVarchar = net.WriteString
-DPP.ReadVarchar = net.ReadString
 DPP.WriteEntityArray = net.WriteEntityArray
 DPP.ReadEntityArray = net.ReadEntityArray
 DPP.WriteArray = net.WriteArray
@@ -156,7 +154,7 @@ function DPP.WriteMessageTable(tab)
 
 		if T == 'string' then
 			net.WriteUInt(DPP_NETTYPE_STRING, 6)
-			DPP.WriteVarchar(v)
+			net.WriteString(v)
 		elseif T == 'Player' then
 			net.WriteUInt(DPP_NETTYPE_PLAYER, 6)
 			net.WriteUInt(v:EntIndex(), 8)
@@ -169,6 +167,8 @@ function DPP.WriteMessageTable(tab)
 		elseif T == 'table' and v.a and v.r and v.g and v.b then
 			net.WriteUInt(DPP_NETTYPE_COLOR, 6)
 			net.WriteColor(v)
+		else
+			error('Unable to write type: ' .. T .. '! REPORT THIS')
 		end
 	end
 end
@@ -181,7 +181,7 @@ function DPP.ReadMessageTable()
 		local T = net.ReadUInt(6)
 
 		if T == DPP_NETTYPE_STRING then
-			table.insert(reply, DPP.ReadVarchar())
+			table.insert(reply, net.ReadString())
 		elseif T == DPP_NETTYPE_NUMBER then
 			table.insert(reply, net.ReadBigInt())
 		elseif T == DPP_NETTYPE_BOOL then
