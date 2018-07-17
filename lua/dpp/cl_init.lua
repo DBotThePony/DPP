@@ -38,6 +38,8 @@ local POSITION_Y = CreateConVar('dpp_position_Y', 50, FCVAR_ARCHIVE, 'Y coordina
 language.Add('Undo_TransferedProp', 'Undo DPP Transfered Entity')
 language.Add('Undo_Owned_Prop', 'Undo DPP Owned Entity')
 
+DLib.RegisterAddonName('DPP')
+
 do
 	local data = sql.Query('SELECT * FROM dpp_friends')
 

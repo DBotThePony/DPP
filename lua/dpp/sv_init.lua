@@ -303,7 +303,15 @@ function DPP.LogIntoFile(...)
 end
 
 function DPP.SimpleLog(...)
-	DPP.DoEcho(...)
+	local repack = {}
+
+	for k, v in ipairs({...}) do
+		if type(v) ~= 'table' or v ~= DPP.SpawnFunctions.SPACE and v ~= DPP.SpawnFunctions.SPACE2 then
+			table.insert(repack, v)
+		end
+	end
+
+	DPP.DoEcho(unpack(repack))
 	DPP.LogIntoFile(...)
 end
 
