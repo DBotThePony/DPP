@@ -196,7 +196,7 @@ local function CheckEntityLimit(ply, class)
 	local limit = DPP.GetEntityLimit(class, ply:GetUserGroup())
 	if limit <= 0 then return false end
 
-	local count = #DPP.FindEntitiesByClass(ply,	class)
+	local count = #DPP.FindEntitiesByClass(ply, class)
 	local status = count + 1 > limit
 	if status then
 		DPP.Notify(ply, DPP.PPhrase(ply, 'entity_limit_hit', class), 1)
@@ -376,7 +376,7 @@ end
 
 local function cleanup_Add(ply, type, ent)
 	if not ent then return end --Fuck this down
-	DPP.AssertArguments('cleanup.Add', {{ply, 'Player'}, {type, 'string'}, {ent, 'AnyEntity'}})
+	DPP.AssertArguments('cleanup.Add', ply, 'Player', type, 'string', ent, 'AnyEntity')
 
 	local check = true
 
@@ -402,7 +402,7 @@ local function cleanup_Add(ply, type, ent)
 end
 
 function SpawnFunctions.PlayerSpawnedProp(ply, model, ent, shouldHideLog, ignoreAntispam)
-	DPP.AssertArguments('PlayerSpawnedProp', {{ply, 'Player'}, {model, 'string'}, {ent, 'AnyEntity'}})
+	DPP.AssertArguments('PlayerSpawnedProp', ply, 'Player', model, 'string', ent, 'AnyEntity')
 	model = model:Replace('\\', '/')
 
 	if ent.DPP_SpawnTime == CurTime() then return end
@@ -443,7 +443,7 @@ function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide, ignoreAntispam)
 	if not IsValid(ply) then return end
 	if not IsValid(ent) then return end
 
-	DPP.AssertArguments('PlayerSpawnedConstraint', {{ply, 'Player'}, {ent, 'AnyEntity'}})
+	DPP.AssertArguments('PlayerSpawnedConstraint', ply, 'Player', ent, 'AnyEntity')
 
 	Spawned(ply, ent)
 
@@ -483,7 +483,7 @@ function SpawnFunctions.PlayerSpawnedConstraint(ply, ent, hide, ignoreAntispam)
 end
 
 function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog, ignoreAntispam)
-	DPP.AssertArguments('PlayerSpawnedRagdoll', {{ply, 'Player'}, {model, 'string'}, {ent, 'AnyEntity'}})
+	DPP.AssertArguments('PlayerSpawnedRagdoll', ply, 'Player', model, 'string', ent, 'AnyEntity')
 	model = model:Replace('\\', '/')
 
 	if ent.DPP_SpawnTime == CurTime() then return end
@@ -510,7 +510,7 @@ function SpawnFunctions.PlayerSpawnedRagdoll(ply, model, ent, shouldHideLog, ign
 end
 
 function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog, ignoreAntispam)
-	DPP.AssertArguments('PlayerSpawnedSENT', {{ply, 'Player'}, {ent, 'AnyEntity'}})
+	DPP.AssertArguments('PlayerSpawnedSENT', ply, 'Player', ent, 'AnyEntity')
 	local model = ent:GetModel() or ''
 	model = model:Replace('\\', '/')
 
@@ -545,7 +545,7 @@ function SpawnFunctions.PlayerSpawnedSENT(ply, ent, shouldHideLog, ignoreAntispa
 end
 
 function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog, ignoreAntispam)
-	DPP.AssertArguments('PlayerSpawnedSWEP', {{ply, 'Player'}, {ent, 'AnyEntity'}})
+	DPP.AssertArguments('PlayerSpawnedSWEP', ply, 'Player', ent, 'AnyEntity')
 	local model = ent:GetModel() or ''
 	model = model:Replace('\\', '/')
 
@@ -578,7 +578,7 @@ function SpawnFunctions.PlayerSpawnedSWEP(ply, ent, shouldHideLog, ignoreAntispa
 end
 
 function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog, ignoreAntispam)
-	DPP.AssertArguments('PlayerSpawnedVehicle', {{ply, 'Player'}, {ent, 'AnyEntity'}})
+	DPP.AssertArguments('PlayerSpawnedVehicle', ply, 'Player', ent, 'AnyEntity')
 	local model = ent:GetModel() or ''
 	model = model:Replace('\\', '/')
 
@@ -613,7 +613,7 @@ function SpawnFunctions.PlayerSpawnedVehicle(ply, ent, shouldHideLog, ignoreAnti
 end
 
 function SpawnFunctions.PlayerSpawnProp(ply, model)
-	DPP.AssertArguments('PlayerSpawnProp', {{ply, 'Player'}, {model, 'string'}})
+	DPP.AssertArguments('PlayerSpawnProp', ply, 'Player', model, 'string')
 	model = model:Replace('\\', '/')
 
 	if DPP.IsModelBlocked(model, ply) then
@@ -639,7 +639,7 @@ function SpawnFunctions.PlayerSpawnProp(ply, model)
 end
 
 function SpawnFunctions.PlayerSpawnEffect(ply, model)
-	DPP.AssertArguments('PlayerSpawnEffect', {{ply, 'Player'}, {model, 'string'}})
+	DPP.AssertArguments('PlayerSpawnEffect', ply, 'Player', model, 'string')
 	model = model:Replace('\\', '/')
 
 	if DPP.IsModelBlocked(model, ply) then
@@ -665,7 +665,7 @@ function SpawnFunctions.PlayerSpawnEffect(ply, model)
 end
 
 function SpawnFunctions.PlayerSpawnObject(ply, model)
-	DPP.AssertArguments('PlayerSpawnObject', {{ply, 'Player'}, {model, 'string'}})
+	DPP.AssertArguments('PlayerSpawnObject', ply, 'Player', model, 'string')
 	model = model:Replace('\\', '/')
 
 	if DPP.IsModelBlocked(model, ply) or CheckModelLimit(ply, model) then
@@ -686,7 +686,7 @@ function SpawnFunctions.PlayerSpawnObject(ply, model)
 end
 
 function SpawnFunctions.PlayerSpawnRagdoll(ply, model)
-	DPP.AssertArguments('PlayerSpawnRagdoll', {{ply, 'Player'}, {model, 'string'}})
+	DPP.AssertArguments('PlayerSpawnRagdoll', ply, 'Player', model, 'string')
 	model = model:Replace('\\', '/')
 
 	if DPP.IsModelBlocked(model, ply) or CheckModelLimit(ply, model) then
@@ -707,7 +707,7 @@ function SpawnFunctions.PlayerSpawnRagdoll(ply, model)
 end
 
 function SpawnFunctions.PlayerSpawnVehicle(ply, model, class)
-	DPP.AssertArguments('PlayerSpawnVehicle', {{ply, 'Player'}, {model, 'string'}, {class, 'string'}})
+	DPP.AssertArguments('PlayerSpawnVehicle', ply, 'Player', model, 'string', class, 'string')
 	model = model:Replace('\\', '/')
 
 	if DPP.IsModelBlocked(model, ply) or CheckModelLimit(ply, model) or CheckEntityLimit(ply, class) then
@@ -734,7 +734,7 @@ function SpawnFunctions.PlayerSpawnVehicle(ply, model, class)
 end
 
 function SpawnFunctions.PlayerSpawnSENT(ply, ent)
-	DPP.AssertArguments('PlayerSpawnSENT', {{ply, 'Player'}, {ent, 'string'}})
+	DPP.AssertArguments('PlayerSpawnSENT', ply, 'Player', ent, 'string')
 
 	if DPP.IsRestrictedSENT(ent, ply) or DPP.IsRestrictedSENTPlayer(ply, ent) then
 		LogTry(ply, '#log_sent', 'N/A', ent)
@@ -749,7 +749,7 @@ function SpawnFunctions.PlayerSpawnSENT(ply, ent)
 end
 
 function SpawnFunctions.PlayerSpawnSWEP(ply, ent)
-	DPP.AssertArguments('PlayerSpawnSWEP', {{ply, 'Player'}, {ent, 'string'}})
+	DPP.AssertArguments('PlayerSpawnSWEP', ply, 'Player', ent, 'string')
 
 	if DPP.IsRestrictedSWEP(ent, ply) or DPP.IsRestrictedSWEPPlayer(ply, ent) then
 		LogTry(ply, '#log_swep', 'N/A', ent)
@@ -764,7 +764,7 @@ function SpawnFunctions.PlayerSpawnSWEP(ply, ent)
 end
 
 function SpawnFunctions.PlayerGiveSWEP(ply, class, tab)
-	DPP.AssertArguments('PlayerSpawnSWEP', {{ply, 'Player'}, {class, 'string'}})
+	DPP.AssertArguments('PlayerSpawnSWEP', ply, 'Player', class, 'string')
 
 	local can = SpawnFunctions.PlayerSpawnSWEP(ply, class)
 	if can == false then return false end
@@ -772,7 +772,7 @@ function SpawnFunctions.PlayerGiveSWEP(ply, class, tab)
 end
 
 function SpawnFunctions.PlayerSpawnNPC(ply, ent)
-	DPP.AssertArguments('PlayerSpawnNPC', {{ply, 'Player'}, {ent, 'string'}})
+	DPP.AssertArguments('PlayerSpawnNPC', ply, 'Player', ent, 'string')
 
 	if DPP.IsRestrictedNPC(ent, ply) or DPP.IsRestrictedNPCPlayer(ply, ent) then
 		LogTry(ply, '#log_npc', 'N/A', ent)
@@ -1207,7 +1207,7 @@ hook.Add('Tick', 'DPP.EntityRemoved', Tick)
 function DPP.SetPlayerMeta(self, ply)
 	--Compability
 
-	DPP.AssertArguments('SetPlayer', {{self, 'AnyEntity'}, {ply, 'Player'}})
+	DPP.AssertArguments('SetPlayer', self, 'AnyEntity', ply, 'Player')
 
 	CheckAfter(ply, self)
 

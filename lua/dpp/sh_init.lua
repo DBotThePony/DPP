@@ -77,39 +77,35 @@ local EntityTypes = {
 
 DPP.ENTITY_TYPES = EntityTypes
 
-function DPP.AssertArguments(funcName, args)
-	for k, v in ipairs(args) do
-		local val = v[1]
-		local expected = v[2]
+function DPP.AssertArguments(funcName, ...)
+	local pos = 0
 
-		if not expected then continue end
+	while true do
+		pos = pos + 2
 
-		local Type = type(val)
+		local val = select(pos - 1, ...)
+		local expected = select(pos, ...)
+		if not expected then return end
 
-		if Type == expected then continue end
-		if Type == 'Vehicle' and expected == 'Entity' then continue end
-		if expected == 'AnyEntity' and EntityTypes[Type] then continue end
+		local valtype = type(val)
 
-		local TypeName = Type
-		local ExpectedName = expected
+		if valtype == expected then goto CONTINUE end
+		if valtype == 'Vehicle' and expected == 'Entity' then goto CONTINUE end
+		if expected == 'AnyEntity' and EntityTypes[valtype] then goto CONTINUE end
+
+		local valname = valtype
+		local expectedname = expected
 
 		if val == NULL then
-			TypeName = 'NULL Entity'
-		end
-
-		if expected == 'Player' then
-			--Trying to Duck type
-
-			if EntityTypes[Type] and val ~= NULL then
-				if val.SteamID and val.SteamID64 and val.Nick then continue end --Duck typed
-			end
+			valname = 'NULL Entity'
 		end
 
 		if expected == 'AnyEntity' then
-			ExpectedName = 'Any Entity'
+			expectedname = 'Any Entity'
 		end
 
-		DPP.ThrowError(string.format('Bad argument #%s to %s (%s expected, got %s)', k, funcName, ExpectedName, TypeName), DPP.FindBestLevel())
+		DPP.ThrowError(string.format('Bad argument #%s to %s (%s expected, got %s)', k, funcName, expectedname, valname), DPP.FindBestLevel())
+		::CONTINUE::
 	end
 end
 

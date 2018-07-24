@@ -20,33 +20,33 @@ local RED = Color(255, 0, 0)
 
 local function GiveEntityChance(ent, funcToCall, ...)
 	local func = ent[funcToCall]
-	
+
 	if type(func) ~= 'function' then
 		if type(func) == 'boolean' then return func end
 		return nil
 	end
-	
+
 	local stuff = {pcall(func, ent, ...)}
 	local status = table.remove(stuff, 1)
-	
+
 	if not status then
 		DPP.DoEcho(RED, '#givechance_error', GRAY, '#givechance_Entity', color_white, tostring(ent), GRAY, '#givechance_desc||' .. funcToCall, color_white, stuff[1])
 		return nil
 	end
-	
+
 	return unpack(stuff, 1, #stuff)
 end
 
 function DPP.CanDamage(ply, ent, ignoreEnt)
 	if not DPP.GetConVar('enable_damage') then return true end
-	if DPP.IsEntityBlockedDamage(ent:GetClass() or '') then 
+	if DPP.IsEntityBlockedDamage(ent:GetClass() or '') then
 		return false, DPP.GetPhrase('damage_blocked')
 	end
 
 	if DPP.IsEntityWhitelistedDamage(ent:GetClass() or '') then
 		return true, DPP.GetPhrase('entity_excluded_d')
 	end
-	
+
 	local can = GiveEntityChance(ent, 'CanDamage', ply)
 	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
 
@@ -78,7 +78,7 @@ function DPP.CanDamage(ply, ent, ignoreEnt)
 			end
 		end
 	end
-	
+
 	return DPP.CanTouch(ply, ent, 'damage')
 end
 
@@ -97,7 +97,7 @@ end
 
 function DPP.GravgunTouch(ply, ent)
 	if DPP.CanGravgun(ply, ent) == false then return false end
-	--[[if SERVER then 
+	--[[if SERVER then
 		DPP.CheckUpForGrabs(ent, ply)
 		DPP.UnghostIfPossible(ent)
 	end]]
@@ -107,26 +107,26 @@ function DPP.PhysgunReloadTouch(phys, ply)
 	local ent = ply:GetEyeTrace().Entity
 
 	DPP.CheckUpForGrabs(ent, ply)
-	
+
 	local final = true
 
 	if DPP.OnPhysgunReload(phys, ply) == false then return false end
-	
+
 	if SERVER then
 		local Connected = DPP.GetAllConnectedEntities(ent)
 
 		for k, v in ipairs(Connected) do
 			local can = DPP.OnPhysgunReload(phys, ply, v)
-			
+
 			-- oops
 			if not can then return can end
 		end
-		
+
 		for k, v in ipairs(Connected) do
 			DPP.UnghostIfPossible(v)
 		end
 	end
-	
+
 	DPP.UnghostIfPossible(ent)
 end
 
@@ -142,9 +142,9 @@ function DPP.ToolgunTouch(ply, tr, mode)
 		for i = 1, 8 do
 			local info = debug.getinfo(i) --Check whatever level is valid
 			if not info then break end
-			
+
 			local Name, Value = debug.getlocal(i, 1)
-			
+
 			if not Name then break end
 			if isentity(Value) and IsValid(Value) and Value:IsWeapon() then
 				Should = true
@@ -159,9 +159,9 @@ function DPP.ToolgunTouch(ply, tr, mode)
 	end
 
 	DPP.CheckUpForGrabs(tr.Entity, ply)
-	
+
 	local CAN, Reason = DPP.CanTool(ply, tr.Entity, mode)
-	if CAN == false then 
+	if CAN == false then
 		if SERVER then
 			ply._DPP_LastToolgunLog = ply._DPP_LastToolgunLog or 0
 			if not DPP.GetConVar('no_tool_log') and not DPP.GetConVar('no_tool_fail_log') and ply._DPP_LastToolgunLog < CurTime() then
@@ -178,10 +178,10 @@ function DPP.ToolgunTouch(ply, tr, mode)
 		DPP.UnghostIfPossible(tr.Entity)
 		ply._DPP_LastToolgunLog = ply._DPP_LastToolgunLog or 0
 
-		if not DPP.GetConVar('no_tool_log') and ply._DPP_LastToolgunLog < CurTime() then 
+		if not DPP.GetConVar('no_tool_log') and ply._DPP_LastToolgunLog < CurTime() then
 			ply._DPP_LastToolgunLog = CurTime() + 0.2
 			local logFunc = not DPP.GetConVar('no_tool_log_echo') and DPP.SimpleLog or DPP.LogIntoFile
-			logFunc(ply, DPP.SpawnFunctions.SPACE, GRAY, '#log_tool_used', DPP.SpawnFunctions.SPACE2, color_white, mode, GRAY, '#log_tool_on', tostring(tr.Entity)) 
+			logFunc(ply, DPP.SpawnFunctions.SPACE, GRAY, '#log_tool_used', DPP.SpawnFunctions.SPACE2, color_white, mode, GRAY, '#log_tool_on', tostring(tr.Entity))
 		end
 	end
 end
@@ -205,7 +205,7 @@ end
 function DPP.CanPhysgun(ply, ent)
 	if not DPP.GetConVar('enable_physgun') then return true end
 
-	if DPP.IsEntityBlockedPhysgun(ent:GetClass() or '', ply) then 
+	if DPP.IsEntityBlockedPhysgun(ent:GetClass() or '', ply) then
 		return false, DPP.GetPhrase('physgun_blocked')
 	end
 
@@ -223,7 +223,7 @@ function DPP.CanPhysgun(ply, ent)
 end
 
 function DPP.PhysgunPickup(ply, ent)
-	if ent:IsPlayer() then 
+	if ent:IsPlayer() then
 		if DPP.PlayerConVar(ply, 'no_player_touch', false) then return false end
 		return
 	end
@@ -261,23 +261,23 @@ end
 function DPP.CanGravgunPunt(ply, ent)
 	if DPP.GetConVar('player_cant_punt') then return false end
 	if not IsValid(ply) then return end
-	
+
 	local can = GiveEntityChance(ent, 'CanGravgunPunt', ply)
 	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
-	
+
 	local can = GiveEntityChance(ent, 'GravGunPunt', ply) --FPP like
 	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
-	
+
 	return DPP.CanGravgun(ply, ent)
 end
 
 function DPP.OnPhysgunReload(phys, ply, ent)
 	if not DPP.GetConVar('enable_physgun') then return end
 	ent = ent or ply:GetEyeTrace().Entity
-	
+
 	local can = GiveEntityChance(ent, 'OnPhysgunReload', ply)
 	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
-	
+
 	return DPP.CanTouch(ply, ent, 'physgun')
 end
 
@@ -298,7 +298,7 @@ local function GetTouchAccess1(ply)
 		expires = math.huge,
 		waiting = true,
 	}
-	
+
 	DPP.HaveAccess(ply, 'touchother', function(result)
 		PlayersTouchAccess[ply] = {
 			result = result,
@@ -324,13 +324,13 @@ end)
 
 function DPP.CanTool(ply, ent, mode)
 	if not DPP.GetConVar('enable_tool') then return true, DPP.GetPhrase('protection_disabled') end
-	DPP.AssertArguments('DPP.CanTool', {{ply, 'Player'}, {ent, 'AnyEntity'}, {mode, 'string'}})
+	DPP.AssertArguments('DPP.CanTool', ply, 'Player', ent, 'AnyEntity', mode, 'string')
 
-	if DPP.IsRestrictedTool(mode, ply) or DPP.IsRestrictedToolPlayer(ply, mode) then 
+	if DPP.IsRestrictedTool(mode, ply) or DPP.IsRestrictedToolPlayer(ply, mode) then
 		return false, DPP.GetPhrase('restricted_tool')
 	end
 
-	if not IsValid(ent) then 
+	if not IsValid(ent) then
 		if DPP.GetConVar('no_rope_world') then
 			if ropeModes[mode] and not (not DPP.GetConVar('no_rope_world_weld') and mode == 'weld') then
 				return false, DPP.GetPhrase('no_rope_world')
@@ -360,7 +360,7 @@ function DPP.CanTool(ply, ent, mode)
 		if PlayersTouchAccess[ply] == nil then
 			GetTouchAccess1(ply)
 		end
-		
+
 		local can1 = DPP.GetConVar('toolgun_player')
 		local can2 = DPP.GetConVar('toolgun_player_admin')
 		local isadmin
@@ -377,7 +377,7 @@ function DPP.CanTool(ply, ent, mode)
 			if can1 then return false, DPP.GetPhrase('no_toolgun_player') end
 		end
 	end
-	
+
 	local can = GiveEntityChance(ent, 'CanTool', ply, mode)
 	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
 
@@ -395,10 +395,10 @@ end
 
 function DPP.CanPlayerEnterVehicle(ply, ent)
 	if not DPP.GetConVar('enable_veh') then return true, DPP.GetPhrase('protection_disabled') end
-	DPP.AssertArguments('DPP.CanPlayerEnterVehicle', {{ply, 'Player'}, {ent, 'AnyEntity'}})
+	DPP.AssertArguments('DPP.CanPlayerEnterVehicle', ply, 'Player', ent, 'AnyEntity')
 	if ent.IgnoreVehicleProtection then return true, DPP.GetPhrase('vehicle_protection_ignored') end
 	if DPP.GetConVar('disable_veh_world') and not DPP.IsOwned(ent) then return true, DPP.GetPhrase('owned_by_world') end
-	
+
 	local can = GiveEntityChance(ent, 'CanPlayerEnterVehicle', ply)
 	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
 
@@ -416,17 +416,17 @@ end
 
 function DPP.CanEditVariable(ent, ply, key, val, editor)
 	if not DPP.GetConVar('enable_tool') then return true, DPP.GetPhrase('protection_disabled') end
-	DPP.AssertArguments('DPP.CanEditVariable', {{ent, 'AnyEntity'}, {ply, 'Player'}})
-	
+	DPP.AssertArguments('DPP.CanEditVariable', ent, 'AnyEntity', ply, 'Player')
+
 	local can = GiveEntityChance(ent, 'CanEditVariable', ply)
 	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
-	
+
 	return DPP.CanTool(ply, ent, '')
 end
 
 function DPP.CanProperty(ply, str, ent)
 	if not DPP.GetConVar('enable_tool') then return true, DPP.GetPhrase('protection_disabled') end
-	DPP.AssertArguments('DPP.CanProperty', {{ply, 'Player'}, {str, 'string'}, {ent, 'AnyEntity'}})
+	DPP.AssertArguments('DPP.CanProperty', ply, 'Player', str, 'string', ent, 'AnyEntity')
 	if string.sub(str, 1, 4) == 'dpp.' then return true, DPP.GetPhrase('dpp_property') end
 
 	--Make check before
@@ -434,7 +434,7 @@ function DPP.CanProperty(ply, str, ent)
 		return false, DPP.GetPhrase('toolgun_blocked')
 	end
 
-	if DPP.IsRestrictedProperty(str, ply) or DPP.IsRestrictedPropertyPlayer(ply, str) then 
+	if DPP.IsRestrictedProperty(str, ply) or DPP.IsRestrictedPropertyPlayer(ply, str) then
 		return false, DPP.GetPhrase('property_restricted')
 	end
 
@@ -445,7 +445,7 @@ function DPP.CanProperty(ply, str, ent)
 	if str ~= 'remover' and DPP.IsEntityWhitelistedProperty(ent:GetClass() or '') then
 		return true, DPP.GetPhrase('entity_excluded')
 	end
-	
+
 	local can = GiveEntityChance(ent, 'CanProperty', ply, str)
 	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
 
@@ -455,7 +455,7 @@ end
 function DPP.PlayerUse(ply, ent)
 	if not DPP.GetConVar('enable_use') then return true, DPP.GetPhrase('protection_disabled') end
 	if DPP.GetConVar('disable_use_world') and not DPP.IsOwned(ent) then return true, DPP.GetPhrase('owned_by_world') end
-	DPP.AssertArguments('DPP.PlayerUse', {{ply, 'Player'}, {ent, 'AnyEntity'}})
+	DPP.AssertArguments('DPP.PlayerUse', ply, 'Player', ent, 'AnyEntity')
 
 	if DPP.IsEntityBlockedUse(ent:GetClass() or '', ply) then
 		return false, DPP.GetPhrase('use_blocked')
@@ -464,7 +464,7 @@ function DPP.PlayerUse(ply, ent)
 	if DPP.IsEntityWhitelistedUse(ent:GetClass() or '') then
 		return true, DPP.GetPhrase('entity_excluded')
 	end
-	
+
 	local can = GiveEntityChance(ent, 'PlayerUse', ply)
 	if can ~= nil then return can, DPP.GetPhrase('givechance_returned') end
 
@@ -482,7 +482,7 @@ end
 
 function DPP.CanDrive(ply, ent)
 	if not DPP.GetConVar('enable_drive') then return true, DPP.GetPhrase('protection_disabled') end
-	DPP.AssertArguments('DPP.CanDrive', {{ply, 'Player'}, {ent, 'AnyEntity'}})
+	DPP.AssertArguments('DPP.CanDrive', ply, 'Player', ent, 'AnyEntity')
 	return DPP.CanPhysgun(ply, ent)
 end
 
@@ -502,7 +502,7 @@ function DPP.CanPickupItem(ply, ent)
 	if not DPP.GetConVar('enable') then return true, DPP.GetPhrase('protection_disabled') end
 	if not DPP.GetConVar('enable_pickup') then return true, DPP.GetPhrase('protection_disabled') end
 
-	DPP.AssertArguments('DPP.CanPickupItem', {{ply, 'Player'}, {ent, 'AnyEntity'}})
+	DPP.AssertArguments('DPP.CanPickupItem', ply, 'Player', ent, 'AnyEntity')
 
 	local class = ent:GetClass()
 
@@ -526,7 +526,7 @@ local HooksToRegister = {
 	--I think this would be useful shared
 	PlayerCanPickupItem = DPP.CanPickupItemTouch,
 	PlayerCanPickupWeapon = DPP.CanPickupItemTouch,
-	
+
 	--Default shared hooks
 	GravGunPunt = DPP.GravGunPuntTouch,
 	OnPhysgunReload = DPP.PhysgunReloadTouch,
@@ -590,25 +590,25 @@ function DPP.OverrideCounts()
 	if not plyMeta.CheckLimit then return end --Not sandbox
 
 	DPP.Message('Overriding Player.GetCount Player.CheckLimit')
-	
+
 	local CVars_Cache = {}
 
 	function plyMeta:CheckLimit(limit)
 		if game.SinglePlayer() then return true end -- DPP In singleplayer, huh?
-		
+
 		local can = hook.Run('CheckLimit', self, limit)
 		if can ~= nil then return can end
-		
+
 		CVars_Cache[limit] = CVars_Cache[limit] or GetConVar('sbox_max' .. limit)
-		
+
 		if not CVars_Cache[limit] then
 			DPP.ThrowError('Invalid console variable to check player limit. WTF? sbox_max' .. limit .. ' is a not existing variable\nContact your addon author first, BEFORE contacting DPP.')
 		end
-		
+
 		local dppLimit = DPP.GetSBoxLimit(limit, self:GetUserGroup())
 		local defaultLimit = CVars_Cache[limit]:GetInt()
 		local limitToUse = math.floor(dppLimit ~= 0 and dppLimit or defaultLimit)
-		
+
 		if limitToUse == -1 then return true end
 
 		if limitToUse == 0 or limitToUse <= -2 or self:GetCount(limit) >= limitToUse then
@@ -618,10 +618,10 @@ function DPP.OverrideCounts()
 
 		return true
 	end
-	
+
 	function plyMeta:LimitHit(limit)
 		if not SERVER then return end
-		
+
 		net.Start('DPP.LimitHit')
 		net.WriteString(limit)
 		net.Send(self)
