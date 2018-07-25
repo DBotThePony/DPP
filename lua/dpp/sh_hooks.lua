@@ -618,14 +618,6 @@ function DPP.OverrideCounts()
 
 		return true
 	end
-
-	function plyMeta:LimitHit(limit)
-		if not SERVER then return end
-
-		net.Start('DPP.LimitHit')
-		net.WriteString(limit)
-		net.Send(self)
-	end
 end
 
 function DPP.ReplaceSharedFunctions()

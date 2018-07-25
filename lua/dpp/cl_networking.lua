@@ -281,10 +281,6 @@ DPP.ClientReceiveFuncs = {
 		hook.Run('DPP.BlockedModelListChanged', s, b)
 	end,
 
-	LimitHit = function()
-		hook.Run('LimitHit', net.ReadString())
-	end,
-
 	RListsInsert_Player = function()
 		local k = net.ReadString()
 		local steamid = net.ReadString()
