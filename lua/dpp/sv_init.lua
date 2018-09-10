@@ -209,34 +209,28 @@ do
 end
 
 local function Think()
-	for k, v in pairs(Queued) do
-		DPP.Message(unpack(v))
-		local admins = {}
+	local grab = table.remove(Queued, 1)
+	if not grab then return end
+	local repack = DPP.TFormat(grab)
 
-		for k, v in ipairs(AccessCache) do
-			table.insert(admins, v)
-		end
+	DPP.Message(unpack(repack))
+	local admins = {}
 
-		net.Start('DPP.Log')
-		DPP.WriteMessageTable(v)
-		net.Send(admins)
-
-		Queued[k] = nil
-
-		break
+	for k, v in ipairs(AccessCache) do
+		table.insert(admins, v)
 	end
+
+	if #admins == 0 then return end
+
+	net.Start('DPP.Log')
+	DPP.WriteMessageTable(repack)
+	net.Send(admins)
 end
 
 hook.Add('Think', 'DPP.NetEchoThink', Think)
 
 function DPP.DoEcho(...)
-	local repack = DPP.Format(...)
-
-	if not DLog then
-		table.insert(Queued, repack)
-	else
-		DLog.Log('DPP', 1, repack)
-	end
+	table.insert(Queued, {...})
 end
 
 function DPP.NotifyLog(t)
