@@ -208,7 +208,7 @@ function DPP.IsModelBlocked(model, ply, nonotify)
 	if white then status = not status end
 
 	if SERVER and not nonotify and status and IsValid(ply) then
-		DPP.Notify(ply, 'Model of that entity is in the black list!', 1)
+		DPP.Notify(ply, 'Model ' .. model .. ' is blocked', 1)
 	end
 
 	return status
