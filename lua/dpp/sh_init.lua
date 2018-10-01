@@ -1585,11 +1585,7 @@ function DPP.GetConstLimit(class, group)
 	end
 end
 
-DPP.langObject = DLib.lang.Create()
-
-hook.Add('DLib.LanguageChanged', 'DPP.LanguageChanged', function()
-	hook.Run('DPP.LanguageChanged')
-end)
+DPP.langObject = DPP_lang.Create()
 
 function DPP.PhraseByLang(lang, id, ...)
 	return DPP.langObject:getByLang(lang, id, ...)

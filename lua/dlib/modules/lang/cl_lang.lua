@@ -1,5 +1,5 @@
 
--- Copyright (C) 2016-2017 DBot
+-- Copyright (C) 2016-2018 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -18,14 +18,29 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-include('dlib/modules/lang/sh_lang.lua')
+DPP_lang = DPP_lang or {}
+local lang = DPP_lang
 
-if CLIENT then
-	include('dlib/modules/lang/cl_lang.lua')
-else
-	AddCSLuaFile('dlib/modules/lang/sh_lang.lua')
-	AddCSLuaFile('dlib/modules/lang/cl_lang.lua')
-	include('dlib/modules/lang/sv_lang.lua')
+local gmod_language, LastLanguage
+
+function lang.update()
+	gmod_language = gmod_language or GetConVar('gmod_language')
+	if not gmod_language then return end
+
+	lang.CURRENT_LANG = gmod_language:GetString():lower():trim()
+
+	if LastLanguage ~= lang.CURRENT_LANG then
+		hook.Run('DPP.LanguageChanged', LastLanguage, lang.CURRENT_LANG)
+		hook.Run('DPP.LanguageChanged2', LastLanguage, lang.CURRENT_LANG)
+	end
+
+	LastLanguage = lang.CURRENT_LANG
+
+	net.Start('DPP.UpdateLang')
+	net.WriteString(lang.CURRENT_LANG)
+	net.SendToServer()
 end
 
-include('dpp/sh_init.lua')
+cvars.AddChangeCallback('gmod_language', lang.update, 'DPP')
+lang.update()
+timer.Simple(0, lang.update)
