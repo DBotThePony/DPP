@@ -341,6 +341,10 @@ end
 
 local HUDPaint
 
+if IsValid(DPP.HUDPanelHidden) then
+	DPP.HUDPanelHidden:Remove()
+end
+
 local function HUDThink()
 	if DPP.PlayerConVar(nil, 'hide_hud') then return end
 	if DPP.GetConVar('disable_huds') and DPP.LocalConVar('hud_obey_server') then return end
@@ -348,7 +352,6 @@ local function HUDThink()
 	if IsValid(DPP.HUDPanelHidden) then
 		DPP.HUDPanelHidden:SetPos(0, 0)
 		DPP.HUDPanelHidden:SetSize(ScrWL(), ScrHL())
-		return
 	else
 		DPP.HUDPanelHidden = vgui.Create('EditablePanel')
 		if IsValid(DPP.HUDPanelHidden) then
