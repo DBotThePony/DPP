@@ -339,9 +339,33 @@ local function SelectPlayer()
 	end
 end
 
+local HUDPaint
+
 local function HUDThink()
 	if DPP.PlayerConVar(nil, 'hide_hud') then return end
 	if DPP.GetConVar('disable_huds') and DPP.LocalConVar('hud_obey_server') then return end
+
+	if IsValid(DPP.HUDPanelHidden) then
+		DPP.HUDPanelHidden:SetPos(0, 0)
+		DPP.HUDPanelHidden:SetSize(ScrWL(), ScrHL())
+		return
+	else
+		DPP.HUDPanelHidden = vgui.Create('EditablePanel')
+		if IsValid(DPP.HUDPanelHidden) then
+			DPP.HUDPanelHidden:SetPos(0, 0)
+			DPP.HUDPanelHidden:SetSize(ScrWL(), ScrHL())
+			DPP.HUDPanelHidden:SetMouseInputEnabled(false)
+			DPP.HUDPanelHidden:SetKeyboardInputEnabled(false)
+			DPP.HUDPanelHidden:SetRenderInScreenshots(false)
+
+			DPP.HUDPanelHidden.Paint = function(pnl, w, h)
+				surface.DisableClipping(true)
+				HUDPaint()
+				surface.DisableClipping(false)
+			end
+		end
+	end
+
 	local epos, eang
 	local ignoreNearest = false
 	local ply = SelectPlayer()
@@ -712,7 +736,7 @@ local function DrawNearToolgun()
 	cam.End3D()
 end
 
-local function HUDPaint()
+function HUDPaint()
 	local can = hook.Run('CanDrawDPPHUD')
 	if can == false then return end
 
@@ -749,7 +773,6 @@ end
 local LastPanelUpdate = 0
 
 hook.Add('Think', 'DPP.HUDThink', HUDThink)
-hook.Add('HUDDrawHidden', 'DPP.HUDThink', HUDPaint)
 
 do
 	-- https://github.com/PAC3-Server/notagain/blob/master/lua/notagain/aowl/aowl.lua#L985
