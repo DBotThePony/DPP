@@ -1,4 +1,5 @@
--- Copyright (C) 2017 DBot
+
+-- Copyright (C) 2015-2018 DBot
 
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
@@ -17,30 +18,5 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-
-local ADDON = 'DPP'
-
-timer.Simple(0, function()
-	timer.Simple(0, function()
-		timer.Simple(0, function()
-			if DLib then return end
-
-			if CLIENT then
-				Derma_Query(
-					ADDON .. ' requires DLib to Run! Without DLib, ' .. ADDON .. ' would not do anything!\nGet it on workshop (or gitlab)',
-					ADDON .. ' requires DLib!',
-					'Open Workshop',
-					function() gui.OpenURL('https://steamcommunity.com/sharedfiles/filedetails/?id=1153306104') end,
-					'Open GitLab',
-					function() gui.OpenURL('https://gitlab.com/DBotThePony/DLib') end
-				)
-			else
-				MsgC('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
-				MsgC(ADDON .. ' requires DLib to Run! Without DLib, ' .. ADDON .. ' would not do anything!\nGet it on workshop (or gitlab)\n')
-				MsgC('https://steamcommunity.com/sharedfiles/filedetails/?id=1153306104\n')
-				MsgC('https://gitlab.com/DBotThePony/DLib\n')
-				MsgC('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n')
-			end
-		end)
-	end)
-end)
+export DPP2
+_G.DPP2 = DPP2 or {}
