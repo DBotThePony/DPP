@@ -54,10 +54,12 @@ CAN_TOUCH = HUDCommons.CreateColor('dpp2_can_touch', 'DPP/2 Can touch text', 66,
 CAN_NOT_TOUCH = HUDCommons.CreateColor('dpp2_cant_touch', 'DPP/2 Can\'t touch text', 213, 43, 43, 255)
 
 GetOwnerText = ->
+	ply = DLib.HUDCommons.SelectPlayer()
+
 	tr = util.TraceLine({
 		start: lastEyePos
 		endpos: lastEyePos + lastEyeAngles\Forward() * 16834
-		filter: GetViewEntity()
+		filter: {GetViewEntity(), ply}
 		mask: MASK_ALL
 	})
 
@@ -71,8 +73,6 @@ GetOwnerText = ->
 		ownerName = string.format('%s\n%q', ownerName, tr.Entity\GetPrintName())
 	elseif tr.Entity.PrintName
 		ownerName = string.format('%s\n%q', ownerName, tr.Entity.PrintName)
-
-	ply = DLib.HUDCommons.SelectPlayer()
 
 	switch ply\GetActiveWeaponClass()
 		when 'weapon_physgun'

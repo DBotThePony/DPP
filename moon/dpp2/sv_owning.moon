@@ -22,6 +22,14 @@ import NULL, type, player from _G
 
 entMeta = FindMetaTable('Entity')
 
+entMeta.DPP2SetIsUpForGrabs = (val) =>
+	val = nil if not val
+	@SetNWBool('dpp2_ufg', val)
+
+entMeta.DPP2SetUpForGrabs = (val) =>
+	val = nil if not val
+	@SetNWBool('dpp2_ufg', val)
+
 entMeta.DPP2GetOwner = =>
 	if @GetNWString('dpp2_owner_steamid', '-1') == '-1'
 		return NULL, 'world', 'World'
@@ -44,14 +52,14 @@ entMeta.DPP2SetOwner = (newOwner = NULL) =>
 
 	return if newOwner == @GetNWEntity('dpp2_ownerent', NULL)
 
+	@DPP2SetIsUpForGrabs(false)
+
 	if newOwner == NULL
 		@SetNWEntity('dpp2_ownerent', nil)
-		@SetNWString('dpp2_owner_name', nil)
 		@SetNWString('dpp2_owner_steamid', nil)
 		@_dpp2_last_nick = nil
 	else
 		@SetNWEntity('dpp2_ownerent', newOwner)
-		@SetNWString('dpp2_owner_name', newOwner\Nick())
 		@SetNWString('dpp2_owner_steamid', newOwner\SteamID())
 		@_dpp2_last_nick = newOwner\Nick()
 		@_dpp2_last_nick = @_dpp2_last_nick .. ' (' .. newOwner\SteamName() .. ')' if newOwner.SteamName and newOwner\SteamName() ~= newOwner\Nick()
@@ -60,3 +68,53 @@ entMeta.DPP2SetOwner = (newOwner = NULL) =>
 
 	return @
 
+entMeta.DPP2CheckUpForGrabs = (newOwner = NULL) =>
+	return false if not newOwner\IsValid()
+	return false if not @DPP2IsUpForGrabs()
+	return false if type(@) == 'Player'
+
+	DPP2.Notify(newOwner, 'message.dpp2.owning.owned')
+	@DPP2SetOwner(newOwner)
+
+PlayerInitialSpawn = =>
+	return if not @SteamID()
+	return if @IsBot()
+	timer.Remove 'DPP2.UpForGrabs.' .. @SteamID()
+
+	for ent in *DPP2.GetAllEntsBySteamID(@SteamID())
+		ent\SetNWEntity('dpp2_ownerent', @)
+		ent\DPP2SetIsUpForGrabs(false)
+
+hook.Add 'PlayerInitialSpawn', 'DPP2.Owning', PlayerInitialSpawn
+
+PlayerDisconnected = =>
+	return if not @SteamID()
+	return if @IsBot()
+
+	return if not @DPP2HasEnts()
+
+	steamid = @SteamID()
+	nick = @Nick()
+	nick ..= ' (' .. @SteamName() .. ')' if @SteamName and @SteamName() ~= nick
+	nick = string.format('%s<%s>', nick, @SteamID())
+
+	if DPP2.ENABLE_UP_FOR_GRABS\GetBool() and not (DPP2.ENABLE_CLEANUP\GetBool() and DPP2.UP_FOR_GRABS_TIMER\GetFloat() >= DPP2.CLEANUP_TIMER\GetFloat())
+		timer.Create 'DPP2.UpForGrabs.' .. steamid, DPP2.UP_FOR_GRABS_TIMER\GetFloat(), 1, ->
+			return if @IsValid()
+			find = DPP2.GetAllEntsBySteamID(steamid)
+			return if #find == 0
+
+			DPP2.NotifyUndoAll(6, nick, 'message.dpp2.notice.upforgrabs')
+			ent\DPP2SetIsUpForGrabs(true) for ent in *find
+
+	if DPP2.ENABLE_CLEANUP\GetBool()
+		timer.Create 'DPP2.Cleanup.' .. steamid, DPP2.CLEANUP_TIMER\GetFloat(), 1, ->
+			return if @IsValid()
+			find = DPP2.GetAllEntsBySteamID(steamid)
+			return if #find == 0
+
+			DPP2.NotifyUndoAll(6, nick, 'message.dpp2.notice.cleanup')
+			SafeRemoveEntity(ent) for ent in *find
+
+
+hook.Add 'PlayerDisconnected', 'DPP2.Owning', PlayerDisconnected

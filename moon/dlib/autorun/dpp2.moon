@@ -18,12 +18,25 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
+import DLib, AddCSLuaFile, include, notification, net, DLib from _G
+
 export DPP2
 _G.DPP2 = DPP2 or {}
 
 DLib.CMessageChat(DPP2, 'DPP2')
 
-DPP2.ENABLE_PROTECTION = DLib.util.CreateSharedConvar('dpp2_protection', '1', 'Main power switch for all protection modules')
+DPP2.TYPE_BOOL = 0
+DPP2.TYPE_INT = 1
+DPP2.TYPE_FLOAT = 2
+
+DPP2.CVarsRegistry = {}
+DPP2.CreateConVar = (cvarName, cvarDef, cvarDesc, cvarType) ->
+	DPP2.Message('Localization error: ' .. cvarName .. ' is unlocalized: ' .. cvarDesc) if DLib.i18n.localize(cvarDesc) == cvarDesc
+	obj = DLib.util.CreateSharedConvar('dpp2_' .. cvarName, cvarDef, DLib.i18n.localize(cvarDesc))
+	table.insert(DPP2.CVarsRegistry, {cvar: obj, :cvarName, :cvarDef, :cvarDesc, :cvarType})
+	return obj
+
+DPP2.ENABLE_PROTECTION = DPP2.CreateConVar('protection', '1', 'gui.dpp2.cvars.protection', DPP2.TYPE_BOOL)
 
 AddCSLuaFile('dpp2/sh_logic.lua')
 AddCSLuaFile('dpp2/sh_owning.lua')
@@ -44,6 +57,104 @@ include('dpp2/sv_logic.lua') if SERVER
 include('dpp2/sv_owning.lua') if SERVER
 include('dpp2/sv_hooks.lua') if SERVER
 include('dpp2/sv_patches.lua') if SERVER
+
+if SERVER
+	net.pool('dpp2_notify')
+
+	DPP2.NotifyAll = (...) -> DPP2.Notify(player.GetAll(), ...)
+	DPP2.NotifyCleanupAll = (...) -> DPP2.NotifyCleanup(player.GetAll(), ...)
+	DPP2.NotifyHintAll = (...) -> DPP2.NotifyHint(player.GetAll(), ...)
+	DPP2.NotifyUndoAll = (...) -> DPP2.NotifyUndo(player.GetAll(), ...)
+	DPP2.NotifyErrorAll = (...) -> DPP2.NotifyError(player.GetAll(), ...)
+
+	DPP2.Notify = (length = 5, ...) =>
+		if type(@) ~= 'table' and not IsValid(@)
+			DPP2.LMessage(...)
+			return
+
+		net.Start('dpp2_notify')
+		net.WriteUInt8(NOTIFY_GENERIC)
+		net.WriteUint16(length)
+		net.WriteArray({...})
+		net.Send(@)
+
+	DPP2.NotifyError = (length = 5, ...) =>
+		if type(@) ~= 'table' and not IsValid(@)
+			DPP2.LMessageError(...)
+			return
+
+		net.Start('dpp2_notify')
+		net.WriteUInt8(NOTIFY_ERROR)
+		net.WriteUint16(length)
+		net.WriteArray({...})
+		net.Send(@)
+
+	DPP2.NotifyHint = (length = 5, ...) =>
+		if type(@) ~= 'table' and not IsValid(@)
+			DPP2.LMessage('[HINT] ', ...)
+			return
+
+		net.Start('dpp2_notify')
+		net.WriteUInt8(NOTIFY_HINT)
+		net.WriteUint16(length)
+		net.WriteArray({...})
+		net.Send(@)
+
+	DPP2.NotifyUndo = (length = 5, ...) =>
+		if type(@) ~= 'table' and not IsValid(@)
+			DPP2.LMessage(...)
+			return
+
+		net.Start('dpp2_notify')
+		net.WriteUInt8(NOTIFY_UNDO)
+		net.WriteUint16(length)
+		net.WriteArray({...})
+		net.Send(@)
+
+	DPP2.NotifyCleanup = (length = 5, ...) =>
+		if type(@) ~= 'table' and not IsValid(@)
+			DPP2.LMessage(...)
+			return
+
+		net.Start('dpp2_notify')
+		net.WriteUInt8(NOTIFY_CLEANUP)
+		net.WriteUint16(length)
+		net.WriteArray({...})
+		net.Send(@)
+else
+	DPP2.Notify = (length = 5, ...) =>
+		strings = [arg for arg in *DPP2.LMessage(...) when type(arg) == 'string']
+		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_GENERIC, length)
+
+	DPP2.NotifyError = (length = 5, ...) =>
+		strings = [arg for arg in *DPP2.LMessageError(...) when type(arg) == 'string']
+		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_ERROR, length)
+
+	DPP2.NotifyUndo = (length = 5, ...) =>
+		strings = [arg for arg in *DPP2.LMessage(...) when type(arg) == 'string']
+		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_UNDO, length)
+
+	DPP2.NotifyCleanup = (length = 5, ...) =>
+		strings = [arg for arg in *DPP2.LMessage(...) when type(arg) == 'string']
+		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_CLEANUP, length)
+
+	DPP2.NotifyHint = (length = 5, ...) =>
+		DPP2.LMessage('[HINT]', ...)
+		strings = [arg for arg in *DPP2.LFormatMessageRaw(...) when type(arg) == 'string']
+		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_HINT, length)
+
+	net.receive 'dpp2_notify', ->
+		switch net.ReadUInt8()
+			when NOTIFY_ERROR
+				DPP2.NotifyError(nil, net.ReadUInt16(), unpack(net.ReadArray()))
+			when NOTIFY_UNDO
+				DPP2.NotifyUndo(nil, net.ReadUInt16(), unpack(net.ReadArray()))
+			when NOTIFY_CLEANUP
+				DPP2.NotifyCleanup(nil, net.ReadUInt16(), unpack(net.ReadArray()))
+			when NOTIFY_HINT
+				DPP2.NotifyHint(nil, net.ReadUInt16(), unpack(net.ReadArray()))
+			when NOTIFY_GENERIC
+				DPP2.Notify(nil, net.ReadUInt16(), unpack(net.ReadArray()))
 
 DPP2.PhysgunProtection = DPP2.DEF.ProtectionDefinition('physgun')
 DPP2.ToolgunProtection = DPP2.DEF.ProtectionDefinition('toolgun')

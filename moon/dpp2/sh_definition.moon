@@ -102,7 +102,7 @@ class DPP2.DEF.ProtectionDefinition
 	CanTouch: (ply = NULL, ent = NULL) =>
 		return true if not ply\IsValid()
 		return false if not ent\IsValid()
-		return true if not @IsEnabled()
+		return true, i18n.localize('gui.dpp2.access.status.disabled') if not @IsEnabled()
 		contraption = ent\DPP2GetContraption()
 
 		if not contraption
