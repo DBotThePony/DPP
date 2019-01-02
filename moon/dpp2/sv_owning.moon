@@ -80,6 +80,7 @@ PlayerInitialSpawn = =>
 	return if not @SteamID()
 	return if @IsBot()
 	timer.Remove 'DPP2.UpForGrabs.' .. @SteamID()
+	timer.Remove 'DPP2.Cleanup.' .. @SteamID()
 
 	for ent in *DPP2.GetAllEntsBySteamID(@SteamID())
 		ent\SetNWEntity('dpp2_ownerent', @)
