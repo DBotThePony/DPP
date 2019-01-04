@@ -30,8 +30,8 @@ DPP2.TYPE_INT = 1
 DPP2.TYPE_FLOAT = 2
 
 DPP2.CVarsRegistry = {}
-DPP2.CreateConVar = (cvarName, cvarDef, cvarDesc, cvarType) ->
-	DPP2.Message('Localization error: ' .. cvarName .. ' is unlocalized: ' .. cvarDesc) if DLib.i18n.localize(cvarDesc) == cvarDesc
+DPP2.CreateConVar = (cvarName, cvarDef, cvarDesc = 'gui.dpp2.cvars.' .. cvarName, cvarType) ->
+	DPP2.Message('Missing langstring for: ' .. cvarName .. '; unlocalized name: ' .. cvarDesc) if DLib.i18n.localize(cvarDesc) == cvarDesc
 	obj = DLib.util.CreateSharedConvar('dpp2_' .. cvarName, cvarDef, DLib.i18n.localize(cvarDesc))
 	table.insert(DPP2.CVarsRegistry, {cvar: obj, :cvarName, :cvarDef, :cvarDesc, :cvarType})
 	return obj

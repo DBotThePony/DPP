@@ -49,13 +49,19 @@ class DPP2.DEF.DefinitionConVarsPrefab
 class DPP2.DEF.ProtectionDefinition
 	new: (classname, prefab = DPP2.DEF.DefinitionConVarsPrefab()) =>
 		@name = assert(type(classname) == 'string' and classname, 'Invalid definition classname')\lower()
-		@enabled = DLib.util.CreateSharedConvar('dpp2_' .. @name .. '_protection', prefab\GetEnabled(), 'Enable ' .. @name .. ' protection module')
-		@adminTouchAny = DLib.util.CreateSharedConvar('dpp2_' .. @name .. '_touch_any', prefab\GetAdminTouchAny(), 'Admins in ' .. @name .. ' protection module can touch anyones else props')
-		@noWorldTouch = DLib.util.CreateSharedConvar('dpp2_' .. @name .. '_no_world', prefab\GetNoWorldTouch(), 'Players can not touch world owned props')
-		@noWorldTouchAdmin = DLib.util.CreateSharedConvar('dpp2_' .. @name .. '_no_world_admin', prefab\GetNoWorldTouchAdmin(), 'REGULAR (the _admin CAMI privilege) Admins can not touch world owned props')
-		@noMapTouch = DLib.util.CreateSharedConvar('dpp2_' .. @name .. '_no_map', prefab\GetNoMapTouch(), 'Players can not touch MAP owned props (entities which were created in hammer editor)')
-		@noMapTouchAdmin = DLib.util.CreateSharedConvar('dpp2_' .. @name .. '_no_map_admin', prefab\GetNoMapTouchAdmin(), 'MAP (the _map_admin CAMI privilege) Admins can not touch MAP owned props (entities which were created in hammer editor)')
-		@camiwatchdog = DLib.CAMIWatchdog('dpp2_' .. @name .. '_protection', 10)
+
+		@enabled =              DPP2.CreateConVar(@name .. '_protection', prefab\GetEnabled(),                  nil, DPP2.TYPE_BOOL)
+		@adminTouchAny =        DPP2.CreateConVar(@name .. '_touch_any', prefab\GetAdminTouchAny(),             nil, DPP2.TYPE_BOOL)
+		@noWorldTouch =         DPP2.CreateConVar(@name .. '_no_world', prefab\GetNoWorldTouch(),               nil, DPP2.TYPE_BOOL)
+		@noWorldTouchAdmin =    DPP2.CreateConVar(@name .. '_no_world_admin', prefab\GetNoWorldTouchAdmin(),    nil, DPP2.TYPE_BOOL)
+		@noMapTouch =           DPP2.CreateConVar(@name .. '_no_map', prefab\GetNoMapTouch(),                   nil, DPP2.TYPE_BOOL)
+		@noMapTouchAdmin =      DPP2.CreateConVar(@name .. '_no_map_admin', prefab\GetNoMapTouchAdmin(),        nil, DPP2.TYPE_BOOL)
+
+		@camiwatchdog =         DLib.CAMIWatchdog('dpp2_' .. @name .. '_protection', 10)
+
+		@friendID = 'dpp2_' .. @name
+		DPP2.Message('Missing langstring for gui.dpp2.buddystatus.' .. @name) if DLib.i18n.localize('gui.dpp2.buddystatus.' .. @name) == 'gui.dpp2.buddystatus.' .. @name
+		friends.Register(@friendID, 'gui.dpp2.buddystatus.' .. @name, true)
 
 		CAMI.RegisterPrivilege({
 			Name: 'dpp2_' .. @name .. '_admin'
@@ -97,6 +103,9 @@ class DPP2.DEF.ProtectionDefinition
 		return true if not @IsEnabled()
 
 		return true if @camiwatchdog\HasPermission(ply, @otherPermString) and @adminTouchAny\GetBool()
+
+		return other\CheckDLibFriendInOverride(ply, @friendID) if IsValid(other)
+
 		return false
 
 	CanTouch: (ply = NULL, ent = NULL) =>
