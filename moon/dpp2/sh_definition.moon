@@ -47,14 +47,29 @@ class DPP2.DEF.DefinitionConVarsPrefab
 	GetNoMapTouchAdmin: => @noMapTouchAdmin and '1' or '0'
 
 class DPP2.DEF.ProtectionDefinition
+	@OBJECTS = {}
+
+	if SERVER
+		hook.Add 'PlayerDisconnected', 'DPP2.DEF.ProtectionDefinition.' .. @name, (ply) -> @PlayerDisconnected(ply)
+	else
+		gameevent.Listen('player_disconnect')
+		hook.Add 'player_disconnect', 'DPP2.DEF.ProtectionDefinition.' .. @name, (data) -> @PlayerDisconnected(Player(data.userid))
+
+	@PlayerDisconnected = (ply) =>
+		return if not ply\IsValid()
+		return if @IsBot()
+		return if not ply\DPP2HasEnts()
+
+		obj\PlayerDisconnected(ply) for obj in *@OBJECTS
+
+		timer.Create 'DPP2.FriendStatus.' .. steamid, 360, 0, ->
+			return if DPP2.HasEntsBySteamID(steamid)
+			obj\PruneFriendData(steamid) for obj in *@OBJECTS
+			timer.Remove('DPP2.FriendStatus.' .. steamid)
+
 	new: (classname, prefab = DPP2.DEF.DefinitionConVarsPrefab()) =>
 		@friendsCache = {}
-
-		if SERVER
-			hook.Add 'PlayerDisconnected', 'DPP2.DEF.ProtectionDefinition.' .. @name, (ply) -> @PlayerDisconnected(ply)
-		else
-			gameevent.Listen('player_disconnect')
-			hook.Add 'player_disconnect', 'DPP2.DEF.ProtectionDefinition.' .. @name, (data) -> @PlayerDisconnected(Player(data.userid))
+		table.insert(@@OBJECTS, @)
 
 		@name = assert(type(classname) == 'string' and classname, 'Invalid definition classname')\lower()
 
@@ -101,18 +116,11 @@ class DPP2.DEF.ProtectionDefinition
 
 		@friendsCache[k] = nil for k in *toRemove
 
+	PruneFriendData: (steamid) =>
+		@friendsCache[steamid] = nil
+
 	PlayerDisconnected: (ply = NULL) =>
-		return if not ply\IsValid()
-		return if @IsBot()
-		return if not ply\DPP2HasEnts()
-		steamid = ply\SteamID()
-
-		@friendsCache[steamid] = {ply\SteamID(), ply\CheckDLibFriendInOverride(ply, @friendID) for ply in *player.GetAll()}
-
-		timer.Create 'DPP2.FriendStatus.' .. steamid, 360, 0, ->
-			return if DPP2.HasEntsBySteamID(steamid)
-			@friendsCache[steamid] = nil
-			timer.Remove('DPP2.FriendStatus.' .. steamid)
+		@friendsCache[ply\SteamID()] = {ply2\SteamID(), ply2\CheckDLibFriendInOverride(ply, @friendID) for ply2 in *player.GetAll()}
 
 	CanTouchWorld: (ply = NULL) =>
 		return true if not ply\IsValid()
