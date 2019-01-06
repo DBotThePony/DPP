@@ -54,6 +54,8 @@ entMeta.DPP2SetOwner = (newOwner = NULL) =>
 
 	@DPP2SetIsUpForGrabs(false)
 
+	hook.Run('DPP2.NotifyOwnerChange', @, @GetNWEntity('dpp2_ownerent', NULL), newOwner)
+
 	if newOwner == NULL
 		@SetNWEntity('dpp2_ownerent', nil)
 		@SetNWString('dpp2_owner_steamid', nil)

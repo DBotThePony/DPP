@@ -36,7 +36,6 @@ entMeta.DPP2GetOwnerSteamID = => select(2, @DPP2GetOwner())
 entMeta.DPP2GetOwnerName = => select(3, @DPP2GetOwner())
 
 plyMeta.DPP2GetAllEnts = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @]
-plyMeta.DPP2GetAllEntities = plyMeta.DPP2GetAllEnts
 plyMeta.DPP2GetAllNPC = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @ and type(ent) == 'NPC']
 plyMeta.DPP2GetAllWeapons = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @ and type(ent) == 'Weapon']
 plyMeta.DPP2GetAllProps = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @ and ent\GetClass() == 'prop_physics']
@@ -45,7 +44,6 @@ plyMeta.DPP2GetAllRagdolls = => [ent for i, ent in ipairs(ents.GetAll()) when en
 plyMeta.DPP2HasEnts = =>
 	return true for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @
 	return false
-plyMeta.DPP2HasEntities = plyMeta.DPP2HasEnts
 plyMeta.DPP2HasNPC = =>
 	return true for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @ and type(ent) == 'NPC'
 	return false
@@ -65,3 +63,23 @@ DPP2.GetAllNPCBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\D
 DPP2.GetAllWeaponsBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID() == @ and type(ent) == 'Weapon']
 DPP2.GetAllPropsBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID() == @ and ent\GetClass() == 'prop_physics']
 DPP2.GetAllRagdollsBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID() == @ and ent\GetClass() == 'prop_ragdoll']
+
+DPP2.HasEntsBySteamID = =>
+	return true ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID() == @
+	return false
+DPP2.HasNPCBySteamID = =>
+	return true ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID() == @ and type(ent) == 'NPC'
+	return false
+DPP2.HasWeaponsBySteamID = =>
+	return true ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID() == @ and type(ent) == 'Weapon'
+	return false
+DPP2.HasPropsBySteamID = =>
+	return true ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID() == @ and ent\GetClass() == 'prop_physics'
+	return false
+DPP2.HasRagdollsBySteamID = =>
+	return true ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID() == @ and ent\GetClass() == 'prop_ragdoll'
+	return false
+
+DPP2.HasEntitiesBySteamID = DPP2.HasEntsBySteamID
+plyMeta.DPP2HasEntities = plyMeta.DPP2HasEnts
+plyMeta.DPP2GetAllEntities = plyMeta.DPP2GetAllEnts

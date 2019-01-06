@@ -48,6 +48,14 @@ class DPP2.DEF.DefinitionConVarsPrefab
 
 class DPP2.DEF.ProtectionDefinition
 	new: (classname, prefab = DPP2.DEF.DefinitionConVarsPrefab()) =>
+		@friendsCache = {}
+
+		if SERVER
+			hook.Add 'PlayerDisconnected', 'DPP2.DEF.ProtectionDefinition.' .. @name, (ply) -> @PlayerDisconnected(ply)
+		else
+			gameevent.Listen('player_disconnect')
+			hook.Add 'player_disconnect', 'DPP2.DEF.ProtectionDefinition.' .. @name, (data) -> @PlayerDisconnected(Player(data.userid))
+
 		@name = assert(type(classname) == 'string' and classname, 'Invalid definition classname')\lower()
 
 		@enabled =              DPP2.CreateConVar(@name .. '_protection', prefab\GetEnabled(),                  nil, DPP2.TYPE_BOOL)
@@ -83,6 +91,29 @@ class DPP2.DEF.ProtectionDefinition
 
 	IsEnabled: => @enabled\GetBool() and DPP2.ENABLE_PROTECTION\GetBool()
 
+	ForcePruneFriends: =>
+		toRemove = {}
+
+		for steamid in pairs(@friendsCache)
+			if not DPP2.HasEntsBySteamID(steamid)
+				table.insert(toRemove, steamid)
+				timer.Remove('DPP2.FriendStatus.' .. steamid)
+
+		@friendsCache[k] = nil for k in *toRemove
+
+	PlayerDisconnected: (ply = NULL) =>
+		return if not ply\IsValid()
+		return if @IsBot()
+		return if not ply\DPP2HasEnts()
+		steamid = ply\SteamID()
+
+		@friendsCache[steamid] = {ply\SteamID(), ply\CheckDLibFriendInOverride(ply, @friendID) for ply in *player.GetAll()}
+
+		timer.Create 'DPP2.FriendStatus.' .. steamid, 360, 0, ->
+			return if DPP2.HasEntsBySteamID(steamid)
+			@friendsCache[steamid] = nil
+			timer.Remove('DPP2.FriendStatus.' .. steamid)
+
 	CanTouchWorld: (ply = NULL) =>
 		return true if not ply\IsValid()
 		return true if not @IsEnabled()
@@ -100,11 +131,18 @@ class DPP2.DEF.ProtectionDefinition
 	CanTouchOther: (ply = NULL, other = NULL) =>
 		return true if not ply\IsValid()
 		return @CanTouchWorld(ply) if other == 'world'
+		return @CanTouchMap(ply) if other == 'map'
 		return true if not @IsEnabled()
 
 		return true if @camiwatchdog\HasPermission(ply, @otherPermString) and @adminTouchAny\GetBool()
 
 		return other\CheckDLibFriendInOverride(ply, @friendID) if IsValid(other)
+
+		if type(other) == 'string'
+			getply = player.GetBySteamID(other)
+			return getply\CheckDLibFriendInOverride(ply, @friendID) if getply
+			steamid = ply\SteamID()
+			return @friendsCache[other][steamid] if @friendsCache[other][steamid] ~= nil
 
 		return false
 
