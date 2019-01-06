@@ -30,11 +30,24 @@ DPP2.TYPE_INT = 1
 DPP2.TYPE_FLOAT = 2
 
 DPP2.CVarsRegistry = {}
-DPP2.CreateConVar = (cvarName, cvarDef, cvarDesc = 'gui.dpp2.cvars.' .. cvarName, cvarType) ->
+
+DPP2.CreateConVar = (cvarName, cvarDef, cvarType) ->
+	cvarDesc = 'gui.dpp2.cvars.' .. cvarName
 	DPP2.Message('Missing langstring for: ' .. cvarName .. '; unlocalized name: ' .. cvarDesc) if DLib.i18n.localize(cvarDesc) == cvarDesc
 	obj = DLib.util.CreateSharedConvar('dpp2_' .. cvarName, cvarDef, DLib.i18n.localize(cvarDesc))
 	table.insert(DPP2.CVarsRegistry, {cvar: obj, :cvarName, :cvarDef, :cvarDesc, :cvarType})
 	return obj
+
+if CLIENT
+	DPP2.ClientCVarsRegistry = {}
+
+	DPP2.CreateClientConVar = (cvarName, cvarDef, cvarType, userinfo = true) ->
+		cvarDesc = 'gui.dpp2.cvars.' .. cvarName
+		DPP2.Message('Missing langstring for: ' .. cvarName .. '; unlocalized name: ' .. cvarDesc) if DLib.i18n.localize(cvarDesc) == cvarDesc
+		obj = CreateConVar('dpp2_' .. cvarName, cvarDef, userinfo and {FCVAR_USERINFO, FCVAR_ARCHIVE} or {FCVAR_ARCHIVE}, DLib.i18n.localize(cvarDesc))
+		table.insert(DPP2.ClientCVarsRegistry, {cvar: obj, :cvarName, :cvarDef, :cvarDesc, :cvarType, :userinfo})
+		return obj
+
 
 DPP2.ENABLE_PROTECTION = DPP2.CreateConVar('protection', '1', 'gui.dpp2.cvars.protection', DPP2.TYPE_BOOL)
 

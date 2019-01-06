@@ -24,6 +24,8 @@ gui.dpp2.access.status.world = 'Owned by world'
 gui.dpp2.access.status.friend = 'Not a friend of owner'
 gui.dpp2.access.status.invalident = 'Invalid Entity'
 gui.dpp2.access.status.disabled = 'Protection is disabled'
+gui.dpp2.access.status.ownerdisabled = 'Protection for owner is disabled'
+gui.dpp2.access.status.yoursettings = 'Your settings'
 
 message.dpp2.owning.owned = 'You now own this entity'
 message.dpp2.notice.upforgrabs = ' props are now up for grabs!'

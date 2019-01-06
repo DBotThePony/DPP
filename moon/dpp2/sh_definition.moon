@@ -69,16 +69,32 @@ class DPP2.DEF.ProtectionDefinition
 
 	new: (classname, prefab = DPP2.DEF.DefinitionConVarsPrefab()) =>
 		@friendsCache = {}
+		@disabledCache = {}
 		table.insert(@@OBJECTS, @)
 
 		@name = assert(type(classname) == 'string' and classname, 'Invalid definition classname')\lower()
 
-		@enabled =              DPP2.CreateConVar(@name .. '_protection', prefab\GetEnabled(),                  nil, DPP2.TYPE_BOOL)
-		@adminTouchAny =        DPP2.CreateConVar(@name .. '_touch_any', prefab\GetAdminTouchAny(),             nil, DPP2.TYPE_BOOL)
-		@noWorldTouch =         DPP2.CreateConVar(@name .. '_no_world', prefab\GetNoWorldTouch(),               nil, DPP2.TYPE_BOOL)
-		@noWorldTouchAdmin =    DPP2.CreateConVar(@name .. '_no_world_admin', prefab\GetNoWorldTouchAdmin(),    nil, DPP2.TYPE_BOOL)
-		@noMapTouch =           DPP2.CreateConVar(@name .. '_no_map', prefab\GetNoMapTouch(),                   nil, DPP2.TYPE_BOOL)
-		@noMapTouchAdmin =      DPP2.CreateConVar(@name .. '_no_map_admin', prefab\GetNoMapTouchAdmin(),        nil, DPP2.TYPE_BOOL)
+		@enabled =              DPP2.CreateConVar(@name .. '_protection', prefab\GetEnabled(),                  DPP2.TYPE_BOOL)
+		@adminTouchAny =        DPP2.CreateConVar(@name .. '_touch_any', prefab\GetAdminTouchAny(),             DPP2.TYPE_BOOL)
+		@noWorldTouch =         DPP2.CreateConVar(@name .. '_no_world', prefab\GetNoWorldTouch(),               DPP2.TYPE_BOOL)
+		@noWorldTouchAdmin =    DPP2.CreateConVar(@name .. '_no_world_admin', prefab\GetNoWorldTouchAdmin(),    DPP2.TYPE_BOOL)
+		@noMapTouch =           DPP2.CreateConVar(@name .. '_no_map', prefab\GetNoMapTouch(),                   DPP2.TYPE_BOOL)
+		@noMapTouchAdmin =      DPP2.CreateConVar(@name .. '_no_map_admin', prefab\GetNoMapTouchAdmin(),        DPP2.TYPE_BOOL)
+
+		@clEnabledName = 'dpp2_cl_' .. @name .. '_protection'
+		@disableNWName = 'dpp2_' .. @name .. '_dp'
+
+		@clientNoTouchOtherName = 'dpp2_cl_' .. @name .. '_no_other'
+		@clientNoWorldName = 'dpp2_cl_' .. @name .. '_no_world'
+		@clientNoMapName = 'dpp2_cl_' .. @name .. '_no_map'
+		@clientNoPlayersName = 'dpp2_cl_' .. @name .. '_no_players'
+
+		if CLIENT
+			@enabledClient = DPP2.CreateClientConVar('cl_' .. @name .. '_protection', '1', DPP2.TYPE_BOOL)
+			@clientNoTouchOther = DPP2.CreateClientConVar('cl_' .. @name .. '_no_other', '0', DPP2.TYPE_BOOL)
+			@clientNoWorld = DPP2.CreateClientConVar('cl_' .. @name .. '_no_world', '0', DPP2.TYPE_BOOL)
+			@clientNoMap = DPP2.CreateClientConVar('cl_' .. @name .. '_no_map', '0', DPP2.TYPE_BOOL)
+			@clientNoPlayers = DPP2.CreateClientConVar('cl_' .. @name .. '_no_players', '0', DPP2.TYPE_BOOL)
 
 		@camiwatchdog =         DLib.CAMIWatchdog('dpp2_' .. @name .. '_protection', 10)
 
@@ -106,6 +122,30 @@ class DPP2.DEF.ProtectionDefinition
 
 	IsEnabled: => @enabled\GetBool() and DPP2.ENABLE_PROTECTION\GetBool()
 
+	SwitchProtectionDisableFor: (ply = NULL, status = false) =>
+		error('Tried to use a NULL Entity!') if not ply\IsValid()
+		error('Tried to use a ' .. type(ply) .. ' instead of Player') if not ply\IsPlayer()
+
+		if status then @EnableProtectionFor(ply) else @DisableProtectionFor(ply)
+
+	EnableProtectionFor: (ply) =>
+		error('Invalid side') if CLIENT
+		ply\SetNWBool(@disableNWName, nil)
+		return @
+
+	DisableProtectionFor: (ply) =>
+		error('Invalid side') if CLIENT
+		ply\SetNWBool(@disableNWName, true)
+		return @
+
+	IsDisabledForPlayer: (ply = NULL) =>
+		return false if not ply\IsValid()
+		return not ply\GetInfoBool(@clEnabledName, true) or ply\GetNWBool(@disableNWName, false)
+
+	IsDisabledForSteamID: (steamid) =>
+		return @disabledCache[steamid] if @disabledCache[steamid] ~= nil
+		return false
+
 	ForcePruneFriends: =>
 		toRemove = {}
 
@@ -115,15 +155,19 @@ class DPP2.DEF.ProtectionDefinition
 				timer.Remove('DPP2.FriendStatus.' .. steamid)
 
 		@friendsCache[k] = nil for k in *toRemove
+		@disabledCache[k] = nil for k in *toRemove
 
 	PruneFriendData: (steamid) =>
 		@friendsCache[steamid] = nil
+		@disabledCache[steamid] = nil
 
 	PlayerDisconnected: (ply = NULL) =>
 		@friendsCache[ply\SteamID()] = {ply2\SteamID(), ply2\CheckDLibFriendInOverride(ply, @friendID) for ply2 in *player.GetAll()}
+		@disabledCache[ply\SteamID()] = @IsDisabledForPlayer(ply)
 
 	CanTouchWorld: (ply = NULL) =>
 		return true if not ply\IsValid()
+		return false, i18n.localize('gui.dpp2.access.status.yoursettings') if ply\GetInfoBool(@clientNoWorldName, false)
 		return true if not @IsEnabled()
 
 		return not @noWorldTouch\GetBool() or not @noWorldTouchAdmin\GetBool() if @camiwatchdog\HasPermission(ply, @otherPermString)
@@ -131,6 +175,7 @@ class DPP2.DEF.ProtectionDefinition
 
 	CanTouchMap: (ply = NULL) =>
 		return true if not ply\IsValid()
+		return false, i18n.localize('gui.dpp2.access.status.yoursettings') if ply\GetInfoBool(@clientNoMapName, false)
 		return true if not @IsEnabled()
 
 		return not @noMapTouch\GetBool() or not @noMapTouchAdmin\GetBool() if @camiwatchdog\HasPermission(ply, @otherPermStringMap)
@@ -140,23 +185,32 @@ class DPP2.DEF.ProtectionDefinition
 		return true if not ply\IsValid()
 		return @CanTouchWorld(ply) if other == 'world'
 		return @CanTouchMap(ply) if other == 'map'
+		return false, i18n.localize('gui.dpp2.access.status.yoursettings') if ply\GetInfoBool(@clientNoTouchOtherName, false)
 		return true if not @IsEnabled()
 
 		return true if @camiwatchdog\HasPermission(ply, @otherPermString) and @adminTouchAny\GetBool()
 
-		return other\CheckDLibFriendInOverride(ply, @friendID) if IsValid(other)
-
 		if type(other) == 'string'
 			getply = player.GetBySteamID(other)
-			return getply\CheckDLibFriendInOverride(ply, @friendID) if getply
-			steamid = ply\SteamID()
-			return @friendsCache[other][steamid] if @friendsCache[other][steamid] ~= nil
 
-		return false
+			if getply
+				return true, i18n.localize('gui.dpp2.access.status.ownerdisabled') if @IsDisabledForPlayer(getply)
+				return getply\CheckDLibFriendInOverride(ply, @friendID)
+
+			return true, i18n.localize('gui.dpp2.access.status.ownerdisabled') if @IsDisabledForSteamID(other)
+
+			steamid = ply\SteamID()
+			return @friendsCache[other][steamid], i18n.localize('gui.dpp2.access.status.friend') if @friendsCache[other][steamid] ~= nil
+		elseif IsValid(other)
+			return true, i18n.localize('gui.dpp2.access.status.ownerdisabled') if @IsDisabledForPlayer(other)
+			return other\CheckDLibFriendInOverride(ply, @friendID), i18n.localize('gui.dpp2.access.status.friend')
+
+		return false, i18n.localize('gui.dpp2.access.status.friend')
 
 	CanTouch: (ply = NULL, ent = NULL) =>
 		return true if not ply\IsValid()
 		return false if not ent\IsValid()
+		return false, i18n.localize('gui.dpp2.access.status.yoursettings') if ent\IsPlayer() and ply\GetInfoBool(@clientNoPlayersName, false)
 		return true, i18n.localize('gui.dpp2.access.status.disabled') if not @IsEnabled()
 		contraption = ent\DPP2GetContraption()
 
@@ -165,7 +219,7 @@ class DPP2.DEF.ProtectionDefinition
 			return true if owner == ply
 			return @CanTouchMap(ply), i18n.localize('gui.dpp2.access.status.map') if ownerSteamID == 'world' and ent\CreatedByMap()
 			return @CanTouchWorld(ply), i18n.localize('gui.dpp2.access.status.world') if ownerSteamID == 'world'
-			return @CanTouchOther(ply, ownerSteamID), i18n.localize('gui.dpp2.access.status.friend')
+			return @CanTouchOther(ply, ownerSteamID)
 
 		steamid = ply\SteamID()
 
