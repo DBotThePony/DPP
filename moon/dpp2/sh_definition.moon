@@ -50,10 +50,10 @@ class DPP2.DEF.ProtectionDefinition
 	@OBJECTS = {}
 
 	if SERVER
-		hook.Add 'PlayerDisconnected', 'DPP2.DEF.ProtectionDefinition.' .. @name, (ply) -> @PlayerDisconnected(ply)
+		hook.Add 'PlayerDisconnected', 'DPP2.DEF.ProtectionDefinition', (ply) -> @PlayerDisconnected(ply)
 	else
 		gameevent.Listen('player_disconnect')
-		hook.Add 'player_disconnect', 'DPP2.DEF.ProtectionDefinition.' .. @name, (data) -> @PlayerDisconnected(Player(data.userid))
+		hook.Add 'player_disconnect', 'DPP2.DEF.ProtectionDefinition', (data) -> @PlayerDisconnected(Player(data.userid))
 
 	@PlayerDisconnected = (ply) =>
 		return if not ply\IsValid()
@@ -100,7 +100,7 @@ class DPP2.DEF.ProtectionDefinition
 
 		@friendID = 'dpp2_' .. @name
 		DPP2.Message('Missing langstring for gui.dpp2.buddystatus.' .. @name) if DLib.i18n.localize('gui.dpp2.buddystatus.' .. @name) == 'gui.dpp2.buddystatus.' .. @name
-		friends.Register(@friendID, 'gui.dpp2.buddystatus.' .. @name, true)
+		DLib.friends.Register(@friendID, 'gui.dpp2.buddystatus.' .. @name, true)
 
 		CAMI.RegisterPrivilege({
 			Name: 'dpp2_' .. @name .. '_admin'

@@ -54,7 +54,7 @@ AllowPlayerPickup = (ply = NULL, ent = NULL) ->
 GravGunPickupAllowed = (ply = NULL, ent = NULL) ->
 	return if not IsValid(ply)
 	return if not IsValid(ent)
-	status = DPP2.ACCESS.CanGravgun(ply, ent)
+	status = DPP2.ACCESS.CanGravgunPunt(ply, ent)
 	return status if not status
 
 PhysgunPickup = (ply = NULL, ent = NULL) ->

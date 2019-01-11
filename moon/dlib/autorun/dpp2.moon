@@ -18,7 +18,7 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-import DLib, AddCSLuaFile, include, notification, net, DLib from _G
+import DLib, notification, net, DLib from _G
 
 export DPP2
 _G.DPP2 = DPP2 or {}
@@ -54,6 +54,7 @@ DPP2.ENABLE_PROTECTION = DPP2.CreateConVar('protection', '1', 'gui.dpp2.cvars.pr
 AddCSLuaFile('dpp2/sh_logic.lua')
 AddCSLuaFile('dpp2/sh_owning.lua')
 AddCSLuaFile('dpp2/sh_hooks.lua')
+AddCSLuaFile('dpp2/sh_cppi.lua')
 AddCSLuaFile('dpp2/sh_registry.lua')
 AddCSLuaFile('dpp2/cl_logic.lua')
 AddCSLuaFile('dpp2/cl_owning.lua')
@@ -70,6 +71,7 @@ include('dpp2/sv_logic.lua') if SERVER
 include('dpp2/sv_owning.lua') if SERVER
 include('dpp2/sv_hooks.lua') if SERVER
 include('dpp2/sv_patches.lua') if SERVER
+include('dpp2/sh_cppi.lua')
 
 if SERVER
 	net.pool('dpp2_notify')

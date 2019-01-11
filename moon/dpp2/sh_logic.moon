@@ -275,3 +275,8 @@ DPP2.ACCESS.CanGravgun = (ply = NULL, ent = NULL) ->
 	return true if not ply\IsValid()
 	return false, i18n.localize('gui.dpp2.access.status.invalident') if not ent\IsValid()
 	return DPP2.GravgunProtection\CanTouch(ply, ent)
+
+DPP2.ACCESS.CanGravgunPunt = (ply = NULL, ent = NULL) ->
+	return true if not ply\IsValid()
+	return false, i18n.localize('gui.dpp2.access.status.invalident') if not ent\IsValid()
+	return DPP2.GravgunProtection\CanTouch(ply, ent)
