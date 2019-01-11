@@ -26,28 +26,28 @@ CheckupEntity = (ent, field, ...) ->
 CanPlayerEnterVehicle = (ply = NULL, vehicle = NULL, role = 0) ->
 	return if not IsValid(ply)
 	return if not IsValid(vehicle)
-	vehicle\DPP2CheckUpForGrabs(ply)
+	vehicle\DPP2CheckUpForGrabs(ply) if SERVER
 	status = DPP2.ACCESS.CanUseVehicle(ply, vehicle)
 	return status if not status
 
 CanDrive = (ply = NULL, ent = NULL) ->
 	return if not IsValid(ply)
 	return if not IsValid(ent)
-	ent\DPP2CheckUpForGrabs(ply)
+	ent\DPP2CheckUpForGrabs(ply) if SERVER
 	status = DPP2.ACCESS.CanDrive(ply, ent)
 	return status if not status
 
 GravGunPunt = (ply = NULL, ent = NULL) ->
 	return if not IsValid(ply)
 	return if not IsValid(ent)
-	ent\DPP2CheckUpForGrabs(ply)
+	ent\DPP2CheckUpForGrabs(ply) if SERVER
 	status = DPP2.ACCESS.CanGravgun(ply, ent)
 	return status if not status
 
 AllowPlayerPickup = (ply = NULL, ent = NULL) ->
 	return if not IsValid(ply)
 	return if not IsValid(ent)
-	ent\DPP2CheckUpForGrabs(ply)
+	ent\DPP2CheckUpForGrabs(ply) if SERVER
 	status = DPP2.ACCESS.CanPickup(ply, ent)
 	return status if not status
 
@@ -60,7 +60,7 @@ GravGunPickupAllowed = (ply = NULL, ent = NULL) ->
 PhysgunPickup = (ply = NULL, ent = NULL) ->
 	return if not IsValid(ply)
 	return if not IsValid(ent)
-	ent\DPP2CheckUpForGrabs(ply)
+	ent\DPP2CheckUpForGrabs(ply) if SERVER
 	status = DPP2.ACCESS.CanPhysgun(ply, ent)
 	return status if not status
 
@@ -74,7 +74,7 @@ OnPhysgunReload = (physgun = NULL, ply = NULL) ->
 CanProperty = (ply = NULL, property, ent = NULL) ->
 	return if not IsValid(ply)
 	return if not IsValid(ent)
-	ent\DPP2CheckUpForGrabs(ply)
+	ent\DPP2CheckUpForGrabs(ply) if SERVER
 	error('Invalid property type. It must be a string! typeof' .. type(property)) if type(property) ~= 'string'
 	status = DPP2.ACCESS.CanToolgun(ply, ent, property)
 	return status if not status
@@ -82,14 +82,14 @@ CanProperty = (ply = NULL, property, ent = NULL) ->
 CanTool = (ply = NULL, tr = {HitPos: Vector(), Entity: NULL, HitNormal: Vector()}, mode) ->
 	return if not IsValid(ply)
 	return if not IsValid(tr.Entity)
-	tr.Entity\DPP2CheckUpForGrabs(ply)
+	tr.Entity\DPP2CheckUpForGrabs(ply) if SERVER
 	status = DPP2.ACCESS.CanToolgun(ply, tr.Entity, mode)
 	return status if not status
 
 CanEditVariable = (ent = NULL, ply = NULL, key, val, editor = {}) ->
 	return if not IsValid(ply)
 	return if not IsValid(ent)
-	ent\DPP2CheckUpForGrabs(ply)
+	ent\DPP2CheckUpForGrabs(ply) if SERVER
 	status = DPP2.ACCESS.CanToolgun(ply, ent, 'edit')
 	return status if not status
 
