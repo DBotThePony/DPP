@@ -43,7 +43,7 @@ plyMeta.CPPIGetFriends = =>
 
 entMeta.CPPIGetOwner = =>
 	owner, steamid = @DPP2GetOwner()
-	return owner, util.CRC('gm_' .. steamd .. '_gm') if not IsValid(owner)
+	return owner, util.CRC('gm_' .. steamid .. '_gm') if not IsValid(owner)
 	return owner, owner\UniqueID()
 
 entMeta.CPPICanTool = (ply = NULL, toolMode = 'remover') => DPP2.ACCESS.CanToolgun(ply, @, toolMode)
