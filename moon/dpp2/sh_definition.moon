@@ -57,7 +57,7 @@ class DPP2.DEF.ProtectionDefinition
 
 	@PlayerDisconnected = (ply) =>
 		return if not ply\IsValid()
-		return if @IsBot()
+		return if ply\IsBot()
 		return if not ply\DPP2HasEnts()
 
 		obj\PlayerDisconnected(ply) for obj in *@OBJECTS
