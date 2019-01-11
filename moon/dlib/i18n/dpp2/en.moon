@@ -33,3 +33,21 @@ message.dpp2.notice.cleanup = ' props has been cleaned up.'
 
 gui.dpp2.cvars.protection = 'Main power switch for all protection modules'
 gui.dpp2.cvars.cleanup = 'Cleanup props of disconnected players'
+
+gui.dpp2.cvars.cleanup_timer = 'Cleanup timer'
+gui.dpp2.cvars.upforgrabs = 'Enable Up For Grabs timer'
+gui.dpp2.cvars.upforgrabs_timer = 'Up for grabs timeout'
+
+for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'drive', 'Prop Drive'}, {'damage', 'Damage'}, {'pickup', 'Pickups'}, {'use', '+use'}, {'vehicle', 'Vehicles'}, {'gravgun', 'Gravity Gun'}}
+	gui.dpp2.cvars[modeID .. '_protection'] = string.format('Enable %s protection module', modeName)
+	gui.dpp2.cvars[modeID .. '_touch_any'] = string.format('%s: Admins can touch anything', modeName)
+	gui.dpp2.cvars[modeID .. '_no_world'] = string.format('%s: Players can not touch world owned props', modeName)
+	gui.dpp2.cvars[modeID .. '_no_world_admin'] = string.format('%s: Admins can not touch world owned props', modeName)
+	gui.dpp2.cvars[modeID .. '_no_map'] = string.format('%s: Players can not touch map owned props', modeName)
+	gui.dpp2.cvars[modeID .. '_no_map_admin'] = string.format('%s: Admins can not touch map owned props', modeName)
+	gui.dpp2.cvars['cl_' .. modeID .. '_protection'] = string.format('Disable %s protection for me', modeName)
+	gui.dpp2.cvars['cl_' .. modeID .. '_no_other'] = string.format('%s: I don\'t want to touch other\'s props', modeName)
+	gui.dpp2.cvars['cl_' .. modeID .. '_no_world'] = string.format('%s: I don\'t want to touch world\'s props', modeName)
+	gui.dpp2.cvars['cl_' .. modeID .. '_no_map'] = string.format('%s: I don\'t want to touch maps\'s props', modeName)
+	gui.dpp2.cvars['cl_' .. modeID .. '_no_players'] = string.format('%s: I don\'t want to touch players', modeName)
+	gui.dpp2.buddystatus[modeID] = 'Buddy in ' .. modeName
