@@ -25,9 +25,9 @@ entMeta = FindMetaTable('Entity')
 
 entMeta.DPP2GetOwner = =>
 	if @GetNWString('dpp2_owner_steamid', '-1') == '-1'
-		return NULL, 'world', 'World'
+		return NULL, 'world', 'World', 'world'
 	else
-		return @GetNWEntity('dpp2_ownerent', NULL), @GetNWString('dpp2_owner_steamid'), DLib.LastNickFormatted(@GetNWString('dpp2_owner_steamid'))
+		return @GetNWEntity('dpp2_ownerent', NULL), @GetNWString('dpp2_owner_steamid'), DLib.LastNickFormatted(@GetNWString('dpp2_owner_steamid')), @GetNWString('dpp2_owner_uid', 'world')
 
 DPP2.HUDPanel\Remove() if IsValid(DPP2.HUDPanel)
 
