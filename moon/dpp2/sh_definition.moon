@@ -48,6 +48,7 @@ class DPP2.DEF.DefinitionConVarsPrefab
 
 class DPP2.DEF.ProtectionDefinition
 	@OBJECTS = {}
+	@OBJECTS_MAP = {}
 
 	if SERVER
 		hook.Add 'PlayerDisconnected', 'DPP2.DEF.ProtectionDefinition', (ply) -> @PlayerDisconnected(ply)
@@ -74,6 +75,8 @@ class DPP2.DEF.ProtectionDefinition
 
 		@name = assert(type(classname) == 'string' and classname, 'Invalid definition classname')\lower()
 
+		@@OBJECTS_MAP[@name] = @
+
 		@enabled =              DPP2.CreateConVar(@name .. '_protection', prefab\GetEnabled(),                  DPP2.TYPE_BOOL)
 		@adminTouchAny =        DPP2.CreateConVar(@name .. '_touch_any', prefab\GetAdminTouchAny(),             DPP2.TYPE_BOOL)
 		@noWorldTouch =         DPP2.CreateConVar(@name .. '_no_world', prefab\GetNoWorldTouch(),               DPP2.TYPE_BOOL)
@@ -88,6 +91,8 @@ class DPP2.DEF.ProtectionDefinition
 		@clientNoWorldName = 'dpp2_cl_' .. @name .. '_no_world'
 		@clientNoMapName = 'dpp2_cl_' .. @name .. '_no_map'
 		@clientNoPlayersName = 'dpp2_cl_' .. @name .. '_no_players'
+
+		@sharingVarID = 'dpp2_s_' .. @name
 
 		if CLIENT
 			@enabledClient = DPP2.CreateClientConVar('cl_' .. @name .. '_protection', '1', DPP2.TYPE_BOOL)
@@ -145,6 +150,36 @@ class DPP2.DEF.ProtectionDefinition
 	IsDisabledForSteamID: (steamid) =>
 		return @disabledCache[steamid] if @disabledCache[steamid] ~= nil
 		return false
+
+	IsShared: (ent = NULL) =>
+		return false if not ent\IsValid()
+		return ent\GetNWBool(@sharingVarID, false)
+
+	SetIsShared: (ent = NULL, newMode = false, flush = true) =>
+		return false if not ent\IsValid()
+		return false if ent\GetNWBool(@sharingVarID, false) == newMode
+
+		if newMode
+			ent\SetNWBool(@sharingVarID, true)
+		else
+			ent\SetNWBool(@sharingVarID, nil)
+
+		if flush and not newMode
+			hit = false
+
+			for obj in *@@OBJECTS
+				if obj\IsShared(ent)
+					hit = true
+					break
+
+			if not hit
+				ent\SetNWBool('dpp2_s', nil)
+			else
+				ent\SetNWBool('dpp2_s', true)
+		elseif flush and newMode
+			ent\SetNWBool('dpp2_s', true)
+
+		return true
 
 	ForcePruneFriends: =>
 		toRemove = {}
@@ -223,10 +258,24 @@ class DPP2.DEF.ProtectionDefinition
 
 		steamid = ply\SteamID()
 
-		for ownerSteamID in *contraption\GetOwners()
+		for ownerSteamID in *contraption\GetOwnersPartial(@name)
 			if steamid ~= ownerSteamID
 				return false, i18n.localize('gui.dpp2.access.status.map'), i18n.localize('gui.dpp2.access.status.contraption') if ownerSteamID == 'world' and ent\CreatedByMap() and not @CanTouchMap(ply)
 				return false, i18n.localize('gui.dpp2.access.status.world'), i18n.localize('gui.dpp2.access.status.contraption') if ownerSteamID == 'world' and not @CanTouchWorld(ply)
 				return false, i18n.localize('gui.dpp2.access.status.friend'), i18n.localize('gui.dpp2.access.status.contraption') if ownerSteamID ~= 'world' and not @CanTouchOther(ply, ownerSteamID)
 
 		return true, i18n.localize('gui.dpp2.access.status.contraption')
+
+entMeta = FindMetaTable('Entity')
+
+entMeta.DPP2IsShared = (mode) =>
+	return false if @IsPlayer()
+	return false if not @IsValid()
+	return @GetNWBool('dpp2_s', false) if not mode
+	return @GetNWBool('dpp2_s_' .. mode, false)
+
+entMeta.DPP2SetIsShared = (mode, newMode, flush) =>
+	return false if @IsPlayer()
+	return false if not @IsValid()
+	return false if not DPP2.DEF.ProtectionDefinition.OBJECTS_MAP[mode]
+	return DPP2.DEF.ProtectionDefinition.OBJECTS_MAP[mode]\SetIsShared(@, newMode, flush)

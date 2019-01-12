@@ -56,6 +56,7 @@ class DPP2.ContraptionHolder
 		@ents = {}
 		@owners = {}
 		@ownersFull = {}
+		@ownersNoShare = {}
 		@id = id
 		@networked = {} if SERVER
 		@lastWalk = 0
@@ -65,6 +66,7 @@ class DPP2.ContraptionHolder
 
 	GetOwners: => @owners
 	GetOwnersFull: => @ownersFull
+	GetOwnersPartial: (mode) => @ownersNoShare[mode] or @ownersFull
 	CopyOwners: => [v for v in *@owners]
 	CopyOwnersFull: => [v for v in *@ownersFull]
 
@@ -105,6 +107,7 @@ class DPP2.ContraptionHolder
 		@ents = {}
 		@owners = {}
 		@ownersFull = {}
+		@ownersNoShare = {}
 
 		if SERVER and #@networked ~= 0
 			@networked = [ply for ply in *@networked when ply\IsValid()]
@@ -178,6 +181,7 @@ class DPP2.ContraptionHolder
 
 		@owners = {}
 		@ownersFull = {}
+		@ownersNoShare = {}
 
 		@ents = for ent in pairs(constraint.GetAllConstrainedEntities(frompoint))
 			ent.__dpp2_contraption = @
@@ -217,11 +221,23 @@ class DPP2.ContraptionHolder
 		@NetworkDiff(prev) if SERVER and (#@ents > 0 or not withMarkForDeath)
 		@owners = {}
 		@ownersFull = {}
+		@ownersNoShare = {}
+
+		@ownersNoShare[def.name] = {} for def in *DPP2.DEF.ProtectionDefinition
 
 		for ent in *@ents
 			owner, ownerSteamID = ent\DPP2GetOwner()
 			table.insert(@owners, owner) if not table.qhasValue(@owners, owner)
 			table.insert(@ownersFull, ownerSteamID) if not table.qhasValue(@ownersFull, ownerSteamID)
+
+			if ownerSteamID ~= 'world' and ownerSteamID ~= 'map'
+				for def in *DPP2.DEF.ProtectionDefinition
+					if not def\IsShared(ent)
+						table.insert(@ownersNoShare[def.name], ownerSteamID) if not table.qhasValue(@ownersNoShare[def.name], ownerSteamID)
+						break
+			else
+				for def in *DPP2.DEF.ProtectionDefinition
+					table.insert(@ownersNoShare[def.name], ownerSteamID) if not table.qhasValue(@ownersNoShare[def.name], ownerSteamID)
 
 		if withMarkForDeath and not @IsValid()
 			@MarkForDeath()
