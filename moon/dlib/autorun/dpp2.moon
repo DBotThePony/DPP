@@ -51,27 +51,27 @@ if CLIENT
 
 DPP2.ENABLE_PROTECTION = DPP2.CreateConVar('protection', '1', 'gui.dpp2.cvars.protection', DPP2.TYPE_BOOL)
 
-AddCSLuaFile('dpp2/sh_logic.lua')
-AddCSLuaFile('dpp2/sh_owning.lua')
-AddCSLuaFile('dpp2/sh_hooks.lua')
-AddCSLuaFile('dpp2/sh_cppi.lua')
-AddCSLuaFile('dpp2/sh_registry.lua')
-AddCSLuaFile('dpp2/cl_logic.lua')
-AddCSLuaFile('dpp2/cl_owning.lua')
+AddCSLuaFile('dpp2/common/sh_logic.lua')
+AddCSLuaFile('dpp2/common/sh_owning.lua')
+AddCSLuaFile('dpp2/common/sh_hooks.lua')
+AddCSLuaFile('dpp2/common/sh_cppi.lua')
+AddCSLuaFile('dpp2/common/sh_registry.lua')
+AddCSLuaFile('dpp2/client/cl_logic.lua')
+AddCSLuaFile('dpp2/client/cl_owning.lua')
 
-include('dpp2/sh_definition.lua')
-include('dpp2/sh_owning.lua')
-include('dpp2/cl_owning.lua') if CLIENT
-include('dpp2/sv_owning.lua') if SERVER
-include('dpp2/sh_registry.lua')
-include('dpp2/sh_logic.lua')
-include('dpp2/sh_hooks.lua')
-include('dpp2/cl_logic.lua') if CLIENT
-include('dpp2/sv_logic.lua') if SERVER
-include('dpp2/sv_owning.lua') if SERVER
-include('dpp2/sv_hooks.lua') if SERVER
-include('dpp2/sv_patches.lua') if SERVER
-include('dpp2/sh_cppi.lua')
+include('dpp2/common/sh_definition.lua')
+include('dpp2/common/sh_owning.lua')
+include('dpp2/client/cl_owning.lua') if CLIENT
+include('dpp2/server/sv_owning.lua') if SERVER
+include('dpp2/common/sh_registry.lua')
+include('dpp2/common/sh_logic.lua')
+include('dpp2/common/sh_hooks.lua')
+include('dpp2/client/cl_logic.lua') if CLIENT
+include('dpp2/server/sv_logic.lua') if SERVER
+include('dpp2/server/sv_owning.lua') if SERVER
+include('dpp2/server/sv_hooks.lua') if SERVER
+include('dpp2/server/sv_patches.lua') if SERVER
+include('dpp2/common/sh_cppi.lua')
 
 if SERVER
 	net.pool('dpp2_notify')
