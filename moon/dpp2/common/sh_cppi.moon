@@ -40,6 +40,20 @@ if SERVER
 	entMeta.CPPISetOwnerUID = (newUID = '-1') => @DPP2SetOwnerUID(assert(type(newUID) == 'string', 'Invalid new owner UID provided, typeof ' .. type(newUID)))
 
 plyMeta.CPPIGetFriends = =>
+	output = {}
+
+	for ply in *player.GetAll()
+		hit = false
+
+		for def in *DPP2.DEF.ProtectionDefinition
+			if def\AreFriends(@, ply)
+				hit = true
+				break
+
+		if hit
+			table.insert(output, ply)
+
+	return output
 
 entMeta.CPPIGetOwner = =>
 	owner, steamid = @DPP2GetOwner()

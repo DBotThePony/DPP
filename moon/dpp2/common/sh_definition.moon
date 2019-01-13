@@ -195,6 +195,8 @@ class DPP2.DEF.ProtectionDefinition
 		@friendsCache[k] = nil for k in *toRemove
 		@disabledCache[k] = nil for k in *toRemove
 
+	AreFriends: (localPly, otherPly) => localPly\CheckDLibFriendInOverride(otherPly, @friendID)
+
 	PruneFriendData: (steamid) =>
 		@friendsCache[steamid] = nil
 		@disabledCache[steamid] = nil
