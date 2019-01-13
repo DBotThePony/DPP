@@ -49,7 +49,9 @@ if CLIENT
 		return obj
 
 
-DPP2.ENABLE_PROTECTION = DPP2.CreateConVar('protection', '1', 'gui.dpp2.cvars.protection', DPP2.TYPE_BOOL)
+DPP2.ENABLE_PROTECTION = DPP2.CreateConVar('protection', '1', DPP2.TYPE_BOOL)
+DPP2.NO_TOOLGUN_PLAYER = DPP2.CreateConVar('no_tool_player', '1', DPP2.TYPE_BOOL)
+DPP2.NO_TOOLGUN_PLAYER_ADMIN = DPP2.CreateConVar('no_tool_player_admin', '0', DPP2.TYPE_BOOL)
 
 AddCSLuaFile('dpp2/common/sh_logic.lua')
 AddCSLuaFile('dpp2/common/sh_owning.lua')

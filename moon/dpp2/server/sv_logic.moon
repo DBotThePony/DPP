@@ -21,6 +21,10 @@
 import DPP2, type, table, player from _G
 import IsValid from FindMetaTable('Entity')
 
+entMeta = FindMetaTable('Entity')
+
+entMeta.DPP2CreatedByMap = => not @IsPlayer() and @CreatedByMap()
+
 net.pool('dpp2_contraption_create')
 net.pool('dpp2_contraption_delete')
 net.pool('dpp2_contraption_diff')

@@ -127,6 +127,9 @@ class DPP2.DEF.ProtectionDefinition
 
 	IsEnabled: => @enabled\GetBool() and DPP2.ENABLE_PROTECTION\GetBool()
 
+	IsAdmin: (ply = NULL) => ply\IsValid() and @camiwatchdog\HasPermission(ply, @otherPermString)
+	IsMapAdmin: (ply = NULL) => ply\IsValid() and @camiwatchdog\HasPermission(ply, @otherPermStringMap)
+
 	SwitchProtectionDisableFor: (ply = NULL, status = false) =>
 		error('Tried to use a NULL Entity!') if not ply\IsValid()
 		error('Tried to use a ' .. type(ply) .. ' instead of Player') if not ply\IsPlayer()
@@ -252,7 +255,7 @@ class DPP2.DEF.ProtectionDefinition
 		if not contraption
 			owner, ownerSteamID, ownerNick = ent\DPP2GetOwner()
 			return true if owner == ply
-			return @CanTouchMap(ply), i18n.localize('gui.dpp2.access.status.map') if ownerSteamID == 'world' and ent\CreatedByMap()
+			return @CanTouchMap(ply), i18n.localize('gui.dpp2.access.status.map') if ownerSteamID == 'world' and ent\DPP2CreatedByMap()
 			return @CanTouchWorld(ply), i18n.localize('gui.dpp2.access.status.world') if ownerSteamID == 'world'
 			return @CanTouchOther(ply, ownerSteamID)
 
@@ -260,7 +263,7 @@ class DPP2.DEF.ProtectionDefinition
 
 		for ownerSteamID in *contraption\GetOwnersPartial(@name)
 			if steamid ~= ownerSteamID
-				return false, i18n.localize('gui.dpp2.access.status.map'), i18n.localize('gui.dpp2.access.status.contraption') if ownerSteamID == 'world' and ent\CreatedByMap() and not @CanTouchMap(ply)
+				return false, i18n.localize('gui.dpp2.access.status.map'), i18n.localize('gui.dpp2.access.status.contraption') if ownerSteamID == 'world' and ent\DPP2CreatedByMap() and not @CanTouchMap(ply)
 				return false, i18n.localize('gui.dpp2.access.status.world'), i18n.localize('gui.dpp2.access.status.contraption') if ownerSteamID == 'world' and not @CanTouchWorld(ply)
 				return false, i18n.localize('gui.dpp2.access.status.friend'), i18n.localize('gui.dpp2.access.status.contraption') if ownerSteamID ~= 'world' and not @CanTouchOther(ply, ownerSteamID)
 

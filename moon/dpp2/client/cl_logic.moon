@@ -22,7 +22,7 @@ import DPP2, type, table, net from _G
 
 entMeta = FindMetaTable('Entity')
 
-entMeta.CreatedByMap = => @GetNWBool('dpp2_cbm', false)
+entMeta.DPP2CreatedByMap = => not @IsPlayer() and @GetNWBool('dpp2_cbm', false)
 
 net.receive 'dpp2_contraption_create', ->
 	id = net.ReadUInt32()

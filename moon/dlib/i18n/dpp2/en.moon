@@ -26,6 +26,7 @@ gui.dpp2.access.status.invalident = 'Invalid Entity'
 gui.dpp2.access.status.disabled = 'Protection is disabled'
 gui.dpp2.access.status.ownerdisabled = 'Protection for owner is disabled'
 gui.dpp2.access.status.yoursettings = 'Your settings'
+gui.dpp2.access.status.toolgun_player = 'Cannot toolgun a player'
 
 message.dpp2.owning.owned = 'You now own this entity'
 message.dpp2.notice.upforgrabs = ' props are now up for grabs!'
@@ -37,6 +38,9 @@ gui.dpp2.cvars.cleanup = 'Cleanup props of disconnected players'
 gui.dpp2.cvars.cleanup_timer = 'Cleanup timer'
 gui.dpp2.cvars.upforgrabs = 'Enable Up For Grabs timer'
 gui.dpp2.cvars.upforgrabs_timer = 'Up for grabs timeout'
+
+gui.dpp2.cvars.no_tool_player = 'Disallow to toolgun players'
+gui.dpp2.cvars.no_tool_player_admin = 'Disallow to toolgun players as admin'
 
 for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'drive', 'Prop Drive'}, {'damage', 'Damage'}, {'pickup', 'Pickups'}, {'use', '+use'}, {'vehicle', 'Vehicles'}, {'gravgun', 'Gravity Gun'}}
 	gui.dpp2.cvars[modeID .. '_protection'] = string.format('Enable %s protection module', modeName)
