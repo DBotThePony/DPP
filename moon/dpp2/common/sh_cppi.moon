@@ -45,7 +45,7 @@ plyMeta.CPPIGetFriends = =>
 	for ply in *player.GetAll()
 		hit = false
 
-		for def in *DPP2.DEF.ProtectionDefinition
+		for def in *DPP2.DEF.ProtectionDefinition.OBJECTS
 			if def\AreFriends(@, ply)
 				hit = true
 				break

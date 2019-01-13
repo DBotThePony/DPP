@@ -223,7 +223,7 @@ class DPP2.ContraptionHolder
 		@ownersFull = {}
 		@ownersNoShare = {}
 
-		@ownersNoShare[def.name] = {} for def in *DPP2.DEF.ProtectionDefinition
+		@ownersNoShare[def.name] = {} for def in *DPP2.DEF.ProtectionDefinition.OBJECTS
 
 		for ent in *@ents
 			owner, ownerSteamID = ent\DPP2GetOwner()
@@ -231,12 +231,12 @@ class DPP2.ContraptionHolder
 			table.insert(@ownersFull, ownerSteamID) if not table.qhasValue(@ownersFull, ownerSteamID)
 
 			if ownerSteamID ~= 'world' and ownerSteamID ~= 'map'
-				for def in *DPP2.DEF.ProtectionDefinition
+				for def in *DPP2.DEF.ProtectionDefinition.OBJECTS
 					if not def\IsShared(ent)
 						table.insert(@ownersNoShare[def.name], ownerSteamID) if not table.qhasValue(@ownersNoShare[def.name], ownerSteamID)
 						break
 			else
-				for def in *DPP2.DEF.ProtectionDefinition
+				for def in *DPP2.DEF.ProtectionDefinition.OBJECTS
 					table.insert(@ownersNoShare[def.name], ownerSteamID) if not table.qhasValue(@ownersNoShare[def.name], ownerSteamID)
 
 		if withMarkForDeath and not @IsValid()
