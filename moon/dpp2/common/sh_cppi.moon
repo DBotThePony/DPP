@@ -36,8 +36,8 @@ import IsValid from entMeta
 import util from _G
 
 if SERVER
-	plyMeta.CPPISetOwner = (newOwner = NULL) => @DPP2SetOwner(assert(type(newOwner) == 'Player' or newOwner == NULL, 'Invalid new owner provided, typeof ' .. type(newOwner)))
-	plyMeta.CPPISetOwnerUID = (newUID = '-1') => @DPP2SetOwnerUID(assert(type(newUID) == 'string', 'Invalid new owner UID provided, typeof ' .. type(newUID)))
+	entMeta.CPPISetOwner = (newOwner = NULL) => @DPP2SetOwner(assert(type(newOwner) == 'Player' or newOwner == NULL, 'Invalid new owner provided, typeof ' .. type(newOwner)))
+	entMeta.CPPISetOwnerUID = (newUID = '-1') => @DPP2SetOwnerUID(assert(type(newUID) == 'string', 'Invalid new owner UID provided, typeof ' .. type(newUID)))
 
 plyMeta.CPPIGetFriends = =>
 
