@@ -298,8 +298,15 @@ function DPP.CheckStuck(ply, ent1, ent2)
 	local can = hook.Run('DPP_G_StuckHit', ply, ent1, ent2)
 	if can == false then return false end
 
-	DPP.SetGhosted(ent1, true)
-	DPP.SetGhosted(ent2, true)
+	if DPP.IsOwned(ent1) and DPP.IsOwned(ent2) or not DPP.IsOwned(ent1) and not DPP.IsOwned(ent2) then
+		DPP.SetGhosted(ent1, true)
+		DPP.SetGhosted(ent2, true)
+	elseif DPP.IsOwned(ent1) then
+		DPP.SetGhosted(ent1, true)
+	elseif DPP.IsOwned(ent2) then
+		DPP.SetGhosted(ent2, true)
+	end
+
 	if IsValid(ply) then
 		DPP.Notify(ply, DPP.PPhrase(ply, 'stuck_hit'))
 	end
