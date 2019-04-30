@@ -96,7 +96,7 @@ CanProperty = (ply = NULL, property, ent = NULL) ->
 	return status if not status
 	if SERVER
 		ent\DPP2UnGhost()
-		DPP2.APKTriggerPhysgunDrop(ply, tr.Entity)
+		DPP2.APKTriggerPhysgunDrop(ply, ent)
 		return
 
 CanTool = (ply = NULL, tr = {HitPos: Vector(), Entity: NULL, HitNormal: Vector()}, mode) ->
