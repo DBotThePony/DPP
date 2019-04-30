@@ -31,6 +31,7 @@ gui.dpp2.access.status.toolgun_player = 'Cannot toolgun a player'
 message.dpp2.owning.owned = 'You now own this entity'
 message.dpp2.notice.upforgrabs = ' props are now up for grabs!'
 message.dpp2.notice.cleanup = ' props has been cleaned up.'
+message.dpp2.warn.trap = 'Your prop seems to stuck in someone'
 
 gui.dpp2.cvars.protection = 'Main power switch for all protection modules'
 gui.dpp2.cvars.cleanup = 'Cleanup props of disconnected players'

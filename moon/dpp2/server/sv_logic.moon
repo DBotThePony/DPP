@@ -67,3 +67,71 @@ hook.Add 'EntityRemoved', 'DPP2.Contraptions', =>
 		WalkConstraint(ent2)
 
 	return
+
+GhostPhysObj = =>
+	motion = @IsMotionEnabled()
+	gravity = @IsGravityEnabled()
+	mass = @GetMass()
+	collisions = @IsCollisionEnabled()
+
+	@EnableMotion(false)
+	@EnableGravity(false)
+	@EnableCollisions(false)
+	@SetMass(1)
+	@Sleep()
+
+	return ->
+		return if not @IsValid()
+		@EnableMotion(motion)
+		@EnableGravity(gravity)
+		@EnableCollisions(collisions)
+		@SetMass(mass)
+
+entMeta.DPP2Ghost = =>
+	return false if @DPP2IsGhosted()
+	phys = @DPP2GetPhys()
+	return false if not phys
+	@SetNWBool('dpp2_ghost', true)
+
+	@__dpp2_old_collisions_group = @GetCollisionGroup()
+	@__dpp2_old_movetype = @GetMoveType()
+	@__dpp2_old_rendermode = @GetRenderMode()
+	@__dpp2_old_color = Color(@GetColor())
+
+	if type(phys) == 'table'
+		@__dpp2_old_phys = [GhostPhysObj(phys2) for phys2 in *phys]
+	else
+		@__dpp2_old_phys = GhostPhysObj(phys)
+
+	@SetMoveType(MOVETYPE_NONE)
+	@SetCollisionGroup(COLLISION_GROUP_WORLD)
+	@SetRenderMode(RENDERMODE_TRANSALPHA)
+	@SetColor(@__dpp2_old_color\ModifyAlpha(100))
+
+entMeta.DPP2UnGhost = =>
+	return if not @DPP2IsGhosted()
+	@SetNWBool('dpp2_ghost', nil)
+
+	if type(@__dpp2_old_phys) == 'function'
+		@__dpp2_old_phys()
+	elseif type(@__dpp2_old_phys) == 'table'
+		func() for func in *@__dpp2_old_phys
+
+	@__dpp2_old_phys = nil
+
+	@SetCollisionGroup(@__dpp2_old_collisions_group) if @__dpp2_old_collisions_group
+	@SetMoveType(@__dpp2_old_movetype) if @__dpp2_old_movetype
+	@SetRenderMode(@__dpp2_old_rendermode) if @__dpp2_old_rendermode
+	@SetColor(@__dpp2_old_color) if @__dpp2_old_color
+
+	@__dpp2_old_collisions_group = nil
+	@__dpp2_old_movetype = nil
+	@__dpp2_old_rendermode = nil
+	@__dpp2_old_color = nil
+
+	return true
+
+entMeta.DPP2SwitchGhost = => @DPP2SetGhost(not @DPP2IsGhosted())
+entMeta.DPP2SetGhost = (status) =>
+	return @DPP2Ghost() if status
+	@DPP2UnGhost()

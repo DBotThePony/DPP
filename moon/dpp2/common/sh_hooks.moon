@@ -29,6 +29,8 @@ CanPlayerEnterVehicle = (ply = NULL, vehicle = NULL, role = 0) ->
 	vehicle\DPP2CheckUpForGrabs(ply) if SERVER
 	status = DPP2.ACCESS.CanUseVehicle(ply, vehicle)
 	return status if not status
+	vehicle\DPP2UnGhost() if SERVER
+	return
 
 CanDrive = (ply = NULL, ent = NULL) ->
 	return if not IsValid(ply)
@@ -36,6 +38,10 @@ CanDrive = (ply = NULL, ent = NULL) ->
 	ent\DPP2CheckUpForGrabs(ply) if SERVER
 	status = DPP2.ACCESS.CanDrive(ply, ent)
 	return status if not status
+	if SERVER
+		ent\DPP2UnGhost()
+		DPP2.APKTriggerPhysgunDrop(ply, tr.Entity)
+		return
 
 GravGunPunt = (ply = NULL, ent = NULL) ->
 	return if not IsValid(ply)
@@ -43,6 +49,10 @@ GravGunPunt = (ply = NULL, ent = NULL) ->
 	ent\DPP2CheckUpForGrabs(ply) if SERVER
 	status = DPP2.ACCESS.CanGravgun(ply, ent)
 	return status if not status
+	if SERVER
+		ent\DPP2UnGhost()
+		DPP2.APKTriggerPhysgunDrop(ply, tr.Entity)
+		return
 
 AllowPlayerPickup = (ply = NULL, ent = NULL) ->
 	return if not IsValid(ply)
@@ -63,6 +73,8 @@ PhysgunPickup = (ply = NULL, ent = NULL) ->
 	ent\DPP2CheckUpForGrabs(ply) if SERVER
 	status = DPP2.ACCESS.CanPhysgun(ply, ent)
 	return status if not status
+	ent\DPP2UnGhost() if SERVER
+	return
 
 OnPhysgunReload = (physgun = NULL, ply = NULL) ->
 	return if not IsValid(ply)
@@ -70,6 +82,10 @@ OnPhysgunReload = (physgun = NULL, ply = NULL) ->
 	return if not IsValid(tr.Entity)
 	status = DPP2.ACCESS.CanPhysgun(ply, tr.Entity)
 	return status if not status
+	if SERVER
+		ent\DPP2UnGhost()
+		DPP2.APKTriggerPhysgunDrop(ply, tr.Entity)
+		return
 
 CanProperty = (ply = NULL, property, ent = NULL) ->
 	return if not IsValid(ply)
@@ -78,6 +94,10 @@ CanProperty = (ply = NULL, property, ent = NULL) ->
 	error('Invalid property type. It must be a string! typeof' .. type(property)) if type(property) ~= 'string'
 	status = DPP2.ACCESS.CanToolgun(ply, ent, property)
 	return status if not status
+	if SERVER
+		ent\DPP2UnGhost()
+		DPP2.APKTriggerPhysgunDrop(ply, tr.Entity)
+		return
 
 CanTool = (ply = NULL, tr = {HitPos: Vector(), Entity: NULL, HitNormal: Vector()}, mode) ->
 	return if not IsValid(ply)
@@ -85,6 +105,10 @@ CanTool = (ply = NULL, tr = {HitPos: Vector(), Entity: NULL, HitNormal: Vector()
 	tr.Entity\DPP2CheckUpForGrabs(ply) if SERVER
 	status = DPP2.ACCESS.CanToolgun(ply, tr.Entity, mode)
 	return status if not status
+	if SERVER
+		ent\DPP2UnGhost()
+		DPP2.APKTriggerPhysgunDrop(ply, tr.Entity)
+		return
 
 CanEditVariable = (ent = NULL, ply = NULL, key, val, editor = {}) ->
 	return if not IsValid(ply)

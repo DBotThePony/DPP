@@ -247,6 +247,8 @@ entMeta.DPP2InvalidateContraption = =>
 	@__dpp2_contraption\Invalidate() if @__dpp2_contraption
 	return @
 
+entMeta.DPP2IsGhosted = => @GetNWBool('dpp2_ghost', false)
+
 DPP2.ACCESS = DPP2.ACCESS or {}
 
 import i18n from DLib
