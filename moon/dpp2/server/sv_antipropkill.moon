@@ -72,6 +72,14 @@ EntityTakeDamage = (dmg) =>
 	return if not DPP2.ENABLE_ANTIPROPKILL\GetBool()
 	return if not DPP2.ANTIPROPKILL_DAMAGE\GetBool()
 	return if dmg\GetDamageType()\band(DMG_CRUSH) ~= DMG_CRUSH and dmg\GetDamageType()\band(DMG_VEHICLE) ~= DMG_VEHICLE
+	return if not @IsPlayer()
+
+	if DPP2.ANTIPROPKILL_DAMAGE_NO_WORLD\GetBool()
+		return if (not IsValid(dmg\GetAttacker()) or not dmg\GetAttacker()\IsPlayer() and not dmg\GetAttacker()\DPP2IsOwned()) and (not IsValid(dmg\GetInflictor()) or not dmg\GetInflictor()\IsPlayer() and not dmg\GetInflictor()\DPP2IsOwned())
+
+	if DPP2.ANTIPROPKILL_DAMAGE_NO_VEHICLES\GetBool()
+		return if IsValid(dmg\GetAttacker()) and dmg\GetAttacker()\IsVehicle() or IsValid(dmg\GetInflictor()) and dmg\GetInflictor()\IsVehicle()
+
 	dmg\SetDamage(0)
 	dmg\SetDamageType(0)
 
