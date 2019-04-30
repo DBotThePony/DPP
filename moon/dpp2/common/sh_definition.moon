@@ -251,6 +251,7 @@ class DPP2.DEF.ProtectionDefinition
 		return true if not ply\IsValid()
 		return false if not ent\IsValid()
 		return false, i18n.localize('gui.dpp2.access.status.yoursettings') if ent\IsPlayer() and ply\GetInfoBool(@clientNoPlayersName, false)
+		return true if ent\IsPlayer()
 		return true, i18n.localize('gui.dpp2.access.status.disabled') if not @IsEnabled()
 		contraption = ent\DPP2GetContraption()
 

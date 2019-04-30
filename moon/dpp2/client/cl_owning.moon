@@ -65,7 +65,8 @@ GetOwnerText = ->
 
 	return if not tr.Hit or not tr.Entity\IsValid()
 	owner, ownerSteamID, ownerName = tr.Entity\DPP2GetOwner()
-	ownerName = string.format('%s\n%s', ownerName, tostring(tr.Entity))
+	--ownerName = tr.Entity\Nick() if tr.Entity\IsPlayer()
+	ownerName = string.format('%s\n%s', ownerName, tostring(tr.Entity)) if not tr.Entity\IsPlayer()
 
 	canTouch = true
 
