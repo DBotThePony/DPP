@@ -18,33 +18,12 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-import Entity from _G
+import DPP2 from _G
 
-entMeta = FindMetaTable('Entity')
-
-local worldspawn
-
-entMeta.DPP2GetPhys = =>
-	return if @IsPlayer() or @IsNPC()
-	worldspawn = Entity(0)\GetPhysicsObject()
-
-	switch @GetPhysicsObjectCount()
-		when 0
-			return
-		when 1
-			phys = @GetPhysicsObject()
-			return if not IsValid(phys) or phys == worldspawn
-			return phys
-
-	local output
-
-	for i = 0, @GetPhysicsObjectCount() - 1
-		phys = @GetPhysicsObjectNum(i)
-
-		if IsValid(phys) and phys ~= worldspawn
-			output = output or {}
-			table.insert(output, phys)
-
-	return if not output
-	return output[1] if #output == 1
-	return output
+DPP2.GhostGroup = (ents) ->
+	unghosted = false
+	closure = ->
+		return if unghosted
+		unghosted = true
+		ent\DPP2UnGhost() for ent in *ents
+	ent\DPP2Ghost(closure) for ent in *ents

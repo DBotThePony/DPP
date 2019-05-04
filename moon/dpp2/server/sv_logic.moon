@@ -73,6 +73,8 @@ GhostPhysObj = =>
 	gravity = @IsGravityEnabled()
 	mass = @GetMass()
 	collisions = @IsCollisionEnabled()
+	angvel = @GetAngleVelocity()
+	vel = @GetVelocity()
 
 	@EnableMotion(false)
 	@EnableGravity(false)
@@ -86,9 +88,15 @@ GhostPhysObj = =>
 		@EnableGravity(gravity)
 		@EnableCollisions(collisions)
 		@SetMass(mass)
+		@Wake()
+		@AddAngleVelocity(angvel)
+		@SetVelocity(vel)
 
-entMeta.DPP2Ghost = =>
+entMeta.DPP2CanGhost = => not @IsConstraint() and not @DPP2IsGhosted() and @DPP2GetPhys()
+
+entMeta.DPP2Ghost = (callback) =>
 	return false if @DPP2IsGhosted()
+	return false if @IsConstraint()
 	phys = @DPP2GetPhys()
 	return false if not phys
 	@SetNWBool('dpp2_ghost', true)
@@ -97,6 +105,12 @@ entMeta.DPP2Ghost = =>
 	@__dpp2_old_movetype = @GetMoveType()
 	@__dpp2_old_rendermode = @GetRenderMode()
 	@__dpp2_old_color = Color(@GetColor())
+
+	if callback
+		if @__dpp2_ghost_callbacks
+			table.insert(@__dpp2_ghost_callbacks, callback)
+		else
+			@__dpp2_ghost_callbacks = {callback}
 
 	if type(phys) == 'table'
 		@__dpp2_old_phys = [GhostPhysObj(phys2) for phys2 in *phys]
@@ -108,7 +122,8 @@ entMeta.DPP2Ghost = =>
 	@SetRenderMode(RENDERMODE_TRANSALPHA)
 	@SetColor(@__dpp2_old_color\ModifyAlpha(100))
 
-entMeta.DPP2UnGhost = =>
+entMeta.DPP2UnGhost = (withConstraption) =>
+	@__dpp2_contraption\UnGhost() if withConstraption and @__dpp2_contraption
 	return if not @DPP2IsGhosted()
 	@SetNWBool('dpp2_ghost', nil)
 
@@ -128,6 +143,10 @@ entMeta.DPP2UnGhost = =>
 	@__dpp2_old_movetype = nil
 	@__dpp2_old_rendermode = nil
 	@__dpp2_old_color = nil
+
+	if @__dpp2_ghost_callbacks
+		callback() for callback in *@__dpp2_ghost_callbacks
+		@__dpp2_ghost_callbacks = nil
 
 	return true
 

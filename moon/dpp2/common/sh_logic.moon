@@ -205,6 +205,9 @@ class DPP2.ContraptionHolder
 		@Invalidate()
 		return @
 
+	Ghost: => ent\DPP2Ghost() for ent in *@ents when IsValid(ent)
+	UnGhost: => ent\DPP2UnGhost() for ent in *@ents when IsValid(ent)
+
 	Revalidate: =>
 		return false if not @IsValid()
 

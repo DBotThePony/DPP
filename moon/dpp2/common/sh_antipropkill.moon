@@ -28,3 +28,9 @@ DPP2.ANTIPROPKILL_TRAP = DPP2.CreateConVar('apropkill_trap', '1', DPP2.TYPE_BOOL
 DPP2.ANTIPROPKILL_PUSH = DPP2.CreateConVar('apropkill_push', '1', DPP2.TYPE_BOOL)
 DPP2.ANTIPROPKILL_THROW = DPP2.CreateConVar('apropkill_throw', '1', DPP2.TYPE_BOOL)
 DPP2.ANTIPROPKILL_PUNT = DPP2.CreateConVar('apropkill_punt', '1', DPP2.TYPE_BOOL)
+
+GravGunPunt = (ply = NULL, wep = NULL) ->
+	return if not DPP2.ENABLE_ANTIPROPKILL\GetBool()
+	return false if DPP2.ANTIPROPKILL_PUNT\GetBool()
+
+hook.Add 'GravGunPunt', 'DPP2.AntiPropkill', GravGunPunt, 6

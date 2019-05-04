@@ -29,7 +29,7 @@ CanPlayerEnterVehicle = (ply = NULL, vehicle = NULL, role = 0) ->
 	vehicle\DPP2CheckUpForGrabs(ply) if SERVER
 	status = DPP2.ACCESS.CanUseVehicle(ply, vehicle)
 	return status if not status
-	vehicle\DPP2UnGhost() if SERVER
+	vehicle\DPP2UnGhost(true) if SERVER
 	return
 
 CanDrive = (ply = NULL, ent = NULL) ->
@@ -39,8 +39,8 @@ CanDrive = (ply = NULL, ent = NULL) ->
 	status = DPP2.ACCESS.CanDrive(ply, ent)
 	return status if not status
 	if SERVER
-		ent\DPP2UnGhost()
-		DPP2.APKTriggerPhysgunDrop(ply, tr.Entity)
+		ent\DPP2UnGhost(true)
+		DPP2.APKTriggerPhysgunDrop(ply, ent)
 		return
 
 GravGunPunt = (ply = NULL, ent = NULL) ->
@@ -50,8 +50,8 @@ GravGunPunt = (ply = NULL, ent = NULL) ->
 	status = DPP2.ACCESS.CanGravgun(ply, ent)
 	return status if not status
 	if SERVER
-		ent\DPP2UnGhost()
-		DPP2.APKTriggerPhysgunDrop(ply, tr.Entity)
+		ent\DPP2UnGhost(true)
+		DPP2.APKTriggerPhysgunDrop(ply, ent)
 		return
 
 AllowPlayerPickup = (ply = NULL, ent = NULL) ->
@@ -73,7 +73,7 @@ PhysgunPickup = (ply = NULL, ent = NULL) ->
 	ent\DPP2CheckUpForGrabs(ply) if SERVER
 	status = DPP2.ACCESS.CanPhysgun(ply, ent)
 	return status if not status
-	ent\DPP2UnGhost() if SERVER
+	ent\DPP2UnGhost(true) if SERVER
 	return
 
 OnPhysgunReload = (physgun = NULL, ply = NULL) ->
@@ -83,7 +83,7 @@ OnPhysgunReload = (physgun = NULL, ply = NULL) ->
 	status = DPP2.ACCESS.CanPhysgun(ply, tr.Entity)
 	return status if not status
 	if SERVER
-		ent\DPP2UnGhost()
+		tr.Entity\DPP2UnGhost(true)
 		DPP2.APKTriggerPhysgunDrop(ply, tr.Entity)
 		return
 
@@ -95,7 +95,7 @@ CanProperty = (ply = NULL, property, ent = NULL) ->
 	status = DPP2.ACCESS.CanToolgun(ply, ent, property)
 	return status if not status
 	if SERVER
-		ent\DPP2UnGhost()
+		ent\DPP2UnGhost(true)
 		DPP2.APKTriggerPhysgunDrop(ply, ent)
 		return
 
@@ -106,7 +106,7 @@ CanTool = (ply = NULL, tr = {HitPos: Vector(), Entity: NULL, HitNormal: Vector()
 	status = DPP2.ACCESS.CanToolgun(ply, tr.Entity, mode)
 	return status if not status
 	if SERVER
-		ent\DPP2UnGhost()
+		tr.Entity\DPP2UnGhost(true)
 		DPP2.APKTriggerPhysgunDrop(ply, tr.Entity)
 		return
 

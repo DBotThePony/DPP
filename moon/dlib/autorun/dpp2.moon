@@ -28,6 +28,8 @@ DLib.CMessageChat(DPP2, 'DPP2')
 DPP2.TYPE_BOOL = 0
 DPP2.TYPE_INT = 1
 DPP2.TYPE_FLOAT = 2
+DPP2.TYPE_UINT = 3
+DPP2.TYPE_UFLOAT = 4
 
 DPP2.CVarsRegistry = {}
 
@@ -62,7 +64,9 @@ AddCSLuaFile('dpp2/common/sh_antipropkill.lua')
 AddCSLuaFile('dpp2/common/sh_registry.lua')
 AddCSLuaFile('dpp2/client/cl_logic.lua')
 AddCSLuaFile('dpp2/client/cl_owning.lua')
+AddCSLuaFile('dpp2/client/sh_antispam.lua')
 
+include('dpp2/server/sv_functions.lua') if SERVER
 include('dpp2/common/sh_definition.lua')
 include('dpp2/common/sh_functions.lua')
 include('dpp2/common/sh_owning.lua')
@@ -78,6 +82,8 @@ include('dpp2/server/sv_hooks.lua') if SERVER
 include('dpp2/server/sv_patches.lua') if SERVER
 include('dpp2/common/sh_antipropkill.lua')
 include('dpp2/server/sv_antipropkill.lua') if SERVER
+include('dpp2/common/sh_antispam.lua')
+include('dpp2/server/sv_antispam.lua') if SERVER
 include('dpp2/common/sh_cppi.lua')
 
 if SERVER
@@ -161,7 +167,7 @@ else
 		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_CLEANUP, length)
 
 	DPP2.NotifyHint = (length = 5, ...) =>
-		DPP2.LMessage('[HINT]', ...)
+		DPP2.LMessage('[HINT] ', ...)
 		strings = [arg for arg in *DPP2.LFormatMessageRaw(...) when type(arg) == 'string']
 		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_HINT, length)
 

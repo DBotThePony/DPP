@@ -18,8 +18,54 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
+fixme_init = {
+	'/advdupe2/'
+	'duplicator.lua'
+}
+
+DPP2.FIXME_HookSpawns = DPP2.FIXME_HookSpawns or fixme_init
+
+for init in *fixme_init
+	if not table.qhasValue(DPP2.FIXME_HookSpawns, init)
+		table.insert(DPP2.FIXME_HookSpawns, init)
+
 DPP2.PlayerSpawnedSomething = (ply, ent, advancedCheck = false) ->
+	fixme = false
+
+	i = 1
+	info = debug.getinfo(i)
+	while info
+		for fix in *DPP2.FIXME_HookSpawns
+			if string.find(info.src or info.short_src, fix)
+				fixme = true
+				break
+
+		i += 1
+		info = debug.getinfo(i)
+
+	if not fixme
+		return if not advancedCheck and not DPP2.QueueAntispam(ply, ent)
+		if not advancedCheck and DPP2.ENABLE_ANTISPAM\GetBool() and DPP2.ANTISPAM_COLLISIONS\GetBool() and ent\GetSolid() ~= SOLID_NONE
+			-- TODO: Point position calculation near plane, for accurate results
+			-- using OBBMins and OBBMaxs
+
+			timer.Simple 0, ->
+				return if not IsValid(ply) or not IsValid(ent)
+				mins, maxs = ent\WorldSpaceAABB()
+				if mins and maxs and mins ~= vector_origin and maxs ~= vector_origin
+					for ent2 in *ents.FindInBox(mins, maxs)
+						if ent2 ~= ent and not ent2\IsPlayer() and not ent2\IsNPC() and (not ent2\IsWeapon() or not ent2\GetOwner()\IsValid()) and ent2\GetSolid() ~= SOLID_NONE
+							ent\DPP2Ghost()
+							DPP2.NotifyHint(ply, 5, 'message.dpp2.warn.collisions')
+							break
+	else
+		return if not DPP2.AntispamCheck(ply, true, ent, nil, true)
+
+	if DPP2.ENABLE_ANTIPROPKILL\GetBool() and DPP2.ANTIPROPKILL_TRAP\GetBool() and ent\GetSolid() ~= SOLID_NONE
+		timer.Simple 0, -> DPP2.APKTriggerPhysgunDrop(ply, ent) if IsValid(ply) and IsValid(ent)
+
 	ent\DPP2SetOwner(ply)
+	hook.Run('DPP_PlayerSpawn', ply, ent)
 
 PlayerSpawnedEffect = (ply = NULL, model = 'models/error.mdl', ent = NULL) ->
 	return unless ply\IsValid()
@@ -86,7 +132,7 @@ DPP2.HookedEntityCreation = => table.qhasValue(CheckEntities, @) or @__dpp2_spaw
 local DiveTableCheck
 local DiveEntityCheck
 
-DiveTableCheck = (tab, owner, checkedEnts, checkedTables) =>
+DiveTableCheck = (tab, owner, checkedEnts, checkedTables, found) =>
 	return if checkedTables[tab]
 	checkedTables[tab] = true
 
@@ -94,18 +140,19 @@ DiveTableCheck = (tab, owner, checkedEnts, checkedTables) =>
 		vtype = type(value)
 
 		if vtype == 'table' and (type(key) ~= 'string' or not key\startsWith('__dpp2'))
-			DiveTableCheck(@, value, owner, checkedEnts, checkedTables)
+			DiveTableCheck(@, value, owner, checkedEnts, checkedTables, found)
 		elseif vtype == 'Entity' or vtype == 'NPC' or vtype == 'NextBot' or vtype == 'Vehicle'
-			DiveEntityCheck(value, owner, checkedEnts, checkedTables)
+			DiveEntityCheck(value, owner, checkedEnts, checkedTables, found)
 
-DiveEntityCheck = (owner, checkedEnts, checkedTables) =>
-	return if checkedEnts[@]
-	return if @__dpp2_check_frame == CurTimeL()
-	return if not @GetTable()
+DiveEntityCheck = (owner, checkedEnts, checkedTables, found) =>
+	return found if checkedEnts[@]
+	return found if @__dpp2_check_frame == CurTimeL()
+	return found if not @GetTable()
 	checkedEnts[@] = true
 	@__dpp2_check_frame = CurTimeL()
-	DPP2.PlayerSpawnedSomething(owner, @, true) if @DPP2GetOwner() ~= owner and @__dpp2_spawn_frame == CurTimeL()
-	DiveTableCheck(@, @GetTable(), owner, checkedEnts, checkedTables)
+	table.insert(found, @) if @DPP2GetOwner() ~= owner and @__dpp2_spawn_frame == CurTimeL()
+	DiveTableCheck(@, @GetTable(), owner, checkedEnts, checkedTables, found)
+	return found
 
 hook.Add 'Think', 'DPP2.CheckEntitiesOwnage', ->
 	return if CheckFrame >= CurTimeL()
@@ -117,9 +164,29 @@ hook.Add 'Think', 'DPP2.CheckEntitiesOwnage', ->
 		if ent\IsValid()
 			ent.__dpp2_spawn_frame = CurTimeL()
 
-	for ent in *copy
+	while #copy ~= 0
+		ent = table.remove(copy, 1)
+
 		if ent\IsValid() and ent\DPP2OwnerIsValid()
-			DiveEntityCheck(ent, ent\DPP2GetOwner(), {}, {})
+			ply = ent\DPP2GetOwner()
+			found = DiveEntityCheck(ent, ply, {}, {}, {})
+
+			if #found ~= 0
+				DPP2.UnqueueAntispam(ent)
+				local toremove
+
+				for ent2 in *found
+					DPP2.UnqueueAntispam(ent2)
+					DPP2.PlayerSpawnedSomething(ply, ent2, true)
+
+					for i, ent3 in ipairs(copy)
+						if ent2 == ent3
+							toremove = toremove or {}
+							table.insert(toremove, i)
+							break
+
+				table.removeValues(copy, toremove) if toremove
+				DPP2.QueueAntispam(ply, ent, found)
 
 hook.Add 'OnEntityCreated', 'DPP2.CheckEntitiesOwnage', =>
 	CheckFrame = CurTimeL()

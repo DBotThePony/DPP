@@ -39,10 +39,17 @@ if undo
 
 	undo.Finish = (...) ->
 		Current_Undo = findUndo()
+		find = {}
 
 		if Current_Undo and type(Current_Undo.Owner) == 'Player' and type(Current_Undo.Entities) == 'table'
 			for ent in *Current_Undo.Entities
-				if IsValid(ent) and DPP2.HookedEntityCreation(ent) and not ent\DPP2IsOwned()
-					DPP2.PlayerSpawnedSomething(Current_Undo.Owner, ent)
+				if IsValid(ent) and DPP2.HookedEntityCreation(ent)
+					DPP2.PlayerSpawnedSomething(Current_Undo.Owner, ent, true) if not ent\DPP2IsOwned()
+					table.insert(find, ent)
+
+		return undo._DPP2_Finish(...) if #find == 0
+
+		DPP2.UnqueueAntispam(ent) for ent in *find
+		DPP2.QueueAntispam(Current_Undo.Owner, table.remove(find, 1), find)
 
 		return undo._DPP2_Finish(...)

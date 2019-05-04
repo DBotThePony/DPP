@@ -31,7 +31,8 @@ gui.dpp2.access.status.toolgun_player = 'Cannot toolgun a player'
 message.dpp2.owning.owned = 'You now own this entity'
 message.dpp2.notice.upforgrabs = ' props are now up for grabs!'
 message.dpp2.notice.cleanup = ' props has been cleaned up.'
-message.dpp2.warn.trap = 'Your prop seems to stuck in someone'
+message.dpp2.warn.trap = 'Your entity seems to stuck in someone. Interact with it to unghost!'
+message.dpp2.warn.collisions = 'Your entity seems to stuck in other prop. Interact with it to unghost!'
 
 gui.dpp2.cvars.protection = 'Main power switch for all protection modules'
 gui.dpp2.cvars.cleanup = 'Cleanup props of disconnected players'
@@ -56,3 +57,13 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 	gui.dpp2.cvars['cl_' .. modeID .. '_no_map'] = string.format('%s: I don\'t want to touch maps\'s props', modeName)
 	gui.dpp2.cvars['cl_' .. modeID .. '_no_players'] = string.format('%s: I don\'t want to touch players', modeName)
 	gui.dpp2.buddystatus[modeID] = 'Buddy in ' .. modeName
+
+message.dpp2.antispam.hint_ghosted = '%d entities were ghosted because of spam'
+message.dpp2.antispam.hint_removed = '%d entities were removed because of spam'
+message.dpp2.antispam.hint_disallowed = 'Action is not allowed due to spam'
+
+message.dpp2.antispam.hint_ghosted_single = 'Entity were ghosted because of spam'
+message.dpp2.antispam.hint_removed_single = 'Entity were removed because of spam'
+
+message.dpp2.antispam.hint_ghosted_big = '%d entities were ghosted because they are too big. Interact with them to unghost!'
+message.dpp2.antispam.hint_ghosted_big_single = 'Entity were ghosted because it is too big. Interact with it to unghost!'

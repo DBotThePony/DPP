@@ -70,9 +70,9 @@ GetOwnerText = ->
 
 	canTouch = true
 
-	if tr.Entity.GetPrintName
+	if tr.Entity.GetPrintName and tr.Entity\GetPrintName() ~= ''
 		ownerName = string.format('%s\n%q', ownerName, tr.Entity\GetPrintName())
-	elseif tr.Entity.PrintName
+	elseif tr.Entity.PrintName and tr.Entity.PrintName ~= ''
 		ownerName = string.format('%s\n%q', ownerName, tr.Entity.PrintName)
 
 	switch ply\GetActiveWeaponClass()

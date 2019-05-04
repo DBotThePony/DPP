@@ -28,7 +28,7 @@ DPP2.APKTriggerPhysgunDrop = (ply = NULL, ent = NULL) ->
 	return if ent\DPP2IsGhosted()
 
 	for ent2 in *ents.FindInBox(ent\WorldSpaceAABB())
-		if ent2\IsPlayer()
+		if ent2\IsPlayer() and ent2 ~= ply
 			ent\DPP2Ghost()
 			DPP2.NotifyHint(ply, 5, 'message.dpp2.warn.trap')
 			return
@@ -38,6 +38,7 @@ PhysgunDrop2 = (ply = NULL, ent = NULL) ->
 	return if not DPP2.ANTIPROPKILL_PUSH\GetBool()
 	ent.__dpp2_pushing = (ent.__dpp2_pushing or 0) - 1
 	return if ent.__dpp2_pushing > 0
+	ent\CollisionRulesChanged()
 	ent\SetCustomCollisionCheck(ent.__dpp2_prev_col_check)
 	ent\CollisionRulesChanged()
 	return
@@ -47,26 +48,26 @@ PhysgunDrop3 = (ply = NULL, ent = NULL) ->
 	return if not DPP2.ANTIPROPKILL_THROW\GetBool()
 	for physID = 0, ent\GetPhysicsObjectCount() - 1
 		phys = ent\GetPhysicsObjectNum(physID)
-		phys\SetVelocity(vector_origin) if IsValid(phys)
+		if IsValid(phys)
+			phys\SetVelocity(vector_origin)
+			phys\AddAngleVelocity(-phys\GetAngleVelocity())
 
 PhysgunPickup = (ply = NULL, ent = NULL) ->
 	return if not DPP2.ENABLE_ANTIPROPKILL\GetBool()
 	return if not DPP2.ANTIPROPKILL_PUSH\GetBool()
+	return if ent\IsPlayer()
 	ent.__dpp2_pushing = (ent.__dpp2_pushing or 0) + 1
 	return if ent.__dpp2_pushing > 1
 	ent\CollisionRulesChanged()
 	ent.__dpp2_prev_col_check = ent\GetCustomCollisionCheck()
 	ent\SetCustomCollisionCheck(true)
+	ent\CollisionRulesChanged()
 	return
 
 ShouldCollide = (ent1, ent2) ->
 	return if (not ent1.__dpp2_pushing or ent1.__dpp2_pushing < 1) and (not ent2.__dpp2_pushing or ent2.__dpp2_pushing < 1)
 	return if not ent1\IsPlayer() and not ent2\IsPlayer()
 	return false
-
-GravGunPunt = (ply = NULL, wep = NULL) ->
-	return if not DPP2.ENABLE_ANTIPROPKILL\GetBool()
-	return false if not DPP2.ANTIPROPKILL_PUNT\GetBool()
 
 EntityTakeDamage = (dmg) =>
 	return if not DPP2.ENABLE_ANTIPROPKILL\GetBool()
@@ -90,6 +91,5 @@ hook.Add 'PhysgunDrop', 'DPP2.Antipush', PhysgunDrop2, 6
 hook.Add 'PhysgunPickup', 'DPP2.Antipush', PhysgunPickup, 6
 hook.Add 'ShouldCollide', 'DPP2.Antipush', ShouldCollide, 6
 
-hook.Add 'GravGunPunt', 'DPP2.AntiPropkill', GravGunPunt, 6
 hook.Add 'EntityTakeDamage', 'DPP2.AntiPropkill', EntityTakeDamage, 6
 hook.Add 'EntityTakeDamage', 'DPP2.AntiPropkill2', EntityTakeDamage, -6
