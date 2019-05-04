@@ -26,9 +26,10 @@ DPP2.APKTriggerPhysgunDrop = (ply = NULL, ent = NULL) ->
 	return if not ply\IsValid() or not ent\IsValid()
 	return if ent\IsPlayer()
 	return if ent\DPP2IsGhosted()
+	return if ent\GetSolid() == SOLID_NONE
 
 	for ent2 in *ents.FindInBox(ent\WorldSpaceAABB())
-		if ent2\IsPlayer() and ent2 ~= ply
+		if ent2\IsPlayer() and ent2 ~= ply and not ent2\InVehicle()
 			ent\DPP2Ghost()
 			DPP2.NotifyHint(ply, 5, 'message.dpp2.warn.trap')
 			return
