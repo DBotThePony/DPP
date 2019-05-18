@@ -111,7 +111,7 @@ DPP2.FindPlayersInArgument = (str = '') ->
 
 	if num = str\tonumber()
 		ply = Player(num)
-		return num if IsValid(ply)
+		return {ply\Nick()} if IsValid(ply)
 		output = [ply\Nick() for ply in *player.GetAll() when ply\UserID()\tostring()\startsWith(str)]
 		return #output ~= 0 and output or {DLib.i18n.localize('message.dpp2.concommand.hint.none')}
 
