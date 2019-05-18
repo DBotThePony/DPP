@@ -71,8 +71,16 @@ message.dpp2.antispam.hint_ghosted_big_single = 'Entity were ghosted because it 
 message.dpp2.concommand.generic.notarget = 'Invalid target!'
 message.dpp2.concommand.generic.noaccess = 'You can not execute this command (reason: %s)'
 message.dpp2.concommand.generic.noaccess_check = 'You can not execute this command on target player (reason: %s)'
-message.dpp2.concommand.cleanup = '#E cleaned all #E\'s props'
-message.dpp2.concommand.cleanupdisconnected = '#E cleaned disconnected player\'s props'
+
+message.dpp2.concommand.cleanup = '#E cleaned all #E\'s entities'
+message.dpp2.concommand.cleanupnpcs = '#E cleaned all #E\'s NPCs'
+message.dpp2.concommand.cleanupallnpcs = '#E cleaned all owned NPCs'
+message.dpp2.concommand.cleanupvehicles = '#E cleaned all #E\'s Vehicles'
+message.dpp2.concommand.cleanupallvehicles = '#E cleaned all owned vehicles'
+message.dpp2.concommand.freezephys = '#E froze all #E\'s entities'
+message.dpp2.concommand.freezephysall = '#E froze all owned entities'
+message.dpp2.concommand.freezephyspanic = '#E froze everything'
+message.dpp2.concommand.cleanupdisconnected = '#E cleaned disconnected player\'s entities'
 
 message.dpp2.concommand.hint.none = '<none>'
 message.dpp2.concommand.hint.player = '<player>'

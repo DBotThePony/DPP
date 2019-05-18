@@ -23,21 +23,79 @@ import DPP2 from _G
 cmds = {
 	cleanup: (args = {}, message) =>
 		str = table.concat(args, ' ')
-		return DPP2.cmd.cleanupdisconnected(@) if str\lower() == 'disconnected'
+
+		switch str\lower()
+			when 'disconnected'
+				return DPP2.cmd_remap.cleanupdisconnected(@)
+			when 'npc'
+				return DPP2.cmd_remap.cleanupallnpcs(@)
+			when 'vehicles'
+				return DPP2.cmd_remap.cleanupallvehicles(@)
+
 		ply = DPP2.FindPlayerInCommand(str)
 		return 'message.dpp2.concommand.generic.notarget' if not ply
+		SafeRemoveEntity(ent) for ent in *ply\DPP2FindOwned()
+		DPP2.Notify(true, nil, 'message.dpp2.concommand.cleanup', @, ply)
 
-		cb = (hasAccess = false, reason = '<unknown reason>') ->
-			return message('message.dpp2.concommand.generic.noaccess_check', reason) if not hasAccess
-			return message('message.dpp2.concommand.generic.notarget') if not IsValid(ply)
-			SafeRemoveEntity(ent) for ent in *ply\DPP2FindOwned()
-			DPP2.Notify(true, nil, 'message.dpp2.concommand.cleanup', @, ply)
+	cleanupnpcs: (args = {}, message) =>
+		str = table.concat(args, ' ')
+		ply = DPP2.FindPlayerInCommand(str)
+		return 'message.dpp2.concommand.generic.notarget' if not ply
+		SafeRemoveEntity(ent) for ent in *ply\DPP2FindOwned() when ent\IsNPC() or type(ent) == 'NextBot'
+		DPP2.Notify(true, nil, 'message.dpp2.concommand.cleanupnpcs', @, ply)
 
-		CAMI.PlayerHasAccess @, 'dpp2_cleanup', cb, ply
+	cleanupvehicles: (args = {}, message) =>
+		str = table.concat(args, ' ')
+		ply = DPP2.FindPlayerInCommand(str)
+		return 'message.dpp2.concommand.generic.notarget' if not ply
+		SafeRemoveEntity(ent) for ent in *ply\DPP2FindOwned() when ent\IsVehicle()
+		DPP2.Notify(true, nil, 'message.dpp2.concommand.cleanupvehicles', @, ply)
+
+	cleanupallnpcs: (args = {}, message) =>
+		SafeRemoveEntity(ent) for ent in *DPP2.FindOwned() when ent\IsNPC() or type(ent) == 'NextBot'
+		DPP2.Notify(true, nil, 'message.dpp2.concommand.cleanupallnpcs', @)
+
+	cleanupallvehicles: (args = {}, message) =>
+		SafeRemoveEntity(ent) for ent in *DPP2.FindOwned() when ent\IsVehicle()
+		DPP2.Notify(true, nil, 'message.dpp2.concommand.cleanupallvehicles', @)
 
 	cleanupdisconnected: (args = {}) =>
 		SafeRemoveEntity(ent) for ent in *DPP2.FindOwned() when not ent\DPP2OwnerIsValid()
 		DPP2.Notify(true, nil, 'message.dpp2.concommand.cleanupdisconnected', @)
+
+	freezephys: (args = {}, message) =>
+		str = table.concat(args, ' ')
+		ply = DPP2.FindPlayerInCommand(str)
+		return 'message.dpp2.concommand.generic.notarget' if not ply
+
+		for ent in *ply\DPP2FindOwned()
+			if phys = ent\DPP2GetPhys()
+				if type(phys) == 'table'
+					phys2\EnableMotion(false) for phys2 in *phys
+				else
+					phys\EnableMotion(false)
+
+		DPP2.Notify(true, nil, 'message.dpp2.concommand.freezephys', @, ply)
+
+	freezephysall: (args = {}, message) =>
+		for ent in *DPP2.FindOwned()
+			if phys = ent\DPP2GetPhys()
+				if type(phys) == 'table'
+					phys2\EnableMotion(false) for phys2 in *phys
+				else
+					phys\EnableMotion(false)
+
+		DPP2.Notify(true, nil, 'message.dpp2.concommand.freezephysall', @)
+
+	freezephyspanic: (args = {}, message) =>
+		for ent in *ents.GetAll()
+			if phys = ent\DPP2GetPhys()
+				if type(phys) == 'table'
+					phys2\EnableMotion(false) for phys2 in *phys
+				else
+					phys\EnableMotion(false)
+
+		DPP2.Notify(true, nil, 'message.dpp2.concommand.freezephyspanic', @)
 }
 
 DPP2.cmd[k] = v for k, v in pairs(cmds)

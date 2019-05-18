@@ -25,7 +25,7 @@ entMeta = FindMetaTable('Entity')
 local worldspawn
 
 entMeta.DPP2GetPhys = =>
-	return if @IsPlayer() or @IsNPC()
+	return if @IsPlayer() or @IsNPC() or type(@) == 'NextBot'
 	worldspawn = Entity(0)\GetPhysicsObject()
 
 	switch @GetPhysicsObjectCount()

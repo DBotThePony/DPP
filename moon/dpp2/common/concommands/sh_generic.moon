@@ -21,14 +21,29 @@
 import DPP2 from _G
 
 cmds = {
+	freezephys: (args = '') -> [string.format('%q', ply) for ply in *DPP2.FindPlayersInArgument(args)]
+
 	cleanup: (args = '') ->
 		args = args\trim()
 		return {'disconnected'} if args == 'disconnected'
+		return {'npcs'} if args == 'npcs'
+		return {'vehicles'} if args == 'vehicles'
 		output = [string.format('%q', ply) for ply in *DPP2.FindPlayersInArgument(args)]
-		table.insert(output, 'disconnected') if args == ''
+		if args == ''
+			table.insert(output, 'disconnected')
+			table.insert(output, 'npcs')
+			table.insert(output, 'vehicles')
 		return output
 }
 
+cmds.cleanupnpcs = cmds.freezephys
+cmds.cleanupvehicles = cmds.freezephys
+
 DPP2.cmd_autocomplete[k] = v for k, v in pairs(cmds)
 
-DPP2.cmd_existing.cleanupdisconnected = true if CLIENT
+if CLIENT
+	DPP2.cmd_existing.cleanupdisconnected = true
+	DPP2.cmd_existing.freezephysall = true
+	DPP2.cmd_existing.freezephyspanic = true
+	DPP2.cmd_existing.cleanupallnpcs = true
+	DPP2.cmd_existing.cleanupallvehicles = true

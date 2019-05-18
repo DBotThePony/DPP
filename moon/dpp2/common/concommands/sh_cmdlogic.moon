@@ -20,7 +20,14 @@
 
 DPP2.cmd_perms = {
 	cleanup: 'admin'
+	cleanupnpcs: 'admin'
+	cleanupallnpcs: 'admin'
+	cleanupallvehicles: 'admin'
+	cleanupvehicles: 'admin'
 	cleanupdisconnected: 'admin'
+	freezephys: 'admin'
+	freezephysall: 'admin'
+	freezephyspanic: 'superadmin'
 }
 
 DPP2.cmd_remap = {}
@@ -52,7 +59,7 @@ if SERVER
 				if IsValid(@)
 					CAMI.PlayerHasAccess @, 'dpp2_' .. cmdName, (hasAccess = false, reason = '<unknown reason>') ->
 						if not hasAccess
-							DPP2.NotifyError(@, nil, 'message.dpp2.concommand.generic.noaccess', reason)
+							DPP2.NotifyError(@, nil, 'message.dpp2.concommand.generic.noaccess_check', reason)
 							return
 
 						output = {cmdFunc(@, args, (...) -> DPP2.NotifyError(@, nil, ...))}
