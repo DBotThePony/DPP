@@ -20,8 +20,8 @@
 
 import NULL, type, ents, player, DLib, DPP2, select, ipairs from _G
 
-DPP2.ENABLE_CLEANUP = DPP2.CreateConVar('cleanup', '1', DPP2.TYPE_BOOL)
-DPP2.CLEANUP_TIMER = DPP2.CreateConVar('cleanup_timer', '480', DPP2.TYPE_FLOAT)
+DPP2.ENABLE_CLEANUP = DPP2.CreateConVar('autocleanup', '1', DPP2.TYPE_BOOL)
+DPP2.CLEANUP_TIMER = DPP2.CreateConVar('autocleanup_timer', '480', DPP2.TYPE_FLOAT)
 DPP2.ENABLE_UP_FOR_GRABS = DPP2.CreateConVar('upforgrabs', '1', DPP2.TYPE_BOOL)
 DPP2.UP_FOR_GRABS_TIMER = DPP2.CreateConVar('upforgrabs_timer', '360', DPP2.TYPE_FLOAT)
 

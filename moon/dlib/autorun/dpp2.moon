@@ -65,6 +65,8 @@ AddCSLuaFile('dpp2/common/sh_registry.lua')
 AddCSLuaFile('dpp2/client/cl_logic.lua')
 AddCSLuaFile('dpp2/client/cl_owning.lua')
 AddCSLuaFile('dpp2/client/sh_antispam.lua')
+AddCSLuaFile('dpp2/common/concommands/sh_cmdlogic.lua')
+AddCSLuaFile('dpp2/common/concommands/sh_generic.lua')
 
 include('dpp2/server/sv_functions.lua') if SERVER
 include('dpp2/common/sh_definition.lua')
@@ -86,6 +88,14 @@ include('dpp2/common/sh_antispam.lua')
 include('dpp2/server/sv_antispam.lua') if SERVER
 include('dpp2/common/sh_cppi.lua')
 
+-- concommands
+DPP2.cmd = {} if SERVER
+DPP2.cmd_existing = {} if CLIENT
+DPP2.cmd_autocomplete = {}
+include('dpp2/server/concommands/sv_generic.lua') if SERVER
+include('dpp2/common/concommands/sh_generic.lua')
+include('dpp2/common/concommands/sh_cmdlogic.lua')
+
 if SERVER
 	net.pool('dpp2_notify')
 
@@ -96,6 +106,15 @@ if SERVER
 	DPP2.NotifyErrorAll = (...) -> DPP2.NotifyError(player.GetAll(), ...)
 
 	DPP2.Notify = (length = 5, ...) =>
+		if @ == false
+			DPP2.LMessage(...)
+			return
+
+		if @ == true
+			DPP2.LMessage(...)
+			DPP2.Notify(player.GetAll(), length, ...)
+			return
+
 		if type(@) ~= 'table' and not IsValid(@)
 			DPP2.LMessage(...)
 			return
@@ -107,6 +126,15 @@ if SERVER
 		net.Send(@)
 
 	DPP2.NotifyError = (length = 5, ...) =>
+		if @ == false
+			DPP2.LMessageError(...)
+			return
+
+		if @ == true
+			DPP2.LMessageError(...)
+			DPP2.NotifyError(player.GetAll(), length, ...)
+			return
+
 		if type(@) ~= 'table' and not IsValid(@)
 			DPP2.LMessageError(...)
 			return
@@ -118,6 +146,15 @@ if SERVER
 		net.Send(@)
 
 	DPP2.NotifyHint = (length = 5, ...) =>
+		if @ == false
+			DPP2.LMessage('[HINT] ', ...)
+			return
+
+		if @ == true
+			DPP2.LMessage('[HINT] ', ...)
+			DPP2.NotifyHint(player.GetAll(), length, ...)
+			return
+
 		if type(@) ~= 'table' and not IsValid(@)
 			DPP2.LMessage('[HINT] ', ...)
 			return
@@ -129,6 +166,15 @@ if SERVER
 		net.Send(@)
 
 	DPP2.NotifyUndo = (length = 5, ...) =>
+		if @ == false
+			DPP2.LMessage(...)
+			return
+
+		if @ == true
+			DPP2.LMessage(...)
+			DPP2.NotifyUndo(player.GetAll(), length, ...)
+			return
+
 		if type(@) ~= 'table' and not IsValid(@)
 			DPP2.LMessage(...)
 			return
@@ -140,6 +186,15 @@ if SERVER
 		net.Send(@)
 
 	DPP2.NotifyCleanup = (length = 5, ...) =>
+		if @ == false
+			DPP2.LMessage(...)
+			return
+
+		if @ == true
+			DPP2.LMessage(...)
+			DPP2.NotifyCleanup(player.GetAll(), length, ...)
+			return
+
 		if type(@) ~= 'table' and not IsValid(@)
 			DPP2.LMessage(...)
 			return

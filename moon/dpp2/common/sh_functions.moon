@@ -18,7 +18,7 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-import Entity from _G
+import Entity, DPP2 from _G
 
 entMeta = FindMetaTable('Entity')
 
@@ -48,3 +48,82 @@ entMeta.DPP2GetPhys = =>
 	return if not output
 	return output[1] if #output == 1
 	return output
+
+plyMeta = FindMetaTable('Player')
+
+plyMeta.DPP2FindOwned = =>
+	return error('Tried to use a NULL Entity!') if not @IsValid()
+
+	output = {}
+
+	for ent in *ents.GetAll()
+		if ent\DPP2GetOwner() == @
+			table.insert(output, ent)
+
+	return output
+
+DPP2.FindOwned = ->
+	output = {}
+
+	for ent in *ents.GetAll()
+		if ent\DPP2IsOwned()
+			table.insert(output, ent)
+
+	return output
+
+DPP2.FindPlayerInCommand = (str = '') ->
+	str = str\trim()\lower()
+	return false if str == ''
+	return player.GetBySteamID(str\upper()) if str\startsWith('steam_')
+
+	if num = str\tonumber()
+		ply = Player(num)
+		return ply if IsValid(ply)
+
+	-- todo: better comprasion
+	findPly = false
+
+	for ply in *player.GetAll()
+		nick = ply\Nick()\lower()
+		return ply if nick == str
+
+		if nick\find(str)
+			findPly = ply
+
+		if ply.SteamName
+			nick = ply\SteamName()\lower()
+			return ply if nick == str
+
+			if nick\find(str)
+				findPly = ply
+
+	return findPly
+
+DPP2.FindPlayersInArgument = (str = '') ->
+	str = str\trim()\lower()
+	return {DLib.i18n.localize('message.dpp2.concommand.hint.player')} if str == ''
+
+	if str\startsWith('steam_')
+		plyFind = player.GetBySteamID(str\upper())
+		return plyFind\Nick() if plyFind
+		output = [ply\SteamID() for ply in *player.GetAll() when ply\SteamID()\lower()\startsWith(str)]
+		return #output ~= 0 and output or {DLib.i18n.localize('message.dpp2.concommand.hint.none')}
+
+	if num = str\tonumber()
+		ply = Player(num)
+		return num if IsValid(ply)
+		output = [ply\Nick() for ply in *player.GetAll() when ply\UserID()\tostring()\startsWith(str)]
+		return #output ~= 0 and output or {DLib.i18n.localize('message.dpp2.concommand.hint.none')}
+
+	findPly = {}
+
+	for ply in *player.GetAll()
+		nick = ply\Nick()\lower()
+		if nick == str or nick\find(str)
+			table.insert(findPly, ply\Nick())
+		elseif ply.SteamName
+			nick = ply\SteamName()\lower()
+			if nick == str or nick\find(str)
+				table.insert(findPly, ply\SteamName())
+
+	return #findPly ~= 0 and findPly or {DLib.i18n.localize('message.dpp2.concommand.hint.none')}

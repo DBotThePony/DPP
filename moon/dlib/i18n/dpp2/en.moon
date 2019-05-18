@@ -67,3 +67,12 @@ message.dpp2.antispam.hint_removed_single = 'Entity were removed because of spam
 
 message.dpp2.antispam.hint_ghosted_big = '%d entities were ghosted because they are too big. Interact with them to unghost!'
 message.dpp2.antispam.hint_ghosted_big_single = 'Entity were ghosted because it is too big. Interact with it to unghost!'
+
+message.dpp2.concommand.generic.notarget = 'Invalid target!'
+message.dpp2.concommand.generic.noaccess = 'You can not execute this command (reason: %s)'
+message.dpp2.concommand.generic.noaccess_check = 'You can not execute this command on target player (reason: %s)'
+message.dpp2.concommand.cleanup = '#E cleaned all #E\'s props'
+message.dpp2.concommand.cleanupdisconnected = '#E cleaned disconnected player\'s props'
+
+message.dpp2.concommand.hint.none = '<none>'
+message.dpp2.concommand.hint.player = '<player>'
