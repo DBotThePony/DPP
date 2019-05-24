@@ -21,9 +21,9 @@
 import DPP2 from _G
 
 cmds = {
-	freezephys: (args = '') -> [string.format('%q', ply) for ply in *DPP2.FindPlayersInArgument(args)]
+	freezephys: (args = '') => [string.format('%q', ply) for ply in *DPP2.FindPlayersInArgument(args)]
 
-	cleanup: (args = '') ->
+	cleanup: (args = '') =>
 		args = args\trim()
 		return {'disconnected'} if args == 'disconnected'
 		return {'npcs'} if args == 'npcs'

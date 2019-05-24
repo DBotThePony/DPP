@@ -28,6 +28,11 @@ DPP2.cmd_perms = {
 	freezephys: 'admin'
 	freezephysall: 'admin'
 	freezephyspanic: 'superadmin'
+
+	transfertoworld: 'admin'
+	transfer: 'user'
+	transferfallback: 'user'
+	transferent: 'user'
 }
 
 DPP2.cmd_remap = {}
@@ -74,7 +79,7 @@ if SERVER
 				fcall = DPP2.cmd_autocomplete[cmdName]
 
 				autocomplete = (cmd = '', args = '') ->
-					ret = fcall(args)
+					ret = fcall(NULL, args\trim(), args)
 					return {cmd} if not ret or #ret == 0
 					output = [cmd .. ' ' .. val for val in *ret]
 					return output
@@ -99,7 +104,7 @@ if SERVER
 				fcall = DPP2.cmd_autocomplete[cmdName]
 
 				autocomplete = (cmd = '', args = '') ->
-					ret = fcall(args)
+					ret = fcall(NULL, args\trim(), args)
 					return {cmd} if not ret or #ret == 0
 					output = [cmd .. ' ' .. val for val in *ret]
 					return output
@@ -133,7 +138,7 @@ elseif not game.SinglePlayer()
 
 				autocomplete = (cmd = '', args = '') ->
 					return {cmd .. ' <No access!>'} if not watchdog\HasPermission(perm)
-					ret = fcall(args)
+					ret = fcall(LocalPlayer(), args\trim(), args)
 					return {cmd} if not ret or #ret == 0
 					output = [cmd .. ' ' .. val for val in *ret]
 					return output
@@ -148,7 +153,7 @@ elseif not game.SinglePlayer()
 				fcall = DPP2.cmd_autocomplete[cmdName]
 
 				autocomplete = (cmd = '', args = '') ->
-					ret = fcall(args)
+					ret = fcall(LocalPlayer(), args\trim(), args)
 					return {cmd} if not ret or #ret == 0
 					output = [cmd .. ' ' .. val for val in *ret]
 					return output

@@ -24,6 +24,7 @@ import debug, type, DPP2 from _G
 if undo
 	undo = undo
 	undo._DPP2_Finish = undo._DPP2_Finish or undo.Finish
+	DPP2.IN_TRANSFER = false
 
 	findUndo = ->
 		local Current_Undo
@@ -38,6 +39,7 @@ if undo
 		return Current_Undo
 
 	undo.Finish = (...) ->
+		return undo._DPP2_Finish(...) if DPP2.IN_TRANSFER
 		Current_Undo = findUndo()
 		find = {}
 

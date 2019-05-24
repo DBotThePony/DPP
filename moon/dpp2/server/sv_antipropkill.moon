@@ -90,7 +90,7 @@ hook.Add 'PhysgunDrop', 'DPP2.NoThrow', PhysgunDrop3, 8
 
 hook.Add 'PhysgunDrop', 'DPP2.Antipush', PhysgunDrop2, 6
 hook.Add 'PhysgunPickup', 'DPP2.Antipush', PhysgunPickup, 6
-hook.Add 'ShouldCollide', 'DPP2.Antipush', ShouldCollide, 6
+hook.Add 'ShouldCollide', 'DPP2.Antipush', ShouldCollide, -1
 
 hook.Add 'EntityTakeDamage', 'DPP2.AntiPropkill', EntityTakeDamage, 6
 hook.Add 'EntityTakeDamage', 'DPP2.AntiPropkill2', EntityTakeDamage, -6

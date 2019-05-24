@@ -39,6 +39,7 @@ entMeta.DPP2GetOwnerUID = => select(4, @DPP2GetOwner())
 entMeta.DPP2GetOwnerName = => select(3, @DPP2GetOwner())
 
 plyMeta.DPP2GetAllEnts = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @]
+plyMeta.DPP2FindOwned = plyMeta.DPP2GetAllEnts
 plyMeta.DPP2GetAllNPC = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @ and type(ent) == 'NPC']
 plyMeta.DPP2GetAllWeapons = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @ and type(ent) == 'Weapon']
 plyMeta.DPP2GetAllProps = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @ and ent\GetClass() == 'prop_physics']

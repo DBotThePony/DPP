@@ -145,11 +145,13 @@ entMeta.DPP2SetOwnerUID = (newOwner = '-1') =>
 
 entMeta.DPP2CheckUpForGrabs = (newOwner = NULL) =>
 	return false if not newOwner\IsValid()
-	return false if not @DPP2IsUpForGrabs()
 	return false if type(@) == 'Player'
+	return @__dpp2_contraption\CheckUpForGrabs() if @__dpp2_contraption
+	return false if not @DPP2IsUpForGrabs()
 
 	DPP2.Notify(newOwner, 'message.dpp2.owning.owned')
-	@DPP2SetOwner(newOwner)
+	DPP2.DoTransfer({@}, newOwner)
+	return true
 
 PlayerInitialSpawn = =>
 	return if not @SteamID()

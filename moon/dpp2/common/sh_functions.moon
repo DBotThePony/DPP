@@ -51,16 +51,39 @@ entMeta.DPP2GetPhys = =>
 
 plyMeta = FindMetaTable('Player')
 
-plyMeta.DPP2FindOwned = =>
-	return error('Tried to use a NULL Entity!') if not @IsValid()
+DPP2.SplitArguments = (argstr = '') ->
+	stack = {}
+	backslash = false
+	inQuotes = false
+	current = ''
 
-	output = {}
+	for char in argstr\gmatch('.')
+		if char == '\\'
+			if backslash
+				backslash = false
+				current ..= '\\'
+			else
+				backslash = true
+		elseif char == '"'
+			if backslash
+				backslash = false
+				current ..= '"'
+			elseif inQuotes
+				inQuotes = false
+				table.insert(stack, current\trim())
+				current = ''
+			else
+				if current\trim() ~= ''
+					table.insert(stack, current\trim())
+					current = ''
 
-	for ent in *ents.GetAll()
-		if ent\DPP2GetOwner() == @
-			table.insert(output, ent)
+				inQuotes = true
+		else
+			backslash = false
+			current ..= char
 
-	return output
+	table.insert(stack, current\trim()) if current\trim() ~= ''
+	return stack
 
 DPP2.FindOwned = ->
 	output = {}
@@ -99,31 +122,61 @@ DPP2.FindPlayerInCommand = (str = '') ->
 
 	return findPly
 
-DPP2.FindPlayersInArgument = (str = '') ->
+DPP2.FindPlayersInArgument = (str = '', filter, nobots = false) ->
+	filter = LocalPlayer() if CLIENT and filter == true
+
+	if nobots
+		filter = {} if not filter
+		filter = {filter} if type(filter) ~= 'table'
+		table.insert(filter, ply) for ply in *player.GetAll() when ply\IsBot()
+
 	str = str\trim()\lower()
 	return {DLib.i18n.localize('message.dpp2.concommand.hint.player')} if str == ''
 
 	if str\startsWith('steam_')
 		plyFind = player.GetBySteamID(str\upper())
-		return plyFind\Nick() if plyFind
-		output = [ply\SteamID() for ply in *player.GetAll() when ply\SteamID()\lower()\startsWith(str)]
+		return {DLib.i18n.localize('message.dpp2.concommand.hint.player')} if plyFind and plyFind == lply
+		return {plyFind\Nick()} if plyFind and plyFind ~= lply
+		output = [ply\SteamID() for ply in *player.GetAll() when ply\SteamID()\lower()\startsWith(str) and ply ~= lply]
 		return #output ~= 0 and output or {DLib.i18n.localize('message.dpp2.concommand.hint.none')}
 
 	if num = str\tonumber()
 		ply = Player(num)
-		return {ply\Nick()} if IsValid(ply)
-		output = [ply\Nick() for ply in *player.GetAll() when ply\UserID()\tostring()\startsWith(str)]
+		return {DLib.i18n.localize('message.dpp2.concommand.hint.player')} if IsValid(ply) and ply == lply
+		return {ply\Nick()} if IsValid(ply) and ply ~= lply
+		output = [ply\Nick() for ply in *player.GetAll() when ply\UserID()\tostring()\startsWith(str) and ply ~= lply]
 		return #output ~= 0 and output or {DLib.i18n.localize('message.dpp2.concommand.hint.none')}
 
 	findPly = {}
 
-	for ply in *player.GetAll()
-		nick = ply\Nick()\lower()
-		if nick == str or nick\find(str)
-			table.insert(findPly, ply\Nick())
-		elseif ply.SteamName
-			nick = ply\SteamName()\lower()
+	if not filter
+		for ply in *player.GetAll()
+			nick = ply\Nick()\lower()
 			if nick == str or nick\find(str)
-				table.insert(findPly, ply\SteamName())
+				table.insert(findPly, ply\Nick())
+			elseif ply.SteamName
+				nick = ply\SteamName()\lower()
+				if nick == str or nick\find(str)
+					table.insert(findPly, ply\SteamName())
+	elseif type(filter) == 'Player'
+		for ply in *player.GetAll()
+			if filter ~= ply
+				nick = ply\Nick()\lower()
+				if nick == str or nick\find(str)
+					table.insert(findPly, ply\Nick())
+				elseif ply.SteamName
+					nick = ply\SteamName()\lower()
+					if nick == str or nick\find(str)
+						table.insert(findPly, ply\SteamName())
+	else
+		for ply in *player.GetAll()
+			if not table.qhasValue(filter, ply)
+				nick = ply\Nick()\lower()
+				if nick == str or nick\find(str)
+					table.insert(findPly, ply\Nick())
+				elseif ply.SteamName
+					nick = ply\SteamName()\lower()
+					if nick == str or nick\find(str)
+						table.insert(findPly, ply\SteamName())
 
 	return #findPly ~= 0 and findPly or {DLib.i18n.localize('message.dpp2.concommand.hint.none')}

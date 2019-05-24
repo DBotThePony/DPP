@@ -205,6 +205,23 @@ class DPP2.ContraptionHolder
 		@Invalidate()
 		return @
 
+	CheckUpForGrabs: (newOwner = NULL) =>
+		error('Invalid side CLIENT') if CLIENT
+		return false if not newOwner\IsValid()
+		fents = {}
+
+		hit = false
+
+		for ent in *@ents
+			if ent\IsValid() and ent\DPP2IsUpForGrabs()
+				hit = true
+				table.insert(fents, ent)
+
+		DPP2.Notify(newOwner, 'message.dpp2.owning.owned_contraption') if hit
+		DPP2.DoTransfer(fents, newOwner)
+
+		return hit
+
 	Ghost: => ent\DPP2Ghost() for ent in *@ents when IsValid(ent)
 	UnGhost: => ent\DPP2UnGhost() for ent in *@ents when IsValid(ent)
 

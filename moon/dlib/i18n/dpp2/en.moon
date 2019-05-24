@@ -29,6 +29,7 @@ gui.dpp2.access.status.yoursettings = 'Your settings'
 gui.dpp2.access.status.toolgun_player = 'Cannot toolgun a player'
 
 message.dpp2.owning.owned = 'You now own this entity'
+message.dpp2.owning.owned_contraption = 'You now own this contraption'
 message.dpp2.notice.upforgrabs = ' props are now up for grabs!'
 message.dpp2.notice.cleanup = ' props has been cleaned up.'
 message.dpp2.warn.trap = 'Your entity seems to stuck in someone. Interact with it to unghost!'
@@ -68,7 +69,9 @@ message.dpp2.antispam.hint_removed_single = 'Entity were removed because of spam
 message.dpp2.antispam.hint_ghosted_big = '%d entities were ghosted because they are too big. Interact with them to unghost!'
 message.dpp2.antispam.hint_ghosted_big_single = 'Entity were ghosted because it is too big. Interact with it to unghost!'
 
+message.dpp2.concommand.generic.invalid_side = 'This command can not be executed on this realm.'
 message.dpp2.concommand.generic.notarget = 'Invalid target!'
+message.dpp2.concommand.generic.no_bots = 'This command can not target bots'
 message.dpp2.concommand.generic.noaccess = 'You can not execute this command (reason: %s)'
 message.dpp2.concommand.generic.noaccess_check = 'You can not execute this command on target player (reason: %s)'
 
@@ -84,3 +87,18 @@ message.dpp2.concommand.cleanupdisconnected = '#E cleaned disconnected player\'s
 
 message.dpp2.concommand.hint.none = '<none>'
 message.dpp2.concommand.hint.player = '<player>'
+
+message.dpp2.concommand.transfer.none = 'There is none entities to transfer.'
+message.dpp2.concommand.transfer.already_ply = 'You already set transfer fallback as #E!'
+message.dpp2.concommand.transfer.none_ply = 'You already have none set as transfer fallback!'
+
+message.dpp2.concommand.transfered = '#E transfered his entities to #E'
+message.dpp2.concommand.transferfallback = 'Successfully set #E as transfer fallback'
+message.dpp2.concommand.transferunfallback = 'Successfully removed transfer fallback'
+
+message.dpp2.transfer.as_fallback = '%s<%s> transfered %d entities to #E as fallback'
+message.dpp2.transfer.no_more_fallback = 'Your fallback player has left the server!'
+
+message.dpp2.concommand.transferent.notarget = 'Invalid entity specified'
+message.dpp2.concommand.transferent.not_owner = 'You do not own this entity!'
+message.dpp2.concommand.transferent.success = 'Successfully transfered #E to #E'
