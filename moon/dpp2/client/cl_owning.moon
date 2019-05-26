@@ -115,8 +115,10 @@ GetOwnerText = ->
 
 	return ownerName, CAN_NOT_TOUCH()
 
+POS_OWNING = HUDCommons.Position2.DefinePosition('dpp2_owner', 0.004, 0.5, false)
+
 HUDPaint = (_, pw, ph) ->
-	x, y = pw * 0.004, ph * 0.5
+	x, y = POS_OWNING()
 	text, color = GetOwnerText()
 	return if not text
 
