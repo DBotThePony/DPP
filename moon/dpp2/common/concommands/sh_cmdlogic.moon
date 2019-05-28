@@ -30,9 +30,11 @@ DPP2.cmd_perms = {
 	freezephyspanic: 'superadmin'
 
 	transfertoworld: 'admin'
+	transfertoworldcontraption: 'admin'
 	transfer: 'user'
 	transferfallback: 'user'
 	transferent: 'user'
+	transfercontraption: 'user'
 }
 
 DPP2.cmd_remap = {}

@@ -106,13 +106,44 @@ DPP2.cmd.transferent = (args = {}) =>
 	DPP2.Notify(@, nil, 'message.dpp2.concommand.transferent.success', ent, ply)
 	-- admin log
 
+DPP2.cmd.transfercontraption = (args = {}) =>
+	return 'message.dpp2.concommand.generic.invalid_side' if not IsValid(@)
+	sent = table.remove(args, 1)
+	contraption = DPP2.ContraptionHolder\GetByID(tonumber(sent or -1) or -1)
+	return 'message.dpp2.concommand.transfercontraption.notarget' if not contraption
+	return 'message.dpp2.concommand.transfercontraption.not_owner' if not contraption\HasOwner(@)
+	str = table.concat(args, ' ')
+	ply = DPP2.FindPlayerInCommand(str)
+	return 'message.dpp2.concommand.generic.notarget' if not ply or ply == @
+	return 'message.dpp2.concommand.generic.no_bots' if ply\IsBot()
+	fents = contraption\EntitiesByOwner(@)
+	DPP2.DoTransfer(fents, ply)
+	DPP2.Notify(@, nil, 'message.dpp2.concommand.transfercontraption.success', #fents, ply)
+	-- admin log
+
 DPP2.cmd.transfertoworld = (args = {}) =>
 	return 'message.dpp2.concommand.generic.invalid_side' if not IsValid(@)
 	fents = @DPP2FindOwned()
 	return 'message.dpp2.concommand.transfer.none' if #fents == 0
 	DPP2.DoTransfer(fents, NULL)
+	DPP2.Notify(@, nil, 'message.dpp2.concommand.transfertoworld.success', #fents)
 	-- admin log
 	-- DPP2.Notify(true, nil, 'message.dpp2.concommand.transfertoworld', @, ply)
+
+DPP2.cmd.transfertoworldcontraption = (args = {}) =>
+	return 'message.dpp2.concommand.generic.invalid_side' if not IsValid(@)
+	sent = table.remove(args, 1)
+	contraption = DPP2.ContraptionHolder\GetByID(tonumber(sent or -1) or -1)
+	return 'message.dpp2.concommand.transfercontraption.notarget' if not contraption
+	return 'message.dpp2.concommand.transfercontraption.not_owner' if not contraption\HasOwner(@)
+	str = table.concat(args, ' ')
+	ply = DPP2.FindPlayerInCommand(str)
+	return 'message.dpp2.concommand.generic.notarget' if not ply or ply == @
+	return 'message.dpp2.concommand.generic.no_bots' if ply\IsBot()
+	fents = contraption\EntitiesByOwner(@)
+	DPP2.DoTransfer(fents, NULL)
+	DPP2.Notify(@, nil, 'message.dpp2.concommand.transfertoworld.success', #fents)
+	-- admin log
 
 DPP2.cmd.transferfallback = (args = {}) =>
 	return 'message.dpp2.concommand.generic.invalid_side' if not IsValid(@)

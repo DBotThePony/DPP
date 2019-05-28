@@ -100,5 +100,9 @@ message.dpp2.transfer.as_fallback = '%s<%s> transfered %d entities to #E as fall
 message.dpp2.transfer.no_more_fallback = 'Your fallback player has left the server!'
 
 message.dpp2.concommand.transferent.notarget = 'Invalid entity specified'
+message.dpp2.concommand.transfercontraption.notarget = 'Invalid contraption specified'
 message.dpp2.concommand.transferent.not_owner = 'You do not own this entity!'
+message.dpp2.concommand.transfercontraption.not_owner = 'You own none of entities inside this contraption!'
 message.dpp2.concommand.transferent.success = 'Successfully transfered #E to #E'
+message.dpp2.concommand.transfercontraption.success = 'Successfully transfered #d entities to #E'
+message.dpp2.concommand.transfertoworld.success = 'Successfully transfered #d entities to world'

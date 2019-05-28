@@ -67,8 +67,12 @@ class DPP2.ContraptionHolder
 	GetOwners: => @owners
 	GetOwnersFull: => @ownersFull
 	GetOwnersPartial: (mode) => @ownersNoShare[mode] or @ownersFull
+	HasOwner: (owner = NULL) => table.qhasValue(@owners, owner)
 	CopyOwners: => [v for v in *@owners]
 	CopyOwnersFull: => [v for v in *@ownersFull]
+
+	EntitiesByOwner: (owner = NULL) => [ent for ent in *@ents when ent\DPP2GetOwner() == owner]
+	EntitiesByStringOwner: (owner = '') => [ent for ent in *@ents when ent\DPP2GetOwnerSteamID() == owner]
 
 	AddEntity: (ent = NULL) =>
 		return false if not IsValid(ent)
