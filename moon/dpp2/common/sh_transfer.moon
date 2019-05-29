@@ -50,7 +50,7 @@ DPP2.cmd_autocomplete.transferent = (args = '', margs = '') =>
 		for ent in *@DPP2FindOwned()
 			str = tostring(ent)
 
-			if str == args[1]
+			if str\lower() == args[1]
 				ace = {str}
 				break
 
@@ -87,12 +87,60 @@ DPP2.cmd_autocomplete.transfertoworldent = (args = '', margs = '') =>
 		for ent in *@DPP2FindOwned()
 			str = tostring(ent)
 
-			if str == args
-				ace = {str}
-				break
+			return {str} if str\lower() == args
 
 			if str\lower()\startsWith(args)
 				table.insert(ace, string.format('%q', str))
+
+	table.sort(ace)
+	return ace
+
+DPP2.cmd_autocomplete.transfercontraption = (args = '', margs = '') =>
+	return if not IsValid(@)
+	args = DPP2.SplitArguments(args)
+	return [string.format('%q', contraption\GetID()) for contraption in *DPP2.ContraptionHolder\GetAll() when contraption\HasOwner(@)] if not args[1]
+
+	local ace
+	args[1] = args[1]\lower()
+
+	if num = tonumber(args[1])
+		if contraption = DPP2.ContraptionHolder\GetByID(num)
+			if contraption\HasOwner(@)
+				ace = {'"' .. args[1] .. '"'}
+			else
+				ace = {'<you own none of entities inside this contraption>'}
+		else
+			ace = [string.format('%q', contraption\GetID()) for contraption in *DPP2.ContraptionHolder\GetAll() when contraption\HasOwner(@) and contraption\GetID()\tostring()\startsWith(args[1])]
+			ace[1] = '<none>' if not ace[1]
+	else
+		ace = {'???'}
+
+	table.sort(ace)
+	return ace if margs[#margs] ~= ' ' and not args[2]
+	return [string.format('%s <player>', ent) for ent in *ace] if not args[2]
+
+	table.remove(args, 1)
+	return [string.format('%s %q', ent, ply) for ent in *ace for ply in *DPP2.FindPlayersInArgument(table.concat(args, ' ')\trim(), true, true)]
+
+DPP2.cmd_autocomplete.transfertoworldcontraption = (args = '', margs = '') =>
+	return if not IsValid(@)
+	args = DPP2.SplitArguments(args)
+	return [string.format('%q', contraption\GetID()) for contraption in *DPP2.ContraptionHolder\GetAll() when contraption\HasOwner(@)] if not args[1]
+
+	local ace
+	args[1] = args[1]\lower()
+
+	if num = tonumber(args[1])
+		if contraption = DPP2.ContraptionHolder\GetByID(num)
+			if contraption\HasOwner(@)
+				ace = {'"' .. args[1] .. '"'}
+			else
+				ace = {'<you own none of entities inside this contraption>'}
+		else
+			ace = [string.format('%q', contraption\GetID()) for contraption in *DPP2.ContraptionHolder\GetAll() when contraption\HasOwner(@) and contraption\GetID()\tostring()\startsWith(args[1])]
+			ace[1] = '<none>' if not ace[1]
+	else
+		ace = {'???'}
 
 	table.sort(ace)
 	return ace

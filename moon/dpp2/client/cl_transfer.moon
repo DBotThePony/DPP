@@ -102,5 +102,4 @@ properties.Add('dpp2_transfertoworldcontraption', {
 
 if CLIENT
 	DPP2.cmd_existing.transfertoworld = true
-	DPP2.cmd_existing.transfertoworldcontraption = true
 	DPP2.cmd_existing.transferunfallback = true

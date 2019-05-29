@@ -266,11 +266,11 @@ class DPP2.DEF.ProtectionDefinition
 
 		for ownerSteamID in *contraption\GetOwnersPartial(@name)
 			if steamid ~= ownerSteamID
-				return false, i18n.localize('gui.dpp2.access.status.map'), i18n.localize('gui.dpp2.access.status.contraption') if ownerSteamID == 'world' and ent\DPP2CreatedByMap() and not @CanTouchMap(ply)
-				return false, i18n.localize('gui.dpp2.access.status.world'), i18n.localize('gui.dpp2.access.status.contraption') if ownerSteamID == 'world' and not @CanTouchWorld(ply)
-				return false, i18n.localize('gui.dpp2.access.status.friend'), i18n.localize('gui.dpp2.access.status.contraption') if ownerSteamID ~= 'world' and not @CanTouchOther(ply, ownerSteamID)
+				return false, i18n.localize('gui.dpp2.access.status.map'), i18n.localize('gui.dpp2.access.status.contraption_ext', contraption\GetID()) if ownerSteamID == 'world' and ent\DPP2CreatedByMap() and not @CanTouchMap(ply)
+				return false, i18n.localize('gui.dpp2.access.status.world'), i18n.localize('gui.dpp2.access.status.contraption_ext', contraption\GetID()) if ownerSteamID == 'world' and not @CanTouchWorld(ply)
+				return false, i18n.localize('gui.dpp2.access.status.friend'), i18n.localize('gui.dpp2.access.status.contraption_ext', contraption\GetID()) if ownerSteamID ~= 'world' and not @CanTouchOther(ply, ownerSteamID)
 
-		return true, i18n.localize('gui.dpp2.access.status.contraption')
+		return true, i18n.localize('gui.dpp2.access.status.contraption_ext', contraption\GetID())
 
 entMeta = FindMetaTable('Entity')
 

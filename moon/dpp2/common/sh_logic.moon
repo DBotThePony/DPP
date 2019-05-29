@@ -46,6 +46,8 @@ class DPP2.ContraptionHolder
 	@OBJECTS = [obj for obj in *@OBJECTS when obj\IsValid()]
 	@Invalidate = => @OBJECTS = [obj for obj in *@OBJECTS when obj\Revalidate()]
 
+	@GetAll = => @OBJECTS
+
 	@GetNextID = =>
 		error('ID must be specified on client realm') if CLIENT
 		id = @NEXT_ID

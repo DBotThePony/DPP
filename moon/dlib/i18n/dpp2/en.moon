@@ -19,6 +19,7 @@
 -- DEALINGS IN THE SOFTWARE.
 
 gui.dpp2.access.status.contraption = 'Contraption'
+gui.dpp2.access.status.contraption_ext = 'Contraption <%d>'
 gui.dpp2.access.status.map = 'Owned by map'
 gui.dpp2.access.status.world = 'Owned by world'
 gui.dpp2.access.status.friend = 'Not a friend of owner'
