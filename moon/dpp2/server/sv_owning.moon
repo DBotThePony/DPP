@@ -23,11 +23,9 @@ import NULL, type, player from _G
 entMeta = FindMetaTable('Entity')
 
 entMeta.DPP2SetIsUpForGrabs = (val) =>
-	val = nil if not val
 	@SetNWBool('dpp2_ufg', val)
 
 entMeta.DPP2SetUpForGrabs = (val) =>
-	val = nil if not val
 	@SetNWBool('dpp2_ufg', val)
 
 entMeta.DPP2GetOwner = =>
@@ -56,7 +54,7 @@ entMeta.DPP2SetOwner = (newOwner = NULL) =>
 	return false if hookStatus ~= nil and hookStatus ~= false
 
 	@DPP2SetIsUpForGrabs(false)
-	@SetNWBool('dpp2_owner_uid_track', nil)
+	@SetNWBool('dpp2_owner_uid_track', false)
 
 	if @GetNWString('dpp2_owner_steamid', '-1') ~= (newOwner\IsValid() and newOwner\SteamID() or '-1')
 		hook.Run('DPP2.NotifyOwnerChange', @, @GetNWEntity('dpp2_ownerent', NULL), newOwner)
@@ -64,9 +62,9 @@ entMeta.DPP2SetOwner = (newOwner = NULL) =>
 		hook.Run('DPP2.NotifyUIDOwnerChange', @, @GetNWString('dpp2_owner_uid', '-1'), newOwner\IsValid() and newOwner\UniqueID() or '-1')
 
 	if newOwner == NULL
-		@SetNWEntity('dpp2_ownerent', nil)
-		@SetNWString('dpp2_owner_steamid', nil)
-		@SetNWString('dpp2_owner_uid', nil)
+		@SetNWEntity('dpp2_ownerent', NULL)
+		@SetNWString('dpp2_owner_steamid', '-1')
+		@SetNWString('dpp2_owner_uid', '-1')
 		@_dpp2_last_nick = nil
 	else
 		@SetNWEntity('dpp2_ownerent', newOwner)
@@ -91,16 +89,16 @@ entMeta.DPP2SetOwnerSteamID = (newOwner = '-1') =>
 	return false if hookStatus ~= nil and hookStatus ~= false
 
 	@DPP2SetIsUpForGrabs(false)
-	@SetNWBool('dpp2_owner_uid_track', nil)
+	@SetNWBool('dpp2_owner_uid_track', false)
 
 	hook.Run('DPP2.NotifySteamIDOwnerChange', @, @GetNWString('dpp2_owner_steamid', '-1'), newOwner)
 	hook.Run('DPP2.NotifyUIDOwnerChange', @, @GetNWString('dpp2_owner_uid', '-1'), newOwner ~= '-1' and util.CRC('gm_' .. newOwner .. '_gm') or '-1')
 
-	@SetNWEntity('dpp2_ownerent', nil)
+	@SetNWEntity('dpp2_ownerent', '-1')
 
 	if newOwner == '-1'
-		@SetNWString('dpp2_owner_steamid', nil)
-		@SetNWString('dpp2_owner_uid', nil)
+		@SetNWString('dpp2_owner_steamid', '-1')
+		@SetNWString('dpp2_owner_uid', '-1')
 		@_dpp2_last_nick = nil
 	else
 		@SetNWString('dpp2_owner_steamid', newOwner)
@@ -127,12 +125,12 @@ entMeta.DPP2SetOwnerUID = (newOwner = '-1') =>
 
 	hook.Run('DPP2.NotifyUIDOwnerChange', @, @GetNWString('dpp2_owner_uid', '-1'), newOwner)
 
-	@SetNWEntity('dpp2_ownerent', nil)
-	@SetNWString('dpp2_owner_steamid', nil)
+	@SetNWEntity('dpp2_ownerent', '-1')
+	@SetNWString('dpp2_owner_steamid', '-1')
 
 	if newOwner == '-1'
-		@SetNWString('dpp2_owner_uid', nil)
-		@SetNWBool('dpp2_owner_uid_track', nil)
+		@SetNWString('dpp2_owner_uid', '-1')
+		@SetNWBool('dpp2_owner_uid_track', '-1')
 		@_dpp2_last_nick = nil
 	else
 		@SetNWString('dpp2_owner_uid', newOwner)
