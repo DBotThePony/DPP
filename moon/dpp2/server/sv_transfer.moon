@@ -106,6 +106,23 @@ DPP2.cmd.transferent = (args = {}) =>
 	DPP2.Notify(@, nil, 'message.dpp2.concommand.transferent.success', ent, ply)
 	-- admin log
 
+DPP2.cmd.transfertoworldent = (args = {}) =>
+	return 'message.dpp2.concommand.generic.invalid_side' if not IsValid(@)
+	sent = table.remove(args, 1)
+	ent = Entity(tonumber(sent or -1) or -1)
+
+	if not IsValid(ent)
+		for ent2 in *@DPP2FindOwned()
+			if tostring(ent2) == sent
+				ent = ent2
+				break
+
+	return 'message.dpp2.concommand.transferent.notarget' if not IsValid(ent)
+	return 'message.dpp2.concommand.transferent.not_owner' if ent\DPP2GetOwner() ~= @
+	DPP2.DoTransfer({ent}, NULL)
+	DPP2.Notify(@, nil, 'message.dpp2.concommand.transfertoworldent.success', ent)
+	-- admin log
+
 DPP2.cmd.transfercontraption = (args = {}) =>
 	return 'message.dpp2.concommand.generic.invalid_side' if not IsValid(@)
 	sent = table.remove(args, 1)
@@ -136,10 +153,6 @@ DPP2.cmd.transfertoworldcontraption = (args = {}) =>
 	contraption = DPP2.ContraptionHolder\GetByID(tonumber(sent or -1) or -1)
 	return 'message.dpp2.concommand.transfercontraption.notarget' if not contraption
 	return 'message.dpp2.concommand.transfercontraption.not_owner' if not contraption\HasOwner(@)
-	str = table.concat(args, ' ')
-	ply = DPP2.FindPlayerInCommand(str)
-	return 'message.dpp2.concommand.generic.notarget' if not ply or ply == @
-	return 'message.dpp2.concommand.generic.no_bots' if ply\IsBot()
 	fents = contraption\EntitiesByOwner(@)
 	DPP2.DoTransfer(fents, NULL)
 	DPP2.Notify(@, nil, 'message.dpp2.concommand.transfertoworld.success', #fents)

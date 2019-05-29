@@ -30,6 +30,7 @@ DPP2.cmd_perms = {
 	freezephyspanic: 'superadmin'
 
 	transfertoworld: 'admin'
+	transfertoworldent: 'admin'
 	transfertoworldcontraption: 'admin'
 	transfer: 'user'
 	transferfallback: 'user'
@@ -119,6 +120,7 @@ if SERVER
 elseif not game.SinglePlayer()
 	DPP2.cmd_existing[cmd] = true for cmd in pairs(DPP2.cmd_autocomplete)
 	watchdog = DLib.CAMIWatchdog('dpp2_client_cmd')
+	DPP2.cmd_perm_watchdog = watchdog
 
 	for cmdName in pairs(DPP2.cmd_existing)
 		execute = (cmd = '', args = {}) =>

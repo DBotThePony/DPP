@@ -21,6 +21,7 @@
 DPP2.cmd_autocomplete.transfer = (args = '') =>
 	return if not IsValid(@)
 	[string.format('%q', ply) for ply in *DPP2.FindPlayersInArgument(args, true, true)]
+
 DPP2.cmd_autocomplete.transferfallback = (args = '') =>
 	return if not IsValid(@)
 	[string.format('%q', ply) for ply in *DPP2.FindPlayersInArgument(args, {LocalPlayer(), @GetNWEntity('dpp2_transfer_fallback', NULL)}, true)]
@@ -63,7 +64,35 @@ DPP2.cmd_autocomplete.transferent = (args = '', margs = '') =>
 	table.remove(args, 1)
 	return [string.format('%q %q', ent, ply) for ent in *ace for ply in *DPP2.FindPlayersInArgument(table.concat(args, ' ')\trim(), true, true)]
 
-if CLIENT
-	DPP2.cmd_existing.transfertoworld = true
-	DPP2.cmd_existing.transferunfallback = true
+DPP2.cmd_autocomplete.transfertoworldent = (args = '', margs = '') =>
+	return if not IsValid(@)
+	return [string.format('%q', tostring(ent)) for ent in *@DPP2FindOwned()] if args == ''
 
+	ace = {}
+	args = args\lower()
+
+	if num = tonumber(args)
+		entf = Entity(num)
+
+		if IsValid(entf)
+			if entf\DPP2GetOwner() == @
+				table.insert(ace, string.format('%q', tostring(entf)))
+			else
+				table.insert(ace, '<not an owner!>')
+		else
+			for ent in *@DPP2FindOwned()
+				if ent\EntIndex()\tostring()\startsWith(args)
+					table.insert(ace, string.format('%q', tostring(ent)))
+	else
+		for ent in *@DPP2FindOwned()
+			str = tostring(ent)
+
+			if str == args
+				ace = {str}
+				break
+
+			if str\lower()\startsWith(args)
+				table.insert(ace, string.format('%q', str))
+
+	table.sort(ace)
+	return ace

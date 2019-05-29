@@ -104,5 +104,15 @@ message.dpp2.concommand.transfercontraption.notarget = 'Invalid contraption spec
 message.dpp2.concommand.transferent.not_owner = 'You do not own this entity!'
 message.dpp2.concommand.transfercontraption.not_owner = 'You own none of entities inside this contraption!'
 message.dpp2.concommand.transferent.success = 'Successfully transfered #E to #E'
+message.dpp2.concommand.transfertoworldent.success = 'Successfully transfered #E to World'
 message.dpp2.concommand.transfercontraption.success = 'Successfully transfered #d entities to #E'
 message.dpp2.concommand.transfertoworld.success = 'Successfully transfered #d entities to world'
+
+gui.dpp2.property.transferent = 'Transfer this entity...'
+gui.dpp2.property.transfertoworldent = 'Transfer this entity to world'
+gui.dpp2.property.transfercontraption = 'Transfer this contraption...'
+gui.dpp2.property.transfertoworldcontraption = 'Transfer this contraption to world'
+
+message.dpp2.property.transferent.nolongervalid = 'Entity is no longer valid'
+message.dpp2.property.transferent.noplayer = 'Target player has left the server'
+message.dpp2.property.transfercontraption.nolongervalid = 'Contraption is no longer valid'

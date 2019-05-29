@@ -62,6 +62,8 @@ class DPP2.ContraptionHolder
 		@lastWalk = 0
 		table.insert(@@OBJECTS, @)
 
+	GetID: => @id
+
 	IsValid: => #@ents > 1
 
 	GetOwners: => @owners
@@ -267,6 +269,7 @@ class DPP2.ContraptionHolder
 			@MarkForDeath()
 
 entMeta.DPP2GetContraption = => @__dpp2_contraption
+entMeta.DPP2HasContraption = => @__dpp2_contraption ~= nil
 entMeta.DPP2InvalidateContraption = =>
 	@__dpp2_contraption\Invalidate() if @__dpp2_contraption
 	return @
