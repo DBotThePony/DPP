@@ -23,6 +23,8 @@ import DLib, notification, net, DLib from _G
 export DPP2
 _G.DPP2 = DPP2 or {}
 
+startup = SysTime()
+
 DLib.CMessageChat(DPP2, 'DPP2')
 
 DPP2.TYPE_BOOL = 0
@@ -96,10 +98,6 @@ include('dpp2/common/sh_transfer.lua')
 include('dpp2/server/sv_transfer.lua') if SERVER
 include('dpp2/client/cl_transfer.lua') if CLIENT
 include('dpp2/common/sh_cppi.lua')
-
-include('dpp2/server/concommands/sv_generic.lua') if SERVER
-include('dpp2/common/concommands/sh_generic.lua')
-include('dpp2/common/concommands/sh_cmdlogic.lua')
 
 if SERVER
 	net.pool('dpp2_notify')
@@ -262,3 +260,11 @@ with AllowMapPrefab = DPP2.DEF.DefinitionConVarsPrefab()
 	DPP2.UseProtection = DPP2.DEF.ProtectionDefinition('use', AllowMapPrefab)
 	DPP2.VehicleProtection = DPP2.DEF.ProtectionDefinition('vehicle', AllowMapPrefab)
 	DPP2.GravgunProtection = DPP2.DEF.ProtectionDefinition('gravgun', AllowMapPrefab)
+
+DPP2.ModelBlacklist = DPP2.DEF.Blacklist()
+
+include('dpp2/server/concommands/sv_generic.lua') if SERVER
+include('dpp2/common/concommands/sh_generic.lua')
+include('dpp2/common/concommands/sh_cmdlogic.lua')
+
+DPP2.Message(string.format('DPP/2 Startup took %.2f ms', SysTime() - startup))

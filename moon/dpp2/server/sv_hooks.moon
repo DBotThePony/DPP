@@ -67,50 +67,98 @@ DPP2.PlayerSpawnedSomething = (ply, ent, advancedCheck = false) ->
 	ent\DPP2SetOwner(ply)
 	hook.Run('DPP_PlayerSpawn', ply, ent)
 
+PreventModelSpawn = (ply, model = ent and ent\GetModel() or 'wtf', ent, nonotify) ->
+	if DPP2.ModelBlacklist\Has(model\lower())
+		DPP2.NotifyError(ply, nil, 'message.dpp2.blacklist.model_blocked', model) if not nonotify
+		SafeRemoveEntity(ent) if IsValid(ent)
+		return false
+
+	return true
+
 PlayerSpawnedEffect = (ply = NULL, model = 'models/error.mdl', ent = NULL) ->
 	return unless ply\IsValid()
 	return unless ent\IsValid()
 	DPP2.PlayerSpawnedSomething(ply, ent)
+	return false if not PreventModelSpawn(ply, model, ent)
 
 PlayerSpawnedProp = (ply = NULL, model = 'models/error.mdl', ent = NULL) ->
 	return unless ply\IsValid()
 	return unless ent\IsValid()
+	return false if not PreventModelSpawn(ply, model, ent)
 	DPP2.PlayerSpawnedSomething(ply, ent)
 
 PlayerSpawnedRagdoll = (ply = NULL, model = 'models/error.mdl', ent = NULL) ->
 	return unless ply\IsValid()
 	return unless ent\IsValid()
+	return false if not PreventModelSpawn(ply, model, ent)
 	DPP2.PlayerSpawnedSomething(ply, ent)
 
 PlayerSpawnedNPC = (ply = NULL, ent = NULL) ->
 	return unless ply\IsValid()
 	return unless ent\IsValid()
+	return false if not PreventModelSpawn(ply, model, ent)
 	DPP2.PlayerSpawnedSomething(ply, ent)
 
 PlayerSpawnedSENT = (ply = NULL, ent = NULL) ->
 	return unless ply\IsValid()
 	return unless ent\IsValid()
+	-- return false if not PreventModelSpawn(ply, model, ent)
 	DPP2.PlayerSpawnedSomething(ply, ent)
 
 PlayerSpawnedSWEP = (ply = NULL, ent = NULL) ->
 	return unless ply\IsValid()
 	return unless ent\IsValid()
+	return false if not PreventModelSpawn(ply, model, ent)
 	DPP2.PlayerSpawnedSomething(ply, ent)
 
 PlayerSpawnedVehicle = (ply = NULL, ent = NULL) ->
 	return unless ply\IsValid()
 	return unless ent\IsValid()
+	return false if not PreventModelSpawn(ply, model, ent)
 	DPP2.PlayerSpawnedSomething(ply, ent)
 
 PlayerSpawnEffect = (ply = NULL, model = 'models/error.mdl') ->
+	return unless ply\IsValid()
+	return false if not PreventModelSpawn(ply, model)
+	return false if not DPP2.AntispamCheck(ply)
+
 PlayerSpawnProp = (ply = NULL, model = 'models/error.mdl') ->
+	return unless ply\IsValid()
+	return false if not PreventModelSpawn(ply, model)
+	return false if not DPP2.AntispamCheck(ply)
+
 PlayerSpawnRagdoll = (ply = NULL, model = 'models/error.mdl') ->
+	return unless ply\IsValid()
+	return false if not PreventModelSpawn(ply, model)
+	return false if not DPP2.AntispamCheck(ply)
+
 PlayerSpawnObject = (ply = NULL, model = 'models/error.mdl', skin = 0) ->
+	return unless ply\IsValid()
+	return false if not PreventModelSpawn(ply, model)
+	return false if not DPP2.AntispamCheck(ply)
+
 PlayerSpawnVehicle = (ply = NULL, model = 'models/error.mdl', name = 'prop_vehicle_jeep', info = {}) ->
+	return unless ply\IsValid()
+	return false if not PreventModelSpawn(ply, model)
+	return false if not DPP2.AntispamCheck(ply)
+
 PlayerSpawnNPC = (ply = NULL, npcclassname = 'base_entity', weaponclass = 'base_entity') ->
+	return unless ply\IsValid()
+	return false if not DPP2.AntispamCheck(ply)
+
 PlayerSpawnSENT = (ply = NULL, classname = 'base_entity') ->
+	return unless ply\IsValid()
+	return false if not DPP2.AntispamCheck(ply)
+
 PlayerGiveSWEP = (ply = NULL, classname = 'base_entity', definition = {ClassName: 'base_entity', WorldModel: 'models/error.mdl', ViewModel: 'models/error.mdl'}) ->
+	return unless ply\IsValid()
+	return false if not PreventModelSpawn(ply, definition.WorldModel)
+	return false if not DPP2.AntispamCheck(ply)
+
 PlayerSpawnSWEP = (ply = NULL, classname = 'base_entity', definition = {ClassName: 'base_entity', WorldModel: 'models/error.mdl', ViewModel: 'models/error.mdl'}) ->
+	return unless ply\IsValid()
+	return false if not PreventModelSpawn(ply, definition.WorldModel)
+	return false if not DPP2.AntispamCheck(ply)
 
 hooksToReg = {
 	:PlayerSpawnedEffect, :PlayerSpawnedProp, :PlayerSpawnedRagdoll
@@ -186,7 +234,19 @@ hook.Add 'Think', 'DPP2.CheckEntitiesOwnage', ->
 							break
 
 				table.removeValues(copy, toremove) if toremove
-				DPP2.QueueAntispam(ply, ent, found)
+				fail = not PreventModelSpawn(ply, nil, ent, true)
+
+				if not fail
+					for ent2 in *found
+						fail = not PreventModelSpawn(ply, nil, ent2, true)
+						break if fail
+
+				if not fail
+					DPP2.QueueAntispam(ply, ent, found)
+				else
+					SafeRemoveEntity(ent)
+					SafeRemoveEntity(ent2) for ent2 in *found
+					DPP2.NotifyError(ply, nil, 'message.dpp2.blacklist.models_blocked', #found + 1)
 
 hook.Add 'OnEntityCreated', 'DPP2.CheckEntitiesOwnage', =>
 	CheckFrame = CurTimeL()

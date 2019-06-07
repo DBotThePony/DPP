@@ -117,3 +117,6 @@ gui.dpp2.property.transfertoworldcontraption = 'Transfer this contraption to wor
 message.dpp2.property.transferent.nolongervalid = 'Entity is no longer valid'
 message.dpp2.property.transferent.noplayer = 'Target player has left the server'
 message.dpp2.property.transfercontraption.nolongervalid = 'Contraption is no longer valid'
+
+message.dpp2.blacklist.model_blocked = 'Model %s is in blacklist'
+message.dpp2.blacklist.models_blocked = '#d entities were removed since some of them had blacklisted model'
