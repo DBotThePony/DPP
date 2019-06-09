@@ -109,6 +109,7 @@ message.dpp2.concommand.transfertoworldent.success = 'Successfully transfered #E
 message.dpp2.concommand.transfercontraption.success = 'Successfully transfered #d entities to #E'
 message.dpp2.concommand.transfertoworld.success = 'Successfully transfered #d entities to world'
 
+
 gui.dpp2.property.transferent = 'Transfer this entity...'
 gui.dpp2.property.transfertoworldent = 'Transfer this entity to world'
 gui.dpp2.property.transfercontraption = 'Transfer this contraption...'
@@ -120,3 +121,10 @@ message.dpp2.property.transfercontraption.nolongervalid = 'Contraption is no lon
 
 message.dpp2.blacklist.model_blocked = 'Model %s is in blacklist'
 message.dpp2.blacklist.models_blocked = '#d entities were removed since some of them had blacklisted model'
+
+message.dpp2.concommand.lists.arg_empty = 'You provided empty argument'
+message.dpp2.concommand.lists.already_in = 'Target list already has that element!'
+message.dpp2.concommand.lists.already_not = 'Target list already has no that element!'
+
+message.dpp2.concommand.blists.added.model = '#e added %s to blacklist'
+message.dpp2.concommand.blists.removed.model = '#e removed %s from blacklist'

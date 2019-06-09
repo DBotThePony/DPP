@@ -18,12 +18,16 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-import DPP2, type, table from _G
+import DPP2, type, table, DLib, string, net from _G
 
 if SERVER
 	net.pool('dpp2_list_entry_create')
 	net.pool('dpp2_list_entry_remove')
 	net.pool('dpp2_list_entry_modify')
+
+	net.pool('dpp2_blist_add')
+	net.pool('dpp2_blist_remove')
+	net.pool('dpp2_blist_replicate')
 
 DPP2.DEF = DPP2.DEF or {}
 
@@ -250,9 +254,111 @@ class DPP2.DEF.RestrictionList
 		return false
 
 class DPP2.DEF.Blacklist
-	new: =>
-		@listing = DLib.Set()
+	@REGISTRY = {}
+	@REGISTRY_ = {}
+	@nextid = 0
 
-	Add: (entry) => @listing\Add(entry)
-	Remove: (entry) => @listing\Remove(entry)
+	if CLIENT
+		net.receive 'dpp2_blist_add', ->
+			list, entry = assert(@REGISTRY_[net.ReadUInt8()], 'Missing blacklist registry'), net.ReadString()
+			list\Add(entry)
+
+		net.receive 'dpp2_blist_remove', ->
+			list, entry = assert(@REGISTRY_[net.ReadUInt8()], 'Missing blacklist registry'), net.ReadString()
+			list\Remove(entry)
+
+		net.receive 'dpp2_blist_replicate', ->
+			list, listing = assert(@REGISTRY_[net.ReadUInt8()], 'Missing blacklist registry'), net.ReadStringArray()
+			list.listing = DLib.Set()
+			list\Add(val) for val in *listing
+
+	new: (identifier, autocomplete) =>
+		assert(identifier, 'Blacklist registry without identifier')
+		error('Blacklist ' .. identifier .. ' already exists! Can not redefine existing one.') if @@REGISTRY[identifier]
+
+		@@REGISTRY[identifier] = @
+		@id = @@nextid
+		@@nextid += 1
+		@@REGISTRY_[@id] = @
+		@identifier = identifier
+		@listing = DLib.Set()
+		@listingDef = DLib.Set()
+		self2 = @
+
+		if SERVER
+			DPP2.cmd['add_' .. identifier .. '_blacklist'] = (args = {}) =>
+				val = table.concat(args, ' ')\trim()
+				return 'message.dpp2.concommand.lists.arg_empty' if val == ''
+				return 'message.dpp2.concommand.lists.already_in' if self2\Has(val)
+				self2\Add(val)
+				DPP2.Notify(true, nil, 'message.dpp2.concommand.blists.added.' .. identifier, @, val)
+
+			DPP2.cmd['remove_' .. identifier .. '_blacklist'] = (args = {}) =>
+				val = table.concat(args, ' ')\trim()
+				return 'message.dpp2.concommand.lists.arg_empty' if val == ''
+				return 'message.dpp2.concommand.lists.already_not' if not self2\Has(val)
+				self2\Remove(val)
+				DPP2.Notify(true, nil, 'message.dpp2.concommand.blists.removed.' .. identifier, @, val)
+
+		DPP2.cmd_perms['add_' .. identifier .. '_blacklist'] = 'superadmin'
+		DPP2.cmd_perms['remove_' .. identifier .. '_blacklist'] = 'superadmin'
+
+		if autocomplete
+			DPP2.cmd_autocomplete['add_' .. identifier .. '_blacklist'] = (args, margs) => autocomplete(@, args, margs, self2.listing\GetValues())
+		elseif CLIENT
+			DPP2.cmd_existing['add_' .. identifier .. '_blacklist'] = true
+
+		DPP2.cmd_autocomplete['remove_' .. identifier .. '_blacklist'] = (args, margs) =>
+			return [string.format('%q', elem) for elem in *@listing\GetValues()] if args == ''
+			args = args\lower()
+
+			output = {}
+
+			for elem in *@listing\GetValues()
+				with lower = elem\lower()
+					if lower == args
+						output = {elem}
+						break
+
+					if \startsWith(args)
+						table.insert(output, elem)
+
+			return output
+
+	Add: (entry) =>
+		return false if @Has(entry)
+		@listing\Add(entry)
+
+		if SERVER
+			net.Start('dpp2_blist_add')
+			net.WriteUInt8(@id)
+			net.WriteString(entry)
+			net.Broadcast()
+
+		return true
+
+	AddDefault: (entry) => @listingDef\Add(entry)
+
+	Remove: (entry) =>
+		return false if not @Has(entry)
+
+		if SERVER
+			net.Start('dpp2_blist_remove')
+			net.WriteUInt8(@id)
+			net.WriteString(entry)
+			net.Broadcast()
+
+		@listing\Remove(entry)
+		return true
+
+	RemoveDefault: (entry) => @listingDef\Remove(entry) -- ???
 	Has: (entry) => @listing\Has(entry)
+	HasDefault: (entry) => @listingDef\Has(entry) -- ???
+
+	FullReplicate: (who = player.GetAll()) =>
+		error('Invalid side') if CLIENT
+		net.Start('dpp2_blist_replicate')
+		net.WriteUInt8(@id)
+		net.WriteStringArray(@listing\GetValues())
+		net.Send(who)
+

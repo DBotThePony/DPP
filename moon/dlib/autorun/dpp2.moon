@@ -71,10 +71,12 @@ AddCSLuaFile('dpp2/client/cl_owning.lua')
 AddCSLuaFile('dpp2/client/cl_transfer.lua')
 AddCSLuaFile('dpp2/common/concommands/sh_cmdlogic.lua')
 AddCSLuaFile('dpp2/common/concommands/sh_generic.lua')
+AddCSLuaFile('dpp2/common/concommands/sh_registry.lua')
 
 DPP2.cmd = {} if SERVER
 DPP2.cmd_existing = {} if CLIENT
 DPP2.cmd_autocomplete = {}
+DPP2.cmd_perms = {}
 
 include('dpp2/server/sv_functions.lua') if SERVER
 include('dpp2/common/sh_definition.lua')
@@ -261,7 +263,9 @@ with AllowMapPrefab = DPP2.DEF.DefinitionConVarsPrefab()
 	DPP2.VehicleProtection = DPP2.DEF.ProtectionDefinition('vehicle', AllowMapPrefab)
 	DPP2.GravgunProtection = DPP2.DEF.ProtectionDefinition('gravgun', AllowMapPrefab)
 
-DPP2.ModelBlacklist = DPP2.DEF.Blacklist()
+include('dpp2/common/concommands/sh_registry.lua')
+
+DPP2.ModelBlacklist = DPP2.DEF.Blacklist('model', DPP2.ModelAutocomplete)
 
 include('dpp2/server/concommands/sv_generic.lua') if SERVER
 include('dpp2/common/concommands/sh_generic.lua')

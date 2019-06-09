@@ -18,7 +18,7 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-DPP2.cmd_perms = {
+cmd_perms = {
 	cleanup: 'admin'
 	cleanupnpcs: 'admin'
 	cleanupallnpcs: 'admin'
@@ -37,6 +37,8 @@ DPP2.cmd_perms = {
 	transferent: 'user'
 	transfercontraption: 'user'
 }
+
+DPP2.cmd_perms[k] = v for k, v in pairs(cmd_perms)
 
 DPP2.cmd_remap = {}
 
