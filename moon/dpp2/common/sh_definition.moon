@@ -253,6 +253,7 @@ class DPP2.DEF.ProtectionDefinition
 		return false, i18n.localize('gui.dpp2.access.status.yoursettings') if ent\IsPlayer() and ply\GetInfoBool(@clientNoPlayersName, false)
 		return true if ent\IsPlayer()
 		return true, i18n.localize('gui.dpp2.access.status.disabled') if not @IsEnabled()
+		return false, i18n.localize('gui.dpp2.access.status.model_blacklist') if DPP2.ModelBlacklist\Check(ent\GetModel())
 		contraption = ent\DPP2GetContraption()
 
 		if not contraption

@@ -28,6 +28,7 @@ gui.dpp2.access.status.disabled = 'Protection is disabled'
 gui.dpp2.access.status.ownerdisabled = 'Protection for owner is disabled'
 gui.dpp2.access.status.yoursettings = 'Your settings'
 gui.dpp2.access.status.toolgun_player = 'Cannot toolgun a player'
+gui.dpp2.access.status.model_blacklist = 'Model is blacklisted'
 
 message.dpp2.owning.owned = 'You now own this entity'
 message.dpp2.owning.owned_contraption = 'You now own this contraption'

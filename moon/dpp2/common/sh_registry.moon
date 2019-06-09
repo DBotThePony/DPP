@@ -355,6 +355,8 @@ class DPP2.DEF.Blacklist
 	Has: (entry) => @listing\Has(entry)
 	HasDefault: (entry) => @listingDef\Has(entry) -- ???
 
+	Check: (entry) => @Has(entry)
+
 	FullReplicate: (who = player.GetAll()) =>
 		error('Invalid side') if CLIENT
 		net.Start('dpp2_blist_replicate')
