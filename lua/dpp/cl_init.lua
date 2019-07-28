@@ -683,10 +683,10 @@ local function DrawNearWeapon(ShiftX)
 
 	local attach = model:LookupAttachment('muzzle')
 
-	if not attach or attach < 0 then return end
+	if not attach or attach < 0 then return false end
 
 	local Data = model:GetAttachment(attach)
-	if not Data then return end
+	if not Data then return false end
 
 	local Ang = Data.Ang
 	local Pos = Data.Pos
@@ -716,10 +716,10 @@ local function DrawNearToolgun()
 
 	local attach = model:LookupAttachment('muzzle')
 
-	if not attach or attach < 0 then return end
+	if not attach or attach < 0 then return false end
 
 	local Data = model:GetAttachment(attach)
-	if not Data then return end
+	if not Data then return false end
 
 	local Ang = Data.Ang
 	local Pos = Data.Pos
@@ -757,13 +757,11 @@ function HUDPaint()
 
 		if IsValid(AWeapon) then
 			if not DPP.PlayerConVar(nil, 'no_physgun_display') and (AWeapon:GetClass() == 'weapon_physgun' or AWeapon:GetClass() == 'weapon_physcannon') then
-				DrawNearWeapon()
-				return
+				if DrawNearWeapon() ~= false then return end
 			end
 
 			if not DPP.PlayerConVar(nil, 'no_toolgun_display') and AWeapon:GetClass() == 'gmod_tool' then
-				DrawNearToolgun()
-				return
+				if DrawNearToolgun() ~= false then return end
 			end
 		end
 	end
