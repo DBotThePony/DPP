@@ -683,9 +683,11 @@ local function DrawNearWeapon(ShiftX)
 
 	local attach = model:LookupAttachment('muzzle')
 
-	if not attach or attach == 0 then return end
+	if not attach or attach < 0 then return end
 
 	local Data = model:GetAttachment(attach)
+	if not Data then return end
+
 	local Ang = Data.Ang
 	local Pos = Data.Pos
 
@@ -714,9 +716,11 @@ local function DrawNearToolgun()
 
 	local attach = model:LookupAttachment('muzzle')
 
-	if not attach or attach == 0 then return end
+	if not attach or attach < 0 then return end
 
 	local Data = model:GetAttachment(attach)
+	if not Data then return end
+
 	local Ang = Data.Ang
 	local Pos = Data.Pos
 
