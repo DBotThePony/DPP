@@ -150,6 +150,17 @@ class DPP2.DEF.RestrictionListEntry
 
 		return true
 
+	SetGroups: (groups = {}) =>
+		for group in *groups
+			if not table.qhasValue(@groups, group)
+				@AddGroup(group)
+
+		for group in *@groups
+			if not table.qhasValue(groups, group)
+				@RemoveGroup(group)
+
+		return @
+
 	Lock: =>
 		error('Invalid side') if CLIENT
 		@locked = true
@@ -234,7 +245,12 @@ class DPP2.DEF.RestrictionList
 				return 'message.dpp2.concommand.lists.arg_empty' if not prop
 				prop = prop\trim()
 				return 'message.dpp2.concommand.lists.arg_empty' if prop == ''
-				return 'message.dpp2.concommand.lists.already_in' if self2\Has(prop)
+
+				if entry = self2\Get(prop)
+					entry\SetGroups([group\trim() for group in *groups\trim()\split(',')])
+					entry\SwitchIsWhitelist(isWhitelist)
+					DPP2.Notify(true, nil, 'message.dpp2.concommand.rlists.updated.' .. identifier, @, prop, (#entry.groups ~= 0 and table.concat(entry.groups, ', ') or '<none>'), entry.isWhitelist)
+					return
 
 				if not groups or groups\trim() == ''
 					self2\CreateEntry(prop)\Replicate()
@@ -262,7 +278,18 @@ class DPP2.DEF.RestrictionList
 			split = DPP2.SplitArguments(args)
 
 			if not split[2]
-				return autocomplete(@, split[1], margs, [elem.class for elem in *self2.listing]) if autocomplete
+				--return autocomplete(@, split[1], margs, [elem.class for elem in *self2.listing]) if autocomplete
+				if autocomplete
+					list = autocomplete(@, split[1], margs, nil, false)
+
+					for i, line in ipairs(list)
+						if get = self2\Get(line)
+							list[i] = string.format('%q', line) .. ' "' .. table.concat(get.groups, ',') .. '" ' .. tostring(get.isWhitelist)
+						else
+							list[i] = string.format('%q', line)
+
+					return list
+
 				return {string.format('%q', split[1])}
 
 			str = string.format('%q', split[1])
@@ -301,6 +328,7 @@ class DPP2.DEF.RestrictionList
 			return output
 
 		DPP2.CheckPhrase('message.dpp2.concommand.rlists.added.' .. identifier)
+		DPP2.CheckPhrase('message.dpp2.concommand.rlists.updated.' .. identifier)
 		DPP2.CheckPhrase('message.dpp2.concommand.rlists_ext.added.' .. identifier)
 		DPP2.CheckPhrase('message.dpp2.concommand.rlists.removed.' .. identifier)
 

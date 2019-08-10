@@ -184,7 +184,7 @@ timer.Simple 0, ->
 	table.deduplicate(def)
 	table.deduplicate(def_weapons)
 
-DPP2.ClassnameAutocomplete = (args, margs, excludelist = empty) =>
+DPP2.ClassnameAutocomplete = (args, margs, excludelist = empty, format = true) =>
 	-- some of addons can register entities at runtime
 	classnames = [data.ClassName for data in *weapons.GetList() when data.ClassName]
 	table.append(classnames, [classname for classname in pairs(scripted_ents.GetList())])
@@ -192,7 +192,11 @@ DPP2.ClassnameAutocomplete = (args, margs, excludelist = empty) =>
 	table.append(classnames, def_weapons)
 	table.sort(classnames)
 	table.deduplicate(classnames)
-	return [string.format('%q', classname) for classname in *classnames] if args == ''
+	if format
+		return [string.format('%q', classname) for classname in *classnames] if args == ''
+	else
+		return [classname for classname in *classnames] if args == ''
+
 	args = args\lower()
 
 	output = {}
@@ -201,7 +205,10 @@ DPP2.ClassnameAutocomplete = (args, margs, excludelist = empty) =>
 		-- we proably got several entities which start with same name
 
 		if classname\startsWith(args) and not table.qhasValue(excludelist, classname)
-			table.insert(output, string.format('%q', classname))
+			if format
+				table.insert(output, string.format('%q', classname))
+			else
+				table.insert(output, classname)
 
 	return output
 
