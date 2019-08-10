@@ -134,6 +134,12 @@ EntityTakeDamage = (dmginfo) =>
 
 		if not status
 			@Extinguish()
+			dmginfo\SetDamage(0)
+			dmginfo\SetDamageCustom(0)
+			dmginfo\SetDamageBonus(0)
+			dmginfo\SetDamageType(0)
+			dmginfo\SetDamageForce(vector_origin)
+			dmginfo\SetReportedPosition(vector_origin)
 			return status
 
 hooksToReg = {

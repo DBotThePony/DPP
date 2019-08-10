@@ -59,3 +59,21 @@ DPP2.ModelAutocomplete = (args, margs, excludelist = empty) =>
 					table.insert(output, string.format('%s/%s', dpath, filename2))
 
 	return output
+
+DPP2.ClassnameAutocomplete = (args, margs, excludelist = empty) =>
+	classnames = [data.ClassName for data in *weapons.GetList() when data.ClassName]
+	table.append(classnames, [classname for classname in pairs(scripted_ents.GetList())])
+	table.sort(classnames)
+	table.deduplicate(classnames)
+	return [string.format('%q', classname) for classname in *classnames] if args == ''
+	args = args\lower()
+
+	output = {}
+
+	for classname in *classnames
+		-- we proably got several entities which start with same name
+
+		if classname\startsWith(args)
+			table.insert(output, string.format('%q', output))
+
+	return output

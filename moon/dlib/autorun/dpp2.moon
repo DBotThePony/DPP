@@ -37,7 +37,7 @@ DPP2.CVarsRegistry = {}
 
 DPP2.CreateConVar = (cvarName, cvarDef, cvarType) ->
 	cvarDesc = 'gui.dpp2.cvars.' .. cvarName
-	DPP2.Message('Missing langstring for: ' .. cvarName .. '; unlocalized name: ' .. cvarDesc) if DLib.i18n.localize(cvarDesc) == cvarDesc
+	DPP2.Message('Missing langstring for: ' .. cvarName .. '; unlocalized name: ' .. cvarDesc) if not DLib.i18n.exists(cvarDesc)
 	obj = DLib.util.CreateSharedConvar('dpp2_' .. cvarName, cvarDef, DLib.i18n.localize(cvarDesc))
 	table.insert(DPP2.CVarsRegistry, {cvar: obj, :cvarName, :cvarDef, :cvarDesc, :cvarType})
 	return obj
@@ -47,11 +47,12 @@ if CLIENT
 
 	DPP2.CreateClientConVar = (cvarName, cvarDef, cvarType, userinfo = true) ->
 		cvarDesc = 'gui.dpp2.cvars.' .. cvarName
-		DPP2.Message('Missing langstring for: ' .. cvarName .. '; unlocalized name: ' .. cvarDesc) if DLib.i18n.localize(cvarDesc) == cvarDesc
+		DPP2.Message('Missing langstring for: ' .. cvarName .. '; unlocalized name: ' .. cvarDesc) if not DLib.i18n.exists(cvarDesc)
 		obj = CreateConVar('dpp2_' .. cvarName, cvarDef, userinfo and {FCVAR_USERINFO, FCVAR_ARCHIVE} or {FCVAR_ARCHIVE}, DLib.i18n.localize(cvarDesc))
 		table.insert(DPP2.ClientCVarsRegistry, {cvar: obj, :cvarName, :cvarDef, :cvarDesc, :cvarType, :userinfo})
 		return obj
 
+DPP2.CheckPhrase = (name) -> DPP2.Message('Missing langstring for: ' .. name) if not DLib.i18n.exists(name)
 
 DPP2.ENABLE_PROTECTION = DPP2.CreateConVar('protection', '1', DPP2.TYPE_BOOL)
 DPP2.NO_TOOLGUN_PLAYER = DPP2.CreateConVar('no_tool_player', '1', DPP2.TYPE_BOOL)
@@ -244,26 +245,26 @@ else
 			when NOTIFY_GENERIC
 				DPP2.Notify(nil, net.ReadUInt16(), unpack(net.ReadArray()))
 
-DPP2.PhysgunProtection = DPP2.DEF.ProtectionDefinition('physgun')
-DPP2.ToolgunProtection = DPP2.DEF.ProtectionDefinition('toolgun')
+include('dpp2/common/concommands/sh_registry.lua')
+
+DPP2.PhysgunProtection = DPP2.DEF.ProtectionDefinition('physgun', nil, true)
+DPP2.ToolgunProtection = DPP2.DEF.ProtectionDefinition('toolgun', nil, true)
 
 with DrivePrefab = DPP2.DEF.DefinitionConVarsPrefab()
 	\SetNoWorldTouch(true)
 	\SetNoWorldTouchAdmin(true)
-	DPP2.DriveProtection = DPP2.DEF.ProtectionDefinition('drive', DrivePrefab)
+	DPP2.DriveProtection = DPP2.DEF.ProtectionDefinition('drive', DrivePrefab, true)
 
 with AllowMapPrefab = DPP2.DEF.DefinitionConVarsPrefab()
 	\SetNoMapTouch(false)
 	\SetNoMapTouchAdmin(false)
 	\SetNoWorldTouch(false)
 	\SetNoWorldTouchAdmin(false)
-	DPP2.DamageProtection = DPP2.DEF.ProtectionDefinition('damage', AllowMapPrefab)
+	DPP2.DamageProtection = DPP2.DEF.ProtectionDefinition('damage', AllowMapPrefab, true)
 	DPP2.PickupProtection = DPP2.DEF.ProtectionDefinition('pickup', AllowMapPrefab)
-	DPP2.UseProtection = DPP2.DEF.ProtectionDefinition('use', AllowMapPrefab)
-	DPP2.VehicleProtection = DPP2.DEF.ProtectionDefinition('vehicle', AllowMapPrefab)
-	DPP2.GravgunProtection = DPP2.DEF.ProtectionDefinition('gravgun', AllowMapPrefab)
-
-include('dpp2/common/concommands/sh_registry.lua')
+	DPP2.UseProtection = DPP2.DEF.ProtectionDefinition('use', AllowMapPrefab, true)
+	DPP2.VehicleProtection = DPP2.DEF.ProtectionDefinition('vehicle', AllowMapPrefab, true)
+	DPP2.GravgunProtection = DPP2.DEF.ProtectionDefinition('gravgun', AllowMapPrefab, true)
 
 DPP2.ModelBlacklist = DPP2.DEF.Blacklist('model', DPP2.ModelAutocomplete)
 
@@ -272,3 +273,5 @@ include('dpp2/common/concommands/sh_generic.lua')
 include('dpp2/common/concommands/sh_cmdlogic.lua')
 
 DPP2.Message(string.format('DPP/2 Startup took %.2f ms', SysTime() - startup))
+
+return

@@ -44,7 +44,9 @@ class DPP2.DEF.RestrictionListEntry
 			id, list = net.ReadUInt32(), net.ReadString()
 			entry = @ReadPayload()
 			entry\SetID(id)
-			entry\SetParent(assert(DPP2.DEF.RestrictionList\GetByID(list), 'Invalid list received: ' .. list))
+			list = assert(DPP2.DEF.RestrictionList\GetByID(list), 'Invalid list received: ' .. list)
+			entry\Bind(list)
+			list\AddEntry(entry)
 			entry.replicated = true
 
 		net.receive 'dpp2_list_entry_remove', ->
@@ -87,7 +89,7 @@ class DPP2.DEF.RestrictionListEntry
 
 	Remove: =>
 		return false if @removed
-		return false if SERVER and @replicated
+		return false if CLIENT and @replicated
 
 		if SERVER and @replicated
 			net.Start('dpp2_list_entry_remove')
@@ -96,7 +98,12 @@ class DPP2.DEF.RestrictionListEntry
 
 		@removed = true
 		@replicated = false
+		@parent\RemoveEntry(@) if @parent
 		return true
+
+	Bind: (parent) =>
+		@parent = parent
+		return @
 
 	SwitchIsWhitelist: (isWhitelist = @isWhitelist) =>
 		return false if isWhitelist == @isWhitelist
@@ -169,9 +176,6 @@ class DPP2.DEF.RestrictionListEntry
 		isWhitelist = net.ReadBool()
 		return DPP2.DEF.RestrictionListEntry(classname, groups, isWhitelist)
 
-	SetParent: (parent) =>
-		@parent = parent
-
 	SetID: (id = @id) =>
 		@id = id
 		return @
@@ -186,7 +190,7 @@ class DPP2.DEF.RestrictionListEntry
 			@replicated = true
 			net.Start('dpp2_list_entry_create')
 			net.WriteUInt32(@id)
-			net.WriteString(@parent)
+			net.WriteString(@parent.identifier)
 			@WritePayload()
 			net.Broadcast()
 		else
@@ -198,7 +202,7 @@ class DPP2.DEF.RestrictionListEntry
 
 	Is: (classname) => @class == classname
 	Ask: (classname, group, isAdmin) =>
-		return if classname ~= @
+		return if classname ~= @class
 		return @isWhitelist if table.qhasValue(@groups, group)
 
 class DPP2.DEF.RestrictionList
@@ -209,18 +213,76 @@ class DPP2.DEF.RestrictionList
 
 	@FindEntry: (id) =>
 		for list in *@_LISTS
-			for entry in *list.listing
-				if entry.id == id
-					return entry
+			entry = list\GetByID(id)
+			return entry if entry
 
 		return false
 
-	new: (identifier) =>
+	new: (identifier, autocompleteList) =>
 		@identifier = identifier
 		error('Restriction list ' .. identifier .. ' already exists! Can not redefine existing one.') if @@LISTS[identifier]
 		@@LISTS[@identifier] = @
 		@listing = {}
-		@@_LISTS = [list for key, list in pairs(@LISTS)]
+		@@_LISTS = [list for key, list in pairs(@@LISTS)]
+		self2 = @
+
+		if SERVER
+			DPP2.cmd['add_' .. identifier .. '_restriction'] = (args = {}) =>
+				prop = args[1]
+				groups = args[2] or ''
+				isWhitelist = tobool(args[3])
+				return 'message.dpp2.concommand.lists.arg_empty' if not prop
+				prop = prop\trim()
+				return 'message.dpp2.concommand.lists.arg_empty' if prop == ''
+				return 'message.dpp2.concommand.lists.already_in' if self2\Has(prop)
+
+				if not groups or groups\trim() == ''
+					self2\CreateEntry(prop)\Replicate()
+					DPP2.Notify(true, nil, 'message.dpp2.concommand.rlists.added.' .. identifier, @, prop)
+					return
+
+				split = [group\trim() for group in *groups\trim()\split(',')]
+				self2\CreateEntry(prop, split, isWhitelist)\Replicate()
+				DPP2.Notify(true, nil, 'message.dpp2.concommand.rlists_ext.added.' .. identifier, @, prop, table.concat(split, ', '), isWhitelist)
+
+			DPP2.cmd['remove_' .. identifier .. '_restriction'] = (args = {}) =>
+				prop = table.concat(args, ' ')\trim()
+				return 'message.dpp2.concommand.lists.arg_empty' if prop == ''
+				getEntry = self2\Get(prop)
+				return 'message.dpp2.concommand.lists.already_not' if not getEntry
+
+				getEntry\Remove()
+				DPP2.Notify(true, nil, 'message.dpp2.concommand.rlists.removed.' .. identifier, @, prop)
+
+		DPP2.cmd_perms['add_' .. identifier .. '_restriction'] = 'superadmin'
+		DPP2.cmd_perms['remove_' .. identifier .. '_restriction'] = 'superadmin'
+
+		if autocomplete
+			DPP2.cmd_autocomplete['add_' .. identifier .. '_restriction'] = (args, margs) =>
+				autocomplete(@, args, margs, self2.listing\GetValues())
+		elseif CLIENT
+			DPP2.cmd_existing['add_' .. identifier .. '_restriction'] = true
+
+		DPP2.cmd_autocomplete['remove_' .. identifier .. '_restriction'] = (args, margs) =>
+			return [string.format('%q', elem.class) for elem in *self2.listing] if args == ''
+			args = args\lower()
+
+			output = {}
+
+			for elem in *self2.listing
+				with lower = elem.class\lower()
+					if lower == args
+						output = {string.format('%q', elem.class)}
+						break
+
+					if \startsWith(args)
+						table.insert(output, string.format('%q', elem.class))
+
+			return output
+
+		DPP2.CheckPhrase('message.dpp2.concommand.rlists.added.' .. identifier)
+		DPP2.CheckPhrase('message.dpp2.concommand.rlists_ext.added.' .. identifier)
+		DPP2.CheckPhrase('message.dpp2.concommand.rlists.removed.' .. identifier)
 
 	AddEntry: (entry) =>
 		return false if table.qhasValue(@listing, entry)
@@ -237,8 +299,13 @@ class DPP2.DEF.RestrictionList
 
 	CreateEntry: (...) =>
 		entry = DPP2.DEF.RestrictionListEntry(...)
+		entry\Bind(@)
 		@AddEntry(entry)
 		return entry
+
+	GetByID: (id) =>
+		return entry for entry in *@listing when entry.id == id
+		return false
 
 	Ask: (classname, ply) =>
 		group, isAdmin = ply\GetUserGroup(), ply\IsAdmin()
@@ -251,6 +318,10 @@ class DPP2.DEF.RestrictionList
 
 	Has: (classname) =>
 		return true for entry in *@listing when entry\Is(classname)
+		return false
+
+	Get: (classname) =>
+		return entry for entry in *@listing when entry\Is(classname)
 		return false
 
 class DPP2.DEF.Blacklist
@@ -309,19 +380,19 @@ class DPP2.DEF.Blacklist
 			DPP2.cmd_existing['add_' .. identifier .. '_blacklist'] = true
 
 		DPP2.cmd_autocomplete['remove_' .. identifier .. '_blacklist'] = (args, margs) =>
-			return [string.format('%q', elem) for elem in *@listing\GetValues()] if args == ''
+			return [string.format('%q', elem) for elem in *self.listing\GetValues()] if args == ''
 			args = args\lower()
 
 			output = {}
 
-			for elem in *@listing\GetValues()
+			for elem in *self.listing\GetValues()
 				with lower = elem\lower()
 					if lower == args
-						output = {elem}
+						output = {string.format('%q', elem)}
 						break
 
 					if \startsWith(args)
-						table.insert(output, elem)
+						table.insert(output, string.format('%q', elem))
 
 			return output
 

@@ -62,16 +62,22 @@ class DPP2.DEF.ProtectionDefinition
 		return if not ply\DPP2HasEnts()
 
 		obj\PlayerDisconnected(ply) for obj in *@OBJECTS
+		steamid = ply\SteamID()
 
 		timer.Create 'DPP2.FriendStatus.' .. steamid, 360, 0, ->
 			return if DPP2.HasEntsBySteamID(steamid)
 			obj\PruneFriendData(steamid) for obj in *@OBJECTS
 			timer.Remove('DPP2.FriendStatus.' .. steamid)
 
-	new: (classname, prefab = DPP2.DEF.DefinitionConVarsPrefab()) =>
+	new: (classname, prefab = DPP2.DEF.DefinitionConVarsPrefab(), classnameRestriction = false) =>
 		@friendsCache = {}
 		@disabledCache = {}
 		table.insert(@@OBJECTS, @)
+
+		if classnameRestriction == true
+			@classnameRestriction = DPP2.DEF.RestrictionList(classname, DPP2.ClassnameAutocomplete)
+		else
+			@classnameRestriction = classnameRestriction
 
 		@name = assert(type(classname) == 'string' and classname, 'Invalid definition classname')\lower()
 
@@ -252,8 +258,9 @@ class DPP2.DEF.ProtectionDefinition
 		return false if not ent\IsValid()
 		return false, i18n.localize('gui.dpp2.access.status.yoursettings') if ent\IsPlayer() and ply\GetInfoBool(@clientNoPlayersName, false)
 		return true if ent\IsPlayer()
-		return true, i18n.localize('gui.dpp2.access.status.disabled') if not @IsEnabled()
 		return false, i18n.localize('gui.dpp2.access.status.model_blacklist') if DPP2.ModelBlacklist\Check(ent\GetModel())
+		return false, i18n.localize('gui.dpp2.access.status.' .. @name .. '_restriction') if @classnameRestriction and not @classnameRestriction\Ask(ent\GetClass(), ply)
+		return true, i18n.localize('gui.dpp2.access.status.disabled') if not @IsEnabled()
 		contraption = ent\DPP2GetContraption()
 
 		if not contraption
