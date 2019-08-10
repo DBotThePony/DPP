@@ -242,8 +242,9 @@ class DPP2.DEF.RestrictionList
 					return
 
 				split = [group\trim() for group in *groups\trim()\split(',')]
+				split = {} if #split == 1 and split[1] == ''
 				self2\CreateEntry(prop, split, isWhitelist)\Replicate()
-				DPP2.Notify(true, nil, 'message.dpp2.concommand.rlists_ext.added.' .. identifier, @, prop, table.concat(split, ', '), isWhitelist)
+				DPP2.Notify(true, nil, 'message.dpp2.concommand.rlists_ext.added.' .. identifier, @, prop, (#split ~= 0 and table.concat(split, ', ') or '<none>'), isWhitelist)
 
 			DPP2.cmd['remove_' .. identifier .. '_restriction'] = (args = {}) =>
 				prop = table.concat(args, ' ')\trim()
