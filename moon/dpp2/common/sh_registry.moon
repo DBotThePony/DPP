@@ -218,7 +218,7 @@ class DPP2.DEF.RestrictionList
 
 		return false
 
-	new: (identifier, autocompleteList) =>
+	new: (identifier, autocomplete) =>
 		@identifier = identifier
 		error('Restriction list ' .. identifier .. ' already exists! Can not redefine existing one.') if @@LISTS[identifier]
 		@@LISTS[@identifier] = @
@@ -257,11 +257,30 @@ class DPP2.DEF.RestrictionList
 		DPP2.cmd_perms['add_' .. identifier .. '_restriction'] = 'superadmin'
 		DPP2.cmd_perms['remove_' .. identifier .. '_restriction'] = 'superadmin'
 
-		if autocomplete
-			DPP2.cmd_autocomplete['add_' .. identifier .. '_restriction'] = (args, margs) =>
-				autocomplete(@, args, margs, self2.listing\GetValues())
-		elseif CLIENT
-			DPP2.cmd_existing['add_' .. identifier .. '_restriction'] = true
+		DPP2.cmd_autocomplete['add_' .. identifier .. '_restriction'] = (args, margs) =>
+			split = DPP2.SplitArguments(args)
+
+			if not split[2]
+				return autocomplete(@, split[1], margs, [elem.class for elem in *self2.listing]) if autocomplete
+				return {string.format('%q', split[1])}
+
+			str = string.format('%q', split[1])
+			groupsRaw = split[2]
+			groupsSplit = split[2]\split(',')
+			lastGroup = table.remove(groupsSplit, #groupsSplit)\trim()
+			groups = {string.format('%q', groupsRaw)}
+
+			for group in pairs(CAMI.GetUsergroups())
+				if group\startsWith(lastGroup) and not table.qhasValue(groupsSplit, group)
+					if #groupsSplit == 0
+						table.insert(groups, string.format('%q', group))
+					else
+						table.insert(groups, string.format('%q', table.concat(groupsSplit, ',') .. ',' .. group))
+
+			if not split[3] and margs[#margs] ~= ' '
+				return [str .. ' ' .. group for group in *groups]
+
+			return {str .. ' ' .. string.format('%q', groupsRaw) .. ' true', str .. ' ' .. string.format('%q', groupsRaw) .. ' false'}
 
 		DPP2.cmd_autocomplete['remove_' .. identifier .. '_restriction'] = (args, margs) =>
 			return [string.format('%q', elem.class) for elem in *self2.listing] if args == ''
