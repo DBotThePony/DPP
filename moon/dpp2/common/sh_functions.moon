@@ -78,6 +78,11 @@ DPP2.SplitArguments = (argstr = '') ->
 					current = ''
 
 				inQuotes = true
+		elseif char == ' ' and not inQuotes
+			if current\trim() ~= ''
+				table.insert(stack, current\trim())
+
+			current = ''
 		else
 			backslash = false
 			current ..= char
