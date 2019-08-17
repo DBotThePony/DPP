@@ -212,7 +212,7 @@ DPP2.ClassnameAutocomplete = (args, margs, excludelist = empty, format = true) =
 
 	return output
 
-DPP2.WeaponAutocomplete = (args, margs, excludelist = empty) =>
+DPP2.WeaponAutocomplete = (args, margs, excludelist = empty, format = true) =>
 	-- some of addons can register entities at runtime
 	classnames = [data.ClassName for data in *weapons.GetList() when data.ClassName]
 	table.append(classnames, def_weapons)
@@ -227,6 +227,27 @@ DPP2.WeaponAutocomplete = (args, margs, excludelist = empty) =>
 		-- we proably got several entities which start with same name
 
 		if classname\startsWith(args) and not table.qhasValue(excludelist, classname)
-			table.insert(output, string.format('%q', classname))
+			if format
+				table.insert(output, string.format('%q', classname))
+			else
+				table.insert(output, classname)
+
+	return output
+
+DPP2.ToolgunAutocomplete = (args, margs, excludelist = empty, format = true) =>
+	toolgun = weapons.GetStored('gmod_tool')
+	return if not toolgun
+	return if not toolgun.Tool
+
+	output = {}
+
+	for classname in pairs(toolgun.Tool)
+		-- we proably got several entities which start with same name
+
+		if classname\startsWith(args) and not table.qhasValue(excludelist, classname)
+			if format
+				table.insert(output, string.format('%q', classname))
+			else
+				table.insert(output, classname)
 
 	return output

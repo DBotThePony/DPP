@@ -101,11 +101,11 @@ CanProperty = (ply = NULL, property, ent = NULL) ->
 
 CanTool = (ply = NULL, tr = {HitPos: Vector(), Entity: NULL, HitNormal: Vector()}, mode) ->
 	return if not IsValid(ply)
-	return if not IsValid(tr.Entity)
-	tr.Entity\DPP2CheckUpForGrabs(ply) if SERVER
+	--return if not IsValid(tr.Entity)
+	tr.Entity\DPP2CheckUpForGrabs(ply) if SERVER and IsValid(tr.Entity)
 	status = DPP2.ACCESS.CanToolgun(ply, tr.Entity, mode)
 	return status if not status
-	if SERVER
+	if SERVER and IsValid(tr.Entity)
 		tr.Entity\DPP2UnGhost(true)
 		DPP2.APKTriggerPhysgunDrop(ply, tr.Entity)
 		return

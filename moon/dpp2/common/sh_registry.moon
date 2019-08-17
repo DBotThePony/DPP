@@ -282,6 +282,8 @@ class DPP2.DEF.RestrictionList
 				if autocomplete
 					list = autocomplete(@, split[1], margs, nil, false)
 
+					return if not list
+
 					for i, line in ipairs(list)
 						if get = self2\Get(line)
 							list[i] = string.format('%q', line) .. ' "' .. table.concat(get.groups, ',') .. '" ' .. tostring(get.isWhitelist)
