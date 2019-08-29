@@ -58,6 +58,12 @@ DPP2.ENABLE_PROTECTION = DPP2.CreateConVar('protection', '1', DPP2.TYPE_BOOL)
 DPP2.NO_TOOLGUN_PLAYER = DPP2.CreateConVar('no_tool_player', '1', DPP2.TYPE_BOOL)
 DPP2.NO_TOOLGUN_PLAYER_ADMIN = DPP2.CreateConVar('no_tool_player_admin', '0', DPP2.TYPE_BOOL)
 
+CAMI.RegisterPrivilege({
+	Name: 'dpp2_log'
+	MinAccess: 'admin'
+	Description: 'Viewing DPP/2 logs'
+})
+
 AddCSLuaFile('dpp2/common/sh_logic.lua')
 AddCSLuaFile('dpp2/common/sh_owning.lua')
 AddCSLuaFile('dpp2/common/sh_hooks.lua')
@@ -101,6 +107,7 @@ include('dpp2/common/sh_transfer.lua')
 include('dpp2/server/sv_transfer.lua') if SERVER
 include('dpp2/client/cl_transfer.lua') if CLIENT
 include('dpp2/common/sh_cppi.lua')
+include('dpp2/server/sv_logging.lua') if SERVER
 
 if SERVER
 	net.pool('dpp2_notify')

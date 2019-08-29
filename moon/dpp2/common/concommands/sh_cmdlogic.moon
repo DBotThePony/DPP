@@ -69,7 +69,7 @@ if SERVER
 				if IsValid(@)
 					CAMI.PlayerHasAccess @, 'dpp2_' .. cmdName, (hasAccess = false, reason = '<unknown reason>') ->
 						if not hasAccess
-							DPP2.NotifyError(@, nil, 'message.dpp2.concommand.generic.noaccess_check', reason)
+							DPP2.NotifyError(@, nil, 'command.dpp2.generic.noaccess_check', reason)
 							return
 
 						output = {cmdFunc(@, args, (...) -> DPP2.NotifyError(@, nil, ...))}

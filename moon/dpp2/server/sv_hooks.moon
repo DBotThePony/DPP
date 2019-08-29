@@ -29,6 +29,14 @@ for init in *fixme_init
 	if not table.qhasValue(DPP2.FIXME_HookSpawns, init)
 		table.insert(DPP2.FIXME_HookSpawns, init)
 
+log_blacklist = {
+	'logic_collision_pair'
+	'phys_constraint'
+	'phys_hinge'
+	'phys_constraintsystem'
+	'phys_lengthconstraint'
+}
+
 DPP2.PlayerSpawnedSomething = (ply, ent, advancedCheck = false) ->
 	fixme = false
 
@@ -65,6 +73,15 @@ DPP2.PlayerSpawnedSomething = (ply, ent, advancedCheck = false) ->
 		timer.Simple 0, -> DPP2.APKTriggerPhysgunDrop(ply, ent) if IsValid(ply) and IsValid(ent)
 
 	ent\DPP2SetOwner(ply)
+
+	eclass = ent\GetClass()
+
+	if not eclass or not table.qhasValue(log_blacklist, eclass)
+		if not eclass or not eclass\startsWith('prop_')
+			DPP2.Log('message.dpp2.log.spawn.generic', ply, ent)
+		else
+			DPP2.Log('message.dpp2.log.spawn.prop', ply, ent, ent\GetModel() or '<unknown>')
+
 	hook.Run('DPP_PlayerSpawn', ply, ent)
 
 PreventModelSpawn = (ply, model = ent and ent\GetModel() or 'wtf', ent, nonotify) ->
@@ -155,6 +172,17 @@ PlayerGiveSWEP = (ply = NULL, classname = 'base_entity', definition = {ClassName
 	return false if not PreventModelSpawn(ply, definition.WorldModel)
 	return false if not DPP2.AntispamCheck(ply)
 
+	if not IsValid(ply\GetWeapon(classname))
+		timer.Simple 0, ->
+			return if not IsValid(ply)
+			wep = ply\GetWeapon(classname)
+
+			if IsValid(wep)
+				DPP2.Log('message.dpp2.log.spawn.giveswep_valid', ply, wep)
+				DPP2.PlayerSpawnedSomething(ply, wep)
+			else
+				DPP2.Log('message.dpp2.log.spawn.giveswep', ply, color_white, classname)
+
 PlayerSpawnSWEP = (ply = NULL, classname = 'base_entity', definition = {ClassName: 'base_entity', WorldModel: 'models/error.mdl', ViewModel: 'models/error.mdl'}) ->
 	return unless ply\IsValid()
 	return false if not PreventModelSpawn(ply, definition.WorldModel)
@@ -189,7 +217,7 @@ DiveTableCheck = (tab, owner, checkedEnts, checkedTables, found) =>
 
 		if vtype == 'table' and (type(key) ~= 'string' or not key\startsWith('__dpp2'))
 			DiveTableCheck(@, value, owner, checkedEnts, checkedTables, found)
-		elseif vtype == 'Entity' or vtype == 'NPC' or vtype == 'NextBot' or vtype == 'Vehicle'
+		elseif vtype == 'Entity' or vtype == 'NPC' or vtype == 'NextBot' or vtype == 'Vehicle' or vtype == 'Weapon'
 			DiveEntityCheck(value, owner, checkedEnts, checkedTables, found)
 
 DiveEntityCheck = (owner, checkedEnts, checkedTables, found) =>
@@ -200,6 +228,7 @@ DiveEntityCheck = (owner, checkedEnts, checkedTables, found) =>
 	@__dpp2_check_frame = CurTimeL()
 	table.insert(found, @) if @DPP2GetOwner() ~= owner and @__dpp2_spawn_frame == CurTimeL()
 	DiveTableCheck(@, @GetTable(), owner, checkedEnts, checkedTables, found)
+	DiveTableCheck(@, @GetSaveTable(), owner, checkedEnts, checkedTables, found)
 	return found
 
 hook.Add 'Think', 'DPP2.CheckEntitiesOwnage', ->

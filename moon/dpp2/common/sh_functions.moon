@@ -136,21 +136,21 @@ DPP2.FindPlayersInArgument = (str = '', filter, nobots = false) ->
 		table.insert(filter, ply) for ply in *player.GetAll() when ply\IsBot()
 
 	str = str\trim()\lower()
-	return {DLib.i18n.localize('message.dpp2.concommand.hint.player')} if str == ''
+	return {DLib.i18n.localize('command.dpp2.hint.player')} if str == ''
 
 	if str\startsWith('steam_')
 		plyFind = player.GetBySteamID(str\upper())
-		return {DLib.i18n.localize('message.dpp2.concommand.hint.player')} if plyFind and plyFind == lply
+		return {DLib.i18n.localize('command.dpp2.hint.player')} if plyFind and plyFind == lply
 		return {plyFind\Nick()} if plyFind and plyFind ~= lply
 		output = [ply\SteamID() for ply in *player.GetAll() when ply\SteamID()\lower()\startsWith(str) and ply ~= lply]
-		return #output ~= 0 and output or {DLib.i18n.localize('message.dpp2.concommand.hint.none')}
+		return #output ~= 0 and output or {DLib.i18n.localize('command.dpp2.hint.none')}
 
 	if num = str\tonumber()
 		ply = Player(num)
-		return {DLib.i18n.localize('message.dpp2.concommand.hint.player')} if IsValid(ply) and ply == lply
+		return {DLib.i18n.localize('command.dpp2.hint.player')} if IsValid(ply) and ply == lply
 		return {ply\Nick()} if IsValid(ply) and ply ~= lply
 		output = [ply\Nick() for ply in *player.GetAll() when ply\UserID()\tostring()\startsWith(str) and ply ~= lply]
-		return #output ~= 0 and output or {DLib.i18n.localize('message.dpp2.concommand.hint.none')}
+		return #output ~= 0 and output or {DLib.i18n.localize('command.dpp2.hint.none')}
 
 	findPly = {}
 
@@ -184,4 +184,4 @@ DPP2.FindPlayersInArgument = (str = '', filter, nobots = false) ->
 					if nick == str or nick\find(str)
 						table.insert(findPly, ply\SteamName())
 
-	return #findPly ~= 0 and findPly or {DLib.i18n.localize('message.dpp2.concommand.hint.none')}
+	return #findPly ~= 0 and findPly or {DLib.i18n.localize('command.dpp2.hint.none')}

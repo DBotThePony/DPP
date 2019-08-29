@@ -242,34 +242,34 @@ class DPP2.DEF.RestrictionList
 				prop = args[1]
 				groups = args[2] or ''
 				isWhitelist = tobool(args[3])
-				return 'message.dpp2.concommand.lists.arg_empty' if not prop
+				return 'command.dpp2.lists.arg_empty' if not prop
 				prop = prop\trim()
-				return 'message.dpp2.concommand.lists.arg_empty' if prop == ''
+				return 'command.dpp2.lists.arg_empty' if prop == ''
 
 				if entry = self2\Get(prop)
 					entry\SetGroups([group\trim() for group in *groups\trim()\split(',')])
 					entry\SwitchIsWhitelist(isWhitelist)
-					DPP2.Notify(true, nil, 'message.dpp2.concommand.rlists.updated.' .. identifier, @, prop, (#entry.groups ~= 0 and table.concat(entry.groups, ', ') or '<none>'), entry.isWhitelist)
+					DPP2.Notify(true, nil, 'command.dpp2.rlists.updated.' .. identifier, @, prop, (#entry.groups ~= 0 and table.concat(entry.groups, ', ') or '<none>'), entry.isWhitelist)
 					return
 
 				if not groups or groups\trim() == ''
 					self2\CreateEntry(prop)\Replicate()
-					DPP2.Notify(true, nil, 'message.dpp2.concommand.rlists.added.' .. identifier, @, prop)
+					DPP2.Notify(true, nil, 'command.dpp2.rlists.added.' .. identifier, @, prop)
 					return
 
 				split = [group\trim() for group in *groups\trim()\split(',')]
 				split = {} if #split == 1 and split[1] == ''
 				self2\CreateEntry(prop, split, isWhitelist)\Replicate()
-				DPP2.Notify(true, nil, 'message.dpp2.concommand.rlists_ext.added.' .. identifier, @, prop, (#split ~= 0 and table.concat(split, ', ') or '<none>'), isWhitelist)
+				DPP2.Notify(true, nil, 'command.dpp2.rlists_ext.added.' .. identifier, @, prop, (#split ~= 0 and table.concat(split, ', ') or '<none>'), isWhitelist)
 
 			DPP2.cmd['remove_' .. identifier .. '_restriction'] = (args = {}) =>
 				prop = table.concat(args, ' ')\trim()
-				return 'message.dpp2.concommand.lists.arg_empty' if prop == ''
+				return 'command.dpp2.lists.arg_empty' if prop == ''
 				getEntry = self2\Get(prop)
-				return 'message.dpp2.concommand.lists.already_not' if not getEntry
+				return 'command.dpp2.lists.already_not' if not getEntry
 
 				getEntry\Remove()
-				DPP2.Notify(true, nil, 'message.dpp2.concommand.rlists.removed.' .. identifier, @, prop)
+				DPP2.Notify(true, nil, 'command.dpp2.rlists.removed.' .. identifier, @, prop)
 
 		DPP2.cmd_perms['add_' .. identifier .. '_restriction'] = 'superadmin'
 		DPP2.cmd_perms['remove_' .. identifier .. '_restriction'] = 'superadmin'
@@ -329,10 +329,10 @@ class DPP2.DEF.RestrictionList
 
 			return output
 
-		DPP2.CheckPhrase('message.dpp2.concommand.rlists.added.' .. identifier)
-		DPP2.CheckPhrase('message.dpp2.concommand.rlists.updated.' .. identifier)
-		DPP2.CheckPhrase('message.dpp2.concommand.rlists_ext.added.' .. identifier)
-		DPP2.CheckPhrase('message.dpp2.concommand.rlists.removed.' .. identifier)
+		DPP2.CheckPhrase('command.dpp2.rlists.added.' .. identifier)
+		DPP2.CheckPhrase('command.dpp2.rlists.updated.' .. identifier)
+		DPP2.CheckPhrase('command.dpp2.rlists_ext.added.' .. identifier)
+		DPP2.CheckPhrase('command.dpp2.rlists.removed.' .. identifier)
 
 	AddEntry: (entry) =>
 		return false if table.qhasValue(@listing, entry)
@@ -409,17 +409,17 @@ class DPP2.DEF.Blacklist
 		if SERVER
 			DPP2.cmd['add_' .. identifier .. '_blacklist'] = (args = {}) =>
 				val = table.concat(args, ' ')\trim()
-				return 'message.dpp2.concommand.lists.arg_empty' if val == ''
-				return 'message.dpp2.concommand.lists.already_in' if self2\Has(val)
+				return 'command.dpp2.lists.arg_empty' if val == ''
+				return 'command.dpp2.lists.already_in' if self2\Has(val)
 				self2\Add(val)
-				DPP2.Notify(true, nil, 'message.dpp2.concommand.blists.added.' .. identifier, @, val)
+				DPP2.Notify(true, nil, 'command.dpp2.blists.added.' .. identifier, @, val)
 
 			DPP2.cmd['remove_' .. identifier .. '_blacklist'] = (args = {}) =>
 				val = table.concat(args, ' ')\trim()
-				return 'message.dpp2.concommand.lists.arg_empty' if val == ''
-				return 'message.dpp2.concommand.lists.already_not' if not self2\Has(val)
+				return 'command.dpp2.lists.arg_empty' if val == ''
+				return 'command.dpp2.lists.already_not' if not self2\Has(val)
 				self2\Remove(val)
-				DPP2.Notify(true, nil, 'message.dpp2.concommand.blists.removed.' .. identifier, @, val)
+				DPP2.Notify(true, nil, 'command.dpp2.blists.removed.' .. identifier, @, val)
 
 		DPP2.cmd_perms['add_' .. identifier .. '_blacklist'] = 'superadmin'
 		DPP2.cmd_perms['remove_' .. identifier .. '_blacklist'] = 'superadmin'
