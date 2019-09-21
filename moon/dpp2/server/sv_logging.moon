@@ -49,6 +49,7 @@ createHandle = (prefix) ->
 
 combined = createHandle('combined_')
 spawns = createHandle('spawns_')
+transfer = createHandle('transfer_')
 
 makestr = (...) ->
 	builder = {}
@@ -74,6 +75,10 @@ DPP2.Log = (...) ->
 DPP2.LogSpawn = (...) ->
 	DPP2.Log(...)
 	spawns(makestr(...))
+
+DPP2.LogTransfer = (...) ->
+	DPP2.Log(...)
+	transfer(makestr(...))
 
 DPP2.SendNextLogChunk = ->
 	pop = table.remove(sendQueue, 1)

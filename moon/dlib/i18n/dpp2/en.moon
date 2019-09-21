@@ -136,3 +136,6 @@ message.dpp2.log.spawn.giveswep = '#E gave himself swep #C%s'
 message.dpp2.log.spawn.giveswep_valid = '#E gave himself swep #E'
 message.dpp2.log.spawn.prop = '#E spawned #E [%s]'
 message.dpp2.log.in_next = 'Logging continues in %s'
+
+message.dpp2.log.transfer.world = '#E transfered ownership of #E to world'
+message.dpp2.log.transfer.other = '#E transfered ownership of #E to #E'

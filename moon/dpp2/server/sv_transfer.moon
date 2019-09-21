@@ -84,6 +84,7 @@ DPP2.cmd.transfer = (args = {}) =>
 	return 'command.dpp2.transfer.none' if #fents == 0
 	DPP2.DoTransfer(fents, ply)
 	DPP2.Notify(true, nil, 'command.dpp2.transfered', @, ply)
+	DPP2.LogTransfer('message.dpp2.log.transfer.other', @, ent, ply) for ent in *fents
 
 DPP2.cmd.transferent = (args = {}) =>
 	return 'command.dpp2.generic.invalid_side' if not IsValid(@)
@@ -104,7 +105,7 @@ DPP2.cmd.transferent = (args = {}) =>
 	return 'command.dpp2.generic.no_bots' if ply\IsBot()
 	DPP2.DoTransfer({ent}, ply)
 	DPP2.Notify(@, nil, 'command.dpp2.transferent.success', ent, ply)
-	-- admin log
+	DPP2.LogTransfer('message.dpp2.log.transfer.other', @, ent, ply)
 
 DPP2.cmd.transfertoworldent = (args = {}) =>
 	return 'command.dpp2.generic.invalid_side' if not IsValid(@)
@@ -121,7 +122,7 @@ DPP2.cmd.transfertoworldent = (args = {}) =>
 	return 'command.dpp2.transferent.not_owner' if ent\DPP2GetOwner() ~= @
 	DPP2.DoTransfer({ent}, NULL)
 	DPP2.Notify(@, nil, 'command.dpp2.transfertoworldent.success', ent)
-	-- admin log
+	DPP2.LogTransfer('message.dpp2.log.transfer.world', @, ent)
 
 DPP2.cmd.transfercontraption = (args = {}) =>
 	return 'command.dpp2.generic.invalid_side' if not IsValid(@)
@@ -136,7 +137,7 @@ DPP2.cmd.transfercontraption = (args = {}) =>
 	fents = contraption\EntitiesByOwner(@)
 	DPP2.DoTransfer(fents, ply)
 	DPP2.Notify(@, nil, 'command.dpp2.transfercontraption.success', #fents, ply)
-	-- admin log
+	DPP2.LogTransfer('message.dpp2.log.transfer.other', @, ent, ply) for ent in *fents
 
 DPP2.cmd.transfertoworld = (args = {}) =>
 	return 'command.dpp2.generic.invalid_side' if not IsValid(@)
@@ -144,8 +145,7 @@ DPP2.cmd.transfertoworld = (args = {}) =>
 	return 'command.dpp2.transfer.none' if #fents == 0
 	DPP2.DoTransfer(fents, NULL)
 	DPP2.Notify(@, nil, 'command.dpp2.transfertoworld.success', #fents)
-	-- admin log
-	-- DPP2.Notify(true, nil, 'command.dpp2.transfertoworld', @, ply)
+	DPP2.LogTransfer('message.dpp2.log.transfer.world', @, ent) for ent in *fents
 
 DPP2.cmd.transfertoworldcontraption = (args = {}) =>
 	return 'command.dpp2.generic.invalid_side' if not IsValid(@)
@@ -156,7 +156,7 @@ DPP2.cmd.transfertoworldcontraption = (args = {}) =>
 	fents = contraption\EntitiesByOwner(@)
 	DPP2.DoTransfer(fents, NULL)
 	DPP2.Notify(@, nil, 'command.dpp2.transfertoworld.success', #fents)
-	-- admin log
+	DPP2.LogTransfer('message.dpp2.log.transfer.world', @, ent) for ent in *fents
 
 DPP2.cmd.transferfallback = (args = {}) =>
 	return 'command.dpp2.generic.invalid_side' if not IsValid(@)
@@ -175,11 +175,15 @@ DPP2.cmd.transferunfallback = (args = {}) =>
 	DPP2.Notify(@, nil, 'command.dpp2.transferunfallback', ply)
 
 PlayerDisconnected = =>
-	if IsValid(@GetNWEntity('dpp2_transfer_fallback', NULL))
+	ply = @GetNWEntity('dpp2_transfer_fallback', NULL)
+
+	if IsValid(ply)
 		fents = @DPP2FindOwned()
+
 		if #fents ~= 0
-			DPP2.DoTransfer(fents, @GetNWEntity('dpp2_transfer_fallback', NULL))
-			DPP2.Notify(true, nil, 'message.dpp2.transfer.as_fallback', @Nick(), @SteamID(), #fents, @GetNWEntity('dpp2_transfer_fallback', NULL))
+			DPP2.DoTransfer(fents, ply)
+			DPP2.Notify(true, nil, 'message.dpp2.transfer.as_fallback', @Nick(), @SteamID(), #fents, ply)
+			DPP2.LogTransfer('message.dpp2.log.transfer.other', @, ent, ply) for ent in *fents
 
 	for ply in *player.GetAll()
 		if ply ~= @
