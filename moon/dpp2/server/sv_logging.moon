@@ -18,6 +18,8 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
+import DLib, DPP2 file from _G
+
 file.mkdir('dpp2_logs')
 
 sendQueue = {}
@@ -36,7 +38,7 @@ createHandle = (prefix) ->
 			file.mkdir('dpp2_logs/' .. split[1] .. '/' .. split[2])
 
 			if handle
-				handle\Write('Logging continues in ' .. prefix .. os.date('%d-%m-%Y') .. '.txt')
+				handle\Write(DLib.i18n.localize('message.dpp2.log.in_next', prefix .. os.date('%d-%m-%Y') .. '.txt'))
 				handle\Close()
 
 			handle = file.Open('dpp2_logs/' .. split[1] .. '/' .. split[2] .. '/' .. prefix .. os.date('%d-%m-%Y') .. '.txt', 'ab', 'DATA')
@@ -45,7 +47,17 @@ createHandle = (prefix) ->
 		handle\Write('[' .. os.date('%H:%M:%S') .. '] ' .. str .. '\n')
 		timer.Create 'DPP2.FlushLog.' .. prefix, 0, 1, -> handle\Flush()
 
-combined = createHandle('dpp2_log_')
+combined = createHandle('combined_')
+spawns = createHandle('spawns_')
+
+makestr = (...) ->
+	builder = {}
+
+	for arg in *DPP2.LFormatMessageRaw(...)
+		if type(arg) == 'string'
+			table.insert(builder, arg)
+
+	return table.concat(builder, '')
 
 DPP2.Log = (...) ->
 	DPP2.LMessage(...)
@@ -57,14 +69,11 @@ DPP2.Log = (...) ->
 			data[ply] = DLib.i18n.rebuildTableByLang(varg, ply.DLib_Lang or 'en', DPP2.textcolor)
 
 	table.insert(sendQueue, data)
+	combined(makestr(...))
 
-	builder = {}
-
-	for arg in *DPP2.LFormatMessageRaw(...)
-		if type(arg) == 'string'
-			table.insert(builder, arg)
-
-	combined(table.concat(builder, ''))
+DPP2.LogSpawn = (...) ->
+	DPP2.Log(...)
+	spawns(makestr(...))
 
 DPP2.SendNextLogChunk = ->
 	pop = table.remove(sendQueue, 1)

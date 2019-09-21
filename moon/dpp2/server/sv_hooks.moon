@@ -78,9 +78,9 @@ DPP2.PlayerSpawnedSomething = (ply, ent, advancedCheck = false) ->
 
 	if not eclass or not table.qhasValue(log_blacklist, eclass)
 		if not eclass or not eclass\startsWith('prop_')
-			DPP2.Log('message.dpp2.log.spawn.generic', ply, ent)
+			DPP2.LogSpawn('message.dpp2.log.spawn.generic', ply, ent)
 		else
-			DPP2.Log('message.dpp2.log.spawn.prop', ply, ent, ent\GetModel() or '<unknown>')
+			DPP2.LogSpawn('message.dpp2.log.spawn.prop', ply, ent, ent\GetModel() or '<unknown>')
 
 	hook.Run('DPP_PlayerSpawn', ply, ent)
 
@@ -178,10 +178,10 @@ PlayerGiveSWEP = (ply = NULL, classname = 'base_entity', definition = {ClassName
 			wep = ply\GetWeapon(classname)
 
 			if IsValid(wep)
-				DPP2.Log('message.dpp2.log.spawn.giveswep_valid', ply, wep)
+				DPP2.LogSpawn('message.dpp2.log.spawn.giveswep_valid', ply, wep)
 				DPP2.PlayerSpawnedSomething(ply, wep)
 			else
-				DPP2.Log('message.dpp2.log.spawn.giveswep', ply, color_white, classname)
+				DPP2.LogSpawn('message.dpp2.log.spawn.giveswep', ply, color_white, classname)
 
 PlayerSpawnSWEP = (ply = NULL, classname = 'base_entity', definition = {ClassName: 'base_entity', WorldModel: 'models/error.mdl', ViewModel: 'models/error.mdl'}) ->
 	return unless ply\IsValid()
