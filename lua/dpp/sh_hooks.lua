@@ -210,7 +210,7 @@ function DPP.PropertyTouch(ply, str, ent)
 end
 
 function DPP.CanPhysgun(ply, ent)
-	if not DPP.GetConVar('enable_physgun') then return true end
+	if not DPP.GetConVar('enable_physgun') then return true, DPP.GetPhrase('protection_disabled') end
 
 	if DPP.IsEntityBlockedPhysgun(ent:GetClass() or '', ply) then
 		return false, DPP.GetPhrase('physgun_blocked')
