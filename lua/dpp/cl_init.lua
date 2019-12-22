@@ -524,7 +524,7 @@ local function PostDrawHUDDefault(x, y)
 			CanTouch = CanTouch ~= false
 
 			if DPP.GetConVar('enable_gravgun') then
-				if status and DisplayReason then
+				if status and DisplayReason and reason then
 					name = name .. '\n' .. reason
 				end
 			else
