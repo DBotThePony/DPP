@@ -116,11 +116,14 @@ class DPP2.DEF.RestrictionListEntry
 			net.WriteBool(isWhitelist)
 			net.Broadcast()
 
+		@parent\CallHook('WhitelistStatusUpdated', group, @isWhitelist) if @parent
+
 		return true
 
 	AddGroup: (group) =>
-		assert(type(group) == 'string', 'Group must be a string')
-		return false if table.qhasValue(@groups, group)
+		assert(type(group) == 'string', 'Group must be a string, ' .. type(group) .. ' given')
+		group = group\trim()
+		return false if table.qhasValue(@groups, group) or group == ''
 		table.insert(@groups, group)
 
 		if SERVER and @replicated and not @locked
@@ -130,11 +133,17 @@ class DPP2.DEF.RestrictionListEntry
 			net.WriteString(group)
 			net.Broadcast()
 
+		@parent\CallHook('GroupAdded', group) if @parent
+
 		return true
 
+	HasGroup: (group) => table.qhasValue(@groups, group)
+	IsWhitelist: => @isWhitelist
+
 	RemoveGroup: (group) =>
-		assert(type(group) == 'string', 'Group must be a string')
-		return false if not table.qhasValue(@groups, group)
+		assert(type(group) == 'string', 'Group must be a string, ' .. type(group) .. ' given')
+		group = group\trim()
+		return false if not table.qhasValue(@groups, group) or group == ''
 
 		for i, group2 in ipairs(@groups)
 			if group == group2
@@ -148,16 +157,23 @@ class DPP2.DEF.RestrictionListEntry
 			net.WriteString(group)
 			net.Broadcast()
 
+		@parent\CallHook('GroupRemoved', group) if @parent
+
 		return true
 
 	SetGroups: (groups = {}) =>
+		toAdd, toRemove = {}, {}
+
 		for group in *groups
 			if not table.qhasValue(@groups, group)
-				@AddGroup(group)
+				table.insert(toAdd, group)
 
 		for group in *@groups
 			if not table.qhasValue(groups, group)
-				@RemoveGroup(group)
+				table.insert(toRemove, group)
+
+		@AddGroup(group) for group in *toAdd
+		@RemoveGroup(group) for group in *toRemove
 
 		return @
 
@@ -248,7 +264,7 @@ class DPP2.DEF.RestrictionList
 
 				if entry = self2\Get(prop)
 					entry\SetGroups([group\trim() for group in *groups\trim()\split(',')])
-					entry\SwitchIsWhitelist(isWhitelist)
+					entry\SwitchIsWhitelist(isWhitelist) if args[3] and args[3]\trim() ~= ''
 					DPP2.Notify(true, nil, 'command.dpp2.rlists.updated.' .. identifier, @, prop, (#entry.groups ~= 0 and table.concat(entry.groups, ', ') or '<none>'), entry.isWhitelist)
 					return
 
@@ -260,7 +276,7 @@ class DPP2.DEF.RestrictionList
 				split = [group\trim() for group in *groups\trim()\split(',')]
 				split = {} if #split == 1 and split[1] == ''
 				self2\CreateEntry(prop, split, isWhitelist)\Replicate()
-				DPP2.Notify(true, nil, 'command.dpp2.rlists_ext.added.' .. identifier, @, prop, (#split ~= 0 and table.concat(split, ', ') or '<none>'), isWhitelist)
+				DPP2.Notify(true, nil, 'command.dpp2.rlists.added_ext.' .. identifier, @, prop, (#split ~= 0 and table.concat(split, ', ') or '<none>'), isWhitelist)
 
 			DPP2.cmd['remove_' .. identifier .. '_restriction'] = (args = {}) =>
 				prop = table.concat(args, ' ')\trim()
@@ -274,13 +290,15 @@ class DPP2.DEF.RestrictionList
 		DPP2.cmd_perms['add_' .. identifier .. '_restriction'] = 'superadmin'
 		DPP2.cmd_perms['remove_' .. identifier .. '_restriction'] = 'superadmin'
 
+		@has_autocomplete = autocomplete ~= nil
+
 		DPP2.cmd_autocomplete['add_' .. identifier .. '_restriction'] = (args, margs) =>
 			split = DPP2.SplitArguments(args)
 
 			if not split[2]
-				--return autocomplete(@, split[1], margs, [elem.class for elem in *self2.listing]) if autocomplete
+				--return autocomplete(@, split[1] or '', margs, [elem.class for elem in *self2.listing]) if autocomplete
 				if autocomplete
-					list = autocomplete(@, split[1], margs, nil, false)
+					list = autocomplete(@, split[1] or '', margs, nil, false)
 
 					return if not list
 
@@ -312,6 +330,8 @@ class DPP2.DEF.RestrictionList
 
 			return {str .. ' ' .. string.format('%q', groupsRaw) .. ' true', str .. ' ' .. string.format('%q', groupsRaw) .. ' false'}
 
+		@add_autocomplete = DPP2.cmd_autocomplete['add_' .. identifier .. '_restriction']
+
 		DPP2.cmd_autocomplete['remove_' .. identifier .. '_restriction'] = (args, margs) =>
 			return [string.format('%q', elem.class) for elem in *self2.listing] if args == ''
 			args = args\lower()
@@ -331,18 +351,21 @@ class DPP2.DEF.RestrictionList
 
 		DPP2.CheckPhrase('command.dpp2.rlists.added.' .. identifier)
 		DPP2.CheckPhrase('command.dpp2.rlists.updated.' .. identifier)
-		DPP2.CheckPhrase('command.dpp2.rlists_ext.added.' .. identifier)
+		DPP2.CheckPhrase('command.dpp2.rlists.added_ext.' .. identifier)
 		DPP2.CheckPhrase('command.dpp2.rlists.removed.' .. identifier)
 
+	CallHook: (name, entry, ...) => hook.Run('DPP2_' .. @identifier .. '_' .. name, @, entry, ...)
 	AddEntry: (entry) =>
 		return false if table.qhasValue(@listing, entry)
 		table.insert(@listing, entry)
+		@CallHook('EntryAdded', entry)
 		return true
 
 	RemoveEntry: (entry) =>
 		for i, entry2 in ipairs(@listing)
 			if entry == entry2
 				table.remove(@listing, i)
+				@CallHook('EntryRemoved', entry2)
 				return true
 
 		return false

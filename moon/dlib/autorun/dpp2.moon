@@ -55,6 +55,7 @@ if CLIENT
 DPP2.CheckPhrase = (name) -> DPP2.Message('Missing langstring for: ' .. name) if not DLib.i18n.exists(name)
 
 DPP2.ENABLE_PROTECTION = DPP2.CreateConVar('protection', '1', DPP2.TYPE_BOOL)
+DPP2.CL_ENABLE_PROTECTION = DPP2.CreateClientConVar('cl_protection', '1', DPP2.TYPE_BOOL) if CLIENT
 DPP2.NO_TOOLGUN_PLAYER = DPP2.CreateConVar('no_tool_player', '1', DPP2.TYPE_BOOL)
 DPP2.NO_TOOLGUN_PLAYER_ADMIN = DPP2.CreateConVar('no_tool_player_admin', '0', DPP2.TYPE_BOOL)
 
@@ -62,6 +63,12 @@ CAMI.RegisterPrivilege({
 	Name: 'dpp2_log'
 	MinAccess: 'admin'
 	Description: 'Viewing DPP/2 logs'
+})
+
+CAMI.RegisterPrivilege({
+	Name: 'dpp2_setvar'
+	MinAccess: 'superadmin'
+	Description: 'Change DPP/2 ConVars'
 })
 
 AddCSLuaFile('dpp2/common/sh_logic.lua')
@@ -76,10 +83,15 @@ AddCSLuaFile('dpp2/common/sh_antispam.lua')
 AddCSLuaFile('dpp2/client/cl_logic.lua')
 AddCSLuaFile('dpp2/client/cl_owning.lua')
 AddCSLuaFile('dpp2/client/cl_transfer.lua')
+AddCSLuaFile('dpp2/client/settings/cl_convars.lua')
+AddCSLuaFile('dpp2/client/settings/cl_menus.lua')
+AddCSLuaFile('dpp2/client/settings/cl_registry_menus.lua')
+AddCSLuaFile('dpp2/client/settings/cl_settings.lua')
 AddCSLuaFile('dpp2/common/concommands/sh_cmdlogic.lua')
 AddCSLuaFile('dpp2/common/concommands/sh_generic.lua')
 AddCSLuaFile('dpp2/common/concommands/sh_registry.lua')
 
+DPP2.Menus = {} if CLIENT
 DPP2.cmd = {} if SERVER
 DPP2.cmd_existing = {} if CLIENT
 DPP2.cmd_autocomplete = {}
@@ -253,6 +265,7 @@ else
 				DPP2.Notify(nil, net.ReadUInt16(), unpack(net.ReadArray()))
 
 include('dpp2/common/concommands/sh_registry.lua')
+include('dpp2/client/settings/cl_registry_menus.lua') if CLIENT
 
 DPP2.PhysgunProtection = DPP2.DEF.ProtectionDefinition('physgun', nil, true)
 DPP2.ToolgunProtection = DPP2.DEF.ProtectionDefinition('toolgun', nil, true)
@@ -280,6 +293,11 @@ DPP2.ToolgunRestrictions = DPP2.DEF.RestrictionList('toolgun_mode', DPP2.Toolgun
 include('dpp2/server/concommands/sv_generic.lua') if SERVER
 include('dpp2/common/concommands/sh_generic.lua')
 include('dpp2/common/concommands/sh_cmdlogic.lua')
+
+if CLIENT
+	include('dpp2/client/settings/cl_convars.lua')
+	include('dpp2/client/settings/cl_menus.lua')
+	include('dpp2/client/settings/cl_settings.lua')
 
 DPP2.Message(string.format('DPP/2 Startup took %.2f ms', SysTime() - startup))
 

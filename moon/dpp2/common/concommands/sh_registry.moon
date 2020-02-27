@@ -218,7 +218,7 @@ DPP2.WeaponAutocomplete = (args, margs, excludelist = empty, format = true) =>
 	table.append(classnames, def_weapons)
 	table.sort(classnames)
 	table.deduplicate(classnames)
-	return [string.format('%q', classname) for classname in *classnames] if args == ''
+	return [format and string.format('%q', classname) or classname for classname in *classnames] if args == ''
 	args = args\lower()
 
 	output = {}
@@ -238,10 +238,11 @@ DPP2.ToolgunAutocomplete = (args, margs, excludelist = empty, format = true) =>
 	toolgun = weapons.GetStored('gmod_tool')
 	return if not toolgun
 	return if not toolgun.Tool
+	return [format and string.format('%q', classname) or classname for classname in SortedPairs(toolgun.Tool)] if args == ''
 
 	output = {}
 
-	for classname in pairs(toolgun.Tool)
+	for classname in SortedPairs(toolgun.Tool)
 		-- we proably got several entities which start with same name
 
 		if classname\startsWith(args) and not table.qhasValue(excludelist, classname)

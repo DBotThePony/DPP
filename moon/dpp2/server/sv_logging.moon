@@ -18,7 +18,7 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-import DLib, DPP2 file from _G
+import DLib, DPP2, file from _G
 
 file.mkdir('dpp2_logs')
 

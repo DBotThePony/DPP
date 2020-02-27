@@ -137,8 +137,8 @@ class DPP2.DEF.ProtectionDefinition
 	IsMapAdmin: (ply = NULL) => ply\IsValid() and @camiwatchdog\HasPermission(ply, @otherPermStringMap)
 
 	SwitchProtectionDisableFor: (ply = NULL, status = false) =>
-		error('Tried to use a NULL Entity!') if not ply\IsValid()
-		error('Tried to use a ' .. type(ply) .. ' instead of Player') if not ply\IsPlayer()
+		error('Tried to use a NULL Entity!', 2) if not ply\IsValid()
+		error('Tried to use a ' .. type(ply) .. ' instead of Player', 2) if not ply\IsPlayer()
 
 		if status then @EnableProtectionFor(ply) else @DisableProtectionFor(ply)
 
@@ -154,7 +154,7 @@ class DPP2.DEF.ProtectionDefinition
 
 	IsDisabledForPlayer: (ply = NULL) =>
 		return false if not ply\IsValid()
-		return not ply\GetInfoBool(@clEnabledName, true) or ply\GetNWBool(@disableNWName, false)
+		return not ply\GetInfoBool('dpp2_cl_protection', true) or not ply\GetInfoBool(@clEnabledName, true) or ply\GetNWBool(@disableNWName, false)
 
 	IsDisabledForSteamID: (steamid) =>
 		return @disabledCache[steamid] if @disabledCache[steamid] ~= nil

@@ -38,6 +38,15 @@ message.dpp2.notice.cleanup = ' props has been cleaned up.'
 message.dpp2.warn.trap = 'Your entity seems to stuck in someone. Interact with it to unghost!'
 message.dpp2.warn.collisions = 'Your entity seems to stuck in other prop. Interact with it to unghost!'
 
+gui.dpp2.chosepnl.buttons.to_chosen = 'Pick >'
+gui.dpp2.chosepnl.buttons.to_available = '< Move back'
+gui.dpp2.chosepnl.column.available = 'Available'
+gui.dpp2.chosepnl.column.chosen = 'Selected'
+gui.dpp2.chosepnl.add.add = 'Add'
+gui.dpp2.chosepnl.add.entry = 'Add custom choice'
+gui.dpp2.restriction.is_whitelist = 'Group list act as whitelist'
+gui.dpp2.restriction.edit_title = 'Editing %q restriction'
+
 gui.dpp2.cvars.protection = 'Main power switch for all protection modules'
 gui.dpp2.cvars.cleanup = 'Cleanup props of disconnected players'
 
@@ -55,7 +64,7 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 	gui.dpp2.cvars[modeID .. '_no_world_admin'] = string.format('%s: Admins can not touch world owned props', modeName)
 	gui.dpp2.cvars[modeID .. '_no_map'] = string.format('%s: Players can not touch map owned props', modeName)
 	gui.dpp2.cvars[modeID .. '_no_map_admin'] = string.format('%s: Admins can not touch map owned props', modeName)
-	gui.dpp2.cvars['cl_' .. modeID .. '_protection'] = string.format('Disable %s protection for me', modeName)
+	gui.dpp2.cvars['cl_' .. modeID .. '_protection'] = string.format('Enable %s protection for me', modeName)
 	gui.dpp2.cvars['cl_' .. modeID .. '_no_other'] = string.format('%s: I don\'t want to touch other\'s props', modeName)
 	gui.dpp2.cvars['cl_' .. modeID .. '_no_world'] = string.format('%s: I don\'t want to touch world\'s props', modeName)
 	gui.dpp2.cvars['cl_' .. modeID .. '_no_map'] = string.format('%s: I don\'t want to touch maps\'s props', modeName)
@@ -111,7 +120,6 @@ command.dpp2.transfertoworldent.success = 'Successfully transfered #E to World'
 command.dpp2.transfercontraption.success = 'Successfully transfered #d entities to #E'
 command.dpp2.transfertoworld.success = 'Successfully transfered #d entities to world'
 
-
 gui.dpp2.property.transferent = 'Transfer this entity...'
 gui.dpp2.property.transfertoworldent = 'Transfer this entity to world'
 gui.dpp2.property.transfercontraption = 'Transfer this contraption...'
@@ -139,3 +147,33 @@ message.dpp2.log.in_next = 'Logging continues in %s'
 
 message.dpp2.log.transfer.world = '#E transfered ownership of #E to world'
 message.dpp2.log.transfer.other = '#E transfered ownership of #E to #E'
+
+command.dpp2.rlists.added.toolgun_mode = '#E added %q to toolgun modes restriction list with whitelist status set to %s'
+command.dpp2.rlists.added_ext.toolgun_mode = '#E added %q to toolgun modes restriction list with %q groups in it and whitelist status set to %s'
+command.dpp2.rlists.updated.toolgun_mode = '#E updated %q toolgun mode restriction with %q groups and whitelist status set to %s'
+command.dpp2.rlists.removed.toolgun_mode = '#E removed %q from toolgun modes restriction list'
+
+gui.dpp2.toolcategory.main = 'Main settings'
+gui.dpp2.toolcategory.client = 'Client settings'
+gui.dpp2.toolcategory.restriction = 'Restriction lists'
+gui.dpp2.toolmenu.client_protection = 'Protection settings'
+gui.dpp2.toolmenu.primary = 'Primary settings'
+gui.dpp2.toolmenu.secondary = 'Secondary settings'
+gui.dpp2.toolmenu.antipropkill = 'Antipropkill settings'
+gui.dpp2.toolmenu.antispam = 'Antispam settings'
+gui.dpp2.toolmenu.restrictions.toolgun_mode = 'Toolgun mode'
+
+gui.dpp2.toolmenu.lists.view.classname = 'Identifier'
+gui.dpp2.toolmenu.lists.view.groups = 'Groups'
+gui.dpp2.toolmenu.lists.view.iswhitelist = 'Is Whitelist'
+gui.dpp2.toolmenu.lists.add_new = 'Add...'
+
+gui.dpp2.menus.add = 'Add new...'
+gui.dpp2.menus.query.title = 'Add new entry'
+gui.dpp2.menus.query.subtitle = 'Please enter classname of new (or existing) restriction'
+
+gui.dpp2.menus.edit = 'Edit...'
+gui.dpp2.menus.remove = 'Remove'
+gui.dpp2.menus.remove2 = 'Confirm'
+gui.dpp2.menus.copy_classname = 'Copy classname'
+gui.dpp2.menus.copy_groups = 'Copy groups'
