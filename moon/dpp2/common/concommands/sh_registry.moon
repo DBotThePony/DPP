@@ -234,7 +234,7 @@ DPP2.WeaponAutocomplete = (args, margs, excludelist = empty, format = true) =>
 
 	return output
 
-DPP2.ToolgunAutocomplete = (args, margs, excludelist = empty, format = true) =>
+DPP2.ToolgunModeAutocomplete = (args, margs, excludelist = empty, format = true) =>
 	toolgun = weapons.GetStored('gmod_tool')
 	return if not toolgun
 	return if not toolgun.Tool

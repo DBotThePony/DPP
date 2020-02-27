@@ -26,7 +26,7 @@ Menus.R = {}
 
 Menus.R.ToolgunMode = =>
 	return if not IsValid(@)
-	DPP2.ToolgunRestrictions\BuildCPanel(@)
+	DPP2.ToolgunModeRestrictions\BuildCPanel(@)
 
 Menus.Slider = (name, convar, min = 0, max = 1, decimals = 0) =>
 	convar = 'dpp2_' .. convar

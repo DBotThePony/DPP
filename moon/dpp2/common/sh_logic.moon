@@ -295,7 +295,7 @@ DPP2.ACCESS.CanDrive = (ply = NULL, ent = NULL) ->
 DPP2.ACCESS.CanToolgun = (ply = NULL, ent = NULL, toolgunMode) ->
 	error('Invalid toolgun mode type. It must be a string! typeof' .. type(toolgunMode)) if type(toolgunMode) ~= 'string'
 	return true if not ply\IsValid()
-	return false, i18n.localize('gui.dpp2.access.status.toolgun_mode_blocked') if not DPP2.ToolgunRestrictions\Ask(toolgunMode, ply)
+	return false, i18n.localize('gui.dpp2.access.status.toolgun_mode_blocked') if not DPP2.ToolgunModeRestrictions\Ask(toolgunMode, ply)
 	return false, i18n.localize('gui.dpp2.access.status.toolgun_player') if ent\IsPlayer() and DPP2.NO_TOOLGUN_PLAYER\GetBool() and (not DPP2.ToolgunProtection\IsAdmin(ply) or DPP2.NO_TOOLGUN_PLAYER_ADMIN\GetBool() and DPP2.ToolgunProtection\IsAdmin(ply))
 	-- allow self tool
 	return true if ply == ent
