@@ -38,7 +38,7 @@ Menus.AntispamMenu = =>
 	Menus.QCheckBox(@, 'antispam_spam_cooldown')
 	Menus.QSlider(@, 'antispam_vol_aabb_div', 1, 10000)
 	Menus.QCheckBox(@, 'antispam_spam_vol')
-	Menus.QCheckBox(@, 'antispam_spam_vol_aabb')
+	Menus.QCheckBox(@, 'antispam_spam_aabb')
 	Menus.QSlider(@, 'antispam_spam_vol_threshold', 1, 1000000000)
 	Menus.QSlider(@, 'antispam_spam_vol_threshold2', 1, 1000000000)
 	Menus.QSlider(@, 'antispam_spam_vol_cooldown', 1, 1000000000)

@@ -32,7 +32,7 @@ DPP2.ANTISPAM_COOLDOWN = DPP2.CreateConVar('antispam_spam_cooldown', '1', DPP2.T
 DPP2.ANTISPAM_VOLUME_AABB_DIV = DPP2.CreateConVar('antispam_vol_aabb_div', '100', DPP2.TYPE_UFLOAT)
 
 DPP2.ANTISPAM_VOLUME_SPAM = DPP2.CreateConVar('antispam_spam_vol', '1', DPP2.TYPE_BOOL)
-DPP2.ANTISPAM_VOLUME_AABB = DPP2.CreateConVar('antispam_spam_vol_aabb', '0', DPP2.TYPE_BOOL)
+DPP2.ANTISPAM_VOLUME_AABB = DPP2.CreateConVar('antispam_spam_aabb', '0', DPP2.TYPE_BOOL)
 DPP2.ANTISPAM_VOLUME_THRESHOLD = DPP2.CreateConVar('antispam_spam_vol_threshold', '600000', DPP2.TYPE_UINT)
 DPP2.ANTISPAM_VOLUME_THRESHOLD2 = DPP2.CreateConVar('antispam_spam_vol_threshold2', '1200000', DPP2.TYPE_UINT)
 DPP2.ANTISPAM_VOLUME_COOLDOWN = DPP2.CreateConVar('antispam_spam_vol_cooldown', '60000', DPP2.TYPE_UINT)

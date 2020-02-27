@@ -71,6 +71,35 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 	gui.dpp2.cvars['cl_' .. modeID .. '_no_players'] = string.format('%s: I don\'t want to touch players', modeName)
 	gui.dpp2.buddystatus[modeID] = 'Buddy in ' .. modeName
 
+gui.dpp2.cvars.cl_protection = 'Main power switch'
+gui.dpp2.cvars.apropkill = 'Antipropkill'
+gui.dpp2.cvars.apropkill_damage = 'Block prop push damage'
+gui.dpp2.cvars.apropkill_damage_nworld = 'Don\'t block push damage from world props'
+gui.dpp2.cvars.apropkill_damage_nveh = 'Don\'t block push damage from world vehicles'
+gui.dpp2.cvars.apropkill_trap = 'Prevent prop trapping'
+gui.dpp2.cvars.apropkill_push = 'Prevent prop pushing'
+gui.dpp2.cvars.apropkill_throw = 'Prevent prop throwing'
+gui.dpp2.cvars.apropkill_punt = 'Prevent gravgun punt'
+
+gui.dpp2.cvars.antispam = 'Antispam main switch'
+gui.dpp2.cvars.antispam_collisions = 'Antispam collisions'
+gui.dpp2.cvars.antispam_spam = 'Prevent spamming'
+gui.dpp2.cvars.antispam_spam_threshold = 'Spam ghost limit'
+gui.dpp2.cvars.antispam_spam_threshold2 = 'Spam remove limit'
+gui.dpp2.cvars.antispam_spam_cooldown = 'Spam cooldown multiplier'
+gui.dpp2.cvars.antispam_vol_aabb_div = 'AABB size divide number'
+gui.dpp2.cvars.antispam_spam_vol = 'Antispam based on volume'
+gui.dpp2.cvars.antispam_spam_aabb = 'Antispam based on AABB size'
+gui.dpp2.cvars.antispam_spam_vol_threshold = 'Spam volume ghost limit'
+gui.dpp2.cvars.antispam_spam_vol_threshold2 = 'Spam volume remove limit'
+gui.dpp2.cvars.antispam_spam_vol_cooldown = 'Spam volume cooldown multiplier'
+
+gui.dpp2.cvars.antispam_ghost_by_size = 'Ghost props based on volume'
+gui.dpp2.cvars.antispam_ghost_size = 'Volume limit'
+
+gui.dpp2.cvars.antispam_ghost_aabb = 'Ghost props based on volume'
+gui.dpp2.cvars.antispam_ghost_aabb_size = 'AABB size limit'
+
 message.dpp2.antispam.hint_ghosted = '%d entities were ghosted because of spam'
 message.dpp2.antispam.hint_removed = '%d entities were removed because of spam'
 message.dpp2.antispam.hint_disallowed = 'Action is not allowed due to spam'
