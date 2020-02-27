@@ -49,9 +49,10 @@ gui.dpp2.restriction.is_whitelist = 'Group list act as whitelist'
 gui.dpp2.restriction.edit_title = 'Editing %q restriction'
 
 gui.dpp2.cvars.protection = 'Main power switch for all protection modules'
-gui.dpp2.cvars.cleanup = 'Cleanup props of disconnected players'
 
-gui.dpp2.cvars.cleanup_timer = 'Cleanup timer'
+gui.dpp2.cvars.autocleanup = 'Cleanup disconnected players props on timer'
+gui.dpp2.cvars.autocleanup_timer = 'Cleanup timer'
+
 gui.dpp2.cvars.upforgrabs = 'Enable Up For Grabs timer'
 gui.dpp2.cvars.upforgrabs_timer = 'Up for grabs timeout'
 
@@ -71,6 +72,11 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 	gui.dpp2.cvars['cl_' .. modeID .. '_no_map'] = string.format('%s: I don\'t want to touch maps\'s props', modeName)
 	gui.dpp2.cvars['cl_' .. modeID .. '_no_players'] = string.format('%s: I don\'t want to touch players', modeName)
 	gui.dpp2.buddystatus[modeID] = 'Buddy in ' .. modeName
+
+	command.dpp2.rlists.added[modeID] = '#E added %q to ' .. modeName .. ' restriction list with whitelist status set to %s'
+	command.dpp2.rlists.added_ext[modeID] = '#E added %q to ' .. modeName .. ' restriction list with %q groups in it and whitelist status set to %s'
+	command.dpp2.rlists.updated[modeID] = '#E updated %q in ' .. modeName .. ' restriction list with %q groups in it and whitelist status set to %s'
+	command.dpp2.rlists.removed[modeID] = '#E removed %q from ' .. modeName .. ' restriction list'
 
 gui.dpp2.cvars.cl_protection = 'Main power switch'
 gui.dpp2.cvars.apropkill = 'Antipropkill'
@@ -184,6 +190,11 @@ command.dpp2.rlists.added.toolgun_mode = '#E added %q to toolgun modes restricti
 command.dpp2.rlists.added_ext.toolgun_mode = '#E added %q to toolgun modes restriction list with %q groups in it and whitelist status set to %s'
 command.dpp2.rlists.updated.toolgun_mode = '#E updated %q toolgun mode restriction with %q groups and whitelist status set to %s'
 command.dpp2.rlists.removed.toolgun_mode = '#E removed %q from toolgun modes restriction list'
+
+command.dpp2.rlists.added.class_spawn = '#E added %q to entity spawning restriction list with whitelist status set to %s'
+command.dpp2.rlists.updated.class_spawn = '#E added %q to entity spawning restriction list with %q groups in it and whitelist status set to %s'
+command.dpp2.rlists.added_ext.class_spawn = '#E added %q to entity spawning restriction list with %q groups in it and whitelist status set to %s'
+command.dpp2.rlists.removed.class_spawn = '#E removed %q from entity spawning restriction list'
 
 gui.dpp2.toolcategory.main = 'Main settings'
 gui.dpp2.toolcategory.client = 'Client settings'

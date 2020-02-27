@@ -270,7 +270,7 @@ class DPP2.DEF.RestrictionList
 
 				if not groups or groups\trim() == ''
 					self2\CreateEntry(prop)\Replicate()
-					DPP2.Notify(true, nil, 'command.dpp2.rlists.added.' .. identifier, @, prop)
+					DPP2.Notify(true, nil, 'command.dpp2.rlists.added.' .. identifier, @, prop, isWhitelist)
 					return
 
 				split = [group\trim() for group in *groups\trim()\split(',')]
