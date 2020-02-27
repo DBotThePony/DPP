@@ -93,12 +93,11 @@ DPP2.DEF.RestrictionList.__base.BuildCPanel = (panel) =>
 
 	@newItemInput.OnEnter = -> @newItemButton\DoClick()
 
-	if @has_autocomplete
+	if @add_autocomplete
 		@newItemInput.GetAutoComplete = (_, text) ->
 			fcall = @add_autocomplete
-			items = fcall('"' .. text .. '"', '"' .. text .. '"')
-			return items if #items == 0
-			items = [item\sub(2, -2) for item in *items]
+			items = fcall(@, text, text, nil, false)
+			return {'...'} if #items > 100
 			return items
 
 	@newItemButton.DoClick = ->

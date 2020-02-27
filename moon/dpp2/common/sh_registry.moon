@@ -290,7 +290,7 @@ class DPP2.DEF.RestrictionList
 		DPP2.cmd_perms['add_' .. identifier .. '_restriction'] = 'superadmin'
 		DPP2.cmd_perms['remove_' .. identifier .. '_restriction'] = 'superadmin'
 
-		@has_autocomplete = autocomplete ~= nil
+		@add_autocomplete = autocomplete
 
 		DPP2.cmd_autocomplete['add_' .. identifier .. '_restriction'] = (args, margs) =>
 			split = DPP2.SplitArguments(args)
@@ -329,8 +329,6 @@ class DPP2.DEF.RestrictionList
 				return [str .. ' ' .. group for group in *groups]
 
 			return {str .. ' ' .. string.format('%q', groupsRaw) .. ' true', str .. ' ' .. string.format('%q', groupsRaw) .. ' false'}
-
-		@add_autocomplete = DPP2.cmd_autocomplete['add_' .. identifier .. '_restriction']
 
 		DPP2.cmd_autocomplete['remove_' .. identifier .. '_restriction'] = (args, margs) =>
 			return [string.format('%q', elem.class) for elem in *self2.listing] if args == ''
