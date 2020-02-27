@@ -22,12 +22,6 @@ import DPP2 from _G
 import Menus from DPP2
 import i18n from DLib
 
-Menus.R = {}
-
-Menus.R.ToolgunMode = =>
-	return if not IsValid(@)
-	DPP2.ToolgunModeRestrictions\BuildCPanel(@)
-
 Menus.Slider = (name, convar, min = 0, max = 1, decimals = 0) =>
 	convar = 'dpp2_' .. convar
 	_obj = ConVar(convar)
@@ -51,7 +45,7 @@ Menus.CheckBox = (name, convar) =>
 	return panel
 
 Menus.QCheckBox = (convar) => Menus.CheckBox(@, 'gui.dpp2.cvars.' .. convar, convar)
-Menus.QSlider = (convar, ...) => Menus.CheckBox(@, 'gui.dpp2.cvars.' .. convar, convar, ...)
+Menus.QSlider = (convar, ...) => Menus.Slider(@, 'gui.dpp2.cvars.' .. convar, convar, ...)
 
 class Menus.MultiChooseItem
 	new: (label, value, ...) =>

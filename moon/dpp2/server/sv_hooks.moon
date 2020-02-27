@@ -38,6 +38,18 @@ log_blacklist = {
 }
 
 DPP2.PlayerSpawnedSomething = (ply, ent, advancedCheck = false) ->
+	return if ent.__dpp2_hit
+	ent.__dpp2_hit = true
+
+	return false if ent\GetEFlags()\band(EFL_KILLME) ~= 0
+
+	if not DPP2.SpawnRestrictions\Ask(ent\GetClass(), ply)
+		hook.Run('DPP_SpawnRestrictionHit', ply, ent)
+		DPP2.NotifyError(ply, 5, 'message.dpp2.restriction.spawn', ent\GetClass())
+		DPP2.LogSpawn('message.dpp2.log.spawn.tried_generic', ply, color_red, DPP2.textcolor, ent)
+		SafeRemoveEntity(ent)
+		return false
+
 	fixme = false
 
 	i = 1
@@ -83,6 +95,7 @@ DPP2.PlayerSpawnedSomething = (ply, ent, advancedCheck = false) ->
 			DPP2.LogSpawn('message.dpp2.log.spawn.prop', ply, ent, ent\GetModel() or '<unknown>')
 
 	hook.Run('DPP_PlayerSpawn', ply, ent)
+	return true
 
 PreventModelSpawn = (ply, model = ent and ent\GetModel() or 'wtf', ent, nonotify) ->
 	if DPP2.ModelBlacklist\Has(model\lower())
@@ -139,15 +152,27 @@ PlayerSpawnEffect = (ply = NULL, model = 'models/error.mdl') ->
 	return false if not PreventModelSpawn(ply, model)
 	return false if not DPP2.AntispamCheck(ply)
 
+	if not DPP2.SpawnRestrictions\Ask('prop_effect', ply)
+		DPP2.LogSpawn('message.dpp2.log.spawn.tried_plain', ply, color_red, DPP2.textcolor, 'prop_effect')
+		return false
+
 PlayerSpawnProp = (ply = NULL, model = 'models/error.mdl') ->
 	return unless ply\IsValid()
 	return false if not PreventModelSpawn(ply, model)
 	return false if not DPP2.AntispamCheck(ply)
 
+	if not DPP2.SpawnRestrictions\Ask('prop_physics', ply)
+		DPP2.LogSpawn('message.dpp2.log.spawn.tried_plain', ply, color_red, DPP2.textcolor, 'prop_physics')
+		return false
+
 PlayerSpawnRagdoll = (ply = NULL, model = 'models/error.mdl') ->
 	return unless ply\IsValid()
 	return false if not PreventModelSpawn(ply, model)
 	return false if not DPP2.AntispamCheck(ply)
+
+	if not DPP2.SpawnRestrictions\Ask('prop_ragdoll', ply)
+		DPP2.LogSpawn('message.dpp2.log.spawn.tried_plain', ply, color_red, DPP2.textcolor, 'prop_ragdoll')
+		return false
 
 PlayerSpawnObject = (ply = NULL, model = 'models/error.mdl', skin = 0) ->
 	return unless ply\IsValid()
@@ -159,18 +184,34 @@ PlayerSpawnVehicle = (ply = NULL, model = 'models/error.mdl', name = 'prop_vehic
 	return false if not PreventModelSpawn(ply, model)
 	return false if not DPP2.AntispamCheck(ply)
 
+	if not DPP2.SpawnRestrictions\Ask(name, ply)
+		DPP2.LogSpawn('message.dpp2.log.spawn.tried_plain', ply, color_red, DPP2.textcolor, name)
+		return false
+
 PlayerSpawnNPC = (ply = NULL, npcclassname = 'base_entity', weaponclass = 'base_entity') ->
 	return unless ply\IsValid()
 	return false if not DPP2.AntispamCheck(ply)
+
+	if not DPP2.SpawnRestrictions\Ask(npcclassname, ply)
+		DPP2.LogSpawn('message.dpp2.log.spawn.tried_plain', ply, color_red, DPP2.textcolor, npcclassname)
+		return false
 
 PlayerSpawnSENT = (ply = NULL, classname = 'base_entity') ->
 	return unless ply\IsValid()
 	return false if not DPP2.AntispamCheck(ply)
 
+	if not DPP2.SpawnRestrictions\Ask(classname, ply)
+		DPP2.LogSpawn('message.dpp2.log.spawn.tried_plain', ply, color_red, DPP2.textcolor, classname)
+		return false
+
 PlayerGiveSWEP = (ply = NULL, classname = 'base_entity', definition = {ClassName: 'base_entity', WorldModel: 'models/error.mdl', ViewModel: 'models/error.mdl'}) ->
 	return unless ply\IsValid()
 	return false if not PreventModelSpawn(ply, definition.WorldModel)
 	return false if not DPP2.AntispamCheck(ply)
+
+	if not DPP2.SpawnRestrictions\Ask(classname, ply)
+		DPP2.LogSpawn('message.dpp2.log.spawn.tried_plain', ply, color_red, DPP2.textcolor, classname)
+		return false
 
 	if not IsValid(ply\GetWeapon(classname))
 		timer.Simple 0, ->
@@ -178,8 +219,8 @@ PlayerGiveSWEP = (ply = NULL, classname = 'base_entity', definition = {ClassName
 			wep = ply\GetWeapon(classname)
 
 			if IsValid(wep)
-				DPP2.LogSpawn('message.dpp2.log.spawn.giveswep_valid', ply, wep)
-				DPP2.PlayerSpawnedSomething(ply, wep)
+				if DPP2.PlayerSpawnedSomething(ply, wep)
+					DPP2.LogSpawn('message.dpp2.log.spawn.giveswep_valid', ply, wep)
 			else
 				DPP2.LogSpawn('message.dpp2.log.spawn.giveswep', ply, color_white, classname)
 
@@ -187,6 +228,9 @@ PlayerSpawnSWEP = (ply = NULL, classname = 'base_entity', definition = {ClassNam
 	return unless ply\IsValid()
 	return false if not PreventModelSpawn(ply, definition.WorldModel)
 	return false if not DPP2.AntispamCheck(ply)
+	if not DPP2.SpawnRestrictions\Ask(classname, ply)
+		DPP2.LogSpawn('message.dpp2.log.spawn.tried_plain', ply, color_red, DPP2.textcolor, classname)
+		return false
 
 hooksToReg = {
 	:PlayerSpawnedEffect, :PlayerSpawnedProp, :PlayerSpawnedRagdoll

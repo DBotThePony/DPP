@@ -79,6 +79,8 @@ class DPP2.DEF.ProtectionDefinition
 		else
 			@classnameRestriction = classnameRestriction
 
+		@RestrictionList = @classnameRestriction
+
 		@name = assert(type(classname) == 'string' and classname, 'Invalid definition classname')\lower()
 
 		@@OBJECTS_MAP[@name] = @

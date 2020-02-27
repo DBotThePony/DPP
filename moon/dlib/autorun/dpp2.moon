@@ -289,6 +289,7 @@ with AllowMapPrefab = DPP2.DEF.DefinitionConVarsPrefab()
 DPP2.ModelBlacklist = DPP2.DEF.Blacklist('model', DPP2.ModelAutocomplete)
 
 DPP2.ToolgunModeRestrictions = DPP2.DEF.RestrictionList('toolgun_mode', DPP2.ToolgunModeAutocomplete)
+DPP2.SpawnRestrictions = DPP2.DEF.RestrictionList('class_spawn', DPP2.ClassnameAutocomplete)
 
 include('dpp2/server/concommands/sv_generic.lua') if SERVER
 include('dpp2/common/concommands/sh_generic.lua')
