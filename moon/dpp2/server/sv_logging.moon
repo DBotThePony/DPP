@@ -38,10 +38,10 @@ createHandle = (prefix) ->
 			file.mkdir('dpp2_logs/' .. split[1] .. '/' .. split[2])
 
 			if handle
-				handle\Write(DLib.i18n.localize('message.dpp2.log.in_next', prefix .. os.date('%d-%m-%Y') .. '.txt'))
+				handle\Write(DLib.i18n.localize('message.dpp2.log.in_next', prefix .. os.date('%Y-%m-%d') .. '.txt'))
 				handle\Close()
 
-			handle = file.Open('dpp2_logs/' .. split[1] .. '/' .. split[2] .. '/' .. prefix .. os.date('%d-%m-%Y') .. '.txt', 'ab', 'DATA')
+			handle = file.Open('dpp2_logs/' .. split[1] .. '/' .. split[2] .. '/' .. prefix .. os.date('%Y-%m-%d') .. '.txt', 'ab', 'DATA')
 			handleId = tformat
 
 		handle\Write('[' .. os.date('%H:%M:%S') .. '] ' .. str .. '\n')
