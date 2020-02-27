@@ -167,7 +167,7 @@ class Menus.MultChooseMenu
 			@addInput\Dock(LEFT)
 			@addButton\Dock(LEFT)
 
-			@addInput\SetPlaceholderText('gui.dpp2.chosepnl.add.entry')
+			@addInput\SetPlaceholderText(i18n.localize('gui.dpp2.chosepnl.add.entry'))
 			@addButton\SetText('gui.dpp2.chosepnl.add.add')
 			@addButton\SizeToContents()
 			@addButton\SetWide(@addButton\GetWide() + 6)

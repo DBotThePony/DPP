@@ -87,7 +87,7 @@ DPP2.DEF.RestrictionList.__base.BuildCPanel = (panel) =>
 	@newItemInput\DockMargin(5, 5, 5, 5)
 	@newItemButton\DockMargin(5, 5, 5, 5)
 
-	@newItemInput\SetPlaceholderText(i18n.format('gui.dpp2.toolmenu.lists.view.classname'))
+	@newItemInput\SetPlaceholderText(i18n.localize('gui.dpp2.toolmenu.lists.view.classname'))
 	@newItemButton\SetText('gui.dpp2.toolmenu.lists.add_new')
 	@newItemButton\SetIcon(Menus.Icons.Add)
 
