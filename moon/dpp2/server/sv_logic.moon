@@ -33,6 +33,8 @@ hook.Add 'Think', 'DPP2.CheckOwnedByMap', ->
 	ent\SetNWBool('dpp2_cbm', true) for ent in *ents.GetAll() when ent\CreatedByMap()
 	hook.Remove 'Think', 'DPP2.CheckOwnedByMap'
 
+hook.Add 'PostCleanupMap', 'DPP2.CheckOwnedByMap', -> timer.Simple 0, -> ent\SetNWBool('dpp2_cbm', true) for ent in *ents.GetAll() when ent\CreatedByMap()
+
 WalkConstraint = =>
 	if not @__dpp2_contraption
 		@__dpp2_contraption = DPP2.ContraptionHolder()
