@@ -233,3 +233,8 @@ gui.dpp2.menus.remove = 'Remove'
 gui.dpp2.menus.remove2 = 'Confirm'
 gui.dpp2.menus.copy_classname = 'Copy classname'
 gui.dpp2.menus.copy_groups = 'Copy groups'
+
+gui.dpp2.property.copymodel = 'Copy model'
+gui.dpp2.property.copyangles = 'Copy angles'
+gui.dpp2.property.copyvector = 'Copy position'
+gui.dpp2.property.copyclassname = 'Copy classname'

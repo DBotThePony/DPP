@@ -83,6 +83,7 @@ AddCSLuaFile('dpp2/common/sh_antispam.lua')
 AddCSLuaFile('dpp2/client/cl_logic.lua')
 AddCSLuaFile('dpp2/client/cl_owning.lua')
 AddCSLuaFile('dpp2/client/cl_transfer.lua')
+AddCSLuaFile('dpp2/client/cl_properties.lua')
 AddCSLuaFile('dpp2/client/settings/cl_convars.lua')
 AddCSLuaFile('dpp2/client/settings/cl_menus.lua')
 AddCSLuaFile('dpp2/client/settings/cl_registry_menus.lua')
@@ -299,6 +300,8 @@ if CLIENT
 	include('dpp2/client/settings/cl_convars.lua')
 	include('dpp2/client/settings/cl_menus.lua')
 	include('dpp2/client/settings/cl_settings.lua')
+
+	include('dpp2/client/cl_properties.lua')
 
 DPP2.Message(string.format('DPP/2 Startup took %.2f ms', SysTime() - startup))
 

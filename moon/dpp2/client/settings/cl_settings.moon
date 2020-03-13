@@ -26,6 +26,8 @@ Menus._Icons = {
 	Edit: 'icon16/pencil.png'
 	Copy: ['icon16/tag_' .. tag .. '.png' for tag in *{'blue', 'green', 'orange', 'pink', 'purple', 'red', 'yellow'}]
 	Remove: 'icon16/delete.png'
+	Angle: {'icon16/arrow_rotate_anticlockwise.png', 'icon16/arrow_rotate_clockwise.png'}
+	Vector: 'icon16/arrow_in.png'
 }
 
 Menus.Icons = setmetatable({}, {
