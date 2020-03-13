@@ -199,6 +199,8 @@ command.dpp2.rlists.removed.class_spawn = '#E removed %q from entity spawning re
 gui.dpp2.toolcategory.main = 'Main settings'
 gui.dpp2.toolcategory.client = 'Client settings'
 gui.dpp2.toolcategory.restriction = 'Restriction lists'
+gui.dpp2.toolcategory.blacklist = 'Blacklists'
+
 gui.dpp2.toolmenu.client_protection = 'Protection settings'
 gui.dpp2.toolmenu.primary = 'Primary settings'
 gui.dpp2.toolmenu.secondary = 'Secondary settings'
@@ -215,10 +217,12 @@ gui.dpp2.toolmenu.restrictions.toolgun = 'Toolgun restrictions'
 gui.dpp2.toolmenu.restrictions.damage = 'Damage restrictions'
 gui.dpp2.toolmenu.restrictions.class_spawn = 'Entity restrictions'
 
-gui.dpp2.toolmenu.lists.view.classname = 'Identifier'
-gui.dpp2.toolmenu.lists.view.groups = 'Groups'
-gui.dpp2.toolmenu.lists.view.iswhitelist = 'Is Whitelist'
-gui.dpp2.toolmenu.lists.add_new = 'Add...'
+gui.dpp2.toolmenu.blacklist.model = 'Model blacklist'
+
+gui.dpp2.restriction_lists.view.classname = 'Identifier'
+gui.dpp2.restriction_lists.view.groups = 'Groups'
+gui.dpp2.restriction_lists.view.iswhitelist = 'Is Whitelist'
+gui.dpp2.restriction_lists.add_new = 'Add...'
 
 gui.dpp2.menus.add = 'Add new...'
 gui.dpp2.menus.query.title = 'Add new entry'

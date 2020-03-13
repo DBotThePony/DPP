@@ -352,7 +352,7 @@ class DPP2.DEF.RestrictionList
 		DPP2.CheckPhrase('command.dpp2.rlists.added_ext.' .. identifier)
 		DPP2.CheckPhrase('command.dpp2.rlists.removed.' .. identifier)
 
-	CallHook: (name, entry, ...) => hook.Run('DPP2_' .. @identifier .. '_' .. name, @, entry, ...)
+	CallHook: (name, entry, ...) => hook.Run('DPP2_BL_' .. @identifier .. '_' .. name, @, entry, ...)
 	AddEntry: (entry) =>
 		return false if table.qhasValue(@listing, entry)
 		table.insert(@listing, entry)
@@ -429,14 +429,14 @@ class DPP2.DEF.Blacklist
 
 		if SERVER
 			DPP2.cmd['add_' .. identifier .. '_blacklist'] = (args = {}) =>
-				val = table.concat(args, ' ')\trim()
+				val = table.concat(args, ' ')\trim()\lower()
 				return 'command.dpp2.lists.arg_empty' if val == ''
 				return 'command.dpp2.lists.already_in' if self2\Has(val)
 				self2\Add(val)
 				DPP2.Notify(true, nil, 'command.dpp2.blists.added.' .. identifier, @, val)
 
 			DPP2.cmd['remove_' .. identifier .. '_blacklist'] = (args = {}) =>
-				val = table.concat(args, ' ')\trim()
+				val = table.concat(args, ' ')\trim()\lower()
 				return 'command.dpp2.lists.arg_empty' if val == ''
 				return 'command.dpp2.lists.already_not' if not self2\Has(val)
 				self2\Remove(val)
@@ -445,7 +445,7 @@ class DPP2.DEF.Blacklist
 		DPP2.cmd_perms['add_' .. identifier .. '_blacklist'] = 'superadmin'
 		DPP2.cmd_perms['remove_' .. identifier .. '_blacklist'] = 'superadmin'
 
-		if autocomplete
+		if @autocomplete = autocomplete
 			DPP2.cmd_autocomplete['add_' .. identifier .. '_blacklist'] = (args, margs) => autocomplete(@, args, margs, self2.listing\GetValues())
 		elseif CLIENT
 			DPP2.cmd_existing['add_' .. identifier .. '_blacklist'] = true
@@ -467,9 +467,10 @@ class DPP2.DEF.Blacklist
 
 			return output
 
+	CallHook: (name, ...) => hook.Run('DPP2_BL_' .. @identifier .. '_' .. name, @, ...)
+
 	Add: (entry) =>
 		return false if @Has(entry)
-		@listing\Add(entry)
 
 		if SERVER
 			net.Start('dpp2_blist_add')
@@ -477,6 +478,8 @@ class DPP2.DEF.Blacklist
 			net.WriteString(entry)
 			net.Broadcast()
 
+		@listing\Add(entry)
+		@CallHook('EntryAdded', entry)
 		return true
 
 	AddDefault: (entry) => @listingDef\Add(entry)
@@ -491,6 +494,7 @@ class DPP2.DEF.Blacklist
 			net.Broadcast()
 
 		@listing\Remove(entry)
+		@CallHook('EntryRemoved', entry)
 		return true
 
 	RemoveDefault: (entry) => @listingDef\Remove(entry) -- ???

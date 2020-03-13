@@ -67,9 +67,9 @@ DPP2.DEF.RestrictionList.__base.BuildCPanel = (panel) =>
 	@listView\Dock(TOP)
 	@listView\SetTall(ScreenSize(350))
 
-	@listView\AddColumn('gui.dpp2.toolmenu.lists.view.classname')
-	@listView\AddColumn('gui.dpp2.toolmenu.lists.view.groups')
-	@listView\AddColumn('gui.dpp2.toolmenu.lists.view.iswhitelist')
+	@listView\AddColumn('gui.dpp2.restriction_lists.view.classname')
+	@listView\AddColumn('gui.dpp2.restriction_lists.view.groups')
+	@listView\AddColumn('gui.dpp2.restriction_lists.view.iswhitelist')
 	@listView.OnRowRightClick = (_pnl, lineID, line) -> @OpenEntryMenu(line._entry) if line._entry
 	OnMousePressed = @listView.OnMousePressed
 
@@ -87,8 +87,8 @@ DPP2.DEF.RestrictionList.__base.BuildCPanel = (panel) =>
 	@newItemInput\DockMargin(5, 5, 5, 5)
 	@newItemButton\DockMargin(5, 5, 5, 5)
 
-	@newItemInput\SetPlaceholderText(i18n.localize('gui.dpp2.toolmenu.lists.view.classname'))
-	@newItemButton\SetText('gui.dpp2.toolmenu.lists.add_new')
+	@newItemInput\SetPlaceholderText(i18n.localize('gui.dpp2.restriction_lists.view.classname'))
+	@newItemButton\SetText('gui.dpp2.restriction_lists.add_new')
 	@newItemButton\SetIcon(Menus.Icons.Add)
 
 	@newItemInput.OnEnter = -> @newItemButton\DoClick()
@@ -163,3 +163,82 @@ DPP2.DEF.RestrictionList.__base.OpenMenu = (classname) =>
 	selectable\AddButtonsTo(nil, frame, finish)
 
 	return frame
+
+DPP2.DEF.Blacklist.__base.RebuildListView = =>
+	return if not IsValid(@listView)
+
+	@listView\Clear()
+
+	for i, entry in SortedPairs(@listing.values)
+		@listView\AddLine(entry)._entry = entry
+
+DPP2.DEF.Blacklist.__base.OpenEmptyListViewMenu = =>
+	with menu = DermaMenu()
+		add = ->
+			callback = (text) -> RunConsoleCommand('dpp2_add_' .. @identifier .. '_blacklist', text)
+			Derma_StringRequest 'gui.dpp2.menus.query.title', 'gui.dpp2.menus.query.subtitle', '', callback, nil, 'gui.misc.ok', 'gui.misc.cancel'
+
+		\AddOption('gui.dpp2.menus.add', add)\SetIcon(Menus.Icons.Add)
+		\Open()
+
+DPP2.DEF.Blacklist.__base.OpenEntryMenu = (entry) =>
+	remove = -> RunConsoleCommand('dpp2_remove_' .. @identifier .. '_blacklist', entry)
+	copy_classname = -> SetClipboardText(entry)
+
+	with menu = DermaMenu()
+		submenu, button = \AddSubMenu('gui.dpp2.menus.remove')
+		button\SetIcon(Menus.Icons.Remove)
+		submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
+
+		\AddOption('gui.dpp2.menus.copy_classname', copy_classname)\SetIcon(Menus.Icons.Copy)
+
+		\Open()
+
+DPP2.DEF.Blacklist.__base.BuildCPanel = (panel) =>
+	return if not IsValid(panel)
+
+	@listView = vgui.Create('DListView', panel)
+	@listView\Dock(TOP)
+	@listView\SetTall(ScreenSize(350))
+
+	@listView\AddColumn('gui.dpp2.restriction_lists.view.classname')
+	@listView.OnRowRightClick = (_pnl, lineID, line) -> @OpenEntryMenu(line._entry) if line._entry
+	OnMousePressed = @listView.OnMousePressed
+
+	@listView.OnMousePressed = (_, code) ->
+		@OpenEmptyListViewMenu() if code == MOUSE_RIGHT
+		return OnMousePressed(_, code)
+
+	@RebuildListView()
+
+	@newItemButton = vgui.Create('DButton', panel)
+	@newItemInput = vgui.Create('DTextEntry', panel)
+	@newItemInput\Dock(TOP)
+	@newItemButton\Dock(TOP)
+
+	@newItemInput\DockMargin(5, 5, 5, 5)
+	@newItemButton\DockMargin(5, 5, 5, 5)
+
+	@newItemInput\SetPlaceholderText(i18n.localize('gui.dpp2.restriction_lists.view.classname'))
+	@newItemButton\SetText('gui.dpp2.restriction_lists.add_new')
+	@newItemButton\SetIcon(Menus.Icons.Add)
+
+	@newItemInput.OnEnter = -> @newItemButton\DoClick()
+
+	if @autocomplete
+		@newItemInput.GetAutoComplete = (_, text) ->
+			fcall = @autocomplete
+			items = fcall(@, text, text, nil, false)
+			return {'...'} if #items > 100
+			return items
+
+	@newItemButton.DoClick = ->
+		text = @newItemInput\GetText()
+		return if not text or text == ''
+		text = text\trim()
+		return if text == ''
+		@newItemInput\SetText('')
+		RunConsoleCommand('dpp2_add_' .. @identifier .. '_blacklist', text)
+
+	hook.Add 'DPP2_BL_' .. @identifier .. '_EntryAdded', panel, -> timer.Create 'DPP2_RebuildLineMenu_BL_' .. @identifier, 0.2, 1, -> @RebuildListView()
+	hook.Add 'DPP2_BL_' .. @identifier .. '_EntryRemoved', panel, -> timer.Create 'DPP2_RebuildLineMenu_BL_' .. @identifier, 0.2, 1, -> @RebuildListView()
