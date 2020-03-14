@@ -88,7 +88,7 @@ AddCSLuaFile('dpp2/client/settings/cl_convars.lua')
 AddCSLuaFile('dpp2/client/settings/cl_menus.lua')
 AddCSLuaFile('dpp2/client/settings/cl_registry_menus.lua')
 AddCSLuaFile('dpp2/client/settings/cl_settings.lua')
-AddCSLuaFile('dpp2/client/settings/cl_playermode.lua')
+AddCSLuaFile('dpp2/client/settings/cl_playerutil.lua')
 AddCSLuaFile('dpp2/common/concommands/sh_cmdlogic.lua')
 AddCSLuaFile('dpp2/common/concommands/sh_generic.lua')
 AddCSLuaFile('dpp2/common/concommands/sh_registry.lua')
@@ -301,7 +301,7 @@ if CLIENT
 	include('dpp2/client/settings/cl_convars.lua')
 	include('dpp2/client/settings/cl_menus.lua')
 	include('dpp2/client/settings/cl_settings.lua')
-	include('dpp2/client/settings/cl_playermode.lua')
+	include('dpp2/client/settings/cl_playerutil.lua')
 
 	include('dpp2/client/cl_properties.lua')
 
