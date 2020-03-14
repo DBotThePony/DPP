@@ -127,7 +127,7 @@ entMeta.DPP2Ghost = (callback) =>
 entMeta.DPP2UnGhost = (withConstraption) =>
 	@__dpp2_contraption\UnGhost() if withConstraption and @__dpp2_contraption
 	return if not @DPP2IsGhosted()
-	@SetNWBool('dpp2_ghost', nil)
+	@SetNWBool('dpp2_ghost', false)
 
 	if type(@__dpp2_old_phys) == 'function'
 		@__dpp2_old_phys()

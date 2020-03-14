@@ -225,7 +225,7 @@ class DPP2.DEF.ProtectionDefinition
 		if newMode
 			ent\SetNWBool(@sharingVarID, true)
 		else
-			ent\SetNWBool(@sharingVarID, nil)
+			ent\SetNWBool(@sharingVarID, false)
 
 		if flush and not newMode
 			hit = false
@@ -236,7 +236,7 @@ class DPP2.DEF.ProtectionDefinition
 					break
 
 			if not hit
-				ent\SetNWBool('dpp2_s', nil)
+				ent\SetNWBool('dpp2_s', false)
 			else
 				ent\SetNWBool('dpp2_s', true)
 		elseif flush and newMode
