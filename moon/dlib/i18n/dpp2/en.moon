@@ -73,10 +73,18 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 	gui.dpp2.cvars['cl_' .. modeID .. '_no_players'] = string.format('%s: I don\'t want to touch players', modeName)
 	gui.dpp2.buddystatus[modeID] = 'Buddy in ' .. modeName
 
+	gui.dpp2.disable_protection[modeID] = 'Disable ' .. modeName .. ' protection'
+
 	command.dpp2.rlists.added[modeID] = '#E added %q to ' .. modeName .. ' restriction list with whitelist status set to %s'
 	command.dpp2.rlists.added_ext[modeID] = '#E added %q to ' .. modeName .. ' restriction list with %q groups in it and whitelist status set to %s'
 	command.dpp2.rlists.updated[modeID] = '#E updated %q in ' .. modeName .. ' restriction list with %q groups in it and whitelist status set to %s'
 	command.dpp2.rlists.removed[modeID] = '#E removed %q from ' .. modeName .. ' restriction list'
+
+	command.dpp2.enabled_for[modeID] = '#E enabled ' .. modeName .. ' protection for #E'
+	command.dpp2.disabled_for[modeID] = '#E disabled ' .. modeName .. ' protection for #E'
+	command.dpp2.already_disabled_for[modeID] = '#E already has ' .. modeName .. ' protection disabled for them!'
+	command.dpp2.already_enabled_for[modeID] = '#E already has ' .. modeName .. ' protection enabled for them!'
+	gui.dpp2.access.status['ownerdisabled_' .. modeID] = modeName .. ' protection for owner is disabled'
 
 gui.dpp2.cvars.cl_protection = 'Main power switch'
 gui.dpp2.cvars.apropkill = 'Antipropkill'
@@ -200,6 +208,9 @@ gui.dpp2.toolcategory.main = 'Main settings'
 gui.dpp2.toolcategory.client = 'Client settings'
 gui.dpp2.toolcategory.restriction = 'Restriction lists'
 gui.dpp2.toolcategory.blacklist = 'Blacklists'
+gui.dpp2.toolcategory.player = 'Player utils'
+
+gui.dpp2.toolmenu.playermode = 'Player protection'
 
 gui.dpp2.toolmenu.client_protection = 'Protection settings'
 gui.dpp2.toolmenu.primary = 'Primary settings'

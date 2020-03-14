@@ -43,16 +43,12 @@ DPP2.cmd_perms[k] = v for k, v in pairs(cmd_perms)
 DPP2.cmd_remap = {}
 
 for permName, permLevel in pairs(DPP2.cmd_perms)
-	CAMI.RegisterPrivilege({
-		Name: 'dpp2_' .. permName
-		MinAccess: permLevel
-		-- Description:
-	})
-
--- because gmod is special
-DPP2.ArgsParseHelper = (args = '') ->
-	output = {}
-	return output
+	if not permLevel\startsWith('CAMI_')
+		CAMI.RegisterPrivilege({
+			Name: 'dpp2_' .. permName
+			MinAccess: permLevel
+			-- Description:
+		})
 
 if SERVER
 	net.pool('dpp2_exec_concommand')
@@ -65,9 +61,11 @@ if SERVER
 
 	for cmdName, cmdFunc in pairs(DPP2.cmd)
 		if DPP2.cmd_perms[cmdName]
+			choosePermName = DPP2.cmd_perms[cmdName]\startsWith('CAMI_') and DPP2.cmd_perms[cmdName]\sub(6) or ('dpp2_' .. cmdName)
+
 			execute = (cmd = '', args = {}) =>
 				if IsValid(@)
-					CAMI.PlayerHasAccess @, 'dpp2_' .. cmdName, (hasAccess = false, reason = '<unknown reason>') ->
+					CAMI.PlayerHasAccess @, choosePermName, (hasAccess = false, reason = '<unknown reason>') ->
 						if not hasAccess
 							DPP2.NotifyError(@, nil, 'command.dpp2.generic.noaccess_check', reason)
 							return
@@ -134,8 +132,8 @@ elseif not game.SinglePlayer()
 		DPP2.cmd_remap[cmdName] = (ply, args) -> execute(ply, nil, args)
 
 		if DPP2.cmd_perms[cmdName]
-			watchdog\Track('dpp2_' .. cmdName)
-			perm = 'dpp2_' .. cmdName
+			perm = DPP2.cmd_perms[cmdName]\startsWith('CAMI_') and DPP2.cmd_perms[cmdName]\sub(6) or ('dpp2_' .. cmdName)
+			watchdog\Track(perm)
 
 			local autocomplete
 

@@ -42,6 +42,8 @@ hook.Add 'PopulateToolMenu', 'DPP2.Menus', ->
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.main', 'gui.dpp2.toolmenu.antispam', 'gui.dpp2.toolmenu.antispam', '', '', Menus.AntispamMenu
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.main', 'gui.dpp2.toolmenu.antipropkill', 'gui.dpp2.toolmenu.antipropkill', '', '', Menus.AntipropkillMenu
 
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.player', 'gui.dpp2.toolmenu.playermode', 'gui.dpp2.toolmenu.playermode', '', '', Menus.BuildPlayerModePanel
+
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.restriction', 'gui.dpp2.toolmenu.restrictions.physgun', 'gui.dpp2.toolmenu.restrictions.physgun', '', '', => DPP2.PhysgunProtection.RestrictionList\BuildCPanel(@)
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.restriction', 'gui.dpp2.toolmenu.restrictions.drive', 'gui.dpp2.toolmenu.restrictions.drive', '', '', => DPP2.DriveProtection.RestrictionList\BuildCPanel(@)
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.restriction', 'gui.dpp2.toolmenu.restrictions.pickup', 'gui.dpp2.toolmenu.restrictions.pickup', '', '', => DPP2.PickupProtection.RestrictionList\BuildCPanel(@)
