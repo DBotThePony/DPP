@@ -55,6 +55,10 @@ cmds = {
 		SafeRemoveEntity(ent) for ent in *DPP2.FindOwned() when ent\IsNPC() or type(ent) == 'NextBot'
 		DPP2.Notify(true, nil, 'command.dpp2.cleanupallnpcs', @)
 
+	cleanupall: (args = {}, message) =>
+		SafeRemoveEntity(ent) for ent in *DPP2.FindOwned()
+		DPP2.Notify(true, nil, 'command.dpp2.cleanupall', @)
+
 	cleanupallvehicles: (args = {}, message) =>
 		SafeRemoveEntity(ent) for ent in *DPP2.FindOwned() when ent\IsVehicle()
 		DPP2.Notify(true, nil, 'command.dpp2.cleanupallvehicles', @)
