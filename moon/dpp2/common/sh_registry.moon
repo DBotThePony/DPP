@@ -283,8 +283,7 @@ class DPP2.DEF.RestrictionList
 			return if not list
 			return if (ply['dpp2_last_full_request_' .. list.identifier] or 0) > RealTime()
 			ply['dpp2_last_full_request_' .. list.identifier] = RealTime() + 30
-			list\StartFullReplicate()
-			net.Send(ply)
+			list\FullReplicate(ply)
 
 	new: (identifier, autocomplete) =>
 		@identifier = identifier
@@ -488,13 +487,12 @@ class DPP2.DEF.RestrictionList
 		@AddEntry(DPP2.DEF.RestrictionListEntry\Deserialize(object)\Bind(@)) for object in *rebuild
 		DPP2.DEF.RestrictionListEntry\UnpauseReplication()
 
-		@StartFullReplicate()
-		net.Broadcast()
+		@FullReplicate() if #player.GetCount()
 
 		timer.Remove('DPP2_Save_' .. @identifier .. '_Restrictions')
 		return true
 
-	StartFullReplicate: =>
+	FullReplicate: (who = player.GetHumans()) =>
 		net.Start('dpp2_list_replicate')
 		net.WriteString(@identifier)
 		net.WriteUInt16(#@listing)
@@ -502,6 +500,8 @@ class DPP2.DEF.RestrictionList
 		for entry in *@listing
 			net.WriteUInt32(entry.id)
 			entry\WritePayload()
+
+		net.Send(who)
 
 	MakeBackup: =>
 		path = @DefaultSavePath()
@@ -531,6 +531,13 @@ class DPP2.DEF.Blacklist
 			list, listing = assert(@REGISTRY_[net.ReadUInt8()], 'Missing blacklist registry'), net.ReadStringArray()
 			list.listing = DLib.Set()
 			list\Add(val) for val in *listing
+	else
+		net.Receive 'dpp2_blist_replicate', (_, ply) ->
+			list = @GetByID(net.ReadString())
+			return if not list
+			return if (ply['dpp2_last_full_request_bl_' .. list.identifier] or 0) > RealTime()
+			ply['dpp2_last_full_request_bl_' .. list.identifier] = RealTime() + 30
+			list\FullReplicate(ply)
 
 	new: (identifier, autocomplete) =>
 		assert(identifier, 'Blacklist registry without identifier')
@@ -585,7 +592,23 @@ class DPP2.DEF.Blacklist
 
 			return output
 
-		@LoadFromDisk()
+		@LoadFromDisk() if SERVER
+
+		if CLIENT
+			if IsValid(LocalPlayer())
+				timer.Simple 1, -> @RequestFromServer()
+			else
+				frames = 0
+				hook.Add 'Think', 'DPP2_bl_' .. @identifier .. '_request', ->
+					ply = LocalPlayer()
+					return if not IsValid(ply)
+
+					if ply\GetVelocity()\Length() > 0
+						frames += 1
+
+					if frames > 400
+						@RequestFromServer()
+						hook.Remove 'Think', 'DPP2_bl_' .. @identifier .. '_request'
 
 	CallHook: (name, ...) => hook.Run('DPP2_BL_' .. @identifier .. '_' .. name, @, ...)
 
@@ -625,7 +648,7 @@ class DPP2.DEF.Blacklist
 
 	Check: (entry) => @Has(entry)
 
-	FullReplicate: (who = player.GetAll()) =>
+	FullReplicate: (who = player.GetHumans()) =>
 		error('Invalid side') if CLIENT
 		net.Start('dpp2_blist_replicate')
 		net.WriteUInt8(@id)
@@ -637,6 +660,12 @@ class DPP2.DEF.Blacklist
 		timer.Create 'DPP2_Save_' .. @identifier .. '_Blacklist', 0.25, 1, ->
 			@MakeBackup()
 			@SaveToDisk()
+
+	RequestFromServer: =>
+		return if SERVER
+		net.Start('dpp2_blist_replicate')
+		net.WriteString(@identifier)
+		net.SendToServer()
 
 	BuildSaveString: => SERVER and util.TableToJSON(@listing.values, true) or error('Invalid side')
 	DefaultSavePath: => 'dpp2/' .. @identifier .. '_blacklist.json'
