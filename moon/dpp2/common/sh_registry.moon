@@ -533,7 +533,7 @@ class DPP2.DEF.Blacklist
 			list\Add(val) for val in *listing
 	else
 		net.Receive 'dpp2_blist_replicate', (_, ply) ->
-			list = @GetByID(net.ReadString())
+			list = @REGISTRY[net.ReadString()]
 			return if not list
 			return if (ply['dpp2_last_full_request_bl_' .. list.identifier] or 0) > RealTime()
 			ply['dpp2_last_full_request_bl_' .. list.identifier] = RealTime() + 30
