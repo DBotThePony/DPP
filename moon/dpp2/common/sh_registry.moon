@@ -487,7 +487,7 @@ class DPP2.DEF.RestrictionList
 		@AddEntry(DPP2.DEF.RestrictionListEntry\Deserialize(object)\Bind(@)) for object in *rebuild
 		DPP2.DEF.RestrictionListEntry\UnpauseReplication()
 
-		@FullReplicate() if #player.GetCount() ~= 0
+		@FullReplicate() if player.GetCount() ~= 0
 
 		timer.Remove('DPP2_Save_' .. @identifier .. '_Restrictions')
 		return true
