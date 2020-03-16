@@ -22,14 +22,20 @@ import DPP2 from _G
 import Menus from DPP2
 import i18n from DLib
 
+isSingleplayer = -> (game.SinglePlayer() or game.GetIPAddress() == 'loopback' or game.GetIPAddress() == '0.0.0.0:0') and LocalPlayer()\EntIndex() == 1
+
 Menus.Slider = (name, convar, min = 0, max = 1, decimals = 0) =>
 	convar = 'dpp2_' .. convar
 	_obj = ConVar(convar)
 	panel = @NumSlider(name, convar, min, max, decimals)
+	panel\SetConVar(nil)
+	panel\SetValue(_obj\GetFloat())
 
 	panel.OnValueChanged = (newValue) =>
-		return if newValue == _obj\GetBool()
+		return if newValue == _obj\GetFloat()
+		return if isSingleplayer()
 		timer.Create 'DPP2_ConVarChange_' .. convar, 0.2, 1, -> RunConsoleCommand('dpp2_setvar', convar, newValue)
+		timer.Create 'DPP2_ConVarChange_' .. convar .. '_2', 0.6, 1, -> panel\SetValue(_obj\GetFloat())
 
 	return panel
 
@@ -37,10 +43,13 @@ Menus.CheckBox = (name, convar) =>
 	convar = 'dpp2_' .. convar
 	panel = @CheckBox(name, convar)
 	_obj = ConVar(convar)
+	panel\SetConVar(nil)
+	panel.Think = -> panel\SetChecked(_obj\GetBool())
 
 	panel.Button.OnChange = (newValue) =>
 		return if newValue == _obj\GetBool()
-		timer.Create 'DPP2_ConVarChange_' .. convar, 0.2, 1, -> RunConsoleCommand('dpp2_setvar', convar, newValue and '1' or '0')
+		return if isSingleplayer()
+		RunConsoleCommand('dpp2_setvar', convar, newValue and '1' or '0')
 
 	return panel
 
