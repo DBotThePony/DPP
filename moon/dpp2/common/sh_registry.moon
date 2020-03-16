@@ -24,6 +24,8 @@ if SERVER
 	net.pool('dpp2_list_entry_create')
 	net.pool('dpp2_list_entry_remove')
 	net.pool('dpp2_list_entry_modify')
+	net.pool('dpp2_list_clear')
+	net.pool('dpp2_list_replicate')
 
 	net.pool('dpp2_blist_add')
 	net.pool('dpp2_blist_remove')
@@ -39,15 +41,23 @@ class DPP2.DEF.RestrictionListEntry
 	@UPDATE_WHITELIST_STATE = 1
 	@FULL_REPLICATE = 3
 
+	@REPLICATION_PAUSED = false
+
+	@PauseReplication = => @REPLICATION_PAUSED = true
+	@UnpauseReplication = => @REPLICATION_PAUSED = false
+
 	if CLIENT
-		net.receive 'dpp2_list_entry_create', ->
-			id, list = net.ReadUInt32(), net.ReadString()
+		@IncomingNetworkObject = (id, list) =>
 			entry = @ReadPayload()
 			entry\SetID(id)
-			list = assert(DPP2.DEF.RestrictionList\GetByID(list), 'Invalid list received: ' .. list)
 			entry\Bind(list)
 			list\AddEntry(entry)
 			entry.replicated = true
+			return entry
+
+		net.receive 'dpp2_list_entry_create', ->
+			id, list = net.ReadUInt32(), net.ReadString()
+			@IncomingNetworkObject(id, assert(DPP2.DEF.RestrictionList\GetByID(list), 'Invalid list received: ' .. list))
 
 		net.receive 'dpp2_list_entry_remove', ->
 			id = net.ReadUInt32()
@@ -87,9 +97,9 @@ class DPP2.DEF.RestrictionListEntry
 		if SERVER
 			@Replicate() if parent
 
-	Remove: =>
+	Remove: (force = false) =>
 		return false if @removed
-		return false if CLIENT and @replicated
+		return false if CLIENT and @replicated and not force
 
 		if SERVER and @replicated
 			net.Start('dpp2_list_entry_remove')
@@ -109,7 +119,7 @@ class DPP2.DEF.RestrictionListEntry
 		return false if isWhitelist == @isWhitelist
 		@isWhitelist = isWhitelist
 
-		if SERVER and @replicated and not @locked
+		if SERVER and @replicated and not @locked and not @@REPLICATION_PAUSED
 			net.Start('dpp2_list_entry_modify')
 			net.WriteUInt32(@id)
 			net.WriteUInt8(@@UPDATE_WHITELIST_STATE)
@@ -126,7 +136,7 @@ class DPP2.DEF.RestrictionListEntry
 		return false if table.qhasValue(@groups, group) or group == ''
 		table.insert(@groups, group)
 
-		if SERVER and @replicated and not @locked
+		if SERVER and @replicated and not @locked and not @@REPLICATION_PAUSED
 			net.Start('dpp2_list_entry_modify')
 			net.WriteUInt32(@id)
 			net.WriteUInt8(@@ADD_GROUP)
@@ -159,7 +169,7 @@ class DPP2.DEF.RestrictionListEntry
 				table.remove(@groups, i)
 				break
 
-		if SERVER and @replicated and not @locked
+		if SERVER and @replicated and not @locked and not @@REPLICATION_PAUSED
 			net.Start('dpp2_list_entry_modify')
 			net.WriteUInt32(@id)
 			net.WriteUInt8(@@REMOVE_GROUP)
@@ -221,6 +231,7 @@ class DPP2.DEF.RestrictionListEntry
 	Replicate: =>
 		error('Invalid side') if CLIENT
 		error('Removed') if @removed
+		return false if @@REPLICATION_PAUSED
 
 		if not @replicated
 			@replicated = true
@@ -235,6 +246,8 @@ class DPP2.DEF.RestrictionListEntry
 			net.WriteUInt8(@@FULL_REPLICATE)
 			@WritePayload()
 			net.Broadcast()
+
+		return true
 
 	Is: (classname) => @class == classname
 	Ask: (classname, group, isAdmin) =>
@@ -253,6 +266,25 @@ class DPP2.DEF.RestrictionList
 			return entry if entry
 
 		return false
+
+	if CLIENT
+		net.Receive 'dpp2_list_clear', ->
+			identifier = net.ReadString()
+			assert(@GetByID(identifier), 'unknown restriction list: ' .. identifier .. '!')\Clear(true)
+
+		net.Receive 'dpp2_list_replicate', ->
+			identifier = net.ReadString()
+			list = assert(@GetByID(identifier), 'unknown restriction list: ' .. identifier .. '!')
+			list\Clear(true)
+			DPP2.DEF.RestrictionListEntry\IncomingNetworkObject(net.ReadUInt32(), list) for i = 1, net.ReadUInt16()
+	else
+		net.Receive 'dpp2_list_replicate', (_, ply) ->
+			list = @GetByID(net.ReadString())
+			return if not list
+			return if (ply['dpp2_last_full_request_' .. list.identifier] or 0) > RealTime()
+			ply['dpp2_last_full_request_' .. list.identifier] = RealTime() + 30
+			list\StartFullReplicate()
+			net.Send(ply)
 
 	new: (identifier, autocomplete) =>
 		@identifier = identifier
@@ -363,6 +395,22 @@ class DPP2.DEF.RestrictionList
 
 		@LoadFromDisk() if SERVER
 
+		if CLIENT
+			if IsValid(LocalPlayer())
+				timer.Simple 1, -> @RequestFromServer()
+			else
+				frames = 0
+				hook.Add 'Think', 'DPP2_' .. @identifier .. '_request', ->
+					ply = LocalPlayer()
+					return if not IsValid(ply)
+
+					if ply\GetVelocity()\Length() > 0
+						frames += 1
+
+					if frames > 400
+						@RequestFromServer()
+						hook.Remove 'Think', 'DPP2_' .. @identifier .. '_request'
+
 	CallHook: (name, entry, ...) => hook.Run('DPP2_' .. @identifier .. '_' .. name, @, entry, ...)
 	AddEntry: (entry) =>
 		return false if table.qhasValue(@listing, entry)
@@ -414,18 +462,46 @@ class DPP2.DEF.RestrictionList
 			@MakeBackup()
 			@SaveToDisk()
 
+	Clear: (force = false) => entry\Remove(force) for entry in *[a for a in *@listing]
+
+	RequestFromServer: =>
+		return if SERVER
+		net.Start('dpp2_list_replicate')
+		net.WriteString(@identifier)
+		net.SendToServer()
+
 	BuildSaveString: => SERVER and util.TableToJSON([entry\Serialize() for entry in *@listing], true) or error('Invalid side')
 	DefaultSavePath: => 'dpp2/' .. @identifier .. '_restrictions.json'
 	SaveToDisk: (path = @DefaultSavePath()) => file.Write(path, @BuildSaveString())
 	LoadFrom: (str) =>
 		error('Invalid side') if not SERVER
-		-- TODO: Cheap clear operation
-		entry\Remove() for entry in *[a for a in *@listing]
+		@listing = {}
 		rebuild = util.JSONToTable(str)
-		return false if not rebuild
+
+		if not rebuild
+			net.Start('dpp2_list_clear')
+			net.WriteString(@identifier)
+			net.Broadcast()
+			return false
+
+		DPP2.DEF.RestrictionListEntry\PauseReplication()
 		@AddEntry(DPP2.DEF.RestrictionListEntry\Deserialize(object)\Bind(@)) for object in *rebuild
+		DPP2.DEF.RestrictionListEntry\UnpauseReplication()
+
+		@StartFullReplicate()
+		net.Broadcast()
+
 		timer.Remove('DPP2_Save_' .. @identifier .. '_Restrictions')
 		return true
+
+	StartFullReplicate: =>
+		net.Start('dpp2_list_replicate')
+		net.WriteString(@identifier)
+		net.WriteUInt16(#@listing)
+
+		for entry in *@listing
+			net.WriteUInt32(entry.id)
+			entry\WritePayload()
 
 	MakeBackup: =>
 		path = @DefaultSavePath()
