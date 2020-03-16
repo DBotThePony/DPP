@@ -363,7 +363,7 @@ class DPP2.DEF.RestrictionList
 
 		@LoadFromDisk() if SERVER
 
-	CallHook: (name, entry, ...) => hook.Run('DPP2_BL_' .. @identifier .. '_' .. name, @, entry, ...)
+	CallHook: (name, entry, ...) => hook.Run('DPP2_' .. @identifier .. '_' .. name, @, entry, ...)
 	AddEntry: (entry) =>
 		return false if table.qhasValue(@listing, entry)
 		table.insert(@listing, entry)
