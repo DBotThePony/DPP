@@ -36,6 +36,8 @@ cmd_perms = {
 	transferfallback: 'user'
 	transferent: 'user'
 	transfercontraption: 'user'
+
+	setvar: 'superadmin'
 }
 
 DPP2.cmd_perms[k] = v for k, v in pairs(cmd_perms)

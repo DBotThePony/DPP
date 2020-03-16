@@ -100,6 +100,19 @@ cmds = {
 					phys\EnableMotion(false)
 
 		DPP2.Notify(true, nil, 'command.dpp2.freezephyspanic', @)
+
+	setvar: (args = {}) =>
+		return 'command.dpp2.setvar.none' if not args[1]
+		return 'command.dpp2.setvar.no_arg' if not args[2]
+		cvar = table.remove(args, 1)\sub(6)
+
+		for entry in *DPP2.CVarsRegistry
+			if entry.cvarName == cvar
+				entry.cvar\SetString(table.concat(args, ' '))
+				DPP2.Notify(true, nil, 'command.dpp2.setvar.changed', @, cvar)
+				return
+
+		return 'command.dpp2.setvar.invalid', cvar
 }
 
 DPP2.cmd[k] = v for k, v in pairs(cmds)

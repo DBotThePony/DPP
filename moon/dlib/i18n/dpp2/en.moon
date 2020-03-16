@@ -261,3 +261,8 @@ gui.dpp2.property.copymodel = 'Copy model'
 gui.dpp2.property.copyangles = 'Copy angles'
 gui.dpp2.property.copyvector = 'Copy position'
 gui.dpp2.property.copyclassname = 'Copy classname'
+
+command.dpp2.setvar.none = 'ConVar wasn\'t specified'
+command.dpp2.setvar.invalid = 'ConVar is not DPP/2\'s ConVar or does not exist: %s'
+command.dpp2.setvar.no_arg = 'No new value was specified'
+command.dpp2.setvar.changed = '#E changed value of dpp2_%s ConVar'
