@@ -140,6 +140,15 @@ class DPP2.DEF.RestrictionListEntry
 	HasGroup: (group) => table.qhasValue(@groups, group)
 	IsWhitelist: => @isWhitelist
 
+	Serialize: =>
+		return {
+			class: @class
+			groups: @groups
+			is_whitelist: @isWhitelist
+		}
+
+	@Deserialize: (input) => DPP2.DEF.RestrictionListEntry(input.class, input.groups, input.is_whitelist)
+
 	RemoveGroup: (group) =>
 		assert(type(group) == 'string', 'Group must be a string, ' .. type(group) .. ' given')
 		group = group\trim()
@@ -352,11 +361,14 @@ class DPP2.DEF.RestrictionList
 		DPP2.CheckPhrase('command.dpp2.rlists.added_ext.' .. identifier)
 		DPP2.CheckPhrase('command.dpp2.rlists.removed.' .. identifier)
 
+		@LoadFromDisk() if SERVER
+
 	CallHook: (name, entry, ...) => hook.Run('DPP2_BL_' .. @identifier .. '_' .. name, @, entry, ...)
 	AddEntry: (entry) =>
 		return false if table.qhasValue(@listing, entry)
 		table.insert(@listing, entry)
 		@CallHook('EntryAdded', entry)
+		@SaveTimer()
 		return true
 
 	RemoveEntry: (entry) =>
@@ -364,6 +376,7 @@ class DPP2.DEF.RestrictionList
 			if entry == entry2
 				table.remove(@listing, i)
 				@CallHook('EntryRemoved', entry2)
+				@SaveTimer()
 				return true
 
 		return false
@@ -394,6 +407,35 @@ class DPP2.DEF.RestrictionList
 	Get: (classname) =>
 		return entry for entry in *@listing when entry\Is(classname)
 		return false
+
+	SaveTimer: =>
+		return if not SERVER
+		timer.Create 'DPP2_Save_' .. @identifier .. '_Restrictions', 0.25, 1, ->
+			@MakeBackup()
+			@SaveToDisk()
+
+	BuildSaveString: => SERVER and util.TableToJSON([entry\Serialize() for entry in *@listing], true) or error('Invalid side')
+	DefaultSavePath: => 'dpp2/' .. @identifier .. '_restrictions.json'
+	SaveToDisk: (path = @DefaultSavePath()) => file.Write(path, @BuildSaveString())
+	LoadFrom: (str) =>
+		error('Invalid side') if not SERVER
+		-- TODO: Cheap clear operation
+		entry\Remove() for entry in *[a for a in *@listing]
+		rebuild = util.JSONToTable(str)
+		return false if not rebuild
+		@AddEntry(DPP2.DEF.RestrictionListEntry\Deserialize(object)\Bind(@)) for object in *rebuild
+		timer.Remove('DPP2_Save_' .. @identifier .. '_Restrictions')
+		return true
+
+	MakeBackup: =>
+		path = @DefaultSavePath()
+		return false if not file.Exists(path, 'data')
+		file.Write('dpp2/backup/' .. @identifier .. '_restrictions_' .. os.date('%Y-%m-%d-%H_%M_%S') .. '.json', file.Read(path, 'data'))
+		return true
+
+	LoadFromDisk: (path = @DefaultSavePath()) =>
+		return false if not file.Exists(path, 'data')
+		return @LoadFrom(file.Read(path, 'data'))
 
 class DPP2.DEF.Blacklist
 	@REGISTRY = {}
@@ -467,12 +509,15 @@ class DPP2.DEF.Blacklist
 
 			return output
 
+		@LoadFromDisk()
+
 	CallHook: (name, ...) => hook.Run('DPP2_BL_' .. @identifier .. '_' .. name, @, ...)
 
 	Add: (entry) =>
 		return false if @Has(entry)
 
 		if SERVER
+			@SaveTimer()
 			net.Start('dpp2_blist_add')
 			net.WriteUInt8(@id)
 			net.WriteString(entry)
@@ -488,6 +533,7 @@ class DPP2.DEF.Blacklist
 		return false if not @Has(entry)
 
 		if SERVER
+			@SaveTimer()
 			net.Start('dpp2_blist_remove')
 			net.WriteUInt8(@id)
 			net.WriteString(entry)
@@ -510,3 +556,30 @@ class DPP2.DEF.Blacklist
 		net.WriteStringArray(@listing\GetValues())
 		net.Send(who)
 
+	SaveTimer: =>
+		return if not SERVER
+		timer.Create 'DPP2_Save_' .. @identifier .. '_Blacklist', 0.25, 1, ->
+			@MakeBackup()
+			@SaveToDisk()
+
+	BuildSaveString: => SERVER and util.TableToJSON(@listing.values, true) or error('Invalid side')
+	DefaultSavePath: => 'dpp2/' .. @identifier .. '_blacklist.json'
+	SaveToDisk: (path = @DefaultSavePath()) => file.Write(path, @BuildSaveString())
+	LoadFrom: (str) =>
+		error('Invalid side') if not SERVER
+		@listing = DLib.Set()
+		rebuild = util.JSONToTable(str)
+		return false if not rebuild
+		@Add(object) for object in *rebuild
+		timer.Remove('DPP2_Save_' .. @identifier .. '_Blacklist')
+		return true
+
+	MakeBackup: =>
+		path = @DefaultSavePath()
+		return false if not file.Exists(path, 'data')
+		file.Write('dpp2/backup/' .. @identifier .. '_blacklist_' .. os.date('%Y-%m-%d-%H_%M_%S') .. '.json', file.Read(path, 'data'))
+		return true
+
+	LoadFromDisk: (path = @DefaultSavePath()) =>
+		return false if not file.Exists(path, 'data')
+		return @LoadFrom(file.Read(path, 'data'))

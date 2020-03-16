@@ -27,6 +27,10 @@ startup = SysTime()
 
 DLib.CMessageChat(DPP2, 'DPP2')
 
+if SERVER
+	file.mkdir('dpp2')
+	file.mkdir('dpp2/backup')
+
 DPP2.TYPE_BOOL = 0
 DPP2.TYPE_INT = 1
 DPP2.TYPE_FLOAT = 2
