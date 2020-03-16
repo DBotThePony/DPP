@@ -297,6 +297,7 @@ class DPP2.DEF.ProtectionDefinition
 				return getply\CheckDLibFriendInOverride(ply, @friendID)
 
 			return true, i18n.localize('gui.dpp2.access.status.ownerdisabled') if @IsDisabledForSteamID(other)
+			return true if @camiwatchdog\HasPermission(ply, @otherPermString) and @adminTouchAny\GetBool()
 
 			steamid = ply\SteamID()
 			return @friendsCache[other][steamid], i18n.localize('gui.dpp2.access.status.friend') if @friendsCache[other] and @friendsCache[other][steamid] ~= nil
