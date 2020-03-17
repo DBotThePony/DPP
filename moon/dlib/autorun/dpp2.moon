@@ -238,26 +238,38 @@ if SERVER
 		net.WriteArray({...})
 		net.Send(@)
 else
+	lastsound = 0
+
+	playsound = (sound) ->
+		return if lastsound > RealTime()
+		surface.PlaySound(sound)
+		lastsound = RealTime() + 0.1
+
 	DPP2.Notify = (length = 5, ...) =>
 		strings = [arg for arg in *DPP2.LMessage(...) when type(arg) == 'string']
 		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_GENERIC, length)
+		playsound('buttons/lightswitch2.wav')
 
 	DPP2.NotifyError = (length = 5, ...) =>
 		strings = [arg for arg in *DPP2.LMessageError(...) when type(arg) == 'string']
 		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_ERROR, length)
+		playsound('buttons/button10.wav')
 
 	DPP2.NotifyUndo = (length = 5, ...) =>
 		strings = [arg for arg in *DPP2.LMessage(...) when type(arg) == 'string']
 		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_UNDO, length)
+		playsound('buttons/button15.wav')
 
 	DPP2.NotifyCleanup = (length = 5, ...) =>
 		strings = [arg for arg in *DPP2.LMessage(...) when type(arg) == 'string']
 		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_CLEANUP, length)
+		playsound('buttons/button15.wav')
 
 	DPP2.NotifyHint = (length = 5, ...) =>
 		DPP2.LMessage('[HINT] ', ...)
 		strings = [arg for arg in *DPP2.LFormatMessageRaw(...) when type(arg) == 'string']
 		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_HINT, length)
+		playsound('buttons/combine_button1.wav')
 
 	net.receive 'dpp2_notify', ->
 		switch net.ReadUInt8()
