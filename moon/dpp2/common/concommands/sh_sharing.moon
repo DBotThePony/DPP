@@ -37,20 +37,20 @@ findDef = (str, ent, wanted) ->
 
 	return output
 
-closure = (args = '', margs = '', unshare) =>
+closure = (args = '', margs = '', share) =>
 	return if not IsValid(@)
 	args = DPP2.SplitArguments(args)
 
-	return [string.format('%q', tostring(ent)) for ent in *@DPP2FindOwned()] if not args[1] and not unshare
-	return [string.format('%q', tostring(ent)) for ent in *@DPP2FindOwned() when ent\DPP2IsShared()] if not args[1] and unshare
+	return [string.format('%q', tostring(ent)) for ent in *@DPP2FindOwned()] if not args[1] and share
+	return [string.format('%q', tostring(ent)) for ent in *@DPP2FindOwned() when ent\DPP2IsShared()] if not args[1] and not share
 
 	local ents
 
-	if unshare
+	if share
+		ents = DPP2.AutocompleteOwnedEntityArgument(args[1])
+	else
 		filter = (ent) -> ent\DPP2IsShared()
 		ents = DPP2.AutocompleteOwnedEntityArgument(args[1], nil, nil, filter)
-	else
-		ents = DPP2.AutocompleteOwnedEntityArgument(args[1])
 
 	return [string.format('%q', ent) for ent in *ents] if margs[#margs] ~= ' ' and not args[2]
 	return {} if #ents == 0
@@ -58,8 +58,91 @@ closure = (args = '', margs = '', unshare) =>
 	return if not IsValid(ent)
 	return {'<not an owner!>'} if ent\DPP2GetOwner() ~= @
 
-	defitions = findDef(args[2] or '', ent, not unshare)
-	return [string.format('%q %q', tostring(ent), def) for def in *defitions]
+	return [string.format('%q %q', tostring(ent), def) for def in *findDef(args[2] or '', ent, share)]
 
-DPP2.cmd_autocomplete.share = (args, margs) => closure(@, args, margs, false)
-DPP2.cmd_autocomplete.unshare = (args = '', margs = '') => closure(@, args, margs, true)
+DPP2.cmd_autocomplete.share = (args, margs) => closure(@, args, margs, true)
+DPP2.cmd_autocomplete.unshare = (args = '', margs = '') => closure(@, args, margs, false)
+
+findDefContr = (str, contraption, wanted) ->
+	str = str\lower()
+	output = {}
+	hit, hit2 = false, false
+
+	for obj in *DPP2.DEF.ProtectionDefinition.OBJECTS
+		if obj.identifier == str
+			for ent in *contraption.ents
+				if not obj\IsShared(ent)
+					return {hit.identifier}
+
+			return {}
+
+	if not hit
+		for ent in *contraption.ents
+			if IsValid(ent)
+				for obj in *DPP2.DEF.ProtectionDefinition.OBJECTS
+					if obj.identifier\startsWith(str) and obj\IsShared(ent) ~= wanted and not table.qhasValue(output, obj.identifier)
+						table.insert(output, obj.identifier)
+
+	return output
+
+hasShare = (contraption) ->
+	ply = LocalPlayer()
+
+	for obj in *DPP2.DEF.ProtectionDefinition.OBJECTS
+		for ent in *contraption.ents
+			if IsValid(ent) and ent\DPP2GetOwner() == ply and obj\IsShared(ent)
+				return true
+
+	return false
+
+hasAllShared = (contraption) ->
+	ply = LocalPlayer()
+
+	for obj in *DPP2.DEF.ProtectionDefinition.OBJECTS
+		for ent in *contraption.ents
+			if IsValid(ent) and ent\DPP2GetOwner() == ply and not obj\IsShared(ent)
+				return false
+
+	return true
+
+closure_contraption = (args = '', margs = '', share) =>
+	return if not IsValid(@)
+	args = DPP2.SplitArguments(args)
+
+	if not args[1]
+		if share
+			return [string.format('%q', tostring(contraption.id)) for contraption in *DPP2.ContraptionHolder.OBJECTS when contraption\HasOwner(@) and not hasAllShared(contraption)]
+		else
+			return [string.format('%q', tostring(contraption.id)) for contraption in *DPP2.ContraptionHolder.OBJECTS when contraption\HasOwner(@) and hasShare(contraption)]
+
+	num = tonumber(args[1])
+
+	if not args[2] and margs[#margs] ~= ' '
+		if num
+			for contraption in *DPP2.ContraptionHolder.OBJECTS
+				if contraption.id == num
+					if contraption\HasOwner(@)
+						if share
+							if hasAllShared(contraption)
+								return {'"<nothing to share>"'}
+							else
+								return {string.format('%q', tostring(contraption.id))}
+						else
+							if hasShare(contraption)
+								return {string.format('%q', tostring(contraption.id))}
+							else
+								return {'"<nothing shared>"'}
+					else
+						return {'"<nothing owned inside this contraption>"'}
+
+		if share
+			return [string.format('%q', tostring(contraption.id)) for contraption in *DPP2.ContraptionHolder.OBJECTS when contraption\HasOwner(@) and contraption.id\tostring()\startsWith(args[1]) and not hasAllShared(contraption)]
+		else
+			return [string.format('%q', tostring(contraption.id)) for contraption in *DPP2.ContraptionHolder.OBJECTS when contraption\HasOwner(@) and contraption.id\tostring()\startsWith(args[1]) and hasShare(contraption)]
+
+	contraption = DPP2.ContraptionHolder\GetByID(num) if num
+	return {string.format('%q %q', args[1], args[2])} if not contraption
+	return [string.format('%q %q', args[1], def) for def in *findDefContr(args[2] or '', contraption, share)]
+
+DPP2.cmd_autocomplete.share_contraption = (args = '', margs = '') => closure_contraption(@, args, margs, true)
+DPP2.cmd_autocomplete.unshare_contraption = (args = '', margs = '') => closure_contraption(@, args, margs, false)

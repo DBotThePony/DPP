@@ -30,6 +30,25 @@ DPP2.cmd.share = (args = {}, message) =>
 	def\SetIsShared(ent, true)
 	DPP2.Notify(@, nil, 'command.dpp2.sharing.shared', ent, def.identifier)
 
+DPP2.cmd.share_contraption = (args = {}, message) =>
+	return 'command.dpp2.sharing.no_target' if not args[1]
+	return 'command.dpp2.sharing.no_mode' if not args[2]
+	def = DPP2.DEF.ProtectionDefinition\Get(args[2])
+	return 'command.dpp2.sharing.invalid_mode' if not def
+	cstr = '_dpp2_share_' .. def.identifier
+	return 'command.dpp2.sharing.cooldown', @[cstr] - RealTime() if @[cstr] and @[cstr] > RealTime()
+	contraption = DPP2.ContraptionHolder\GetByID(tonumber(table.remove(args, 1) or -1) or -1)
+	return 'command.dpp2.sharing.invalid_contraption' if not IsValid(contraption)
+	return 'command.dpp2.sharing.not_owner_contraption' if not contraption\HasOwner(@)
+
+	for ent in *contraption.ents
+		if IsValid(ent) and ent\DPP2GetOwner() == @
+			def\SetIsShared(ent, true)
+
+	@[cstr] = RealTime() + #contraption.ents / 60
+
+	DPP2.Notify(@, nil, 'command.dpp2.sharing.shared_contraption', contraption.id, def.identifier)
+
 DPP2.cmd.unshare = (args = {}, message) =>
 	return 'command.dpp2.sharing.no_target' if not args[1]
 	return 'command.dpp2.sharing.no_mode' if not args[2]
@@ -41,3 +60,22 @@ DPP2.cmd.unshare = (args = {}, message) =>
 	return 'command.dpp2.sharing.already_not_shared' if not def\IsShared(ent)
 	def\SetIsShared(ent, false)
 	DPP2.Notify(@, nil, 'command.dpp2.sharing.un_shared', ent, def.identifier)
+
+DPP2.cmd.unshare_contraption = (args = {}, message) =>
+	return 'command.dpp2.sharing.no_target' if not args[1]
+	return 'command.dpp2.sharing.no_mode' if not args[2]
+	def = DPP2.DEF.ProtectionDefinition\Get(args[2])
+	return 'command.dpp2.sharing.invalid_mode' if not def
+	cstr = '_dpp2_share_' .. def.identifier
+	return 'command.dpp2.sharing.cooldown', @[cstr] - RealTime() if @[cstr] and @[cstr] > RealTime()
+	contraption = DPP2.ContraptionHolder\GetByID(tonumber(table.remove(args, 1) or -1) or -1)
+	return 'command.dpp2.sharing.invalid_contraption' if not IsValid(contraption)
+	return 'command.dpp2.sharing.not_owner_contraption' if not contraption\HasOwner(@)
+
+	for ent in *contraption.ents
+		if IsValid(ent) and ent\DPP2GetOwner() == @
+			def\SetIsShared(ent, false)
+
+	@[cstr] = RealTime() + #contraption.ents / 60
+
+	DPP2.Notify(@, nil, 'command.dpp2.sharing.un_shared_contraption', contraption.id, def.identifier)
