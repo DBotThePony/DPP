@@ -102,10 +102,9 @@ class DPP2.ContraptionHolder
 
 		return true
 
-	MarkForDeath: =>
-		for ent in *@ents
-			if IsValid(ent)
-				ent.__dpp2_contraption = nil
+	MarkForDeath: (fromMerge = false) =>
+		if not fromMerge
+			ent.__dpp2_contraption = nil for ent in *@ents when IsValid(ent) and ent.__dpp2_contraption == @
 
 		for i, obj in ipairs(@@OBJECTS)
 			if obj == @
@@ -121,6 +120,7 @@ class DPP2.ContraptionHolder
 			@networked = [ply for ply in *@networked when ply\IsValid()]
 			net.Start('dpp2_contraption_delete')
 			net.WriteUInt32(@id)
+			net.WriteBool(fromMerge)
 			net.Send(@networked)
 
 		DPP2.ContraptionHolder\Invalidate()
@@ -177,24 +177,30 @@ class DPP2.ContraptionHolder
 			net.WriteEntityArray(removed)
 			net.Send(@networked)
 
-	Walk: (frompoint = NULL) =>
+	Walk: (frompoint = NULL, ask, _find) =>
 		error('Invalid side') if CLIENT
 		error('Tried to use a NULL entity!') if not IsValid(frompoint)
 
 		oldEnts = @ents
-
-		for ent in *@ents
-			if IsValid(ent)
-				ent.__dpp2_contraption = nil
+		ent.__dpp2_contraption = nil for ent in *@ents when IsValid(ent) and ent.__dpp2_contraption == @
 
 		@owners = {}
 		@ownersFull = {}
 		@ownersNoShare = {}
 
-		@ents = for ent in pairs(constraint.GetAllConstrainedEntities(frompoint))
-			ent.__dpp2_contraption = @
-			ent
+		find = _find or constraint.GetAllConstrainedEntities(frompoint)
+		setup = {}
 
+		for ent in pairs(find)
+			if ent.__dpp2_contraption and ent.__dpp2_contraption ~= @ and #ent.__dpp2_contraption.ents >= #oldEnts and ent.__dpp2_contraption ~= ask
+				ent.__dpp2_contraption\Walk(ent, @, find)
+				@MarkForDeath(true)
+				return false
+
+			table.insert(setup, ent)
+
+		@ents = setup
+		ent.__dpp2_contraption = @ for ent in *setup
 		@lastWalk = RealTime() + 0.1
 
 		if not @IsValid()
@@ -202,6 +208,8 @@ class DPP2.ContraptionHolder
 		else
 			@Invalidate()
 			@NetworkDiff(oldEnts)
+
+		return true
 
 	From: (ents = @ents) =>
 		for ent in *ents
@@ -270,6 +278,8 @@ class DPP2.ContraptionHolder
 
 		if withMarkForDeath and not @IsValid()
 			@MarkForDeath()
+
+	__tostring: => string.format('DPP2Contraption<%d>[%p]', @id, @)
 
 entMeta.DPP2GetContraption = => @__dpp2_contraption
 entMeta.DPP2HasContraption = => @__dpp2_contraption ~= nil
