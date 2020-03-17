@@ -154,6 +154,15 @@ CalcView = (data) ->
 	--UpdateFilter()
 	return data
 
+Think = =>
+	ply = LocalPlayer()
+	return if not IsValid(ply)
+
+	if ply\GetActiveWeaponClass() == 'gmod_camera'
+		@SetRenderInScreenshots(false)
+	else
+		@SetRenderInScreenshots(true)
+
 timer.Simple 0, ->
 	with DPP2.HUDPanel = vgui.Create('EditablePanel')
 		\Dock(FILL)
@@ -161,6 +170,7 @@ timer.Simple 0, ->
 		\SetMouseInputEnabled(false)
 		\SetRenderInScreenshots(false)
 		.Paint = HUDPaint
+		.Think = Think
 
 hook.Add 'PostDrawTranslucentRenderables', 'DPP2.UpdateDisplay', PostDrawTranslucentRenderables
 hook.AddPostModifier 'CalcView', 'DPP2.UpdateDisplay', CalcView
