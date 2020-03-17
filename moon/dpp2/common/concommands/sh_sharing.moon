@@ -66,13 +66,12 @@ DPP2.cmd_autocomplete.unshare = (args = '', margs = '') => closure(@, args, marg
 findDefContr = (str, contraption, wanted) ->
 	str = str\lower()
 	output = {}
-	hit, hit2 = false, false
 
 	for obj in *DPP2.DEF.ProtectionDefinition.OBJECTS
 		if obj.identifier == str
 			for ent in *contraption.ents
 				if not obj\IsShared(ent)
-					return {hit.identifier}
+					return {obj.identifier}
 
 			return {}
 

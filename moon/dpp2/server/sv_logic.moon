@@ -60,6 +60,9 @@ hook.Add 'OnEntityCreated', 'DPP2.Contraptions', =>
 	return
 
 hook.Add 'EntityRemoved', 'DPP2.Contraptions', =>
+	if @__dpp2_contraption
+		timer.Simple 0, -> DPP2.ContraptionHolder\Invalidate()
+
 	return if not @IsConstraint()
 	ent1, ent2 = @GetConstrainedEntities()
 	return if not IsValid(ent1) or not IsValid(ent2)

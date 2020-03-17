@@ -37,6 +37,7 @@ DPP2.cmd.share_contraption = (args = {}, message) =>
 	return 'command.dpp2.sharing.invalid_mode' if not def
 	cstr = '_dpp2_share_' .. def.identifier
 	return 'command.dpp2.sharing.cooldown', @[cstr] - RealTime() if @[cstr] and @[cstr] > RealTime()
+	DPP2.ContraptionHolder\Invalidate()
 	contraption = DPP2.ContraptionHolder\GetByID(tonumber(table.remove(args, 1) or -1) or -1)
 	return 'command.dpp2.sharing.invalid_contraption' if not IsValid(contraption)
 	return 'command.dpp2.sharing.not_owner_contraption' if not contraption\HasOwner(@)
@@ -68,6 +69,7 @@ DPP2.cmd.unshare_contraption = (args = {}, message) =>
 	return 'command.dpp2.sharing.invalid_mode' if not def
 	cstr = '_dpp2_share_' .. def.identifier
 	return 'command.dpp2.sharing.cooldown', @[cstr] - RealTime() if @[cstr] and @[cstr] > RealTime()
+	DPP2.ContraptionHolder\Invalidate()
 	contraption = DPP2.ContraptionHolder\GetByID(tonumber(table.remove(args, 1) or -1) or -1)
 	return 'command.dpp2.sharing.invalid_contraption' if not IsValid(contraption)
 	return 'command.dpp2.sharing.not_owner_contraption' if not contraption\HasOwner(@)

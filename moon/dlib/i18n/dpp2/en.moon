@@ -285,4 +285,4 @@ command.dpp2.sharing.shared_contraption = 'Everything inside contraption with ID
 command.dpp2.sharing.already_not_shared = 'Entity is already not shared in this mode'
 command.dpp2.sharing.un_shared = '#E is no longer shared in %s protection module'
 command.dpp2.sharing.un_shared_contraption = 'Everything inside contraption with ID %d is no longer shared in %s protection module'
-command.dpp2.sharing.cooldown = 'Command cooldown. Try again after %.2f seconds'
+command.dpp2.sharing.cooldown = 'Command cooldown. Try again after #.2f seconds'
