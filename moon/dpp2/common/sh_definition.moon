@@ -244,6 +244,11 @@ class DPP2.DEF.ProtectionDefinition
 		elseif flush and newMode
 			ent\SetNWBool('dpp2_s', true)
 
+		if contraption = ent\DPP2GetContraption()
+			timer.Create 'DPP2_UpdateSharedContraption_' .. contraption.id, 0.2, 1, ->
+				contraption\InvalidateClients()
+				contraption\Invalidate()
+
 		return true
 
 	ForcePruneFriends: =>

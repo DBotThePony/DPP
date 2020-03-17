@@ -58,7 +58,7 @@ class DPP2.ContraptionHolder
 		@ents = {}
 		@owners = {}
 		@ownersFull = {}
-		@ownersNoShare = {}
+		@ownersStateNotShared = {}
 		@id = id
 		@networked = {} if SERVER
 		@lastWalk = 0
@@ -70,7 +70,7 @@ class DPP2.ContraptionHolder
 
 	GetOwners: => @owners
 	GetOwnersFull: => @ownersFull
-	GetOwnersPartial: (mode) => @ownersNoShare[mode] or @ownersFull
+	GetOwnersPartial: (mode) => @ownersStateNotShared[mode] or @ownersFull
 	HasOwner: (owner = NULL) => table.qhasValue(@owners, owner)
 	CopyOwners: => [v for v in *@owners]
 	CopyOwnersFull: => [v for v in *@ownersFull]
@@ -114,7 +114,7 @@ class DPP2.ContraptionHolder
 		@ents = {}
 		@owners = {}
 		@ownersFull = {}
-		@ownersNoShare = {}
+		@ownersStateNotShared = {}
 
 		if SERVER and #@networked ~= 0
 			@networked = [ply for ply in *@networked when ply\IsValid()]
@@ -186,7 +186,7 @@ class DPP2.ContraptionHolder
 
 		@owners = {}
 		@ownersFull = {}
-		@ownersNoShare = {}
+		@ownersStateNotShared = {}
 
 		find = _find or constraint.GetAllConstrainedEntities(frompoint)
 		setup = {}
@@ -251,15 +251,21 @@ class DPP2.ContraptionHolder
 
 		return @IsValid()
 
+	InvalidateClients: =>
+		error('Invalid side') if CLIENT
+		return false if player.GetCount() == 0
+		net.Start('dpp2_contraption_invalidate')
+		net.WriteUInt32(@id)
+		net.Broadcast()
+		return true
+
 	Invalidate: (withMarkForDeath = false) =>
 		prev = @ents
 		@ents = [ent for ent in *@ents when IsValid(ent)]
 		@NetworkDiff(prev) if SERVER and (#@ents > 0 or not withMarkForDeath)
 		@owners = {}
 		@ownersFull = {}
-		@ownersNoShare = {}
-
-		@ownersNoShare[def.identifier] = {} for def in *DPP2.DEF.ProtectionDefinition.OBJECTS
+		@ownersStateNotShared = {def.identifier, {} for def in *DPP2.DEF.ProtectionDefinition.OBJECTS}
 
 		for ent in *@ents
 			ent.__dpp2_contraption = @
@@ -270,11 +276,11 @@ class DPP2.ContraptionHolder
 			if ownerSteamID ~= 'world' and ownerSteamID ~= 'map'
 				for def in *DPP2.DEF.ProtectionDefinition.OBJECTS
 					if not def\IsShared(ent)
-						table.insert(@ownersNoShare[def.identifier], ownerSteamID) if not table.qhasValue(@ownersNoShare[def.identifier], ownerSteamID)
+						table.insert(@ownersStateNotShared[def.identifier], ownerSteamID) if not table.qhasValue(@ownersStateNotShared[def.identifier], ownerSteamID)
 						break
 			else
 				for def in *DPP2.DEF.ProtectionDefinition.OBJECTS
-					table.insert(@ownersNoShare[def.identifier], ownerSteamID) if not table.qhasValue(@ownersNoShare[def.identifier], ownerSteamID)
+					table.insert(@ownersStateNotShared[def.identifier], ownerSteamID) if not table.qhasValue(@ownersStateNotShared[def.identifier], ownerSteamID)
 
 		if withMarkForDeath and not @IsValid()
 			@MarkForDeath()

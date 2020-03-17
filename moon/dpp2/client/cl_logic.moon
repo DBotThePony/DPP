@@ -39,10 +39,17 @@ net.receive 'dpp2_contraption_create', ->
 net.receive 'dpp2_contraption_delete', ->
 	id = net.ReadUInt32()
 	merge = net.ReadBool()
-	obj = DPP2.ContraptionHolder\GetByID(id)
 	DPP2.ContraptionHolder\Invalidate()
+	obj = DPP2.ContraptionHolder\GetByID(id)
 	return if not obj
 	obj\MarkForDeath(merge)
+
+net.receive 'dpp2_contraption_invalidate', ->
+	id = net.ReadUInt32()
+	DPP2.ContraptionHolder\Invalidate()
+	obj = DPP2.ContraptionHolder\GetByID(id)
+	return if not obj
+	obj\Invalidate()
 
 net.receive 'dpp2_contraption_diff', ->
 	id = net.ReadUInt32()

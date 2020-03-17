@@ -27,6 +27,7 @@ entMeta.DPP2CreatedByMap = => not @IsPlayer() and @CreatedByMap()
 
 net.pool('dpp2_contraption_create')
 net.pool('dpp2_contraption_delete')
+net.pool('dpp2_contraption_invalidate')
 net.pool('dpp2_contraption_diff')
 
 hook.Add 'Think', 'DPP2.CheckOwnedByMap', ->
