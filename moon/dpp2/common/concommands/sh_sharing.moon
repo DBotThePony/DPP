@@ -56,7 +56,7 @@ closure = (args = '', margs = '', share) =>
 	return {} if #ents == 0
 	ent = DPP2.FindEntityFromArg(ents[1], @)
 	return if not IsValid(ent)
-	return {'<not an owner!>'} if ent\DPP2GetOwner() ~= @
+	return {i18n.localize('command.dpp2.hint.share.not_owned')} if ent\DPP2GetOwner() ~= @
 
 	return [string.format('%q %q', tostring(ent), def) for def in *findDef(args[2] or '', ent, share)]
 
@@ -123,16 +123,16 @@ closure_contraption = (args = '', margs = '', share) =>
 					if contraption\HasOwner(@)
 						if share
 							if hasAllShared(contraption)
-								return {'"<nothing to share>"'}
+								return {i18n.localize('command.dpp2.hint.share.nothing_to_share')}
 							else
 								return {string.format('%q', tostring(contraption.id))}
 						else
 							if hasShare(contraption)
 								return {string.format('%q', tostring(contraption.id))}
 							else
-								return {'"<nothing shared>"'}
+								return {i18n.localize('command.dpp2.hint.share.nothing_shared')}
 					else
-						return {'"<nothing owned inside this contraption>"'}
+						return {i18n.localize('command.dpp2.hint.share.not_own_contraption')}
 
 		if share
 			return [string.format('%q', tostring(contraption.id)) for contraption in *DPP2.ContraptionHolder.OBJECTS when contraption\HasOwner(@) and contraption.id\tostring()\startsWith(args[1]) and not hasAllShared(contraption)]

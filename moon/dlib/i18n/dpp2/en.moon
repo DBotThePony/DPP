@@ -146,6 +146,10 @@ command.dpp2.cleanupdisconnected = '#E cleaned disconnected player\'s entities'
 
 command.dpp2.hint.none = '<none>'
 command.dpp2.hint.player = '<player>'
+command.dpp2.hint.share.not_own_contraption = '<you own none of entities inside this contraption>'
+command.dpp2.hint.share.nothing_shared = '<nothing shared>'
+command.dpp2.hint.share.nothing_to_share = '<nothing to share>'
+command.dpp2.hint.share.not_owned = '<not an owner>'
 
 command.dpp2.transfer.none = 'There is none entities to transfer.'
 command.dpp2.transfer.already_ply = 'You already set transfer fallback as #E!'
