@@ -138,6 +138,6 @@ properties.Add('dpp2_sharecontraption', {
 		contraption = ent\DPP2GetContraption()
 
 		with menu = option\AddSubMenu()
-			menu\AddOption('gui.dpp2.property.share_contraption_all', (-> @ActionShareAll(contraption)))\SetIcon(Menus.Icons.ShareAllContraption) if @FilterShareAll(contraption)
-			menu\AddOption('gui.dpp2.property.un_share_contraption', (-> @ActionUnShareAll(contraption)))\SetIcon(Menus.Icons.UnShareContraption) if @FilterUnShareAll(contraption)
+			menu\AddOption('gui.dpp2.property.share_all', (-> @ActionShareAll(contraption)))\SetIcon(Menus.Icons.ShareAllContraption) if @FilterShareAll(contraption)
+			menu\AddOption('gui.dpp2.property.un_share_all', (-> @ActionUnShareAll(contraption)))\SetIcon(Menus.Icons.UnShareContraption) if @FilterUnShareAll(contraption)
 })
