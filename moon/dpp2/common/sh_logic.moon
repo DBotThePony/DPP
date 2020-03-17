@@ -254,6 +254,7 @@ class DPP2.ContraptionHolder
 		@ownersNoShare[def.identifier] = {} for def in *DPP2.DEF.ProtectionDefinition.OBJECTS
 
 		for ent in *@ents
+			ent.__dpp2_contraption = @
 			owner, ownerSteamID = ent\DPP2GetOwner()
 			table.insert(@owners, owner) if not table.qhasValue(@owners, owner)
 			table.insert(@ownersFull, ownerSteamID) if not table.qhasValue(@ownersFull, ownerSteamID)
