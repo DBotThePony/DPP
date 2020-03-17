@@ -185,3 +185,40 @@ DPP2.FindPlayersInArgument = (str = '', filter, nobots = false) ->
 						table.insert(findPly, ply\SteamName())
 
 	return #findPly ~= 0 and findPly or {DLib.i18n.localize('command.dpp2.hint.none')}
+
+DPP2.AutocompleteOwnedEntityArgument = (str2, owned = CLIENT, format = false, filter) ->
+	owned = nil if SERVER
+	entsFind = [ent for ent in *ents.GetAll() when ent\DPP2IsOwned()] if owned == false
+	searchEnts = owned and LocalPlayer()\DPP2FindOwned() or entsFind or ents.GetAll()
+	output = {}
+	str2 = str2\lower()
+
+	if num = tonumber(str2)
+		entf = Entity(num)
+
+		if IsValid(entf)
+			if (entf\DPP2GetOwner() == @ or not owned) and (not filter or filter(entf))
+				table.insert(output, format and string.format('%q', tostring(entf)) or tostring(entf))
+			else
+				table.insert(output, '<cannot target!>')
+		else
+			for ent in *searchEnts
+				if ent\EntIndex()\tostring()\startsWith(str) and (not filter or filter(ent))
+					table.insert(output, format and string.format('%q', tostring(ent)) or tostring(ent))
+	else
+		for ent in *searchEnts
+			str = tostring(ent)
+
+			return {format and string.format('%q', str) or str} if str\lower() == str2
+
+			if str\lower()\startsWith(str2) and (not filter or filter(ent))
+				table.insert(output, format and string.format('%q', str) or str)
+
+	table.sort(output)
+	return output
+
+DPP2.FindEntityFromArg = (str, ply = CLIENT and LocalPlayer() or error('You must provide player entity')) ->
+	ent = Entity(tonumber(str or -1) or -1)
+	return ent if IsValid(ent)
+	return ent for ent in *ply\DPP2FindOwned() when tostring(ent) == str
+	return NULL

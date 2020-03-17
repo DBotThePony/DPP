@@ -50,6 +50,8 @@ class DPP2.DEF.ProtectionDefinition
 	@OBJECTS = {}
 	@OBJECTS_MAP = {}
 
+	@Get = (name) => @OBJECTS_MAP[assert(isstring(name) and name\lower()\trim(), 'identifier must be a string! typeof ' .. type(name))] or false
+
 	if SERVER
 		hook.Add 'PlayerDisconnected', 'DPP2.DEF.ProtectionDefinition', (ply) -> @PlayerDisconnected(ply)
 	else
@@ -70,6 +72,8 @@ class DPP2.DEF.ProtectionDefinition
 			timer.Remove('DPP2.FriendStatus.' .. steamid)
 
 	new: (identifier, prefab = DPP2.DEF.DefinitionConVarsPrefab(), classnameRestriction = false) =>
+		@identifier = assert(type(identifier) == 'string' and identifier, 'Invalid definition identifier')\lower()
+		assert(not @@OBJECTS_MAP[identifier], 'cannot redefine already existing ProtectionDefinition[' .. identifier .. ']!')
 		@friendsCache = {}
 		@disabledCache = {}
 		table.insert(@@OBJECTS, @)
@@ -80,8 +84,6 @@ class DPP2.DEF.ProtectionDefinition
 			@classnameRestriction = classnameRestriction
 
 		@RestrictionList = @classnameRestriction
-
-		@identifier = assert(type(identifier) == 'string' and identifier, 'Invalid definition identifier')\lower()
 
 		@@OBJECTS_MAP[@identifier] = @
 

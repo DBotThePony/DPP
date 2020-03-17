@@ -88,15 +88,7 @@ DPP2.cmd.transfer = (args = {}) =>
 
 DPP2.cmd.transferent = (args = {}) =>
 	return 'command.dpp2.generic.invalid_side' if not IsValid(@)
-	sent = table.remove(args, 1)
-	ent = Entity(tonumber(sent or -1) or -1)
-
-	if not IsValid(ent)
-		for ent2 in *@DPP2FindOwned()
-			if tostring(ent2) == sent
-				ent = ent2
-				break
-
+	ent = DPP2.FindEntityFromArg(table.remove(args, 1), @)
 	return 'command.dpp2.transferent.notarget' if not IsValid(ent)
 	return 'command.dpp2.transferent.not_owner' if ent\DPP2GetOwner() ~= @
 	str = table.concat(args, ' ')
@@ -109,15 +101,7 @@ DPP2.cmd.transferent = (args = {}) =>
 
 DPP2.cmd.transfertoworldent = (args = {}) =>
 	return 'command.dpp2.generic.invalid_side' if not IsValid(@)
-	sent = table.remove(args, 1)
-	ent = Entity(tonumber(sent or -1) or -1)
-
-	if not IsValid(ent)
-		for ent2 in *@DPP2FindOwned()
-			if tostring(ent2) == sent
-				ent = ent2
-				break
-
+	ent = DPP2.FindEntityFromArg(table.remove(args, 1), @)
 	return 'command.dpp2.transferent.notarget' if not IsValid(ent)
 	return 'command.dpp2.transferent.not_owner' if ent\DPP2GetOwner() ~= @
 	DPP2.DoTransfer({ent}, NULL)

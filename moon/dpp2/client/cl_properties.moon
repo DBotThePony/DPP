@@ -44,8 +44,8 @@ properties.Add('dpp2_copyclassname', {
 
 	Filter: (ent = NULL, ply = LocalPlayer()) =>
 		@MenuIcon = Menus.Icons.Copy
-		return if not ent\IsValid()
-		return if not ent\GetClass() or ent\GetClass()\trim() == ''
+		return false if not ent\IsValid()
+		return false if not ent\GetClass() or ent\GetClass()\trim() == ''
 		return true
 
 	Action: (ent = NULL) =>

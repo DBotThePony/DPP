@@ -28,6 +28,9 @@ Menus._Icons = {
 	Remove: 'icon16/delete.png'
 	Angle: {'icon16/arrow_rotate_anticlockwise.png', 'icon16/arrow_rotate_clockwise.png'}
 	Vector: 'icon16/arrow_in.png'
+	Share: 'icon16/key_add.png'
+	ShareAll: 'icon16/key_go.png'
+	UnShare: 'icon16/key_delete.png'
 }
 
 Menus.Icons = setmetatable({}, {

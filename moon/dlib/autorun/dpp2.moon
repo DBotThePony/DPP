@@ -88,6 +88,7 @@ AddCSLuaFile('dpp2/client/cl_logic.lua')
 AddCSLuaFile('dpp2/client/cl_owning.lua')
 AddCSLuaFile('dpp2/client/cl_transfer.lua')
 AddCSLuaFile('dpp2/client/cl_properties.lua')
+AddCSLuaFile('dpp2/client/cl_sharing.lua')
 AddCSLuaFile('dpp2/client/settings/cl_convars.lua')
 AddCSLuaFile('dpp2/client/settings/cl_menus.lua')
 AddCSLuaFile('dpp2/client/settings/cl_registry_menus.lua')
@@ -96,6 +97,7 @@ AddCSLuaFile('dpp2/client/settings/cl_playerutil.lua')
 AddCSLuaFile('dpp2/common/concommands/sh_cmdlogic.lua')
 AddCSLuaFile('dpp2/common/concommands/sh_generic.lua')
 AddCSLuaFile('dpp2/common/concommands/sh_registry.lua')
+AddCSLuaFile('dpp2/common/concommands/sh_sharing.lua')
 
 DPP2.Menus = {} if CLIENT
 DPP2.cmd = {} if SERVER
@@ -299,6 +301,8 @@ DPP2.SpawnRestrictions = DPP2.DEF.RestrictionList('class_spawn', DPP2.ClassnameA
 
 include('dpp2/server/concommands/sv_generic.lua') if SERVER
 include('dpp2/common/concommands/sh_generic.lua')
+include('dpp2/common/concommands/sh_sharing.lua')
+include('dpp2/server/concommands/sv_sharing.lua') if SERVER
 include('dpp2/common/concommands/sh_cmdlogic.lua')
 
 if CLIENT
@@ -308,6 +312,7 @@ if CLIENT
 	include('dpp2/client/settings/cl_playerutil.lua')
 
 	include('dpp2/client/cl_properties.lua')
+	include('dpp2/client/cl_sharing.lua')
 
 DPP2.Message(string.format('DPP/2 Startup took %.2f ms', SysTime() - startup))
 

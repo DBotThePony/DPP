@@ -86,6 +86,8 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 	command.dpp2.already_enabled_for[modeID] = '#E already has ' .. modeName .. ' protection enabled for them!'
 	gui.dpp2.access.status['ownerdisabled_' .. modeID] = modeName .. ' protection for owner is disabled'
 
+	gui.dpp2.sharing['share_' .. modeID] = 'Share as ' .. modeName
+
 gui.dpp2.cvars.cl_protection = 'Main power switch'
 gui.dpp2.cvars.apropkill = 'Antipropkill'
 gui.dpp2.cvars.apropkill_damage = 'Block prop push damage'
@@ -266,3 +268,17 @@ command.dpp2.setvar.none = 'ConVar wasn\'t specified'
 command.dpp2.setvar.invalid = 'ConVar is not DPP/2\'s ConVar or does not exist: %s'
 command.dpp2.setvar.no_arg = 'No new value was specified'
 command.dpp2.setvar.changed = '#E changed value of dpp2_%s ConVar'
+
+gui.dpp2.sharing.window_title = 'Sharing'
+gui.dpp2.property.share = 'Share...'
+gui.dpp2.property.share_all = 'Share all'
+gui.dpp2.property.un_share_all = 'Unshare all'
+command.dpp2.sharing.no_target = 'No sharing target was specified'
+command.dpp2.sharing.no_mode = 'No sharing mode was specified'
+command.dpp2.sharing.invalid_mode = 'Invalid sharing mode was specified'
+command.dpp2.sharing.invalid_entity = 'Invalid entity was specified'
+command.dpp2.sharing.not_owner = 'Cannot share not own entity'
+command.dpp2.sharing.already_shared = 'Entity is already shared in this mode'
+command.dpp2.sharing.shared = '#E is now shared in %s protection module'
+command.dpp2.sharing.already_not_shared = 'Entity is already not shared in this mode'
+command.dpp2.sharing.un_shared = '#E is no longer shared in %s protection module'
