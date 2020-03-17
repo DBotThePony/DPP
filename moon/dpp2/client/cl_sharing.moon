@@ -58,7 +58,7 @@ Menus.OpenShareMenu = =>
 
 properties.Add('dpp2_share', {
 	MenuLabel: 'gui.dpp2.property.share'
-	Order: 3004
+	Order: 1660
 	MenuIcon: Menus.Icons.Share
 
 	Filter: (ent = NULL, ply = LocalPlayer()) =>

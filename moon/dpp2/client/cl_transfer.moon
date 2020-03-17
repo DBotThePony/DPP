@@ -21,7 +21,7 @@
 properties.Add('dpp2_transferent', {
 	Type: 'simple'
 	MenuLabel: 'gui.dpp2.property.transferent'
-	Order: 1530
+	Order: 1670
 	MenuIcon: 'icon16/pencil_go.png'
 
 	Filter: (ent, ply = LocalPlayer()) =>
@@ -46,7 +46,7 @@ properties.Add('dpp2_transferent', {
 properties.Add('dpp2_transfercontraption', {
 	Type: 'simple'
 	MenuLabel: 'gui.dpp2.property.transfercontraption'
-	Order: 1531
+	Order: 1671
 	MenuIcon: 'icon16/folder_go.png'
 
 	Filter: (ent, ply = LocalPlayer()) =>
@@ -72,7 +72,7 @@ properties.Add('dpp2_transfercontraption', {
 properties.Add('dpp2_transfertoworldent', {
 	Type: 'simple'
 	MenuLabel: 'gui.dpp2.property.transfertoworldent'
-	Order: 1532
+	Order: 1672
 	MenuIcon: 'icon16/world_go.png'
 
 	Filter: (ent, ply = LocalPlayer()) =>
@@ -87,7 +87,7 @@ properties.Add('dpp2_transfertoworldent', {
 properties.Add('dpp2_transfertoworldcontraption', {
 	Type: 'simple'
 	MenuLabel: 'gui.dpp2.property.transfertoworldcontraption'
-	Order: 1533
+	Order: 1673
 	MenuIcon: 'icon16/world_link.png'
 
 	Filter: (ent, ply = LocalPlayer()) =>

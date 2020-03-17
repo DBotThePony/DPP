@@ -24,7 +24,7 @@ import i18n from DLib
 
 properties.Add('dpp2_copymodel', {
 	MenuLabel: 'gui.dpp2.property.copymodel'
-	Order: 3000
+	Order: 1650
 	MenuIcon: Menus.Icons.Copy
 
 	Filter: (ent = NULL, ply = LocalPlayer()) =>
@@ -39,7 +39,7 @@ properties.Add('dpp2_copymodel', {
 
 properties.Add('dpp2_copyclassname', {
 	MenuLabel: 'gui.dpp2.property.copyclassname'
-	Order: 3001
+	Order: 1651
 	MenuIcon: Menus.Icons.Copy
 
 	Filter: (ent = NULL, ply = LocalPlayer()) =>
@@ -54,7 +54,7 @@ properties.Add('dpp2_copyclassname', {
 
 properties.Add('dpp2_copyangles', {
 	MenuLabel: 'gui.dpp2.property.copyangles'
-	Order: 3002
+	Order: 1652
 	MenuIcon: Menus.Icons.Angle
 
 	Filter: (ent = NULL, ply = LocalPlayer()) =>
@@ -68,7 +68,7 @@ properties.Add('dpp2_copyangles', {
 
 properties.Add('dpp2_copyvector', {
 	MenuLabel: 'gui.dpp2.property.copyvector'
-	Order: 3003
+	Order: 1653
 	MenuIcon: Menus.Icons.Vector
 
 	Filter: (ent = NULL, ply = LocalPlayer()) =>
