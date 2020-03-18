@@ -98,7 +98,7 @@ CanProperty = (ply = NULL, property, ent = NULL) ->
 
 	ent\DPP2UnGhost(true)
 	DPP2.APKTriggerPhysgunDrop(ply, ent)
-	DPP2.LogToolgun('message.dpp2.log.toolgun.property', ply, property, ent )
+	DPP2.LogToolgun('message.dpp2.log.toolgun.property', ply, property, ent)
 
 	return
 

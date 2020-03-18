@@ -27,6 +27,7 @@ isSingleplayer = -> (game.SinglePlayer() or game.GetIPAddress() == 'loopback' or
 Menus.Slider = (name, convar, min = 0, max = 1, decimals = 0) =>
 	convar = 'dpp2_' .. convar
 	_obj = ConVar(convar)
+	return DPP2.MessageError('Unknown convar: ', convar) if not _obj
 	panel = @NumSlider(name, convar, min, max, decimals)
 	panel\SetConVar(nil)
 	panel\SetValue(_obj\GetFloat())
@@ -41,8 +42,9 @@ Menus.Slider = (name, convar, min = 0, max = 1, decimals = 0) =>
 
 Menus.CheckBox = (name, convar) =>
 	convar = 'dpp2_' .. convar
-	panel = @CheckBox(name, convar)
 	_obj = ConVar(convar)
+	return DPP2.MessageError('Unknown convar: ', convar) if not _obj
+	panel = @CheckBox(name, convar)
 	panel\SetConVar(nil)
 	panel.Think = -> panel\SetChecked(_obj\GetBool())
 

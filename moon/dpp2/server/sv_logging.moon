@@ -30,6 +30,7 @@ createHandle = (prefix) ->
 	local handle, handleId
 
 	return (str) ->
+		return if not DPP2.WRITE_LOG\GetBool()
 		tformat = os.date('%Y/%m/%d')
 
 		if not handle or handleId ~= tformat
@@ -57,26 +58,36 @@ makestr = (...) ->
 	return table.concat(builder, '')
 
 DPP2.Log = (...) ->
-	DPP2.LMessage(...)
+	return if not DPP2.ENABLE_LOGGING\GetBool()
+	DPP2.LMessage(...) if DPP2.ECHO_LOG\GetBool()
 	varg = {...}
-	data = {}
 
-	for ply in *player.GetAll()
-		if watchdog\HasPermission(ply, 'dpp2_log')
-			data[ply] = DLib.i18n.rebuildTableByLang(varg, ply.DLib_Lang or 'en', DPP2.textcolor)
+	if DPP2.ECHO_LOG_CLIENTS\GetBool()
+		data = {}
 
-	table.insert(sendQueue, data)
+		for ply in *player.GetAll()
+			if watchdog\HasPermission(ply, 'dpp2_log')
+				data[ply] = DLib.i18n.rebuildTableByLang(varg, ply.DLib_Lang or 'en', DPP2.textcolor)
+
+		table.insert(sendQueue, data)
+
 	combined(makestr(...))
 
 DPP2.LogSpawn = (...) ->
+	return if not DPP2.ENABLE_LOGGING\GetBool()
+	return if not DPP2.ENABLE_LOGGING_SPAWNS\GetBool()
 	DPP2.Log(...)
 	spawns(makestr(...))
 
 DPP2.LogTransfer = (...) ->
+	return if not DPP2.ENABLE_LOGGING\GetBool()
+	return if not DPP2.ENABLE_LOGGING_TRANSFER\GetBool()
 	DPP2.Log(...)
 	transfer(makestr(...))
 
 DPP2.LogToolgun = (...) ->
+	return if not DPP2.ENABLE_LOGGING\GetBool()
+	return if not DPP2.ENABLE_LOGGING_TOOLGUN\GetBool()
 	DPP2.Log(...)
 	toolgun(makestr(...))
 

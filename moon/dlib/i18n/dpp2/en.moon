@@ -88,6 +88,14 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 
 	gui.dpp2.sharing['share_' .. modeID] = 'Share as ' .. modeName
 
+gui.dpp2.cvars.log = 'Main power switch'
+gui.dpp2.cvars.log_echo = 'Echo logs in server console'
+gui.dpp2.cvars.log_echo_clients = 'Echo logs in admin console'
+gui.dpp2.cvars.log_spawns = 'Log entity spawns'
+gui.dpp2.cvars.log_toolgun = 'Log toolgun usage'
+gui.dpp2.cvars.log_tranfer = 'Log transfers'
+gui.dpp2.cvars.log_write = 'Write log to disk'
+
 gui.dpp2.cvars.cl_protection = 'Main power switch'
 gui.dpp2.cvars.apropkill = 'Antipropkill'
 gui.dpp2.cvars.apropkill_damage = 'Block prop push damage'
@@ -231,6 +239,7 @@ gui.dpp2.toolmenu.antipropkill = 'Antipropkill settings'
 gui.dpp2.toolmenu.antispam = 'Antispam settings'
 gui.dpp2.toolmenu.cleanup = 'Cleanup'
 gui.dpp2.toolmenu.utils = 'Utils'
+gui.dpp2.toolmenu.logging = 'Logging settings'
 gui.dpp2.toolmenu.restrictions.toolgun_mode = 'Toolgun mode restrictions'
 gui.dpp2.toolmenu.restrictions.physgun = 'Physgun restrictions'
 gui.dpp2.toolmenu.restrictions.drive = 'Drive restrictions'

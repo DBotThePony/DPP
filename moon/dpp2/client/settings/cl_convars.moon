@@ -27,6 +27,17 @@ Menus.SecondaryMenu = =>
 	Menus.QCheckBox(@, 'no_tool_player')
 	Menus.QCheckBox(@, 'no_tool_player_admin')
 
+Menus.LoggingMenu = =>
+	return if not IsValid(@)
+
+	Menus.QCheckBox(@, 'log')
+	Menus.QCheckBox(@, 'log_echo')
+	Menus.QCheckBox(@, 'log_echo_clients')
+	Menus.QCheckBox(@, 'log_write')
+	Menus.QCheckBox(@, 'log_spawns')
+	Menus.QCheckBox(@, 'log_toolgun')
+	Menus.QCheckBox(@, 'log_tranfer')
+
 Menus.AntispamMenu = =>
 	return if not IsValid(@)
 
