@@ -94,10 +94,13 @@ CanProperty = (ply = NULL, property, ent = NULL) ->
 	error('Invalid property type. It must be a string! typeof' .. type(property)) if type(property) ~= 'string'
 	status = DPP2.ACCESS.CanToolgun(ply, ent, property)
 	return status if not status
-	if SERVER
-		ent\DPP2UnGhost(true)
-		DPP2.APKTriggerPhysgunDrop(ply, ent)
-		return
+	return if not SERVER
+
+	ent\DPP2UnGhost(true)
+	DPP2.APKTriggerPhysgunDrop(ply, ent)
+	DPP2.LogToolgun('message.dpp2.log.toolgun.property', ply, property, ent )
+
+	return
 
 CanTool = (ply = NULL, tr = {HitPos: Vector(), Entity: NULL, HitNormal: Vector()}, mode) ->
 	return if not IsValid(ply)
@@ -105,10 +108,16 @@ CanTool = (ply = NULL, tr = {HitPos: Vector(), Entity: NULL, HitNormal: Vector()
 	tr.Entity\DPP2CheckUpForGrabs(ply) if SERVER and IsValid(tr.Entity)
 	status = DPP2.ACCESS.CanToolgun(ply, tr.Entity, mode)
 	return status if not status
-	if SERVER and IsValid(tr.Entity)
+	return if not SERVER
+
+	if IsValid(tr.Entity)
 		tr.Entity\DPP2UnGhost(true)
 		DPP2.APKTriggerPhysgunDrop(ply, tr.Entity)
-		return
+		DPP2.LogToolgun('message.dpp2.log.toolgun.regular', ply, mode, tr.Entity)
+	else
+		DPP2.LogToolgun('message.dpp2.log.toolgun.world', ply, mode)
+
+	return
 
 CanEditVariable = (ent = NULL, ply = NULL, key, val, editor = {}) ->
 	return if not IsValid(ply)

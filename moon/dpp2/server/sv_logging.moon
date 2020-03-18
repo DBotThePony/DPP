@@ -48,16 +48,12 @@ createHandle = (prefix) ->
 		timer.Create 'DPP2.FlushLog.' .. prefix, 0, 1, -> handle\Flush()
 
 combined = createHandle('combined_')
+toolgun = createHandle('toolgun_')
 spawns = createHandle('spawns_')
 transfer = createHandle('transfer_')
 
 makestr = (...) ->
-	builder = {}
-
-	for arg in *DPP2.LFormatMessageRaw(...)
-		if type(arg) == 'string'
-			table.insert(builder, arg)
-
+	builder = [arg for arg in *DPP2.LFormatMessageRaw(...) when isstring(arg)]
 	return table.concat(builder, '')
 
 DPP2.Log = (...) ->
@@ -79,6 +75,10 @@ DPP2.LogSpawn = (...) ->
 DPP2.LogTransfer = (...) ->
 	DPP2.Log(...)
 	transfer(makestr(...))
+
+DPP2.LogToolgun = (...) ->
+	DPP2.Log(...)
+	toolgun(makestr(...))
 
 DPP2.SendNextLogChunk = ->
 	pop = table.remove(sendQueue, 1)

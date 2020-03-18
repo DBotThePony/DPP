@@ -202,6 +202,10 @@ message.dpp2.log.in_next = 'Logging continues in %s'
 message.dpp2.log.transfer.world = '#E transfered ownership of #E to world'
 message.dpp2.log.transfer.other = '#E transfered ownership of #E to #E'
 
+message.dpp2.log.toolgun.regular = '#E shot toolgun %s on #E'
+message.dpp2.log.toolgun.property = '#E used property %s on #E'
+message.dpp2.log.toolgun.world = '#E shot toolgun %s on world'
+
 command.dpp2.rlists.added.toolgun_mode = '#E added %q to toolgun modes restriction list with whitelist status set to %s'
 command.dpp2.rlists.added_ext.toolgun_mode = '#E added %q to toolgun modes restriction list with %q groups in it and whitelist status set to %s'
 command.dpp2.rlists.updated.toolgun_mode = '#E updated %q toolgun mode restriction with %q groups and whitelist status set to %s'
