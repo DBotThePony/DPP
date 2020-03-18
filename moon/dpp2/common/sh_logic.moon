@@ -216,8 +216,9 @@ class DPP2.ContraptionHolder
 		if not @IsValid()
 			@MarkForDeath()
 		else
+			oldEnts = [ent for ent in *oldEnts]
 			@Invalidate()
-			timer.Create 'DPP2_ContraptionDiff_' .. @id, 1, 1, -> @NetworkDiff(oldEnts) if @IsValid()
+			timer.Create 'DPP2_ContraptionDiff_' .. @id, 0.2, 1, -> @NetworkDiff(oldEnts) if @IsValid()
 
 		return true
 
@@ -256,7 +257,7 @@ class DPP2.ContraptionHolder
 
 		for ent in *@ents
 			if not entMeta.IsValid(ent)
-				@Invalidate()
+				@Invalidate(false, true)
 				return @IsValid()
 
 		return @IsValid()
@@ -269,10 +270,14 @@ class DPP2.ContraptionHolder
 		net.Broadcast()
 		return true
 
-	Invalidate: (withMarkForDeath = false) =>
-		prev = @ents
-		@ents = [ent for ent in *@ents when IsValid(ent)]
-		@NetworkDiff(prev) if SERVER and (#@ents > 0 or not withMarkForDeath)
+	Invalidate: (withMarkForDeath = false, networkDiff = true) =>
+		for ent in *@ents
+			if not IsValid(ent)
+				prev = @ents
+				@ents = [ent for ent in *@ents when IsValid(ent)]
+				@NetworkDiff(prev) if SERVER and networkDiff and (#@ents > 0 or not withMarkForDeath)
+				break
+
 		@owners = {}
 		@ownersFull = {}
 		@ownersStateNotShared = {def.identifier, {} for def in *DPP2.DEF.ProtectionDefinition.OBJECTS}

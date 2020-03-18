@@ -64,6 +64,7 @@ net.receive 'dpp2_contraption_diff', ->
 	for ent in *removed
 		for i, ent2 in ipairs(obj.ents)
 			if ent == ent2
+				ent.__dpp2_contraption = nil if ent.__dpp2_contraption == obj
 				table.remove(obj.ents, i)
 				break
 
