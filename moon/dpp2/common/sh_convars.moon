@@ -41,6 +41,9 @@ DPP2.ENABLE_ANTISPAM = DPP2.CreateConVar('antispam', '1', DPP2.TYPE_BOOL)
 DPP2.ANTISPAM_COLLISIONS = DPP2.CreateConVar('antispam_collisions', '0', DPP2.TYPE_BOOL)
 -- DPP2.ANTISPAM_MAX_EXPLOSIONS = DPP2.CreateConVar('antispam_explosions', '1', DPP2.TYPE_BOOL)
 
+DPP2.ANTISPAM_UNFREEZE = DPP2.CreateConVar('antispam_unfreeze', '1', DPP2.TYPE_BOOL)
+DPP2.ANTISPAM_DIVIDER = DPP2.CreateConVar('antispam_unfreeze_div', '1', DPP2.TYPE_UFLOAT)
+
 DPP2.ANTISPAM_SPAM = DPP2.CreateConVar('antispam_spam', '1', DPP2.TYPE_BOOL)
 DPP2.ANTISPAM_THRESHOLD = DPP2.CreateConVar('antispam_spam_threshold', '4', DPP2.TYPE_UFLOAT)
 DPP2.ANTISPAM_THRESHOLD2 = DPP2.CreateConVar('antispam_spam_threshold2', '8', DPP2.TYPE_UFLOAT)

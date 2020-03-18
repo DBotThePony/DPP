@@ -22,6 +22,22 @@ import DPP2 from _G
 
 QUEUE = {}
 
+OnPhysgunReload = (physgun, ply) ->
+	return if not DPP2.ENABLE_ANTISPAM\GetBool()
+	return if not DPP2.ANTISPAM_UNFREEZE\GetBool()
+
+	ent = ply\GetEyeTrace().Entity
+	return if not IsValid(ent)
+
+	if (ply.__dpp2_unfreeze or 0) > RealTime()
+		DPP2.NotifyError(ply, nil, 'message.dpp2.antispam.hint_unfreeze_antispam', ply.__dpp2_unfreeze - RealTime())
+		return false
+
+	if contraption = ent\DPP2GetContraption()
+		ply.__dpp2_unfreeze = RealTime() + #contraption.ents / (30 * DPP2.ANTISPAM_DIVIDER\GetFloat())
+	else
+		ply.__dpp2_unfreeze = RealTime() + 1 / (30 * DPP2.ANTISPAM_DIVIDER\GetFloat())
+
 _SafeRemoveEntity = SafeRemoveEntity
 SafeRemoveEntity = (ent) ->
 	ent.__dpp2_killme = true
@@ -244,3 +260,4 @@ ProcessQueue = ->
 	DPP2.NotifyHint(ply, nil, count > 1 and 'message.dpp2.antispam.hint_ghosted_big' or 'message.dpp2.antispam.hint_ghosted_big_single', count > 1 and count or nil) for ply, count in pairs(notificationsAG)
 
 hook.Add 'Tick', 'DPP2.Antispam', ProcessQueue, 2
+hook.Add 'OnPhysgunReload', 'DPP2.Antispam', OnPhysgunReload, 1

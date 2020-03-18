@@ -107,6 +107,8 @@ gui.dpp2.cvars.apropkill_throw = 'Prevent prop throwing'
 gui.dpp2.cvars.apropkill_punt = 'Prevent gravgun punt'
 
 gui.dpp2.cvars.antispam = 'Antispam main switch'
+gui.dpp2.cvars.antispam_unfreeze = 'Unfreeze antispam'
+gui.dpp2.cvars.antispam_unfreeze_div = 'Unfreeze antispam time multiplier'
 gui.dpp2.cvars.antispam_collisions = 'Prevent spawning prop inside prop'
 gui.dpp2.cvars.antispam_spam = 'Prevent spamming'
 gui.dpp2.cvars.antispam_spam_threshold = 'Spam ghost limit'
@@ -127,6 +129,7 @@ gui.dpp2.cvars.antispam_ghost_aabb_size = 'AABB size limit'
 
 message.dpp2.antispam.hint_ghosted = '%d entities were ghosted because of spam'
 message.dpp2.antispam.hint_removed = '%d entities were removed because of spam'
+message.dpp2.antispam.hint_unfreeze_antispam = 'Unfreeze antispam. Try again after #.2f seconds'
 message.dpp2.antispam.hint_disallowed = 'Action is not allowed due to spam'
 
 message.dpp2.antispam.hint_ghosted_single = 'Entity were ghosted because of spam'

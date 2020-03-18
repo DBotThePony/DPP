@@ -106,7 +106,7 @@ DPP2.cmd_existing = {} if CLIENT
 DPP2.cmd_autocomplete = {}
 DPP2.cmd_perms = {}
 
-include('dpp2/server/sh_convars.lua')
+include('dpp2/common/sh_convars.lua')
 include('dpp2/server/sv_functions.lua') if SERVER
 include('dpp2/common/sh_definition.lua')
 include('dpp2/common/sh_functions.lua')
