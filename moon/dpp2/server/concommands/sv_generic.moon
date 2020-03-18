@@ -20,6 +20,8 @@
 
 import DPP2 from _G
 
+net.pool('dpp2_cleardecals')
+
 cmds = {
 	cleanup: (args = {}, message) =>
 		str = table.concat(args, ' ')
@@ -113,6 +115,12 @@ cmds = {
 				return
 
 		return 'command.dpp2.setvar.invalid', cvar
+
+	cleardecals: (args = {}) =>
+		net.Start('dpp2_cleardecals')
+		net.WriteBool(IsValid(@))
+		net.WriteEntity(@) if IsValid(@)
+		net.Broadcast()
 }
 
 DPP2.cmd[k] = v for k, v in pairs(cmds)

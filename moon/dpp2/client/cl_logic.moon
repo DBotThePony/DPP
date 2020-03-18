@@ -67,3 +67,9 @@ net.receive 'dpp2_contraption_diff', ->
 				break
 
 	obj\Invalidate()
+
+net.receive 'dpp2_cleardecals', ->
+	ply = net.ReadEntity() if net.ReadBool()
+	DPP2.Notify(true, nil, 'command.dpp2.cleardecals', ply or NULL)
+	RunConsoleCommand('r_cleardecals')
+	game.RemoveRagdolls()

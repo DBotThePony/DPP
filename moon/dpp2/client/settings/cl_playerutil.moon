@@ -56,6 +56,9 @@ Menus.BuildPlayerModePanel = =>
 			\SetExpanded(false)
 			Menus.BuildPlyerModeRow(spoiler, ply)
 
+Menus.BuildUtilsPanel = =>
+	@Button('gui.dpp2.toolmenu.util.cleardecals', 'dpp2_cleardecals')
+
 Menus.BuildCleanupPanel = =>
 	return if not IsValid(@)
 
