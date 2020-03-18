@@ -106,6 +106,7 @@ DPP2.cmd_existing = {} if CLIENT
 DPP2.cmd_autocomplete = {}
 DPP2.cmd_perms = {}
 
+include('dpp2/server/sh_convars.lua')
 include('dpp2/server/sv_functions.lua') if SERVER
 include('dpp2/common/sh_definition.lua')
 include('dpp2/common/sh_functions.lua')
@@ -120,15 +121,12 @@ include('dpp2/server/sv_logic.lua') if SERVER
 include('dpp2/server/sv_owning.lua') if SERVER
 include('dpp2/server/sv_hooks.lua') if SERVER
 include('dpp2/server/sv_patches.lua') if SERVER
-include('dpp2/common/sh_antipropkill.lua')
 include('dpp2/server/sv_antipropkill.lua') if SERVER
-include('dpp2/common/sh_antispam.lua')
 include('dpp2/server/sv_antispam.lua') if SERVER
 include('dpp2/common/sh_transfer.lua')
 include('dpp2/server/sv_transfer.lua') if SERVER
 include('dpp2/client/cl_transfer.lua') if CLIENT
 include('dpp2/common/sh_cppi.lua')
-include('dpp2/common/sh_logging.lua')
 include('dpp2/server/sv_logging.lua') if SERVER
 
 if SERVER

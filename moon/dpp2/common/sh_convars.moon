@@ -20,6 +20,23 @@
 
 import DPP2 from _G
 
+-- Antipropkill
+DPP2.ENABLE_ANTIPROPKILL = DPP2.CreateConVar('apropkill', '1', DPP2.TYPE_BOOL)
+DPP2.ANTIPROPKILL_DAMAGE = DPP2.CreateConVar('apropkill_damage', '1', DPP2.TYPE_BOOL)
+DPP2.ANTIPROPKILL_DAMAGE_NO_WORLD = DPP2.CreateConVar('apropkill_damage_nworld', '1', DPP2.TYPE_BOOL)
+DPP2.ANTIPROPKILL_DAMAGE_NO_VEHICLES = DPP2.CreateConVar('apropkill_damage_nveh', '1', DPP2.TYPE_BOOL)
+DPP2.ANTIPROPKILL_TRAP = DPP2.CreateConVar('apropkill_trap', '1', DPP2.TYPE_BOOL)
+DPP2.ANTIPROPKILL_PUSH = DPP2.CreateConVar('apropkill_push', '1', DPP2.TYPE_BOOL)
+DPP2.ANTIPROPKILL_THROW = DPP2.CreateConVar('apropkill_throw', '1', DPP2.TYPE_BOOL)
+DPP2.ANTIPROPKILL_PUNT = DPP2.CreateConVar('apropkill_punt', '1', DPP2.TYPE_BOOL)
+
+GravGunPunt = (ply = NULL, wep = NULL) ->
+	return if not DPP2.ENABLE_ANTIPROPKILL\GetBool()
+	return false if DPP2.ANTIPROPKILL_PUNT\GetBool()
+
+hook.Add 'GravGunPunt', 'DPP2.AntiPropkill', GravGunPunt, 6
+
+-- Antispam
 DPP2.ENABLE_ANTISPAM = DPP2.CreateConVar('antispam', '1', DPP2.TYPE_BOOL)
 DPP2.ANTISPAM_COLLISIONS = DPP2.CreateConVar('antispam_collisions', '0', DPP2.TYPE_BOOL)
 -- DPP2.ANTISPAM_MAX_EXPLOSIONS = DPP2.CreateConVar('antispam_explosions', '1', DPP2.TYPE_BOOL)
@@ -42,3 +59,12 @@ DPP2.AUTO_GHOST_SIZE = DPP2.CreateConVar('antispam_ghost_size', '300000', DPP2.T
 
 DPP2.AUTO_GHOST_BY_AABB = DPP2.CreateConVar('antispam_ghost_aabb', '0', DPP2.TYPE_BOOL)
 DPP2.AUTO_GHOST_AABB_SIZE = DPP2.CreateConVar('antispam_ghost_aabb_size', '400000', DPP2.TYPE_UINT)
+
+-- Logging
+DPP2.ENABLE_LOGGING = DPP2.CreateConVar('log', '1', DPP2.TYPE_BOOL)
+DPP2.ECHO_LOG = DPP2.CreateConVar('log_echo', '1', DPP2.TYPE_BOOL)
+DPP2.ECHO_LOG_CLIENTS = DPP2.CreateConVar('log_echo_clients', '1', DPP2.TYPE_BOOL)
+DPP2.WRITE_LOG = DPP2.CreateConVar('log_write', '1', DPP2.TYPE_BOOL)
+DPP2.ENABLE_LOGGING_SPAWNS = DPP2.CreateConVar('log_spawns', '1', DPP2.TYPE_BOOL)
+DPP2.ENABLE_LOGGING_TOOLGUN = DPP2.CreateConVar('log_toolgun', '1', DPP2.TYPE_BOOL)
+DPP2.ENABLE_LOGGING_TRANSFER = DPP2.CreateConVar('log_tranfer', '1', DPP2.TYPE_BOOL)
