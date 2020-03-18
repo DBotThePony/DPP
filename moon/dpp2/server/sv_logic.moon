@@ -42,6 +42,8 @@ WalkConstraint = =>
 		@__dpp2_contraption\Walk(@)
 	elseif @__dpp2_contraption.lastWalk < RealTime()
 		@__dpp2_contraption\Walk(@)
+	else
+		timer.Create 'DPP2_WalkContraption_' .. @__dpp2_contraption.id, 0.25, 1, -> @__dpp2_contraption\Walk(@) if @IsValid() and @__dpp2_contraption\IsValid() and @__dpp2_contraption.lastWalk < RealTime()
 
 hook.Add 'Think', 'DPP2.Contraptions', ->
 	for ply in *player.GetAll()
