@@ -25,6 +25,14 @@ entMeta = FindMetaTable('Entity')
 nextidP = 0
 nextidP = DPP2.ContraptionHolder.NEXT_ID or 0 if DPP2.ContraptionHolder
 
+doWalkParent = (target, level) =>
+	return target if not IsValid(@)
+	return target if target[@] and level <= 0
+	target[@] = @
+	doWalkParent(children, target, level - 1) for _, children in pairs(@GetChildren())
+	doWalkParent(@GetParent(), target, level - 1)
+	return target
+
 class DPP2.ContraptionHolder
 	@NEXT_ID = nextidP
 	@OBJECTS = {}
@@ -183,17 +191,20 @@ class DPP2.ContraptionHolder
 
 		oldEnts = @ents
 		ent.__dpp2_contraption = nil for ent in *@ents when IsValid(ent) and ent.__dpp2_contraption == @
+		@lastWalk = RealTime() + 0.1
+		@nextNetwork = RealTime() + 1
 
 		@owners = {}
 		@ownersFull = {}
 		@ownersStateNotShared = {}
 
-		find = _find or constraint.GetAllConstrainedEntities(frompoint)
+		find = _find or doWalkParent(frompoint, constraint.GetAllConstrainedEntities(frompoint), 1)
+		find = {ent, ent for ent in pairs(find) when not ent\IsVehicle() or ent\DPP2IsOwned()} if not _find
 		setup = {}
 
 		for ent in pairs(find)
 			if ent.__dpp2_contraption and ent.__dpp2_contraption ~= @ and #ent.__dpp2_contraption.ents >= #oldEnts and ent.__dpp2_contraption ~= ask
-				ent.__dpp2_contraption\Walk(ent, @, find)
+				ent.__dpp2_contraption\Walk(frompoint, @, find)
 				@MarkForDeath(true)
 				return false
 
@@ -201,13 +212,12 @@ class DPP2.ContraptionHolder
 
 		@ents = setup
 		ent.__dpp2_contraption = @ for ent in *setup
-		@lastWalk = RealTime() + 0.1
 
 		if not @IsValid()
 			@MarkForDeath()
 		else
 			@Invalidate()
-			@NetworkDiff(oldEnts)
+			timer.Create 'DPP2_ContraptionDiff_' .. @id, 1, 1, -> @NetworkDiff(oldEnts) if @IsValid()
 
 		return true
 

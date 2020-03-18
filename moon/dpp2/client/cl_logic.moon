@@ -31,6 +31,7 @@ net.receive 'dpp2_contraption_create', ->
 	obj = DPP2.ContraptionHolder\GetByID(id)
 
 	if obj
+		ent.__dpp2_contraption = nil for ent in *entsRead when ent.__dpp2_contraption == obj
 		obj.ents = entsRead
 		obj\Invalidate()
 	else
