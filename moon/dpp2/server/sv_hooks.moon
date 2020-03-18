@@ -132,7 +132,7 @@ PlayerSpawnedNPC = (ply = NULL, ent = NULL) ->
 PlayerSpawnedSENT = (ply = NULL, ent = NULL) ->
 	return unless ply\IsValid()
 	return unless ent\IsValid()
-	-- return false if not PreventModelSpawn(ply, model, ent)
+	return false if not PreventModelSpawn(ply, model, ent)
 	DPP2.PlayerSpawnedSomething(ply, ent)
 
 PlayerSpawnedSWEP = (ply = NULL, ent = NULL) ->

@@ -55,3 +55,14 @@ if undo
 		DPP2.QueueAntispam(Current_Undo.Owner, table.remove(find, 1), find)
 
 		return undo._DPP2_Finish(...)
+
+-- cleanup patch
+if cleanup
+	cleanup = cleanup
+	cleanup._DPP2_Add = cleanup._DPP2_Add or cleanup.Add
+
+	cleanup.Add = (ply = NULL, mode = error('category was not specified'), ent = NULL, ...) ->
+		error('NULL player specified') if not IsValid(ply)
+		error('NULL entity specified') if not IsValid(ent)
+		DPP2.PlayerSpawnedSomething(ply, ent, true) if not ent\DPP2IsOwned() and mode ~= 'duplicates'
+		return cleanup._DPP2_Add(ply, mode, ent, ...)
