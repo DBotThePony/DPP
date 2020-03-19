@@ -34,9 +34,9 @@ OnPhysgunReload = (physgun, ply) ->
 		return false
 
 	if contraption = ent\DPP2GetContraption()
-		ply.__dpp2_unfreeze = RealTime() + #contraption.ents / (30 * DPP2.ANTISPAM_DIVIDER\GetFloat())
+		ply.__dpp2_unfreeze = RealTime() + #contraption.ents / (20 * DPP2.ANTISPAM_DIVIDER\GetFloat())
 	else
-		ply.__dpp2_unfreeze = RealTime() + 1 / (30 * DPP2.ANTISPAM_DIVIDER\GetFloat())
+		ply.__dpp2_unfreeze = RealTime() + 1 / (20 * DPP2.ANTISPAM_DIVIDER\GetFloat())
 
 _SafeRemoveEntity = SafeRemoveEntity
 SafeRemoveEntity = (ent) ->
