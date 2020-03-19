@@ -98,7 +98,7 @@ DPP2.PlayerSpawnedSomething = (ply, ent, advancedCheck = false) ->
 	return true
 
 PreventModelSpawn = (ply, model = ent and ent\GetModel() or 'wtf', ent, nonotify) ->
-	if DPP2.ModelBlacklist\Has(model\lower())
+	if not DPP2.ModelBlacklist\Ask(model\lower(), ply)
 		DPP2.NotifyError(ply, nil, 'message.dpp2.blacklist.model_blocked', model) if not nonotify
 		SafeRemoveEntity(ent) if IsValid(ent)
 		return false

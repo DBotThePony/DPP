@@ -647,6 +647,7 @@ class DPP2.DEF.Blacklist
 	HasDefault: (entry) => @listingDef\Has(entry) -- ???
 
 	Check: (entry) => @Has(entry)
+	Ask: (entry, ply) => not @Has(entry)
 
 	FullReplicate: (who = player.GetHumans()) =>
 		error('Invalid side') if CLIENT

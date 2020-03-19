@@ -71,7 +71,7 @@ class DPP2.DEF.ProtectionDefinition
 			obj\PruneFriendData(steamid) for obj in *@OBJECTS
 			timer.Remove('DPP2.FriendStatus.' .. steamid)
 
-	new: (identifier, prefab = DPP2.DEF.DefinitionConVarsPrefab(), classnameRestriction = false) =>
+	new: (identifier, prefab = DPP2.DEF.DefinitionConVarsPrefab(), classnameRestriction = false, classnameBlacklist = false) =>
 		@identifier = assert(type(identifier) == 'string' and identifier, 'Invalid definition identifier')\lower()
 		assert(not @@OBJECTS_MAP[identifier], 'cannot redefine already existing ProtectionDefinition[' .. identifier .. ']!')
 		@friendsCache = {}
@@ -80,10 +80,16 @@ class DPP2.DEF.ProtectionDefinition
 
 		if classnameRestriction == true
 			@classnameRestriction = DPP2.DEF.RestrictionList(identifier, DPP2.ClassnameAutocomplete)
-		else
+		elseif classnameRestriction
 			@classnameRestriction = classnameRestriction
 
+		if classnameBlacklist == true
+			@classnameBlacklist = DPP2.DEF.Blacklist(identifier, DPP2.ClassnameAutocomplete)
+		elseif classnameBlacklist
+			@classnameBlacklist = classnameBlacklist
+
 		@RestrictionList = @classnameRestriction
+		@Blacklist = @classnameBlacklist
 
 		@@OBJECTS_MAP[@identifier] = @
 
@@ -322,6 +328,7 @@ class DPP2.DEF.ProtectionDefinition
 		return true if ent\IsPlayer()
 		return false, i18n.localize('gui.dpp2.access.status.model_blacklist') if DPP2.ModelBlacklist\Check(ent\GetModel())
 		return false, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_restriction') if @classnameRestriction and not @classnameRestriction\Ask(ent\GetClass(), ply)
+		return false, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_blacklist') if @classnameBlacklist and not @classnameBlacklist\Ask(ent\GetClass(), ply)
 		return true, i18n.localize('gui.dpp2.access.status.disabled') if not @IsEnabled()
 		contraption = ent\DPP2GetContraption()
 

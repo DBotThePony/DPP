@@ -73,6 +73,12 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 	gui.dpp2.cvars['cl_' .. modeID .. '_no_players'] = string.format('%s: I don\'t want to touch players', modeName)
 	gui.dpp2.buddystatus[modeID] = 'Buddy in ' .. modeName
 
+	gui.dpp2.toolmenu.restrictions[modeID] = modeName .. ' restrictions'
+	gui.dpp2.toolmenu.blacklist[modeID] = modeName .. ' blacklist'
+
+	command.dpp2.blists.added[modeID] = '#E added %s to ' .. modeName .. ' blacklist'
+	command.dpp2.blists.removed[modeID] = '#E removed %s from ' .. modeName .. ' blacklist'
+
 	gui.dpp2.disable_protection[modeID] = 'Disable ' .. modeName .. ' protection'
 
 	command.dpp2.rlists.added[modeID] = '#E added %q to ' .. modeName .. ' restriction list with whitelist status set to %s'
@@ -199,8 +205,8 @@ command.dpp2.lists.arg_empty = 'You provided empty argument'
 command.dpp2.lists.already_in = 'Target list already has that element!'
 command.dpp2.lists.already_not = 'Target list already has no that element!'
 
-command.dpp2.blists.added.model = '#e added %s to blacklist'
-command.dpp2.blists.removed.model = '#e removed %s from blacklist'
+command.dpp2.blists.added.model = '#E added %s to blacklist'
+command.dpp2.blists.removed.model = '#E removed %s from blacklist'
 
 message.dpp2.log.spawn.generic = '#E spawned #E'
 message.dpp2.log.spawn.tried_generic = '#E #C tried #C to spawn #E'
@@ -244,14 +250,6 @@ gui.dpp2.toolmenu.cleanup = 'Cleanup'
 gui.dpp2.toolmenu.utils = 'Utils'
 gui.dpp2.toolmenu.logging = 'Logging settings'
 gui.dpp2.toolmenu.restrictions.toolgun_mode = 'Toolgun mode restrictions'
-gui.dpp2.toolmenu.restrictions.physgun = 'Physgun restrictions'
-gui.dpp2.toolmenu.restrictions.drive = 'Drive restrictions'
-gui.dpp2.toolmenu.restrictions.pickup = 'Pickup restrictions'
-gui.dpp2.toolmenu.restrictions.use = 'Use restrictions'
-gui.dpp2.toolmenu.restrictions.vehicle = 'Vehicle restrictions'
-gui.dpp2.toolmenu.restrictions.gravgun = 'Gravgun restrictions'
-gui.dpp2.toolmenu.restrictions.toolgun = 'Toolgun restrictions'
-gui.dpp2.toolmenu.restrictions.damage = 'Damage restrictions'
 gui.dpp2.toolmenu.restrictions.class_spawn = 'Entity restrictions'
 
 gui.dpp2.toolmenu.playerutil.clear = '%s: Cleanup props'

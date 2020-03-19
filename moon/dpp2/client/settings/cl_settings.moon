@@ -65,3 +65,11 @@ hook.Add 'PopulateToolMenu', 'DPP2.Menus', ->
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.restriction', 'gui.dpp2.toolmenu.restrictions.class_spawn', 'gui.dpp2.toolmenu.restrictions.class_spawn', '', '', => DPP2.SpawnRestrictions\BuildCPanel(@)
 
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.blacklist', 'gui.dpp2.toolmenu.blacklist.model', 'gui.dpp2.toolmenu.blacklist.model', '', '', => DPP2.ModelBlacklist\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.blacklist', 'gui.dpp2.toolmenu.blacklist.physgun', 'gui.dpp2.toolmenu.blacklist.physgun', '', '', => DPP2.PhysgunProtection.Blacklist\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.blacklist', 'gui.dpp2.toolmenu.blacklist.drive', 'gui.dpp2.toolmenu.blacklist.drive', '', '', => DPP2.DriveProtection.Blacklist\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.blacklist', 'gui.dpp2.toolmenu.blacklist.pickup', 'gui.dpp2.toolmenu.blacklist.pickup', '', '', => DPP2.PickupProtection.Blacklist\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.blacklist', 'gui.dpp2.toolmenu.blacklist.use', 'gui.dpp2.toolmenu.blacklist.use', '', '', => DPP2.UseProtection.Blacklist\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.blacklist', 'gui.dpp2.toolmenu.blacklist.vehicle', 'gui.dpp2.toolmenu.blacklist.vehicle', '', '', => DPP2.VehicleProtection.Blacklist\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.blacklist', 'gui.dpp2.toolmenu.blacklist.gravgun', 'gui.dpp2.toolmenu.blacklist.gravgun', '', '', => DPP2.GravgunProtection.Blacklist\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.blacklist', 'gui.dpp2.toolmenu.blacklist.toolgun', 'gui.dpp2.toolmenu.blacklist.toolgun', '', '', => DPP2.ToolgunProtection.Blacklist\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.blacklist', 'gui.dpp2.toolmenu.blacklist.damage', 'gui.dpp2.toolmenu.blacklist.damage', '', '', => DPP2.DamageProtection.Blacklist\BuildCPanel(@)
