@@ -173,6 +173,7 @@ command.dpp2.generic.noaccess_check = 'You can not execute this command on targe
 
 command.dpp2.cleanup = '#E cleaned all #E\'s entities'
 command.dpp2.cleardecals = '#E cleaned up decals'
+command.dpp2.cleanupgibs = '#E cleaned up gibs. #d gibs were removed'
 command.dpp2.cleanupnpcs = '#E cleaned all #E\'s NPCs'
 command.dpp2.cleanupallnpcs = '#E cleaned all owned NPCs'
 command.dpp2.cleanupall = '#E cleaned all owned entities'
@@ -285,6 +286,7 @@ gui.dpp2.toolmenu.playerutil.clear_disconnected = 'Cleanup disconnected player\'
 
 gui.dpp2.toolmenu.blacklist.model = 'Model blacklist'
 gui.dpp2.toolmenu.util.cleardecals = 'Clear decals'
+gui.dpp2.toolmenu.util.cleanupgibs = 'Clean up gibs'
 
 gui.dpp2.restriction_lists.view.classname = 'Identifier'
 gui.dpp2.restriction_lists.view.groups = 'Groups'

@@ -48,3 +48,4 @@ if CLIENT
 	DPP2.cmd_existing.cleanupallnpcs = true
 	DPP2.cmd_existing.cleanupallvehicles = true
 	DPP2.cmd_existing.cleardecals = true
+	DPP2.cmd_existing.cleanupgibs = true

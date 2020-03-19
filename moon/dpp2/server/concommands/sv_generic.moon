@@ -121,6 +121,16 @@ cmds = {
 		net.WriteBool(IsValid(@))
 		net.WriteEntity(@) if IsValid(@)
 		net.Broadcast()
+
+	cleanupgibs: (args = {}) =>
+		num = 0
+
+		for ent in *ents.GetAll()
+			if ent\GetClass() == 'gib' and ent\EntIndex() > 0
+				SafeRemoveEntity(ent)
+				num += 1
+
+		DPP2.Notify(true, nil, 'command.dpp2.cleanupgibs', @, num)
 }
 
 DPP2.cmd[k] = v for k, v in pairs(cmds)

@@ -58,45 +58,18 @@ Menus.BuildPlayerModePanel = =>
 
 Menus.BuildUtilsPanel = =>
 	@Button('gui.dpp2.toolmenu.util.cleardecals', 'dpp2_cleardecals')
+	@Button('gui.dpp2.toolmenu.util.cleanupgibs', 'dpp2_cleanupgibs')
 
 Menus.BuildCleanupPanel = =>
 	return if not IsValid(@)
 
-	with vgui.Create('DButton', @)
-		\Dock(TOP)
-		\DockMargin(5, 5, 5, 5)
-		\SetText('gui.dpp2.toolmenu.playerutil.freezephysall')
-		.DoClick = -> RunConsoleCommand('dpp2_freezephysall')
-
-	with vgui.Create('DButton', @)
-		\Dock(TOP)
-		\DockMargin(5, 5, 5, 5)
-		\SetText('gui.dpp2.toolmenu.playerutil.freezephyspanic')
-		.DoClick = -> RunConsoleCommand('dpp2_freezephyspanic')
-
-	with vgui.Create('DButton', @)
-		\Dock(TOP)
-		\DockMargin(5, 5, 5, 5)
-		\SetText('gui.dpp2.toolmenu.playerutil.clear_all')
-		.DoClick = -> RunConsoleCommand('dpp2_cleanupall')
-
-	with vgui.Create('DButton', @)
-		\Dock(TOP)
-		\DockMargin(5, 5, 5, 5)
-		\SetText('gui.dpp2.toolmenu.playerutil.clear_npcs')
-		.DoClick = -> RunConsoleCommand('dpp2_cleanupnpcs')
-
-	with vgui.Create('DButton', @)
-		\Dock(TOP)
-		\DockMargin(5, 5, 5, 5)
-		\SetText('gui.dpp2.toolmenu.playerutil.clear_vehicles')
-		.DoClick = -> RunConsoleCommand('dpp2_cleanupvehicles')
-
-	with vgui.Create('DButton', @)
-		\Dock(TOP)
-		\DockMargin(5, 5, 5, 5)
-		\SetText('gui.dpp2.toolmenu.playerutil.clear_disconnected')
-		.DoClick = -> RunConsoleCommand('dpp2_cleanupdisconnected')
+	@Button('gui.dpp2.toolmenu.playerutil.freezephysall', 'dpp2_freezephysall')\DockMargin(5, 5, 5, 5)
+	@Button('gui.dpp2.toolmenu.util.cleanupgibs', 'dpp2_cleanupgibs')\DockMargin(5, 5, 5, 5)
+	@Button('gui.dpp2.toolmenu.playerutil.freezephyspanic', 'dpp2_freezephyspanic')\DockMargin(5, 5, 5, 5)
+	@Button('gui.dpp2.toolmenu.playerutil.clear_all', 'dpp2_cleanupall')\DockMargin(5, 5, 5, 5)
+	@Button('gui.dpp2.toolmenu.playerutil.clear_npcs', 'dpp2_cleanupnpcs')\DockMargin(5, 5, 5, 5)
+	@Button('gui.dpp2.toolmenu.playerutil.clear_vehicles', 'dpp2_cleanupvehicles')\DockMargin(5, 5, 5, 5)
+	@Button('gui.dpp2.toolmenu.playerutil.clear_disconnected', 'dpp2_cleanupdisconnected')\DockMargin(5, 5, 5, 5)
 
 	for ply in *player.GetAll()
 		with row = vgui.Create('EditablePanel', @)

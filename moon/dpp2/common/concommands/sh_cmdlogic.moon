@@ -21,6 +21,7 @@
 cmd_perms = {
 	cleanup: 'admin'
 	cleardecals: 'admin'
+	cleanupgibs: 'admin'
 	cleanupnpcs: 'admin'
 	cleanupallnpcs: 'admin'
 	cleanupallvehicles: 'admin'
