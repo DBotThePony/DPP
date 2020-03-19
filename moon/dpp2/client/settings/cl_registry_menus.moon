@@ -91,6 +91,10 @@ DPP2.DEF.RestrictionList.__base.BuildCPanel = (panel) =>
 	@newItemButton\SetText('gui.dpp2.restriction_lists.add_new')
 	@newItemButton\SetIcon(Menus.Icons.Add)
 
+	Menus.QCheckBox(panel, 'rl_' .. @identifier .. '_enable')
+	Menus.QCheckBox(panel, 'rl_' .. @identifier .. '_invert')
+	Menus.QCheckBox(panel, 'rl_' .. @identifier .. '_invert_all')
+
 	@newItemInput.OnEnter = -> @newItemButton\DoClick()
 
 	if @add_autocomplete
@@ -224,6 +228,10 @@ DPP2.DEF.Blacklist.__base.BuildCPanel = (panel) =>
 	@newItemButton\SetIcon(Menus.Icons.Add)
 
 	@newItemInput.OnEnter = -> @newItemButton\DoClick()
+
+	Menus.QCheckBox(panel, 'bl_' .. @identifier .. '_enable')
+	Menus.QCheckBox(panel, 'bl_' .. @identifier .. '_whitelist')
+	Menus.QCheckBox(panel, 'bl_' .. @identifier .. '_admin_bypass')
 
 	if @autocomplete
 		@newItemInput.GetAutoComplete = (_, text) ->

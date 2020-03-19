@@ -285,6 +285,8 @@ class DPP2.DEF.RestrictionList
 			ply['dpp2_last_full_request_' .. list.identifier] = RealTime() + 30
 			list\FullReplicate(ply)
 
+	@ENABLED = DPP2.CreateConVar('rl_enable', '1', DPP2.TYPE_BOOL)
+
 	new: (identifier, autocomplete) =>
 		@identifier = identifier
 		error('Restriction list ' .. identifier .. ' already exists! Can not redefine existing one.') if @@LISTS[identifier]
@@ -292,6 +294,10 @@ class DPP2.DEF.RestrictionList
 		@listing = {}
 		@@_LISTS = [list for key, list in pairs(@@LISTS)]
 		self2 = @
+
+		@ENABLED = DPP2.CreateConVar('rl_' .. identifier .. '_enable', '1', DPP2.TYPE_BOOL)
+		@INVERT = DPP2.CreateConVar('rl_' .. identifier .. '_invert', '0', DPP2.TYPE_BOOL)
+		@INVERT_ALL = DPP2.CreateConVar('rl_' .. identifier .. '_invert_all', '0', DPP2.TYPE_BOOL)
 
 		if SERVER
 			DPP2.cmd['add_' .. identifier .. '_restriction'] = (args = {}) =>
@@ -439,13 +445,18 @@ class DPP2.DEF.RestrictionList
 		return false
 
 	Ask: (classname, ply) =>
+		return true if not @@ENABLED\GetBool() or not @ENABLED\GetBool()
 		group, isAdmin = ply\GetUserGroup(), ply\IsAdmin()
 
 		for entry in *@listing
 			status = entry\Ask(classname, group, isAdmin)
-			return status if status ~= nil
 
-		return true
+			if @INVERT\GetBool() or @INVERT_ALL\GetBool()
+				return not status if status ~= nil
+			else
+				return status if status ~= nil
+
+		return not @INVERT_ALL\GetBool()
 
 	Has: (classname) =>
 		return true for entry in *@listing when entry\Is(classname)
@@ -518,6 +529,9 @@ class DPP2.DEF.Blacklist
 	@REGISTRY_ = {}
 	@nextid = 0
 
+	@CAMI_WATCHDOG = DLib.CAMIWatchdog('dpp2_blacklist')
+	@ENABLED = DPP2.CreateConVar('bl_enable', '1', DPP2.TYPE_BOOL)
+
 	if CLIENT
 		net.receive 'dpp2_blist_add', ->
 			list, entry = assert(@REGISTRY_[net.ReadUInt8()], 'Missing blacklist registry'), net.ReadString()
@@ -551,6 +565,19 @@ class DPP2.DEF.Blacklist
 		@listing = DLib.Set()
 		@listingDef = DLib.Set()
 		self2 = @
+
+		@ENABLED = DPP2.CreateConVar('bl_' .. identifier .. '_enable', '1', DPP2.TYPE_BOOL)
+		@IS_WHITELIST = DPP2.CreateConVar('bl_' .. identifier .. '_whitelist', '0', DPP2.TYPE_BOOL)
+		@ADMINS_BYPASS = DPP2.CreateConVar('bl_' .. identifier .. '_admin_bypass', '0', DPP2.TYPE_BOOL)
+
+		@cami_name = 'dpp2_bl_' .. identifier .. '_admin'
+		@@CAMI_WATCHDOG\Track(@cami_name)
+
+		CAMI.RegisterPrivilege({
+			Name: @cami_name
+			MinAccess: 'admin'
+			Description: identifier .. ' blacklist admin role (for admin bypass option)'
+		})
 
 		if SERVER
 			DPP2.cmd['add_' .. identifier .. '_blacklist'] = (args = {}) =>
@@ -647,7 +674,14 @@ class DPP2.DEF.Blacklist
 	HasDefault: (entry) => @listingDef\Has(entry) -- ???
 
 	Check: (entry) => @Has(entry)
-	Ask: (entry, ply) => not @Has(entry)
+	Ask: (entry, ply = NULL) =>
+		return true if not @@ENABLED\GetBool() or not @ENABLED\GetBool()
+		return true if @ADMINS_BYPASS\GetBool() and IsValid(ply) and @@CAMI_WATCHDOG\HasPermission(ply, @cami_name)
+
+		if @IS_WHITELIST\GetBool()
+			return @Has(entry)
+		else
+			return not @Has(entry)
 
 	FullReplicate: (who = player.GetHumans()) =>
 		error('Invalid side') if CLIENT

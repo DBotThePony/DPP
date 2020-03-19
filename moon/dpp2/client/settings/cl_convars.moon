@@ -26,6 +26,8 @@ Menus.SecondaryMenu = =>
 
 	Menus.QCheckBox(@, 'no_tool_player')
 	Menus.QCheckBox(@, 'no_tool_player_admin')
+	Menus.QCheckBox(@, 'rl_enable')
+	Menus.QCheckBox(@, 'bl_enable')
 
 Menus.LoggingMenu = =>
 	return if not IsValid(@)

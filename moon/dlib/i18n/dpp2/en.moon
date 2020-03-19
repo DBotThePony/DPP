@@ -66,6 +66,15 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 	gui.dpp2.cvars[modeID .. '_no_world_admin'] = string.format('%s: Admins can not touch world owned props', modeName)
 	gui.dpp2.cvars[modeID .. '_no_map'] = string.format('%s: Players can not touch map owned props', modeName)
 	gui.dpp2.cvars[modeID .. '_no_map_admin'] = string.format('%s: Admins can not touch map owned props', modeName)
+
+	gui.dpp2.cvars['bl_' .. modeID .. '_enable'] = string.format('%s blacklist enabled', modeName)
+	gui.dpp2.cvars['bl_' .. modeID .. '_whitelist'] = string.format('%s blacklist act as whitelist', modeName)
+	gui.dpp2.cvars['bl_' .. modeID .. '_admin_bypass'] = string.format('%s blacklist can be bypassed by admins', modeName)
+
+	gui.dpp2.cvars['rl_' .. modeID .. '_enable'] = string.format('%s restriction list enabled', modeName)
+	gui.dpp2.cvars['rl_' .. modeID .. '_invert'] = string.format('%s restriction list is inverted', modeName)
+	gui.dpp2.cvars['rl_' .. modeID .. '_invert_all'] = string.format('%s restriction list is fully inverted', modeName)
+
 	gui.dpp2.cvars['cl_' .. modeID .. '_protection'] = string.format('Enable %s protection for me', modeName)
 	gui.dpp2.cvars['cl_' .. modeID .. '_no_other'] = string.format('%s: I don\'t want to touch other\'s props', modeName)
 	gui.dpp2.cvars['cl_' .. modeID .. '_no_world'] = string.format('%s: I don\'t want to touch world\'s props', modeName)
@@ -93,6 +102,18 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 	gui.dpp2.access.status['ownerdisabled_' .. modeID] = modeName .. ' protection for owner is disabled'
 
 	gui.dpp2.sharing['share_' .. modeID] = 'Share as ' .. modeName
+
+gui.dpp2.cvars.rl_enable = 'Enable restriction lists'
+gui.dpp2.cvars.bl_enable = 'Enable blacklists'
+
+for {modeID, modeName} in *{{'model', 'Model'}, {'toolgun_mode', 'Toolgun mode'}, {'class_spawn', 'Spawn'}}
+	gui.dpp2.cvars['bl_' .. modeID .. '_enable'] = string.format('%s blacklist enabled', modeName)
+	gui.dpp2.cvars['bl_' .. modeID .. '_whitelist'] = string.format('%s blacklist act as whitelist', modeName)
+	gui.dpp2.cvars['bl_' .. modeID .. '_admin_bypass'] = string.format('%s blacklist can be bypassed by admins', modeName)
+
+	gui.dpp2.cvars['rl_' .. modeID .. '_enable'] = string.format('%s restriction list enabled', modeName)
+	gui.dpp2.cvars['rl_' .. modeID .. '_invert'] = string.format('%s restriction list is inverted', modeName)
+	gui.dpp2.cvars['rl_' .. modeID .. '_invert_all'] = string.format('%s restriction list is fully inverted', modeName)
 
 gui.dpp2.cvars.log = 'Main power switch'
 gui.dpp2.cvars.log_echo = 'Echo logs in server console'

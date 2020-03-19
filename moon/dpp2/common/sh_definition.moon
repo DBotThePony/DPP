@@ -326,7 +326,7 @@ class DPP2.DEF.ProtectionDefinition
 		return false if not ent\IsValid()
 		return false, i18n.localize('gui.dpp2.access.status.yoursettings') if ent\IsPlayer() and ply\GetInfoBool(@clientNoPlayersName, false)
 		return true if ent\IsPlayer()
-		return false, i18n.localize('gui.dpp2.access.status.model_blacklist') if DPP2.ModelBlacklist\Check(ent\GetModel())
+		return false, i18n.localize('gui.dpp2.access.status.model_blacklist') if not DPP2.ModelBlacklist\Ask(ent\GetModel(), ply)
 		return false, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_restriction') if @classnameRestriction and not @classnameRestriction\Ask(ent\GetClass(), ply)
 		return false, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_blacklist') if @classnameBlacklist and not @classnameBlacklist\Ask(ent\GetClass(), ply)
 		return true, i18n.localize('gui.dpp2.access.status.disabled') if not @IsEnabled()
