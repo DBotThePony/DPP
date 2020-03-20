@@ -80,11 +80,9 @@ AddCSLuaFile('dpp2/common/sh_owning.lua')
 AddCSLuaFile('dpp2/common/sh_hooks.lua')
 AddCSLuaFile('dpp2/common/sh_cppi.lua')
 AddCSLuaFile('dpp2/common/sh_functions.lua')
-AddCSLuaFile('dpp2/common/sh_antipropkill.lua')
 AddCSLuaFile('dpp2/common/sh_registry.lua')
 AddCSLuaFile('dpp2/common/sh_transfer.lua')
-AddCSLuaFile('dpp2/common/sh_antispam.lua')
-AddCSLuaFile('dpp2/common/sh_logging.lua')
+AddCSLuaFile('dpp2/common/sh_count.lua')
 AddCSLuaFile('dpp2/client/cl_logic.lua')
 AddCSLuaFile('dpp2/client/cl_owning.lua')
 AddCSLuaFile('dpp2/client/cl_transfer.lua')
@@ -126,6 +124,9 @@ include('dpp2/server/sv_antispam.lua') if SERVER
 include('dpp2/common/sh_transfer.lua')
 include('dpp2/server/sv_transfer.lua') if SERVER
 include('dpp2/client/cl_transfer.lua') if CLIENT
+include('dpp2/common/sh_count.lua')
+include('dpp2/server/sv_count.lua') if SERVER
+include('dpp2/client/cl_count.lua') if CLIENT
 include('dpp2/common/sh_cppi.lua')
 include('dpp2/server/sv_logging.lua') if SERVER
 
