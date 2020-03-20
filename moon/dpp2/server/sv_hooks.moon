@@ -116,36 +116,42 @@ PlayerSpawnedProp = (ply = NULL, model = 'models/error.mdl', ent = NULL) ->
 	return unless ent\IsValid()
 	return false if not PreventModelSpawn(ply, model, ent)
 	DPP2.PlayerSpawnedSomething(ply, ent)
+	return
 
 PlayerSpawnedRagdoll = (ply = NULL, model = 'models/error.mdl', ent = NULL) ->
 	return unless ply\IsValid()
 	return unless ent\IsValid()
 	return false if not PreventModelSpawn(ply, model, ent)
 	DPP2.PlayerSpawnedSomething(ply, ent)
+	return
 
 PlayerSpawnedNPC = (ply = NULL, ent = NULL) ->
 	return unless ply\IsValid()
 	return unless ent\IsValid()
 	return false if not PreventModelSpawn(ply, model, ent)
 	DPP2.PlayerSpawnedSomething(ply, ent)
+	return
 
 PlayerSpawnedSENT = (ply = NULL, ent = NULL) ->
 	return unless ply\IsValid()
 	return unless ent\IsValid()
 	return false if not PreventModelSpawn(ply, model, ent)
 	DPP2.PlayerSpawnedSomething(ply, ent)
+	return
 
 PlayerSpawnedSWEP = (ply = NULL, ent = NULL) ->
 	return unless ply\IsValid()
 	return unless ent\IsValid()
 	return false if not PreventModelSpawn(ply, model, ent)
 	DPP2.PlayerSpawnedSomething(ply, ent)
+	return
 
 PlayerSpawnedVehicle = (ply = NULL, ent = NULL) ->
 	return unless ply\IsValid()
 	return unless ent\IsValid()
 	return false if not PreventModelSpawn(ply, model, ent)
 	DPP2.PlayerSpawnedSomething(ply, ent)
+	return
 
 PlayerSpawnEffect = (ply = NULL, model = 'models/error.mdl') ->
 	return unless ply\IsValid()
@@ -223,6 +229,8 @@ PlayerGiveSWEP = (ply = NULL, classname = 'base_entity', definition = {ClassName
 					DPP2.LogSpawn('message.dpp2.log.spawn.giveswep_valid', ply, wep)
 			else
 				DPP2.LogSpawn('message.dpp2.log.spawn.giveswep', ply, color_white, classname)
+
+	return
 
 PlayerSpawnSWEP = (ply = NULL, classname = 'base_entity', definition = {ClassName: 'base_entity', WorldModel: 'models/error.mdl', ViewModel: 'models/error.mdl'}) ->
 	return unless ply\IsValid()
