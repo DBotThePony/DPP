@@ -25,11 +25,11 @@ net.receive 'dpp2_limitlist_clear', ->
 
 net.receive 'dpp2_limitentry_change', ->
 	id = net.ReadUInt32()
-	assert(DPP2.DEF.LimitEntry\GetByID(), 'Unknown limit entry with id ' .. id .. '!')\ReadPayload()
+	assert(DPP2.DEF.LimitEntry\GetByID(id), 'Unknown limit entry with id ' .. id .. '!')\ReadPayload()
 
 net.receive 'dpp2_limitentry_remove', ->
 	id = net.ReadUInt32()
-	assert(DPP2.DEF.LimitEntry\GetByID(), 'Unknown limit entry with id ' .. id .. '!')\Remove()
+	assert(DPP2.DEF.LimitEntry\GetByID(id), 'Unknown limit entry with id ' .. id .. '!')\Remove()
 
 net.receive 'dpp2_limitentry_create', ->
 	identifier = net.ReadString()

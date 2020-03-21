@@ -150,8 +150,8 @@ class DPP2.DEF.LimitEntry
 		return false if @@REPLICATION_PAUSED
 
 		net.Start('dpp2_limitentry_create')
-		net.WriteUInt32(@id)
 		net.WriteString(@parent.identifier)
+		net.WriteUInt32(@id)
 		@WritePayload()
 		net.Broadcast()
 
@@ -180,6 +180,8 @@ class DPP2.DEF.LimitEntry
 			@WritePayload()
 			net.Broadcast()
 
+		@parent\CallHook('EntryChanged', entry) if @parent
+
 		return true
 
 	IsValid: => not @removed
@@ -201,6 +203,7 @@ class DPP2.DEF.LimitEntry
 		@class = net.ReadString()
 		@group = net.ReadString()
 		@limit = net.ReadUInt32()
+		@parent\CallHook('EntryChanged', entry) if @parent
 
 	@ReadPayload: =>
 		classname = net.ReadString()
@@ -220,6 +223,53 @@ class DPP2.DEF.LimitRegistry
 		@@OBJECTS[@identifier] = @
 		table.insert(@@_OBJECTS, @)
 		@listing = {}
+
+		if SERVER
+			self2 = @
+
+			DPP2.cmd['add_' .. identifier .. '_limit'] = (args = {}) =>
+				prop = args[1]
+				group = args[2]
+				limit = tonumber(args[3])
+
+				return 'command.dpp2.lists.arg_empty' if not prop
+				prop = prop\trim()\lower()
+				return 'command.dpp2.lists.arg_empty' if prop == ''
+
+				return 'command.dpp2.lists.group_empty' if not prop
+				group = prop\trim()\lower()
+				return 'command.dpp2.lists.group_empty' if prop == ''
+
+				return 'command.dpp2.lists.limit_empty' if not limit
+
+				if entry = self2\Get(prop, group)
+					entry\SetLimit(limit)
+					DPP2.Notify(true, nil, 'command.dpp2.limit_lists.modified.' .. identifier, @, prop, group, limit)
+					return
+
+				self2\CreateEntry(prop, group, limit)\Replicate()
+				DPP2.Notify(true, nil, 'command.dpp2.limit_lists.added.' .. identifier, @, prop, group, limit)
+
+			DPP2.cmd['remove_' .. identifier .. '_limit'] = (args = {}) =>
+				prop = args[1]
+				group = args[2]
+
+				return 'command.dpp2.lists.arg_empty' if not prop
+				prop = prop\trim()\lower()
+				return 'command.dpp2.lists.arg_empty' if prop == ''
+
+				return 'command.dpp2.lists.group_empty' if not group
+				group = prop\trim()\lower()
+				return 'command.dpp2.lists.group_empty' if group == ''
+
+				entry = self2\Get(prop, group)
+				return 'command.dpp2.lists.already_not' if not entry
+
+				entry\Remove()
+				DPP2.Notify(true, nil, 'command.dpp2.limit_lists.removed.' .. identifier, @, prop, group)
+
+		DPP2.cmd_perms['add_' .. identifier .. '_limit'] = 'superadmin'
+		DPP2.cmd_perms['remove_' .. identifier .. '_limit'] = 'superadmin'
 
 		@LoadFromDisk() if SERVER
 

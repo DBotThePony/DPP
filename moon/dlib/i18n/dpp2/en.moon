@@ -224,6 +224,8 @@ message.dpp2.blacklist.model_blocked = 'Model %s is in blacklist'
 message.dpp2.blacklist.models_blocked = '#d entities were removed since some of them had blacklisted model'
 
 command.dpp2.lists.arg_empty = 'You provided empty argument'
+command.dpp2.lists.group_empty = 'Missing group name!'
+command.dpp2.lists.limit_empty = 'Invalid limit provided'
 command.dpp2.lists.already_in = 'Target list already has that element!'
 command.dpp2.lists.already_not = 'Target list already has no that element!'
 
@@ -331,3 +333,7 @@ command.dpp2.sharing.already_not_shared = 'Entity is already not shared in this 
 command.dpp2.sharing.un_shared = '#E is no longer shared in %s protection module'
 command.dpp2.sharing.un_shared_contraption = 'Everything inside contraption with ID %d is no longer shared in %s protection module'
 command.dpp2.sharing.cooldown = 'Command cooldown. Try again after #.2f seconds'
+
+command.dpp2.limit_lists.added.sbox = '#E added %q sandbox limit for group %s as #d'
+command.dpp2.limit_lists.removed.sbox = '#E added %q sandbox limit for group %s'
+command.dpp2.limit_lists.modified.sbox = '#E modified %q sandbox limit for group %s to #d'

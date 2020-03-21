@@ -124,8 +124,8 @@ include('dpp2/server/sv_antispam.lua') if SERVER
 include('dpp2/common/sh_transfer.lua')
 include('dpp2/server/sv_transfer.lua') if SERVER
 include('dpp2/client/cl_transfer.lua') if CLIENT
-include('dpp2/common/sh_count.lua')
 include('dpp2/server/sv_count.lua') if SERVER
+include('dpp2/common/sh_count.lua')
 include('dpp2/client/cl_count.lua') if CLIENT
 include('dpp2/common/sh_cppi.lua')
 include('dpp2/server/sv_logging.lua') if SERVER
