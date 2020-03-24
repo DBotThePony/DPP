@@ -28,6 +28,8 @@ Menus.SecondaryMenu = =>
 	Menus.QCheckBox(@, 'no_tool_player_admin')
 	Menus.QCheckBox(@, 'rl_enable')
 	Menus.QCheckBox(@, 'bl_enable')
+	Menus.QCheckBox(@, 'no_host_limits')
+	Menus.QCheckBox(@, 'limits_lists_enabled')
 
 Menus.LoggingMenu = =>
 	return if not IsValid(@)

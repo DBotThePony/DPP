@@ -18,6 +18,10 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
+import DPP2, DLib from _G
+import i18n from DLib
+import Menus from DPP2
+
 net.receive 'dpp2_limitlist_clear', ->
 	identifier = net.ReadString()
 	obj = assert(DPP2.DEF.LimitRegistry\GetByID(identifier), 'Unknown limit list ' .. identifier .. '!')
@@ -56,3 +60,158 @@ net.receive 'dpp2_limitlist_replicate', ->
 		obj\AddEntry(entry)
 
 net.receive 'dpp2_limithit', -> hook.Run('LimitHit', net.ReadString())
+
+DPP2.DEF.LimitRegistry.__base.RebuildListView = =>
+	return if not IsValid(@listView)
+
+	@listView\Clear()
+
+	sorted = [e for e in *@listing]
+	table.sort sorted, (a, b) ->
+		return true if a.class > b.class
+		return a.group > b.group
+
+	for entry in *sorted
+		@listView\AddLine(entry.class, entry.group, entry.limit)._entry = entry
+
+DPP2.DEF.LimitRegistry.__base.OpenMenu = (classname) =>
+	frame = vgui.Create('DLib_Window')
+	frame\SetSize(ScreenSize(200), ScreenSize(300))
+	frame\Center()
+	frame\MakePopup()
+	frame\SetTitle('gui.dpp2.limit.edit_title', classname)
+
+	entries = {}
+
+	with close = vgui.Create('DButton', frame)
+		\Dock(BOTTOM)
+		\Dock(5, 5, 5, 5)
+		\SetText('gui.misc.cancel')
+		.DoClick = -> frame\Close()
+
+	with apply = vgui.Create('DButton', frame)
+		\Dock(BOTTOM)
+		\Dock(5, 5, 5, 5)
+		\SetText('gui.misc.apply')
+		.DoClick = ->
+			for group, entry in pairs(entries)
+				if value = tonumber(entry\GetValue())
+					entry2 = @Get(classname, group)
+					if value ~= entry2.limit
+						RunConsoleCommand('dpp2_add_' .. @identifier .. '_limit', classname, group, entry\GetValue())
+				else
+					RunConsoleCommand('dpp2_remove_' .. @identifier .. '_limit', classname, group)
+
+			frame\Close()
+
+	scroll = vgui.Create('DScrollPanel', frame)
+	scroll\Dock(FILL)
+	canvas = scroll\GetCanvas()
+
+	groups = [group for group in pairs(CAMI.GetUsergroups())]
+
+	for entry in *@listing
+		if entry\Is(classname) and not table.qhasValue(groups, entry.group)
+			table.insert(groups, entry.group)
+
+	for group in *groups
+		with row = vgui.Create('EditablePanel', canvas)
+			\Dock(TOP)
+			\DockMargin(5, 2, 5, 2)
+			entry = @Get(classname, group)
+
+			with label = vgui.Create('DLabel', row)
+				\Dock(LEFT)
+				\DockMargin(0, 0, 2, 0)
+				\SetText(group)
+				\SetWide(ScreenSize(140))
+
+			with text = vgui.Create('DTextEntry', row)
+				\Dock(RIGHT)
+				\DockMargin(2, 0, 0, 0)
+				\SetValue(entry and entry.limit or '')
+				\SetWide(ScreenSize(140))
+				entries[group] = text
+
+DPP2.DEF.LimitRegistry.__base.OpenEmptyListViewMenu = =>
+	with menu = DermaMenu()
+		add = ->
+			callback = (text) -> RunConsoleCommand('dpp2_add_' .. @identifier .. '_limit', text)
+			Derma_StringRequest 'gui.dpp2.menus.query.title', 'gui.dpp2.menus.query.subtitle', '', callback, nil, 'gui.misc.ok', 'gui.misc.cancel'
+
+		\AddOption('gui.dpp2.menus.add', add)\SetIcon(Menus.Icons.Add)
+		\Open()
+
+DPP2.DEF.LimitRegistry.__base.OpenEntryMenu = (entry) =>
+	remove = -> RunConsoleCommand('dpp2_remove_' .. @identifier .. '_limit', entry.class, entry.group)
+	edit = -> @OpenMenu(entry.class)
+	copy_classname = -> SetClipboardText(entry.class)
+	copy_group = -> SetClipboardText(entry.group)
+	copy_limit = -> SetClipboardText(entry.limit\tostring())
+
+	with menu = DermaMenu()
+		submenu, button = \AddSubMenu('gui.dpp2.menus.remove')
+		button\SetIcon(Menus.Icons.Remove)
+		submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
+
+		\AddOption('gui.dpp2.menus.edit', edit)\SetIcon(Menus.Icons.Edit)
+		\AddOption('gui.dpp2.menus.copy_classname', copy_classname)\SetIcon(Menus.Icons.Copy)
+		\AddOption('gui.dpp2.menus.copy_group', copy_group)\SetIcon(Menus.Icons.Copy) if entry.group
+		\AddOption('gui.dpp2.menus.copy_limit', copy_limit)\SetIcon(Menus.Icons.Copy)
+
+		\Open()
+
+DPP2.DEF.LimitRegistry.__base.BuildCPanel = (panel) =>
+	return if not IsValid(panel)
+
+	@listView = vgui.Create('DListView', panel)
+	@listView\Dock(TOP)
+	@listView\SetTall(ScreenSize(350))
+
+	@listView\AddColumn('gui.dpp2.limit_lists.view.classname')
+	@listView\AddColumn('gui.dpp2.limit_lists.view.group')
+	@listView\AddColumn('gui.dpp2.limit_lists.view.limit')
+	@listView.OnRowRightClick = (_pnl, lineID, line) -> @OpenEntryMenu(line._entry) if line._entry
+	OnMousePressed = @listView.OnMousePressed
+
+	@listView.OnMousePressed = (_, code) ->
+		@OpenEmptyListViewMenu() if code == MOUSE_RIGHT
+		return OnMousePressed(_, code)
+
+	@RebuildListView()
+
+	@newItemButton = vgui.Create('DButton', panel)
+	@newItemInput = vgui.Create('DTextEntry', panel)
+	@newItemInput\Dock(TOP)
+	@newItemButton\Dock(TOP)
+
+	@newItemInput\DockMargin(5, 5, 5, 5)
+	@newItemButton\DockMargin(5, 5, 5, 5)
+
+	@newItemInput\SetPlaceholderText(i18n.localize('gui.dpp2.limit_lists.view.classname'))
+	@newItemButton\SetText('gui.dpp2.restriction_lists.add_new')
+	@newItemButton\SetIcon(Menus.Icons.Add)
+
+	@newItemInput.OnEnter = -> @newItemButton\DoClick()
+
+	Menus.QCheckBox(panel, @identifier .. '_limits_enabled')
+	Menus.QCheckBox(panel, @identifier .. '_limits_inclusive')
+
+	if @autocomplete
+		@newItemInput.GetAutoComplete = (_, text) ->
+			fcall = @autocomplete
+			items = fcall(@, text, text, nil, false)
+			return {'...'} if #items > 100
+			return items
+
+	@newItemButton.DoClick = ->
+		text = @newItemInput\GetText()
+		return if not text or text == ''
+		text = text\trim()
+		return if text == ''
+		@newItemInput\SetText('')
+		@OpenMenu(text)
+
+	hook.Add 'DPP2_Limits_' .. @identifier .. '_EntryAdded', panel, -> timer.Create 'DPP2_RebuildLineMenu_Limits_' .. @identifier, 0.2, 1, -> @RebuildListView()
+	hook.Add 'DPP2_Limits_' .. @identifier .. '_EntryRemoved', panel, -> timer.Create 'DPP2_RebuildLineMenu_Limits_' .. @identifier, 0.2, 1, -> @RebuildListView()
+	hook.Add 'DPP2_Limits_' .. @identifier .. '_EntryChanged', panel, -> timer.Create 'DPP2_RebuildLineMenu_Limits_' .. @identifier, 0.2, 1, -> @RebuildListView()

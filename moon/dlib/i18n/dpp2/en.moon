@@ -262,6 +262,7 @@ gui.dpp2.toolcategory.client = 'Client settings'
 gui.dpp2.toolcategory.restriction = 'Restriction lists'
 gui.dpp2.toolcategory.blacklist = 'Blacklists'
 gui.dpp2.toolcategory.player = 'Player utils'
+gui.dpp2.toolcategory.limits = 'Limits'
 
 gui.dpp2.toolmenu.playermode = 'Player protection'
 
@@ -275,6 +276,8 @@ gui.dpp2.toolmenu.utils = 'Utils'
 gui.dpp2.toolmenu.logging = 'Logging settings'
 gui.dpp2.toolmenu.restrictions.toolgun_mode = 'Toolgun mode restrictions'
 gui.dpp2.toolmenu.restrictions.class_spawn = 'Entity restrictions'
+
+gui.dpp2.toolmenu.limits.sbox = 'Sandbox Limits'
 
 gui.dpp2.toolmenu.playerutil.clear = '%s: Cleanup props'
 gui.dpp2.toolmenu.playerutil.freezephys = 'F'
@@ -304,6 +307,8 @@ gui.dpp2.menus.remove = 'Remove'
 gui.dpp2.menus.remove2 = 'Confirm'
 gui.dpp2.menus.copy_classname = 'Copy classname'
 gui.dpp2.menus.copy_groups = 'Copy groups'
+gui.dpp2.menus.copy_group = 'Copy group'
+gui.dpp2.menus.copy_limit = 'Copy limit'
 
 gui.dpp2.property.copymodel = 'Copy model'
 gui.dpp2.property.copyangles = 'Copy angles'
@@ -334,6 +339,16 @@ command.dpp2.sharing.un_shared = '#E is no longer shared in %s protection module
 command.dpp2.sharing.un_shared_contraption = 'Everything inside contraption with ID %d is no longer shared in %s protection module'
 command.dpp2.sharing.cooldown = 'Command cooldown. Try again after #.2f seconds'
 
+gui.dpp2.cvars.no_host_limits = 'No limits for host player in singleplayer/on listen server'
+gui.dpp2.cvars.sbox_limits_enabled = 'Enable sandbox limits overrides'
+gui.dpp2.cvars.sbox_limits_inclusive = 'Sandbox limits list is inclusive'
+gui.dpp2.cvars.limits_lists_enabled = 'Enable limits lists'
+
 command.dpp2.limit_lists.added.sbox = '#E added %q sandbox limit for group %s as #d'
-command.dpp2.limit_lists.removed.sbox = '#E added %q sandbox limit for group %s'
+command.dpp2.limit_lists.removed.sbox = '#E removed %q sandbox limit for group %s'
 command.dpp2.limit_lists.modified.sbox = '#E modified %q sandbox limit for group %s to #d'
+
+gui.dpp2.limit_lists.view.classname = 'Identifier'
+gui.dpp2.limit_lists.view.group = 'Usergroup'
+gui.dpp2.limit_lists.view.limit = 'Limit'
+gui.dpp2.limit.edit_title = 'Editing limits for %s'

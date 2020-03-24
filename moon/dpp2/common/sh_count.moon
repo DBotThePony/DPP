@@ -20,7 +20,8 @@
 
 import DPP2 from _G
 
-DPP2.NO_LIMIT_FOR_HOST = DPP2.CreateConVar('no_host_limits', '0', DPP2.TYPE_BOOL)
+DPP2.NO_LIMIT_FOR_HOST = DPP2.CreateConVar('no_host_limits', '1', DPP2.TYPE_BOOL)
+DPP2.LIMITS_LIST_ENABLED = DPP2.CreateConVar('limits_lists_enabled', '1', DPP2.TYPE_BOOL)
 
 if not DPP2.g_SBoxObjects
 	DPP2.g_SBoxObjects = setmetatable(g_SBoxObjects or {}, {
@@ -88,8 +89,9 @@ plyMeta.CheckLimit = (mode, notify = SERVER) =>
 	mode = mode\lower()
 	cache[mode] = cache[mode] or assert(ConVar('sbox_max' .. mode), 'No such ConVar: sbox_max' .. mode)
 
-	entry = DPP2.SBoxLimits\Get(mode, @GetUserGroup())
+	entry = DPP2.SBoxLimits\Get(mode, @GetUserGroup()) if DPP2.SBoxLimits\IsEnabled()
 	limit = entry and entry.limit or cache[mode]\GetInt()
+	limit = 0 if not entry and DPP2.SBoxLimits\IsEnabled() and DPP2.SBoxLimits\IsInclusive()
 
 	return true if limit < 0
 
@@ -202,13 +204,13 @@ class DPP2.DEF.LimitEntry
 	ReadPayload: =>
 		@class = net.ReadString()
 		@group = net.ReadString()
-		@limit = net.ReadUInt32()
+		@limit = net.ReadInt32()
 		@parent\CallHook('EntryChanged', entry) if @parent
 
 	@ReadPayload: =>
 		classname = net.ReadString()
 		group = net.ReadString()
-		limit = net.ReadUInt32()
+		limit = net.ReadInt32()
 		return DPP2.DEF.LimitEntry(classname, group, limit)
 
 class DPP2.DEF.LimitRegistry
@@ -224,6 +226,9 @@ class DPP2.DEF.LimitRegistry
 		table.insert(@@_OBJECTS, @)
 		@listing = {}
 
+		@ENABLED = DPP2.CreateConVar(identifier .. '_limits_enabled', '1', DPP2.TYPE_BOOL)
+		@IS_INCLUSIVE = DPP2.CreateConVar(identifier .. '_limits_inclusive', '0', DPP2.TYPE_BOOL)
+
 		if SERVER
 			self2 = @
 
@@ -236,9 +241,9 @@ class DPP2.DEF.LimitRegistry
 				prop = prop\trim()\lower()
 				return 'command.dpp2.lists.arg_empty' if prop == ''
 
-				return 'command.dpp2.lists.group_empty' if not prop
-				group = prop\trim()\lower()
-				return 'command.dpp2.lists.group_empty' if prop == ''
+				return 'command.dpp2.lists.group_empty' if not group
+				group = group\trim()\lower()
+				return 'command.dpp2.lists.group_empty' if group == ''
 
 				return 'command.dpp2.lists.limit_empty' if not limit
 
@@ -259,7 +264,7 @@ class DPP2.DEF.LimitRegistry
 				return 'command.dpp2.lists.arg_empty' if prop == ''
 
 				return 'command.dpp2.lists.group_empty' if not group
-				group = prop\trim()\lower()
+				group = group\trim()\lower()
 				return 'command.dpp2.lists.group_empty' if group == ''
 
 				entry = self2\Get(prop, group)
@@ -305,6 +310,9 @@ class DPP2.DEF.LimitRegistry
 		@CallHook('EntryAdded', entry)
 		@SaveTimer()
 		return true
+
+	IsEnabled: => DPP2.LIMITS_LIST_ENABLED\GetBool() and @ENABLED\GetBool()
+	IsInclusive: => @IS_INCLUSIVE\GetBool()
 
 	RemoveEntry: (entry) =>
 		for i, entry2 in ipairs(@listing)
