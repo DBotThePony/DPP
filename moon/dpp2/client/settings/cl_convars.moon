@@ -100,3 +100,10 @@ Menus.ClientProtectionModulesMenu = =>
 		@CheckBox('gui.dpp2.cvars.' .. 'cl_' .. name .. '_no_players', 'dpp2_cl_' .. name .. '_no_players')
 		@CheckBox('gui.dpp2.cvars.' .. 'cl_' .. name .. '_no_world', 'dpp2_cl_' .. name .. '_no_world')
 		@CheckBox('gui.dpp2.cvars.' .. 'cl_' .. name .. '_no_map', 'dpp2_cl_' .. name .. '_no_map')
+
+Menus.ClientMenu = =>
+	return if not IsValid(@)
+
+	@CheckBox('gui.dpp2.cvars.cl_simple_owner', 'dpp2_cl_simple_owner')
+	@CheckBox('gui.dpp2.cvars.cl_entity_name', 'dpp2_cl_entity_name')
+	@CheckBox('gui.dpp2.cvars.cl_entity_info', 'dpp2_cl_entity_info')

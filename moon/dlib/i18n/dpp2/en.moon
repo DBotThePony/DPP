@@ -271,6 +271,7 @@ gui.dpp2.toolcategory.limits = 'Limits'
 gui.dpp2.toolmenu.playermode = 'Player protection'
 
 gui.dpp2.toolmenu.client_protection = 'Protection settings'
+gui.dpp2.toolmenu.client_settings = 'General settings'
 gui.dpp2.toolmenu.primary = 'Primary settings'
 gui.dpp2.toolmenu.secondary = 'Secondary settings'
 gui.dpp2.toolmenu.antipropkill = 'Antipropkill settings'
