@@ -124,6 +124,10 @@ gui.dpp2.cvars.log_tranfer = 'Log transfers'
 gui.dpp2.cvars.log_write = 'Write log to disk'
 
 gui.dpp2.cvars.cl_protection = 'Main power switch'
+gui.dpp2.cvars.cl_simple_owner = 'Simple owner display (FPP Style)'
+gui.dpp2.cvars.cl_entity_name = 'Show entity print name'
+gui.dpp2.cvars.cl_entity_info = 'Show entity info'
+
 gui.dpp2.cvars.apropkill = 'Antipropkill'
 gui.dpp2.cvars.apropkill_damage = 'Block prop push damage'
 gui.dpp2.cvars.apropkill_damage_nworld = 'Don\'t block push damage from world props'

@@ -23,6 +23,10 @@ import HUDCommons from DLib
 
 entMeta = FindMetaTable('Entity')
 
+DPP2.CL_SIMPLE_OWNER = DPP2.CreateClientConVar('cl_simple_owner', '0', DPP2.TYPE_BOOL)
+DPP2.CL_SHOW_ENTITY_NAME = DPP2.CreateClientConVar('cl_entity_name', '1', DPP2.TYPE_BOOL)
+DPP2.CL_SHOW_ENTITY_INFO = DPP2.CreateClientConVar('cl_entity_info', '1', DPP2.TYPE_BOOL)
+
 entMeta.DPP2GetOwner = =>
 	if @GetNWString('dpp2_owner_steamid', '-1') == '-1'
 		return NULL, 'world', 'World', 'world'
@@ -69,46 +73,53 @@ GetOwnerText = ->
 		mask: MASK_ALL
 	})
 
+	CL_SIMPLE_OWNER = DPP2.CL_SIMPLE_OWNER\GetBool()
+
 	return if not tr.Hit or not tr.Entity\IsValid()
 	owner, ownerSteamID, ownerName = tr.Entity\DPP2GetOwner()
 	--ownerName = tr.Entity\Nick() if tr.Entity\IsPlayer()
-	ownerName = string.format('%s\n%s', ownerName, tostring(tr.Entity)) if not tr.Entity\IsPlayer()
+	ownerName = string.format('%s\n%s', ownerName, tostring(tr.Entity)) if not CL_SIMPLE_OWNER and not tr.Entity\IsPlayer() and DPP2.CL_SHOW_ENTITY_INFO\GetBool()
 
 	canTouch = true
 
-	if tr.Entity.GetPrintName and tr.Entity\GetPrintName() ~= ''
-		ownerName = string.format('%s\n%q', ownerName, tr.Entity\GetPrintName())
-	elseif tr.Entity.PrintName and tr.Entity.PrintName ~= ''
-		ownerName = string.format('%s\n%q', ownerName, tr.Entity.PrintName)
+	if not CL_SIMPLE_OWNER and DPP2.CL_SHOW_ENTITY_NAME\GetBool()
+		if tr.Entity.GetPrintName and tr.Entity\GetPrintName() ~= ''
+			ownerName = string.format('%s\n%q', ownerName, tr.Entity\GetPrintName())
+		elseif tr.Entity.PrintName and tr.Entity.PrintName ~= ''
+			ownerName = string.format('%s\n%q', ownerName, tr.Entity.PrintName)
 
 	switch ply\GetActiveWeaponClass()
 		when 'weapon_physgun'
 			status, text1, text2 = DPP2.ACCESS.CanPhysgun(ply, tr.Entity)
 			canTouch = status
 
-			ownerName = string.format('%s\n%s', ownerName, text1) if text1
-			ownerName = string.format('%s\n%s', ownerName, text2) if text2
+			if not CL_SIMPLE_OWNER
+				ownerName = string.format('%s\n%s', ownerName, text1) if text1
+				ownerName = string.format('%s\n%s', ownerName, text2) if text2
 
 		when 'gmod_tool'
 			status, text1, text2 = DPP2.ACCESS.CanToolgun(ply, tr.Entity, ply\GetActiveWeapon()\GetMode() or 'remover')
 			canTouch = status
 
-			ownerName = string.format('%s\n%s', ownerName, text1) if text1
-			ownerName = string.format('%s\n%s', ownerName, text2) if text2
+			if not CL_SIMPLE_OWNER
+				ownerName = string.format('%s\n%s', ownerName, text1) if text1
+				ownerName = string.format('%s\n%s', ownerName, text2) if text2
 
 		when 'weapon_physcannon'
 			status, text1, text2 = DPP2.ACCESS.CanGravgun(ply, tr.Entity)
 			canTouch = status
 
-			ownerName = string.format('%s\n%s', ownerName, text1) if text1
-			ownerName = string.format('%s\n%s', ownerName, text2) if text2
+			if not CL_SIMPLE_OWNER
+				ownerName = string.format('%s\n%s', ownerName, text1) if text1
+				ownerName = string.format('%s\n%s', ownerName, text2) if text2
 
 		else
 			status, text1, text2 = DPP2.ACCESS.CanDamage(ply, tr.Entity)
 			canTouch = status
 
-			ownerName = string.format('%s\n%s', ownerName, text1) if text1
-			ownerName = string.format('%s\n%s', ownerName, text2) if text2
+			if not CL_SIMPLE_OWNER
+				ownerName = string.format('%s\n%s', ownerName, text1) if text1
+				ownerName = string.format('%s\n%s', ownerName, text2) if text2
 
 	if canTouch
 		return ownerName, CAN_TOUCH()
