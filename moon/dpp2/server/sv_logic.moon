@@ -79,6 +79,7 @@ hook.Add 'OnEntityCreated', 'DPP2.Contraptions', =>
 		return if not IsValid(ent1) or not IsValid(ent2)
 		WalkConstraint(ent1)
 		WalkConstraint(ent2)
+
 	return
 
 hook.Add 'EntityRemoved', 'DPP2.Contraptions', =>

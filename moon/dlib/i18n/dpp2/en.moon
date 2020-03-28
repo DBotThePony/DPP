@@ -115,6 +115,8 @@ for {modeID, modeName} in *{{'model', 'Model'}, {'toolgun_mode', 'Toolgun mode'}
 	gui.dpp2.cvars['rl_' .. modeID .. '_invert'] = string.format('%s restriction list is inverted', modeName)
 	gui.dpp2.cvars['rl_' .. modeID .. '_invert_all'] = string.format('%s restriction list is fully inverted', modeName)
 
+gui.dpp2.cvars.no_rope_world = 'No rope world'
+
 gui.dpp2.cvars.log = 'Main power switch'
 gui.dpp2.cvars.log_echo = 'Echo logs in server console'
 gui.dpp2.cvars.log_echo_clients = 'Echo logs in admin console'

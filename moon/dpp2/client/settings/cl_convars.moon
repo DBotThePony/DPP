@@ -30,6 +30,7 @@ Menus.SecondaryMenu = =>
 	Menus.QCheckBox(@, 'bl_enable')
 	Menus.QCheckBox(@, 'no_host_limits')
 	Menus.QCheckBox(@, 'limits_lists_enabled')
+	Menus.QCheckBox(@, 'no_rope_world')
 
 Menus.LoggingMenu = =>
 	return if not IsValid(@)

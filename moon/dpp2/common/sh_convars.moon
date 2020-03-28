@@ -20,6 +20,8 @@
 
 import DPP2 from _G
 
+DPP2.NO_ROPE_WORLD = DPP2.CreateConVar('no_rope_world', '1', DPP2.TYPE_BOOL)
+
 -- Antipropkill
 DPP2.ENABLE_ANTIPROPKILL = DPP2.CreateConVar('apropkill', '1', DPP2.TYPE_BOOL)
 DPP2.ANTIPROPKILL_DAMAGE = DPP2.CreateConVar('apropkill_damage', '1', DPP2.TYPE_BOOL)

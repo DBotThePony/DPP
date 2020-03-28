@@ -88,6 +88,14 @@ DPP2.PlayerSpawnedSomething = (ply, ent, advancedCheck = false) ->
 
 	eclass = ent\GetClass()
 
+	if DPP2.NO_ROPE_WORLD\GetBool() and eclass == 'keyframe_rope'
+		start, endpoint = ent\GetInternalVariable('m_hStartPoint'), ent\GetInternalVariable('m_hEndPoint')
+
+		if start == endpoint and not IsValid(start)
+			ent\Remove()
+			DPP2.LogSpawn('message.dpp2.log.spawn.tried_plain', ply, color_red, DPP2.textcolor, 'keyframe_rope')
+			return false
+
 	if not eclass or not table.qhasValue(log_blacklist, eclass)
 		if not eclass or not eclass\startsWith('prop_')
 			DPP2.LogSpawn('message.dpp2.log.spawn.generic', ply, ent)
@@ -253,7 +261,7 @@ hook.Add(name, 'DPP2.SpawnHooks', func, -4) for name, func in pairs(hooksToReg)
 import CurTimeL, table, type from _G
 
 CheckEntities = {}
-CheckFrame = 0
+DPP2._Spawn_CheckFrame = 0
 
 DPP2.HookedEntityCreation = => table.qhasValue(CheckEntities, @) or @__dpp2_spawn_frame == CurTimeL()
 
@@ -284,52 +292,68 @@ DiveEntityCheck = (owner, checkedEnts, checkedTables, found) =>
 	return found
 
 hook.Add 'Think', 'DPP2.CheckEntitiesOwnage', ->
-	return if CheckFrame >= CurTimeL()
+	return if DPP2._Spawn_CheckFrame >= CurTimeL()
 	return if #CheckEntities == 0
 	copy = CheckEntities
+	checkConstraints = {}
 	CheckEntities = {}
+	ctime = CurTimeL()
 
 	for ent in *copy
 		if ent\IsValid()
-			ent.__dpp2_spawn_frame = CurTimeL()
+			ent.__dpp2_spawn_frame = ctime
 
 	while #copy ~= 0
 		ent = table.remove(copy, 1)
 
-		if ent\IsValid() and ent\DPP2OwnerIsValid()
-			ply = ent\DPP2GetOwner()
-			found = DiveEntityCheck(ent, ply, {}, {}, {})
+		if ent\IsValid()
+			if ent\IsConstraint()
+				table.insert(checkConstraints, ent)
+			elseif ent\DPP2OwnerIsValid()
+				ply = ent\DPP2GetOwner()
+				found = DiveEntityCheck(ent, ply, {}, {}, {})
 
-			if #found ~= 0
-				DPP2.UnqueueAntispam(ent)
-				local toremove
+				if #found ~= 0
+					DPP2.UnqueueAntispam(ent)
+					local toremove
 
-				for ent2 in *found
-					DPP2.UnqueueAntispam(ent2)
-					DPP2.PlayerSpawnedSomething(ply, ent2, true)
-
-					for i, ent3 in ipairs(copy)
-						if ent2 == ent3
-							toremove = toremove or {}
-							table.insert(toremove, i)
-							break
-
-				table.removeValues(copy, toremove) if toremove
-				fail = not PreventModelSpawn(ply, nil, ent, true)
-
-				if not fail
 					for ent2 in *found
-						fail = not PreventModelSpawn(ply, nil, ent2, true)
-						break if fail
+						DPP2.UnqueueAntispam(ent2)
+						DPP2.PlayerSpawnedSomething(ply, ent2, true)
 
-				if not fail
-					DPP2.QueueAntispam(ply, ent, found)
-				else
-					SafeRemoveEntity(ent)
-					SafeRemoveEntity(ent2) for ent2 in *found
-					DPP2.NotifyError(ply, nil, 'message.dpp2.blacklist.models_blocked', #found + 1)
+						for i, ent3 in ipairs(copy)
+							if ent2 == ent3
+								toremove = toremove or {}
+								table.insert(toremove, i)
+								break
+
+					table.removeValues(copy, toremove) if toremove
+					fail = not PreventModelSpawn(ply, nil, ent, true)
+
+					if not fail
+						for ent2 in *found
+							fail = not PreventModelSpawn(ply, nil, ent2, true)
+							break if fail
+
+					if not fail
+						DPP2.QueueAntispam(ply, ent, found)
+					else
+						SafeRemoveEntity(ent)
+						SafeRemoveEntity(ent2) for ent2 in *found
+						DPP2.NotifyError(ply, nil, 'message.dpp2.blacklist.models_blocked', #found + 1)
+
+	for constraint in *checkConstraints
+		ent1, ent2 = constraint\GetConstrainedEntities()
+
+		if ctime == ent1.__dpp2_spawn_frame and ctime == ent2.__dpp2_spawn_frame
+			if ent1\DPP2IsOwned() and ent1\DPP2OwnerIsValid()
+				DPP2.PlayerSpawnedSomething(ent1\DPP2GetOwner(), constraint, true)
+			elseif ent2\DPP2IsOwned() and ent2\DPP2OwnerIsValid()
+				DPP2.PlayerSpawnedSomething(ent2\DPP2GetOwner(), constraint, true)
+
+		class1, class2 = ent1\GetClass(), ent2\GetClass()
 
 hook.Add 'OnEntityCreated', 'DPP2.CheckEntitiesOwnage', =>
-	CheckFrame = CurTimeL()
+	DPP2._Spawn_CheckFrame = CurTimeL()
 	table.insert(CheckEntities, @)
 	return

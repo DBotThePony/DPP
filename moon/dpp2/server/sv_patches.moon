@@ -63,6 +63,6 @@ if cleanup
 
 	cleanup.Add = (ply = NULL, mode = error('category was not specified'), ent = NULL, ...) ->
 		error('NULL player specified') if not IsValid(ply)
-		error('NULL entity specified') if not IsValid(ent)
-		DPP2.PlayerSpawnedSomething(ply, ent, true) if not ent\DPP2IsOwned() and mode ~= 'duplicates'
+		--error('NULL entity specified') if not IsValid(ent)
+		DPP2.PlayerSpawnedSomething(ply, ent, true) if IsValid(ent) and not ent\DPP2IsOwned() and mode ~= 'duplicates'
 		return cleanup._DPP2_Add(ply, mode, ent, ...)
