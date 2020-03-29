@@ -93,6 +93,7 @@ AddCSLuaFile('dpp2/client/settings/cl_menus.lua')
 AddCSLuaFile('dpp2/client/settings/cl_registry_menus.lua')
 AddCSLuaFile('dpp2/client/settings/cl_settings.lua')
 AddCSLuaFile('dpp2/client/settings/cl_playerutil.lua')
+AddCSLuaFile('dpp2/client/cl_spawnmenu.lua')
 AddCSLuaFile('dpp2/common/concommands/sh_cmdlogic.lua')
 AddCSLuaFile('dpp2/common/concommands/sh_generic.lua')
 AddCSLuaFile('dpp2/common/concommands/sh_registry.lua')
@@ -326,6 +327,8 @@ if CLIENT
 
 	include('dpp2/client/cl_properties.lua')
 	include('dpp2/client/cl_sharing.lua')
+
+	include('dpp2/client/cl_spawnmenu.lua')
 
 DPP2.Message(string.format('DPP/2 Startup took %.2f ms', SysTime() - startup))
 

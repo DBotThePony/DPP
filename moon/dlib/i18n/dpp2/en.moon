@@ -88,6 +88,13 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 	command.dpp2.blists.added[modeID] = '#E added %s to ' .. modeName .. ' blacklist'
 	command.dpp2.blists.removed[modeID] = '#E removed %s from ' .. modeName .. ' blacklist'
 
+	gui.dpp2.menu['add_to_' .. modeID .. '_blacklist'] = 'Add to ' .. modeName .. ' blacklist'
+	gui.dpp2.menu['remove_from_' .. modeID .. '_blacklist'] = 'Remove from ' .. modeName .. ' blacklist'
+
+	gui.dpp2.menu['add_to_' .. modeID .. '_restrictions'] = 'Add to ' .. modeName .. ' restriction list...'
+	gui.dpp2.menu['edit_in_' .. modeID .. '_restrictions'] = 'Edit in ' .. modeName .. ' restriction list'
+	gui.dpp2.menu['remove_from_' .. modeID .. '_restrictions'] = 'Remove from ' .. modeName .. ' restriction list'
+
 	gui.dpp2.disable_protection[modeID] = 'Disable ' .. modeName .. ' protection'
 
 	command.dpp2.rlists.added[modeID] = '#E added %q to ' .. modeName .. ' restriction list with whitelist status set to %s'
@@ -114,6 +121,13 @@ for {modeID, modeName} in *{{'model', 'Model'}, {'toolgun_mode', 'Toolgun mode'}
 	gui.dpp2.cvars['rl_' .. modeID .. '_enable'] = string.format('%s restriction list enabled', modeName)
 	gui.dpp2.cvars['rl_' .. modeID .. '_invert'] = string.format('%s restriction list is inverted', modeName)
 	gui.dpp2.cvars['rl_' .. modeID .. '_invert_all'] = string.format('%s restriction list is fully inverted', modeName)
+
+	gui.dpp2.menu['add_to_' .. modeID .. '_blacklist'] = 'Add to ' .. modeName .. ' blacklist'
+	gui.dpp2.menu['remove_from_' .. modeID .. '_blacklist'] = 'Remove from ' .. modeName .. ' blacklist'
+
+	gui.dpp2.menu['add_to_' .. modeID .. '_restrictions'] = 'Add to ' .. modeName .. ' restriction list...'
+	gui.dpp2.menu['edit_in_' .. modeID .. '_restrictions'] = 'Edit in ' .. modeName .. ' restriction list'
+	gui.dpp2.menu['remove_from_' .. modeID .. '_restrictions'] = 'Remove from ' .. modeName .. ' restriction list'
 
 gui.dpp2.cvars.no_rope_world = 'No rope world'
 
