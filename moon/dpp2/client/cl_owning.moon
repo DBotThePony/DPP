@@ -23,6 +23,7 @@ import HUDCommons from DLib
 
 entMeta = FindMetaTable('Entity')
 
+DPP2.CL_DRAW_OWNER = DPP2.CreateClientConVar('cl_draw_owner', '1', DPP2.TYPE_BOOL)
 DPP2.CL_SIMPLE_OWNER = DPP2.CreateClientConVar('cl_simple_owner', '0', DPP2.TYPE_BOOL)
 DPP2.CL_SHOW_ENTITY_NAME = DPP2.CreateClientConVar('cl_entity_name', '1', DPP2.TYPE_BOOL)
 DPP2.CL_SHOW_ENTITY_INFO = DPP2.CreateClientConVar('cl_entity_info', '1', DPP2.TYPE_BOOL)
@@ -64,6 +65,8 @@ CAN_TOUCH = HUDCommons.CreateColor('dpp2_can_touch', 'DPP/2 Can touch text', 66,
 CAN_NOT_TOUCH = HUDCommons.CreateColor('dpp2_cant_touch', 'DPP/2 Can\'t touch text', 213, 43, 43, 255)
 
 GetOwnerText = ->
+	return if not DPP2.CL_DRAW_OWNER\GetBool() or not DPP2.DRAW_OWNER\GetBool()
+
 	ply = DLib.HUDCommons.SelectPlayer()
 
 	tr = util.TraceLine({
@@ -73,16 +76,16 @@ GetOwnerText = ->
 		mask: MASK_ALL
 	})
 
-	CL_SIMPLE_OWNER = DPP2.CL_SIMPLE_OWNER\GetBool()
+	CL_SIMPLE_OWNER = DPP2.CL_SIMPLE_OWNER\GetBool() or DPP2.SIMPLE_OWNER\GetBool()
 
 	return if not tr.Hit or not tr.Entity\IsValid()
 	owner, ownerSteamID, ownerName = tr.Entity\DPP2GetOwner()
 	--ownerName = tr.Entity\Nick() if tr.Entity\IsPlayer()
-	ownerName = string.format('%s\n%s', ownerName, tostring(tr.Entity)) if not CL_SIMPLE_OWNER and not tr.Entity\IsPlayer() and DPP2.CL_SHOW_ENTITY_INFO\GetBool()
+	ownerName = string.format('%s\n%s', ownerName, tostring(tr.Entity)) if not CL_SIMPLE_OWNER and not tr.Entity\IsPlayer() and DPP2.CL_SHOW_ENTITY_INFO\GetBool() and DPP2.SHOW_ENTITY_INFO\GetBool()
 
 	canTouch = true
 
-	if not CL_SIMPLE_OWNER and DPP2.CL_SHOW_ENTITY_NAME\GetBool()
+	if not CL_SIMPLE_OWNER and DPP2.CL_SHOW_ENTITY_NAME\GetBool() and DPP2.SHOW_ENTITY_NAME\GetBool()
 		if tr.Entity.GetPrintName and tr.Entity\GetPrintName() ~= ''
 			ownerName = string.format('%s\n%q', ownerName, tr.Entity\GetPrintName())
 		elseif tr.Entity.PrintName and tr.Entity.PrintName ~= ''

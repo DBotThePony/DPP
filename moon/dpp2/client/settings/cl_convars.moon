@@ -32,6 +32,11 @@ Menus.SecondaryMenu = =>
 	Menus.QCheckBox(@, 'limits_lists_enabled')
 	Menus.QCheckBox(@, 'no_rope_world')
 
+	Menus.QCheckBox(@, 'draw_owner')
+	Menus.QCheckBox(@, 'simple_owner')
+	Menus.QCheckBox(@, 'entity_name')
+	Menus.QCheckBox(@, 'entity_info')
+
 Menus.LoggingMenu = =>
 	return if not IsValid(@)
 

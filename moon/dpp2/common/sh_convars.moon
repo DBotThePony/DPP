@@ -20,6 +20,11 @@
 
 import DPP2 from _G
 
+DPP2.DRAW_OWNER = DPP2.CreateConVar('draw_owner', '1', DPP2.TYPE_BOOL)
+DPP2.SIMPLE_OWNER = DPP2.CreateConVar('simple_owner', '0', DPP2.TYPE_BOOL)
+DPP2.SHOW_ENTITY_NAME = DPP2.CreateConVar('entity_name', '1', DPP2.TYPE_BOOL)
+DPP2.SHOW_ENTITY_INFO = DPP2.CreateConVar('entity_info', '1', DPP2.TYPE_BOOL)
+
 DPP2.NO_ROPE_WORLD = DPP2.CreateConVar('no_rope_world', '1', DPP2.TYPE_BOOL)
 
 -- Antipropkill

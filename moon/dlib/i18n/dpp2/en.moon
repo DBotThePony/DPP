@@ -140,9 +140,16 @@ gui.dpp2.cvars.log_tranfer = 'Log transfers'
 gui.dpp2.cvars.log_write = 'Write log to disk'
 
 gui.dpp2.cvars.cl_protection = 'Main power switch'
+
+gui.dpp2.cvars.cl_draw_owner = 'Draw ownership'
 gui.dpp2.cvars.cl_simple_owner = 'Simple owner display (FPP Style)'
 gui.dpp2.cvars.cl_entity_name = 'Show entity print name'
 gui.dpp2.cvars.cl_entity_info = 'Show entity info'
+
+gui.dpp2.cvars.draw_owner = 'Serverside override: Draw ownership'
+gui.dpp2.cvars.simple_owner = 'Serverside override: Simple owner display (FPP Style)'
+gui.dpp2.cvars.entity_name = 'Serverside override: Show entity print name'
+gui.dpp2.cvars.entity_info = 'Serverside override: Show entity info'
 
 gui.dpp2.cvars.apropkill = 'Antipropkill'
 gui.dpp2.cvars.apropkill_damage = 'Block prop push damage'

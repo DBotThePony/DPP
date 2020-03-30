@@ -56,6 +56,8 @@ if CLIENT
 		table.insert(DPP2.ClientCVarsRegistry, {cvar: obj, :cvarName, :cvarDef, :cvarDesc, :cvarType, :userinfo})
 		return obj
 
+DLib.i18n.reload('dpp2')
+
 DPP2.CheckPhrase = (name) -> DPP2.Message('Missing langstring for: ' .. name) if not DLib.i18n.exists(name)
 
 DPP2.ENABLE_PROTECTION = DPP2.CreateConVar('protection', '1', DPP2.TYPE_BOOL)
