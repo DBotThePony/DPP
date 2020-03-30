@@ -23,6 +23,8 @@ import Menus from DPP2
 
 Menus._Icons = {
 	Add: 'icon16/pencil_add.png'
+	Wrench: 'icon16/wrench.png'
+	Wrench2: 'icon16/wrench_orange.png'
 	AddPlain: 'icon16/add.png'
 	Edit: 'icon16/pencil.png'
 	Copy: ['icon16/tag_' .. tag .. '.png' for tag in *{'blue', 'green', 'orange', 'pink', 'purple', 'red', 'yellow'}]

@@ -291,6 +291,9 @@ gui.dpp2.toolcategory.blacklist = 'Blacklists'
 gui.dpp2.toolcategory.player = 'Player utils'
 gui.dpp2.toolcategory.limits = 'Limits'
 
+gui.dpp2.toolmenu.select_tool = 'Select this tool'
+gui.dpp2.toolmenu.select_tool2 = 'Deploy this tool'
+
 gui.dpp2.toolmenu.playermode = 'Player protection'
 
 gui.dpp2.toolmenu.client_protection = 'Protection settings'

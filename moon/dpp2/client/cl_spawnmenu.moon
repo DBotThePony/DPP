@@ -106,28 +106,77 @@ SpawnlistOpenGenericMenu = =>
 					RunConsoleCommand('dpp2_add_model_blacklist', model)
 		menu\AddOption('gui.dpp2.menu.add_to_model_blacklist', add)\SetIcon(Menus.Icons.AddPlain)
 
+DPP2.ToolStuff = {}
+local catchButtons
+
+PatchToolPanel = =>
+	@AddCategory_DPP2 = @AddCategory_DPP2 or @AddCategory
+	@AddCategory = (name, label, items, ...) =>
+		panels = {}
+		catchButtons = panels
+		a, b, c, d, e, f = @AddCategory_DPP2(name, label, items, ...)
+		catchButtons = nil
+
+		for button in *panels
+			if IsValid(button)
+				if isstring(button.Command) and button.Command\startsWith('gmod_tool ')
+					toolname = button.Command\sub(11)
+					with button
+						.DoRightClick_DPP2 = .DoRightClick_DPP2 or .DoRightClick or () ->
+						.DoRightClick = ->
+							\DoRightClick_DPP2(button)
+							local menu
+
+							if lastMenu and lastMenuFrame == FrameNumber()
+								menu = lastMenu
+							else
+								menu = DermaMenu()
+
+							select_tool = ->
+								\DoClickInternal()
+								\DoClick()
+
+							menu\AddOption('gui.dpp2.property.copyclassname', (-> SetClipboardText(toolname)))\SetIcon(Menus.Icons.Copy)
+							menu\AddSpacer()
+							menu\AddOption('gui.dpp2.toolmenu.select_tool2', (-> RunConsoleCommand(unpack(.Command\split(' ')))))\SetIcon(Menus.Icons.Wrench)
+							menu\AddOption('gui.dpp2.toolmenu.select_tool', select_tool)\SetIcon(Menus.Icons.Wrench2)
+							addRestrictionMenuOption(DPP2.ToolgunModeRestrictions, toolname, menu)
+							menu\Open()
+
+		return a, b, c, d, e, f
+
+PatchSpawnIcon = =>
+	@OpenMenu_DPP2 = @OpenMenu_DPP2 or @OpenMenu
+	@OpenMenu = =>
+		@OpenMenu_DPP2()
+
+		if IsValid(lastMenu) and lastMenuFrame == FrameNumber()
+			lastMenuFrame = FrameNumber() + 1
+			lastMenu\AddSpacer()
+			addBlacklistMenuOption(DPP2.ModelBlacklist, @GetModelName()\lower(), lastMenu)
+
 hook.Add 'SpawnlistOpenGenericMenu', 'DPP2.ContextMenuCatch', SpawnlistOpenGenericMenu, 8
 hook.Add 'VGUIPanelCreated', 'DPP2.ContextMenuCatch', =>
-	if @GetName() == 'DMenu' and lastMenuFrame < FrameNumber()
+	name = @GetName()
+
+	if catchButtons and name == 'DButton'
+		table.insert(catchButtons, @)
+		return
+
+	if name == 'DMenu' and lastMenuFrame < FrameNumber()
 		lastMenu = @
 		lastMenuFrame = FrameNumber()
 		return
 
-	if @GetName() == 'SpawnIcon'
-		timer.Simple 0, ->
-			return if not @IsValid()
-			@OpenMenu_DPP2 = @OpenMenu_DPP2 or @OpenMenu
-			@OpenMenu = =>
-				@OpenMenu_DPP2()
-
-				if IsValid(lastMenu) and lastMenuFrame == FrameNumber()
-					lastMenuFrame = FrameNumber() + 1
-					lastMenu\AddSpacer()
-					addBlacklistMenuOption(DPP2.ModelBlacklist, @GetModelName()\lower(), lastMenu)
-
+	if name == 'SpawnIcon'
+		timer.Simple 0, -> PatchSpawnIcon(@) if IsValid(@)
 		return
 
-	return if @GetName() ~= 'ContentIcon'
+	if name == 'ToolPanel'
+		PatchToolPanel(@)
+		return
+
+	return if name ~= 'ContentIcon'
 	timer.Simple 0, ->
 		return if not @IsValid()
 		contentType = @GetContentType()
