@@ -357,3 +357,17 @@ hook.Add 'OnEntityCreated', 'DPP2.CheckEntitiesOwnage', =>
 	DPP2._Spawn_CheckFrame = CurTimeL()
 	table.insert(CheckEntities, @)
 	return
+
+hook.Add 'OnEntityCopyTableFinish', 'DPP2.ClearFields', (data) =>
+	data.__dpp2_check_frame = nil
+	data.__dpp2_hit = nil
+	data.__dpp2_spawn_frame = nil
+	data.__dpp2_contraption = nil
+	data._dpp2_last_nick = nil
+	data.__dpp2_pushing = nil
+	data.__dpp2_unfreeze = nil
+	data.__dpp2_old_collisions_group = nil
+	data.__dpp2_old_movetype = nil
+	data.__dpp2_old_color = nil
+	data.__dpp2_ghost_callbacks = nil
+	data.__dpp2_old_rendermode = nil

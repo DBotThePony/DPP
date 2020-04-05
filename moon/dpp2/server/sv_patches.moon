@@ -66,3 +66,10 @@ if cleanup
 		--error('NULL entity specified') if not IsValid(ent)
 		DPP2.PlayerSpawnedSomething(ply, ent, true) if IsValid(ent) and not ent\DPP2IsOwned() and mode ~= 'duplicates'
 		return cleanup._DPP2_Add(ply, mode, ent, ...)
+
+if duplicator and duplicator.CopyEntTable
+	duplicator._DPP2_CopyEntTable = duplicator._DPP2_CopyEntTable or duplicator.CopyEntTable
+	duplicator.CopyEntTable = (ent, ...) ->
+		ret = duplicator._DPP2_CopyEntTable(ent, ...)
+		hook.Run('OnEntityCopyTableFinish', ent, ret) if IsValid(ent) and istable(ret)
+		return ret
