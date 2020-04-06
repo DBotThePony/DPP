@@ -113,6 +113,8 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 gui.dpp2.cvars.rl_enable = 'Enable restriction lists'
 gui.dpp2.cvars.bl_enable = 'Enable blacklists'
 
+gui.dpp2.model_blacklist.window_title = 'Model blacklist visual menu'
+
 for {modeID, modeName} in *{{'model', 'Model'}, {'toolgun_mode', 'Toolgun mode'}, {'class_spawn', 'Spawn'}}
 	gui.dpp2.cvars['bl_' .. modeID .. '_enable'] = string.format('%s blacklist enabled', modeName)
 	gui.dpp2.cvars['bl_' .. modeID .. '_whitelist'] = string.format('%s blacklist act as whitelist', modeName)

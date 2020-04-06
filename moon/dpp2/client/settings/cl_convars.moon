@@ -113,3 +113,11 @@ Menus.ClientMenu = =>
 	@CheckBox('gui.dpp2.cvars.cl_simple_owner', 'dpp2_cl_simple_owner')
 	@CheckBox('gui.dpp2.cvars.cl_entity_name', 'dpp2_cl_entity_name')
 	@CheckBox('gui.dpp2.cvars.cl_entity_info', 'dpp2_cl_entity_info')
+
+Menus.ModelBlacklistMenu = =>
+	return if not IsValid(@)
+
+	DPP2.ModelBlacklist\BuildCPanel(@)
+
+	button = @Button('gui.dpp2.model_blacklist.window_title')
+	button.DoClick = -> Menus.OpenModelBlacklistFrame()

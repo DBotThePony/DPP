@@ -43,6 +43,85 @@ Menus.Icons = setmetatable({}, {
 	__index: (key) => istable(Menus._Icons[key]) and table.Random(Menus._Icons[key]) or Menus._Icons[key]
 })
 
+Menus.OpenModelBlacklistFrame = ->
+	self = vgui.Create('DLib_Window')
+	@SetSize(ScrW() - 100, ScrH() - 100)
+	@SetTitle('gui.dpp2.model_blacklist.window_title')
+	@Center()
+	@MakePopup()
+
+	scroll = vgui.Create('DScrollPanel', @)
+	scroll\DockMargin(5, 5, 5, 5)
+	scroll\Dock(FILL)
+	canvas = scroll\GetCanvas()
+
+	buttons = {}
+	spacing = 6
+
+	rearrangeButtons = (w = canvas\GetWide(), h = canvas\GetTall()) ->
+		w -= ScreenSize(6)
+
+		x = 0
+		y = 0
+		rowy = 0
+
+		for _, icon in SortedPairs(buttons)
+			iw, ih = icon\GetSize()
+
+			if x + iw + spacing >= w
+				y += rowy + spacing
+				rowy = 0
+				x = 0
+
+			icon\SetPos(x, y)
+			x += iw + spacing
+			rowy = rowy\max(ih)
+
+	canvas._PerformLayout = canvas._PerformLayout
+	canvas.PerformLayout = (_, w, h) ->
+		@_PerformLayout(w, h) if @_PerformLayout
+		rearrangeButtons(w, h)
+
+	rebuildList = ->
+		button._mark = true for _, button in pairs(buttons)
+
+		for model in *DPP2.ModelBlacklist.listing.values
+			if not buttons[model]
+				button = vgui.Create('SpawnIcon', canvas)
+				--canvas\Add(button)
+				button\SetSize(64, 64)
+				button\SetModel(model)
+				button\SetTooltip(model)
+
+				button.DoClick = ->
+					with menu = DermaMenu()
+						\AddOption('gui.dpp2.property.copyclassname', (-> SetClipboardText(model)))\SetIcon(Menus.Icons.Copy)
+						\AddSpacer()
+
+						if DPP2.cmd_perm_watchdog\HasPermission('dpp2_remove_' .. DPP2.ModelBlacklist.identifier .. '_blacklist')
+							remove = -> RunConsoleCommand('dpp2_remove_' .. DPP2.ModelBlacklist.identifier .. '_blacklist', model)
+							submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. DPP2.ModelBlacklist.identifier .. '_blacklist')
+							button\SetIcon(Menus.Icons.Remove)
+							submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
+
+						\Open()
+
+				button.DoRightClick = button.DoClick
+				button.OpenMenu = button.DoClick
+
+				buttons[model] = button
+			else
+				buttons[model]._mark = false
+
+		button\Remove() for _, button in pairs(buttons) when button._mark
+		buttons = {_, button for _, button in pairs(buttons) when not button._mark}
+		rearrangeButtons()
+
+	rebuildList()
+
+	hook.Add 'DPP2_BL_' .. DPP2.ModelBlacklist.identifier .. '_EntryAdded', @, rebuildList
+	hook.Add 'DPP2_BL_' .. DPP2.ModelBlacklist.identifier .. '_EntryRemoved', @, rebuildList
+
 hook.Add 'PopulateToolMenu', 'DPP2.Menus', ->
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.client', 'gui.dpp2.toolmenu.client_protection', 'gui.dpp2.toolmenu.client_protection', '', '', Menus.ClientProtectionModulesMenu
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.client', 'gui.dpp2.toolmenu.client_settings', 'gui.dpp2.toolmenu.client_settings', '', '', Menus.ClientMenu
@@ -70,7 +149,7 @@ hook.Add 'PopulateToolMenu', 'DPP2.Menus', ->
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.restriction', 'gui.dpp2.toolmenu.restrictions.damage', 'gui.dpp2.toolmenu.restrictions.damage', '', '', => DPP2.DamageProtection.RestrictionList\BuildCPanel(@)
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.restriction', 'gui.dpp2.toolmenu.restrictions.class_spawn', 'gui.dpp2.toolmenu.restrictions.class_spawn', '', '', => DPP2.SpawnRestrictions\BuildCPanel(@)
 
-	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.blacklist', 'gui.dpp2.toolmenu.blacklist.model', 'gui.dpp2.toolmenu.blacklist.model', '', '', => DPP2.ModelBlacklist\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.blacklist', 'gui.dpp2.toolmenu.blacklist.model', 'gui.dpp2.toolmenu.blacklist.model', '', '', Menus.ModelBlacklistMenu
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.blacklist', 'gui.dpp2.toolmenu.blacklist.physgun', 'gui.dpp2.toolmenu.blacklist.physgun', '', '', => DPP2.PhysgunProtection.Blacklist\BuildCPanel(@)
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.blacklist', 'gui.dpp2.toolmenu.blacklist.drive', 'gui.dpp2.toolmenu.blacklist.drive', '', '', => DPP2.DriveProtection.Blacklist\BuildCPanel(@)
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.blacklist', 'gui.dpp2.toolmenu.blacklist.pickup', 'gui.dpp2.toolmenu.blacklist.pickup', '', '', => DPP2.PickupProtection.Blacklist\BuildCPanel(@)
