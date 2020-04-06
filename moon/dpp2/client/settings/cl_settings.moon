@@ -54,58 +54,59 @@ Menus.OpenModelBlacklistFrame = ->
 	scroll\DockMargin(5, 5, 5, 5)
 	scroll\Dock(FILL)
 	canvas = scroll\GetCanvas()
+	grid = vgui.Create('DTileLayout', canvas)
+	grid\Dock(FILL)
+	grid\SetSelectionCanvas(true)
+	grid\SetDnD(false)
 
 	buttons = {}
-	spacing = 6
 
-	rearrangeButtons = (w = canvas\GetWide(), h = canvas\GetTall()) ->
-		w -= ScreenSize(6)
+	openMultipleMenu = (selected = grid\GetSelectedChildren()) ->
+		return if #selected == 0
 
-		x = 0
-		y = 0
-		rowy = 0
+		with menu = DermaMenu()
+			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_remove_' .. DPP2.ModelBlacklist.identifier .. '_blacklist')
+				remove = ->
+					for button in *selected
+						RunConsoleCommand('dpp2_remove_' .. DPP2.ModelBlacklist.identifier .. '_blacklist', button._model)
+				submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. DPP2.ModelBlacklist.identifier .. '_blacklist')
+				button\SetIcon(Menus.Icons.Remove)
+				submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
 
-		for _, icon in SortedPairs(buttons)
-			iw, ih = icon\GetSize()
+			\Open()
 
-			if x + iw + spacing >= w
-				y += rowy + spacing
-				rowy = 0
-				x = 0
+	grid.DoRightClick = openMultipleMenu
 
-			icon\SetPos(x, y)
-			x += iw + spacing
-			rowy = rowy\max(ih)
+	openButtonMenu = =>
+		selected = grid\GetSelectedChildren()
 
-	canvas._PerformLayout = canvas._PerformLayout
-	canvas.PerformLayout = (_, w, h) ->
-		@_PerformLayout(w, h) if @_PerformLayout
-		rearrangeButtons(w, h)
+		if #selected == 0
+			with menu = DermaMenu()
+				\AddOption('gui.dpp2.property.copyclassname', (-> SetClipboardText(@_model)))\SetIcon(Menus.Icons.Copy)
+				\AddSpacer()
+
+				if DPP2.cmd_perm_watchdog\HasPermission('dpp2_remove_' .. DPP2.ModelBlacklist.identifier .. '_blacklist')
+					remove = -> RunConsoleCommand('dpp2_remove_' .. DPP2.ModelBlacklist.identifier .. '_blacklist', @_model)
+					submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. DPP2.ModelBlacklist.identifier .. '_blacklist')
+					button\SetIcon(Menus.Icons.Remove)
+					submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
+
+				\Open()
+		else
+			openMultipleMenu(selected)
 
 	rebuildList = ->
 		button._mark = true for _, button in pairs(buttons)
 
-		for model in *DPP2.ModelBlacklist.listing.values
+		for _, model in SortedPairs(DPP2.ModelBlacklist.listing.values)
 			if not buttons[model]
-				button = vgui.Create('SpawnIcon', canvas)
-				--canvas\Add(button)
+				button = vgui.Create('SpawnIcon', grid)
 				button\SetSize(64, 64)
 				button\SetModel(model)
 				button\SetTooltip(model)
+				button._model = model
 
-				button.DoClick = ->
-					with menu = DermaMenu()
-						\AddOption('gui.dpp2.property.copyclassname', (-> SetClipboardText(model)))\SetIcon(Menus.Icons.Copy)
-						\AddSpacer()
-
-						if DPP2.cmd_perm_watchdog\HasPermission('dpp2_remove_' .. DPP2.ModelBlacklist.identifier .. '_blacklist')
-							remove = -> RunConsoleCommand('dpp2_remove_' .. DPP2.ModelBlacklist.identifier .. '_blacklist', model)
-							submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. DPP2.ModelBlacklist.identifier .. '_blacklist')
-							button\SetIcon(Menus.Icons.Remove)
-							submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
-
-						\Open()
-
+				button.DoClick = openButtonMenu
 				button.DoRightClick = button.DoClick
 				button.OpenMenu = button.DoClick
 
@@ -115,12 +116,12 @@ Menus.OpenModelBlacklistFrame = ->
 
 		button\Remove() for _, button in pairs(buttons) when button._mark
 		buttons = {_, button for _, button in pairs(buttons) when not button._mark}
-		rearrangeButtons()
+		grid\Layout()
 
 	rebuildList()
 
-	hook.Add 'DPP2_BL_' .. DPP2.ModelBlacklist.identifier .. '_EntryAdded', @, rebuildList
-	hook.Add 'DPP2_BL_' .. DPP2.ModelBlacklist.identifier .. '_EntryRemoved', @, rebuildList
+	hook.Add 'DPP2_BL_' .. DPP2.ModelBlacklist.identifier .. '_EntryAdded', @, -> timer.Create 'DPP2_RebuildModelBlacklistVisualMenu', 0.1, 1, rebuildList
+	hook.Add 'DPP2_BL_' .. DPP2.ModelBlacklist.identifier .. '_EntryRemoved', @, -> timer.Create 'DPP2_RebuildModelBlacklistVisualMenu', 0.1, 1, rebuildList
 
 hook.Add 'PopulateToolMenu', 'DPP2.Menus', ->
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.client', 'gui.dpp2.toolmenu.client_protection', 'gui.dpp2.toolmenu.client_protection', '', '', Menus.ClientProtectionModulesMenu
