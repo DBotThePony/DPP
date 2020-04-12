@@ -59,6 +59,15 @@ DPP2.DEF.RestrictionList.__base.OpenEntryMenu = (entry) =>
 
 		\Open()
 
+DPP2.DEF.RestrictionList.__base.OpenGenericMenu = (rows) =>
+	remove = -> RunConsoleCommand('dpp2_remove_' .. @identifier .. '_restriction', row._entry.class) for row in *rows when row._entry
+
+	with menu = DermaMenu()
+		submenu, button = \AddSubMenu('gui.dpp2.menus.remove')
+		button\SetIcon(Menus.Icons.Remove)
+		submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
+
+		\Open()
 
 DPP2.DEF.RestrictionList.__base.BuildCPanel = (panel) =>
 	return if not IsValid(panel)
@@ -70,7 +79,11 @@ DPP2.DEF.RestrictionList.__base.BuildCPanel = (panel) =>
 	@listView\AddColumn('gui.dpp2.restriction_lists.view.classname')
 	@listView\AddColumn('gui.dpp2.restriction_lists.view.groups')
 	@listView\AddColumn('gui.dpp2.restriction_lists.view.iswhitelist')
-	@listView.OnRowRightClick = (_pnl, lineID, line) -> @OpenEntryMenu(line._entry) if line._entry
+	@listView\SetMultiSelect(true)
+	@listView.OnRowRightClick = (_pnl, lineID, line) ->
+		rows = @listView\GetSelected()
+		return @OpenGenericMenu(rows) if #rows > 1
+		@OpenEntryMenu(line._entry) if line._entry
 	OnMousePressed = @listView.OnMousePressed
 
 	@listView.OnMousePressed = (_, code) ->
@@ -198,6 +211,16 @@ DPP2.DEF.Blacklist.__base.OpenEntryMenu = (entry) =>
 
 		\Open()
 
+DPP2.DEF.Blacklist.__base.OpenGenericMenu = (rows) =>
+	remove = -> RunConsoleCommand('dpp2_remove_' .. @identifier .. '_blacklist', row._entry) for row in *rows when row._entry
+
+	with menu = DermaMenu()
+		submenu, button = \AddSubMenu('gui.dpp2.menus.remove')
+		button\SetIcon(Menus.Icons.Remove)
+		submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
+
+		\Open()
+
 DPP2.DEF.Blacklist.__base.BuildCPanel = (panel) =>
 	return if not IsValid(panel)
 
@@ -206,12 +229,13 @@ DPP2.DEF.Blacklist.__base.BuildCPanel = (panel) =>
 	@listView\SetTall(ScreenSize(350))
 
 	@listView\AddColumn('gui.dpp2.restriction_lists.view.classname')
-	@listView.OnRowRightClick = (_pnl, lineID, line) -> @OpenEntryMenu(line._entry) if line._entry
 	OnMousePressed = @listView.OnMousePressed
 
-	@listView.OnMousePressed = (_, code) ->
-		@OpenEmptyListViewMenu() if code == MOUSE_RIGHT
-		return OnMousePressed(_, code)
+	@listView\SetMultiSelect(true)
+	@listView.OnRowRightClick = (_pnl, lineID, line) ->
+		rows = @listView\GetSelected()
+		return @OpenGenericMenu(rows) if #rows > 1
+		@OpenEntryMenu(line._entry) if line._entry
 
 	@RebuildListView()
 
