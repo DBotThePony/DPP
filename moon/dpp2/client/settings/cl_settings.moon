@@ -29,6 +29,7 @@ Menus._Icons = {
 	Edit: 'icon16/pencil.png'
 	Copy: ['icon16/tag_' .. tag .. '.png' for tag in *{'blue', 'green', 'orange', 'pink', 'purple', 'red', 'yellow'}]
 	Remove: 'icon16/delete.png'
+	Restrict: 'icon16/cross.png'
 	Angle: {'icon16/arrow_rotate_anticlockwise.png', 'icon16/arrow_rotate_clockwise.png'}
 	Vector: 'icon16/arrow_in.png'
 	Share: 'icon16/key_add.png'
@@ -42,6 +43,14 @@ Menus._Icons = {
 Menus.Icons = setmetatable({}, {
 	__index: (key) => istable(Menus._Icons[key]) and table.Random(Menus._Icons[key]) or Menus._Icons[key]
 })
+
+Menus.ModelBlacklistMenu = =>
+	return if not IsValid(@)
+
+	DPP2.ModelBlacklist\BuildCPanel(@)
+
+	button = @Button('gui.dpp2.model_blacklist.window_title')
+	button.DoClick = -> Menus.OpenModelBlacklistFrame()
 
 Menus.OpenModelBlacklistFrame = ->
 	self = vgui.Create('DLib_Window')
@@ -65,10 +74,10 @@ Menus.OpenModelBlacklistFrame = ->
 		return if #selected == 0
 
 		with menu = DermaMenu()
-			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_remove_' .. DPP2.ModelBlacklist.identifier .. '_blacklist')
+			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelBlacklist.remove_command_identifier)
 				remove = ->
 					for button in *selected
-						RunConsoleCommand('dpp2_remove_' .. DPP2.ModelBlacklist.identifier .. '_blacklist', button._model)
+						RunConsoleCommand('dpp2_' .. DPP2.ModelBlacklist.remove_command_identifier, button._model)
 				submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. DPP2.ModelBlacklist.identifier .. '_blacklist')
 				button\SetIcon(Menus.Icons.Remove)
 				submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
@@ -85,8 +94,8 @@ Menus.OpenModelBlacklistFrame = ->
 				\AddOption('gui.dpp2.property.copyclassname', (-> SetClipboardText(@_model)))\SetIcon(Menus.Icons.Copy)
 				\AddSpacer()
 
-				if DPP2.cmd_perm_watchdog\HasPermission('dpp2_remove_' .. DPP2.ModelBlacklist.identifier .. '_blacklist')
-					remove = -> RunConsoleCommand('dpp2_remove_' .. DPP2.ModelBlacklist.identifier .. '_blacklist', @_model)
+				if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelBlacklist.remove_command_identifier)
+					remove = -> RunConsoleCommand('dpp2_' .. DPP2.ModelBlacklist.remove_command_identifier, @_model)
 					submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. DPP2.ModelBlacklist.identifier .. '_blacklist')
 					button\SetIcon(Menus.Icons.Remove)
 					submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)

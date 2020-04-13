@@ -43,7 +43,7 @@ DPP2.DEF.RestrictionList.__base.OpenEmptyListViewMenu = =>
 
 DPP2.DEF.RestrictionList.__base.OpenEntryMenu = (entry) =>
 	edit = -> @OpenMenu(entry.class)
-	remove = -> RunConsoleCommand('dpp2_remove_' .. @identifier .. '_restriction', entry.class)
+	remove = -> RunConsoleCommand('dpp2_' .. @remove_command_identifier, entry.class)
 	copy_classname = -> SetClipboardText(entry.class)
 	copy_groups = -> SetClipboardText(table.concat(', ' , entry.groups))
 
@@ -60,7 +60,7 @@ DPP2.DEF.RestrictionList.__base.OpenEntryMenu = (entry) =>
 		\Open()
 
 DPP2.DEF.RestrictionList.__base.OpenGenericMenu = (rows) =>
-	remove = -> RunConsoleCommand('dpp2_remove_' .. @identifier .. '_restriction', row._entry.class) for row in *rows when row._entry
+	remove = -> RunConsoleCommand('dpp2_' .. @remove_command_identifier, row._entry.class) for row in *rows when row._entry
 
 	with menu = DermaMenu()
 		submenu, button = \AddSubMenu('gui.dpp2.menus.remove')
@@ -172,10 +172,10 @@ DPP2.DEF.RestrictionList.__base.OpenMenu = (classname) =>
 
 		if #value == 0
 			return if not entry
-			RunConsoleCommand('dpp2_remove_' .. @identifier .. '_restriction', classname)
+			RunConsoleCommand('dpp2_' .. @remove_command_identifier, classname)
 			return
 
-		RunConsoleCommand('dpp2_add_' .. @identifier .. '_restriction', classname, table.concat(value, ','), whitelistcheckbox\GetChecked() and '1' or '0')
+		RunConsoleCommand('dpp2_' .. @add_command_identifier, classname, table.concat(value, ','), whitelistcheckbox\GetChecked() and '1' or '0')
 
 	selectable\AddButtonsTo(nil, frame, finish)
 
@@ -192,14 +192,14 @@ DPP2.DEF.Blacklist.__base.RebuildListView = =>
 DPP2.DEF.Blacklist.__base.OpenEmptyListViewMenu = =>
 	with menu = DermaMenu()
 		add = ->
-			callback = (text) -> RunConsoleCommand('dpp2_add_' .. @identifier .. '_blacklist', text)
+			callback = (text) -> RunConsoleCommand('dpp2_' .. @add_command_identifier, text)
 			Derma_StringRequest 'gui.dpp2.menus.query.title', 'gui.dpp2.menus.query.subtitle', '', callback, nil, 'gui.misc.ok', 'gui.misc.cancel'
 
 		\AddOption('gui.dpp2.menus.add', add)\SetIcon(Menus.Icons.Add)
 		\Open()
 
 DPP2.DEF.Blacklist.__base.OpenEntryMenu = (entry) =>
-	remove = -> RunConsoleCommand('dpp2_remove_' .. @identifier .. '_blacklist', entry)
+	remove = -> RunConsoleCommand('dpp2_' .. @remove_command_identifier, entry)
 	copy_classname = -> SetClipboardText(entry)
 
 	with menu = DermaMenu()
@@ -212,7 +212,7 @@ DPP2.DEF.Blacklist.__base.OpenEntryMenu = (entry) =>
 		\Open()
 
 DPP2.DEF.Blacklist.__base.OpenGenericMenu = (rows) =>
-	remove = -> RunConsoleCommand('dpp2_remove_' .. @identifier .. '_blacklist', row._entry) for row in *rows when row._entry
+	remove = -> RunConsoleCommand('dpp2_' .. @remove_command_identifier, row._entry) for row in *rows when row._entry
 
 	with menu = DermaMenu()
 		submenu, button = \AddSubMenu('gui.dpp2.menus.remove')
@@ -270,7 +270,7 @@ DPP2.DEF.Blacklist.__base.BuildCPanel = (panel) =>
 		text = text\trim()
 		return if text == ''
 		@newItemInput\SetText('')
-		RunConsoleCommand('dpp2_add_' .. @identifier .. '_blacklist', text)
+		RunConsoleCommand('dpp2_' .. @add_command_identifier, text)
 
 	hook.Add 'DPP2_BL_' .. @identifier .. '_EntryAdded', panel, -> timer.Create 'DPP2_RebuildLineMenu_BL_' .. @identifier, 0.2, 1, -> @RebuildListView()
 	hook.Add 'DPP2_BL_' .. @identifier .. '_EntryRemoved', panel, -> timer.Create 'DPP2_RebuildLineMenu_BL_' .. @identifier, 0.2, 1, -> @RebuildListView()

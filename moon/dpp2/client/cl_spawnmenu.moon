@@ -33,31 +33,31 @@ _entlist = {
 addRestrictionMenuOption = (classname, menu) =>
 	with menu
 		if @Has(classname)
-			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_add_' .. @identifier .. '_restriction')
+			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. @add_command_identifier)
 				edit = -> @OpenMenu(classname)
 				\AddOption('gui.dpp2.menu.edit_in_' .. @identifier .. '_restrictions', edit)\SetIcon(Menus.Icons.Edit)
 
-			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_remove_' .. @identifier .. '_restriction')
-				remove = -> RunConsoleCommand('dpp2_remove_' .. @identifier .. '_restriction', classname)
+			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. @remove_command_identifier)
+				remove = -> RunConsoleCommand('dpp2_' .. @remove_command_identifier, classname)
 				submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. @identifier .. '_restrictions')
 				button\SetIcon(Menus.Icons.Remove)
 				submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
 		else
-			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_add_' .. @identifier .. '_restriction')
+			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. @add_command_identifier)
 				add = -> @OpenMenu(classname)
 				\AddOption('gui.dpp2.menu.add_to_' .. @identifier .. '_restrictions', add)\SetIcon(Menus.Icons.Add)
 
 addBlacklistMenuOption = (classname, menu) =>
 	with menu
 		if @Has(classname)
-			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_remove_' .. @identifier .. '_blacklist')
-				remove = -> RunConsoleCommand('dpp2_remove_' .. @identifier .. '_blacklist', classname)
+			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. @remove_command_identifier)
+				remove = -> RunConsoleCommand('dpp2_' .. @remove_command_identifier, classname)
 				submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. @identifier .. '_blacklist')
 				button\SetIcon(Menus.Icons.Remove)
 				submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
 		else
-			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_add_' .. @identifier .. '_blacklist')
-				add = -> RunConsoleCommand('dpp2_add_' .. @identifier .. '_blacklist', classname)
+			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. @add_command_identifier)
+				add = -> RunConsoleCommand('dpp2_' .. @add_command_identifier, classname)
 				\AddOption('gui.dpp2.menu.add_to_' .. @identifier .. '_blacklist', add)\SetIcon(Menus.Icons.AddPlain)
 
 SpawnlistOpenGenericMenu = =>

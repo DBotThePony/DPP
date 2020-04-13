@@ -98,9 +98,9 @@ DPP2.DEF.LimitRegistry.__base.OpenMenu = (classname) =>
 				if value = tonumber(entry\GetValue())
 					entry2 = @Get(classname, group)
 					if value ~= entry2.limit
-						RunConsoleCommand('dpp2_add_' .. @identifier .. '_limit', classname, group, entry\GetValue())
+						RunConsoleCommand('dpp2_' .. @add_command_identifier, classname, group, entry\GetValue())
 				else
-					RunConsoleCommand('dpp2_remove_' .. @identifier .. '_limit', classname, group)
+					RunConsoleCommand('dpp2_' .. @remove_command_identifier, classname, group)
 
 			frame\Close()
 
@@ -136,14 +136,14 @@ DPP2.DEF.LimitRegistry.__base.OpenMenu = (classname) =>
 DPP2.DEF.LimitRegistry.__base.OpenEmptyListViewMenu = =>
 	with menu = DermaMenu()
 		add = ->
-			callback = (text) -> RunConsoleCommand('dpp2_add_' .. @identifier .. '_limit', text)
+			callback = (text) -> RunConsoleCommand('dpp2_' .. @add_command_identifier, text)
 			Derma_StringRequest 'gui.dpp2.menus.query.title', 'gui.dpp2.menus.query.subtitle', '', callback, nil, 'gui.misc.ok', 'gui.misc.cancel'
 
 		\AddOption('gui.dpp2.menus.add', add)\SetIcon(Menus.Icons.Add)
 		\Open()
 
 DPP2.DEF.LimitRegistry.__base.OpenEntryMenu = (entry) =>
-	remove = -> RunConsoleCommand('dpp2_remove_' .. @identifier .. '_limit', entry.class, entry.group)
+	remove = -> RunConsoleCommand('dpp2_' .. @remove_command_identifier, entry.class, entry.group)
 	edit = -> @OpenMenu(entry.class)
 	copy_classname = -> SetClipboardText(entry.class)
 	copy_group = -> SetClipboardText(entry.group)

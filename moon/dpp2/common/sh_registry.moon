@@ -299,8 +299,11 @@ class DPP2.DEF.RestrictionList
 		@INVERT = DPP2.CreateConVar('rl_' .. identifier .. '_invert', '0', DPP2.TYPE_BOOL)
 		@INVERT_ALL = DPP2.CreateConVar('rl_' .. identifier .. '_invert_all', '0', DPP2.TYPE_BOOL)
 
+		@add_command_identifier = 'add_' .. identifier .. '_restriction'
+		@remove_command_identifier = 'remove_' .. identifier .. '_restriction'
+
 		if SERVER
-			DPP2.cmd['add_' .. identifier .. '_restriction'] = (args = {}) =>
+			DPP2.cmd[@add_command_identifier] = (args = {}) =>
 				prop = args[1]
 				groups = args[2] or ''
 				isWhitelist = tobool(args[3])
@@ -324,7 +327,7 @@ class DPP2.DEF.RestrictionList
 				self2\CreateEntry(prop, split, isWhitelist)\Replicate()
 				DPP2.Notify(true, nil, 'command.dpp2.rlists.added_ext.' .. identifier, @, prop, (#split ~= 0 and table.concat(split, ', ') or '<none>'), isWhitelist)
 
-			DPP2.cmd['remove_' .. identifier .. '_restriction'] = (args = {}) =>
+			DPP2.cmd[@remove_command_identifier] = (args = {}) =>
 				prop = table.concat(args, ' ')\trim()
 				return 'command.dpp2.lists.arg_empty' if prop == ''
 				getEntry = self2\Get(prop)
@@ -333,12 +336,12 @@ class DPP2.DEF.RestrictionList
 				getEntry\Remove()
 				DPP2.Notify(true, nil, 'command.dpp2.rlists.removed.' .. identifier, @, prop)
 
-		DPP2.cmd_perms['add_' .. identifier .. '_restriction'] = 'superadmin'
-		DPP2.cmd_perms['remove_' .. identifier .. '_restriction'] = 'superadmin'
+		DPP2.cmd_perms[@add_command_identifier] = 'superadmin'
+		DPP2.cmd_perms[@remove_command_identifier] = 'superadmin'
 
 		@add_autocomplete = autocomplete
 
-		DPP2.cmd_autocomplete['add_' .. identifier .. '_restriction'] = (args, margs) =>
+		DPP2.cmd_autocomplete[@add_command_identifier] = (args, margs) =>
 			split = DPP2.SplitArguments(args)
 
 			if not split[2]
@@ -376,7 +379,7 @@ class DPP2.DEF.RestrictionList
 
 			return {str .. ' ' .. string.format('%q', groupsRaw) .. ' true', str .. ' ' .. string.format('%q', groupsRaw) .. ' false'}
 
-		DPP2.cmd_autocomplete['remove_' .. identifier .. '_restriction'] = (args, margs) =>
+		DPP2.cmd_autocomplete[@remove_command_identifier] = (args, margs) =>
 			return [string.format('%q', elem.class) for elem in *self2.listing] if args == ''
 			args = args\lower()
 
@@ -579,30 +582,33 @@ class DPP2.DEF.Blacklist
 			Description: identifier .. ' blacklist admin role (for admin bypass option)'
 		})
 
+		@add_command_identifier = 'add_' .. identifier .. '_blacklist'
+		@remove_command_identifier = 'remove_' .. identifier .. '_blacklist'
+
 		if SERVER
-			DPP2.cmd['add_' .. identifier .. '_blacklist'] = (args = {}) =>
+			DPP2.cmd[@add_command_identifier] = (args = {}) =>
 				val = table.concat(args, ' ')\trim()\lower()
 				return 'command.dpp2.lists.arg_empty' if val == ''
 				return 'command.dpp2.lists.already_in' if self2\Has(val)
 				self2\Add(val)
 				DPP2.Notify(true, nil, 'command.dpp2.blists.added.' .. identifier, @, val)
 
-			DPP2.cmd['remove_' .. identifier .. '_blacklist'] = (args = {}) =>
+			DPP2.cmd[@remove_command_identifier] = (args = {}) =>
 				val = table.concat(args, ' ')\trim()\lower()
 				return 'command.dpp2.lists.arg_empty' if val == ''
 				return 'command.dpp2.lists.already_not' if not self2\Has(val)
 				self2\Remove(val)
 				DPP2.Notify(true, nil, 'command.dpp2.blists.removed.' .. identifier, @, val)
 
-		DPP2.cmd_perms['add_' .. identifier .. '_blacklist'] = 'superadmin'
-		DPP2.cmd_perms['remove_' .. identifier .. '_blacklist'] = 'superadmin'
+		DPP2.cmd_perms[@add_command_identifier] = 'superadmin'
+		DPP2.cmd_perms[@remove_command_identifier] = 'superadmin'
 
 		if @autocomplete = autocomplete
-			DPP2.cmd_autocomplete['add_' .. identifier .. '_blacklist'] = (args, margs) => autocomplete(@, args, margs, self2.listing\GetValues())
+			DPP2.cmd_autocomplete[@add_command_identifier] = (args, margs) => autocomplete(@, args, margs, self2.listing\GetValues())
 		elseif CLIENT
-			DPP2.cmd_existing['add_' .. identifier .. '_blacklist'] = true
+			DPP2.cmd_existing[@add_command_identifier] = true
 
-		DPP2.cmd_autocomplete['remove_' .. identifier .. '_blacklist'] = (args, margs) =>
+		DPP2.cmd_autocomplete[@remove_command_identifier] = (args, margs) =>
 			return [string.format('%q', elem) for elem in *self.listing\GetValues()] if args == ''
 			args = args\lower()
 

@@ -245,6 +245,8 @@ gui.dpp2.property.transfertoworldent = 'Transfer this entity to world'
 gui.dpp2.property.transfercontraption = 'Transfer this contraption...'
 gui.dpp2.property.transfertoworldcontraption = 'Transfer this contraption to world'
 
+gui.dpp2.property.restrictions = 'DPP/2 Restrictions'
+
 message.dpp2.property.transferent.nolongervalid = 'Entity is no longer valid'
 message.dpp2.property.transferent.noplayer = 'Target player has left the server'
 message.dpp2.property.transfercontraption.nolongervalid = 'Contraption is no longer valid'

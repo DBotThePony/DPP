@@ -229,10 +229,13 @@ class DPP2.DEF.LimitRegistry
 		@ENABLED = DPP2.CreateConVar(identifier .. '_limits_enabled', '1', DPP2.TYPE_BOOL)
 		@IS_INCLUSIVE = DPP2.CreateConVar(identifier .. '_limits_inclusive', '0', DPP2.TYPE_BOOL)
 
+		@add_command_identifier = 'add_' .. identifier .. '_limit'
+		@remove_command_identifier = 'remove_' .. identifier .. '_limit'
+
 		if SERVER
 			self2 = @
 
-			DPP2.cmd['add_' .. identifier .. '_limit'] = (args = {}) =>
+			DPP2.cmd[@add_command_identifier] = (args = {}) =>
 				prop = args[1]
 				group = args[2]
 				limit = tonumber(args[3])
@@ -255,7 +258,7 @@ class DPP2.DEF.LimitRegistry
 				self2\CreateEntry(prop, group, limit)\Replicate()
 				DPP2.Notify(true, nil, 'command.dpp2.limit_lists.added.' .. identifier, @, prop, group, limit)
 
-			DPP2.cmd['remove_' .. identifier .. '_limit'] = (args = {}) =>
+			DPP2.cmd[@remove_command_identifier] = (args = {}) =>
 				prop = args[1]
 				group = args[2]
 
@@ -273,8 +276,8 @@ class DPP2.DEF.LimitRegistry
 				entry\Remove()
 				DPP2.Notify(true, nil, 'command.dpp2.limit_lists.removed.' .. identifier, @, prop, group)
 
-		DPP2.cmd_perms['add_' .. identifier .. '_limit'] = 'superadmin'
-		DPP2.cmd_perms['remove_' .. identifier .. '_limit'] = 'superadmin'
+		DPP2.cmd_perms[@add_command_identifier] = 'superadmin'
+		DPP2.cmd_perms[@remove_command_identifier] = 'superadmin'
 
 		@LoadFromDisk() if SERVER
 
