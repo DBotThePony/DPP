@@ -146,6 +146,8 @@ properties.Add('dpp2_copyvector', {
 				elseif DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelBlacklist.add_command_identifier)
 					\AddOption('gui.dpp2.menu.add_to_model_blacklist', (-> RunConsoleCommand('dpp2_' .. DPP2.ModelBlacklist.add_command_identifier, model)))\SetIcon(Menus.Icons.AddPlain)
 
+			\AddSpacer()
+
 			for object in *blacklists
 				if object\Has(classname)
 					if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.remove_command_identifier)
@@ -154,6 +156,8 @@ properties.Add('dpp2_copyvector', {
 						submenu\AddOption('gui.dpp2.menus.remove2', (-> RunConsoleCommand('dpp2_' .. object.remove_command_identifier, model)))\SetIcon(Menus.Icons.Remove)
 				elseif DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.add_command_identifier)
 					\AddOption('gui.dpp2.menu.add_to_' .. object.identifier .. '_blacklist', (-> RunConsoleCommand('dpp2_' .. object.add_command_identifier, model)))\SetIcon(Menus.Icons.AddPlain)
+
+			\AddSpacer()
 
 			for object in *restrictions
 				if object\Has(classname)
