@@ -158,4 +158,6 @@ hooksToReg = {
 	:CanEditVariable, :EntityTakeDamage
 }
 
-hook.Add(name, 'DPP2.ProtectionHooks', func, -4) for name, func in pairs(hooksToReg)
+for name, func in pairs(hooksToReg)
+	hook.Add(name, 'DPP2.ProtectionHooks', func, -4)
+	DPP2['_' .. name] = func
