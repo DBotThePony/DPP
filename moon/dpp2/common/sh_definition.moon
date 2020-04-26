@@ -71,7 +71,7 @@ class DPP2.DEF.ProtectionDefinition
 			obj\PruneFriendData(steamid) for obj in *@OBJECTS
 			timer.Remove('DPP2.FriendStatus.' .. steamid)
 
-	new: (identifier, prefab = DPP2.DEF.DefinitionConVarsPrefab(), classnameRestriction = false, classnameBlacklist = false) =>
+	new: (identifier, prefab = DPP2.DEF.DefinitionConVarsPrefab(), classnameRestriction = false, classnameBlacklist = false, classnameExclusionList = false) =>
 		@identifier = assert(type(identifier) == 'string' and identifier, 'Invalid definition identifier')\lower()
 		assert(not @@OBJECTS_MAP[identifier], 'cannot redefine already existing ProtectionDefinition[' .. identifier .. ']!')
 		@friendsCache = {}
@@ -88,8 +88,14 @@ class DPP2.DEF.ProtectionDefinition
 		elseif classnameBlacklist
 			@classnameBlacklist = classnameBlacklist
 
+		if classnameExclusionList == true
+			@classnameExclusionList = DPP2.DEF.Exclusion(identifier, DPP2.ClassnameAutocomplete)
+		elseif classnameExclusionList
+			@classnameExclusionList = classnameExclusionList
+
 		@RestrictionList = @classnameRestriction
 		@Blacklist = @classnameBlacklist
+		@Exclusions = @classnameExclusionList
 
 		@@OBJECTS_MAP[@identifier] = @
 
@@ -321,31 +327,60 @@ class DPP2.DEF.ProtectionDefinition
 
 		return false, i18n.localize('gui.dpp2.access.status.friend')
 
-	CanTouch: (ply = NULL, ent = NULL) =>
+	CanGeneric: (ply = NULL, ent = NULL) =>
 		return true if not ply\IsValid()
 		return false if not ent\IsValid()
 		return false, i18n.localize('gui.dpp2.access.status.yoursettings') if ent\IsPlayer() and ply\GetInfoBool(@clientNoPlayersName, false)
 		return true if ent\IsPlayer()
+		classname = ent\GetClass()
 		return false, i18n.localize('gui.dpp2.access.status.model_blacklist') if not DPP2.ModelBlacklist\Ask(ent\GetModel(), ply)
-		return false, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_restriction') if @classnameRestriction and not @classnameRestriction\Ask(ent\GetClass(), ply)
-		return false, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_blacklist') if @classnameBlacklist and not @classnameBlacklist\Ask(ent\GetClass(), ply)
+		return false, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_restriction') if @classnameRestriction and not @classnameRestriction\Ask(classname, ply)
+		return false, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_blacklist') if @classnameBlacklist and not @classnameBlacklist\Ask(classname, ply)
 		return true, i18n.localize('gui.dpp2.access.status.disabled') if not @IsEnabled()
+
+	CanTouch: (ply = NULL, ent = NULL) =>
+		cangeneric, tstatus = @CanGeneric(ply, ent)
+		return cangeneric, tstatus if cangeneric ~= nil
 		contraption = ent\DPP2GetContraption()
 
 		if not contraption
 			owner, ownerSteamID, ownerNick = ent\DPP2GetOwner()
 			return true if owner == ply
+			return true, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_exclusion') if @classnameExclusionList and @classnameExclusionList\Ask(ent\GetClass(), ply)
+			return true, i18n.localize('gui.dpp2.access.status.model_exclusion') if DPP2.ModelExclusions\Ask(ent\GetModel(), ply)
 			return @CanTouchMap(ply), i18n.localize('gui.dpp2.access.status.map') if ownerSteamID == 'world' and ent\DPP2CreatedByMap()
 			return @CanTouchWorld(ply), i18n.localize('gui.dpp2.access.status.world') if ownerSteamID == 'world'
 			return @CanTouchOther(ply, IsValid(owner) and owner or ownerSteamID)
 
 		steamid = ply\SteamID()
 
-		for ownerSteamID in *contraption\GetOwnersPartial(@identifier)
-			if steamid ~= ownerSteamID
-				return false, i18n.localize('gui.dpp2.access.status.map'), i18n.localize('gui.dpp2.access.status.contraption_ext', contraption\GetID()) if ownerSteamID == 'world' and ent\DPP2CreatedByMap() and not @CanTouchMap(ply)
-				return false, i18n.localize('gui.dpp2.access.status.world'), i18n.localize('gui.dpp2.access.status.contraption_ext', contraption\GetID()) if ownerSteamID == 'world' and not @CanTouchWorld(ply)
-				return false, i18n.localize('gui.dpp2.access.status.friend'), i18n.localize('gui.dpp2.access.status.contraption_ext', contraption\GetID()) if ownerSteamID ~= 'world' and not @CanTouchOther(ply, ownerSteamID)
+		check = not DPP2.ModelBlacklist\IsEnabled() and
+			(not @classnameExclusionList or not @classnameExclusionList\IsEnabled()) and
+			(not @classnameBlacklist or not @classnameBlacklist\IsEnabled()) and
+			(not @classnameRestriction or not @classnameRestriction\IsEnabled())
+
+		if check
+			for ownerSteamID in *contraption\GetOwnersPartial(@identifier)
+				if steamid ~= ownerSteamID
+					return false, i18n.localize('gui.dpp2.access.status.map'), i18n.localize('gui.dpp2.access.status.contraption_ext', contraption\GetID()) if ownerSteamID == 'world' and ent\DPP2CreatedByMap() and not @CanTouchMap(ply)
+					return false, i18n.localize('gui.dpp2.access.status.world'), i18n.localize('gui.dpp2.access.status.contraption_ext', contraption\GetID()) if ownerSteamID == 'world' and not @CanTouchWorld(ply)
+					return false, i18n.localize('gui.dpp2.access.status.friend'), i18n.localize('gui.dpp2.access.status.contraption_ext', contraption\GetID()) if ownerSteamID ~= 'world' and not @CanTouchOther(ply, ownerSteamID)
+		else
+			for ent2 in *contraption.ents
+				if IsValid(ent2) and ent2 ~= ent
+					owner, ownerSteamID, ownerNick = ent2\DPP2GetOwner()
+					classname2 = ent2\GetClass()
+					mdl2 = ent2\GetModel()
+					return false, i18n.localize('gui.dpp2.access.status.model_blacklist') if not DPP2.ModelBlacklist\Ask(mdl2, ply)
+
+					if (not @classnameExclusionList or not @classnameExclusionList\Ask(classname2, ply)) and not DPP2.ModelExclusions\Ask(mdl2, ply)
+						return false, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_restriction') if @classnameRestriction and not @classnameRestriction\Ask(classname2, ply)
+						return false, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_blacklist') if @classnameBlacklist and not @classnameBlacklist\Ask(classname2, ply)
+
+						if steamid ~= ownerSteamID
+							return false, i18n.localize('gui.dpp2.access.status.map'), i18n.localize('gui.dpp2.access.status.contraption_ext', contraption\GetID()) if ownerSteamID == 'world' and ent\DPP2CreatedByMap() and not @CanTouchMap(ply)
+							return false, i18n.localize('gui.dpp2.access.status.world'), i18n.localize('gui.dpp2.access.status.contraption_ext', contraption\GetID()) if ownerSteamID == 'world' and not @CanTouchWorld(ply)
+							return false, i18n.localize('gui.dpp2.access.status.friend'), i18n.localize('gui.dpp2.access.status.contraption_ext', contraption\GetID()) if ownerSteamID ~= 'world' and not @CanTouchOther(ply, ownerSteamID)
 
 		return true, i18n.localize('gui.dpp2.access.status.contraption_ext', contraption\GetID())
 

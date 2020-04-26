@@ -253,9 +253,11 @@ DPP2.DEF.Blacklist.__base.BuildCPanel = (panel) =>
 
 	@newItemInput.OnEnter = -> @newItemButton\DoClick()
 
-	Menus.QCheckBox(panel, 'bl_' .. @identifier .. '_enable')
-	Menus.QCheckBox(panel, 'bl_' .. @identifier .. '_whitelist')
-	Menus.QCheckBox(panel, 'bl_' .. @identifier .. '_admin_bypass')
+	Menus.QCheckBox(panel, @@INTERNAL_NAME .. '_' .. @identifier .. '_enable')
+
+	if @@ADDITIONAL_CONVARS
+		Menus.QCheckBox(panel, @@INTERNAL_NAME .. '_' .. @identifier .. '_whitelist')
+		Menus.QCheckBox(panel, @@INTERNAL_NAME .. '_' .. @identifier .. '_admin_bypass')
 
 	if @autocomplete
 		@newItemInput.GetAutoComplete = (_, text) ->
@@ -272,5 +274,5 @@ DPP2.DEF.Blacklist.__base.BuildCPanel = (panel) =>
 		@newItemInput\SetText('')
 		RunConsoleCommand('dpp2_' .. @add_command_identifier, text)
 
-	hook.Add 'DPP2_BL_' .. @identifier .. '_EntryAdded', panel, -> timer.Create 'DPP2_RebuildLineMenu_BL_' .. @identifier, 0.2, 1, -> @RebuildListView()
-	hook.Add 'DPP2_BL_' .. @identifier .. '_EntryRemoved', panel, -> timer.Create 'DPP2_RebuildLineMenu_BL_' .. @identifier, 0.2, 1, -> @RebuildListView()
+	hook.Add 'DPP2_' .. @@__name .. '_' .. @identifier .. '_EntryAdded', panel, -> timer.Create 'DPP2_RebuildLineMenu_' .. @@__name .. '_' .. @identifier, 0.2, 1, -> @RebuildListView()
+	hook.Add 'DPP2_' .. @@__name .. '_' .. @identifier .. '_EntryRemoved', panel, -> timer.Create 'DPP2_RebuildLineMenu_' .. @@__name .. '_' .. @identifier, 0.2, 1, -> @RebuildListView()

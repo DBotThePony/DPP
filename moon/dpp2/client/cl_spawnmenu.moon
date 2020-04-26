@@ -52,13 +52,13 @@ addBlacklistMenuOption = (classname, menu) =>
 		if @Has(classname)
 			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. @remove_command_identifier)
 				remove = -> RunConsoleCommand('dpp2_' .. @remove_command_identifier, classname)
-				submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. @identifier .. '_blacklist')
+				submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. @identifier .. '_' .. @@REGULAR_NAME)
 				button\SetIcon(Menus.Icons.Remove)
 				submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
 		else
 			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. @add_command_identifier)
 				add = -> RunConsoleCommand('dpp2_' .. @add_command_identifier, classname)
-				\AddOption('gui.dpp2.menu.add_to_' .. @identifier .. '_blacklist', add)\SetIcon(Menus.Icons.AddPlain)
+				\AddOption('gui.dpp2.menu.add_to_' .. @identifier .. '_' .. @@REGULAR_NAME, add)\SetIcon(Menus.Icons.AddPlain)
 
 SpawnlistOpenGenericMenu = =>
 	selected = @GetSelectedChildren()
@@ -141,6 +141,7 @@ PatchToolPanel = =>
 							menu\AddOption('gui.dpp2.toolmenu.select_tool2', (-> RunConsoleCommand(unpack(.Command\split(' ')))))\SetIcon(Menus.Icons.Wrench)
 							menu\AddOption('gui.dpp2.toolmenu.select_tool', select_tool)\SetIcon(Menus.Icons.Wrench2)
 							addRestrictionMenuOption(DPP2.ToolgunModeRestrictions, toolname, menu)
+							addBlacklistMenuOption(DPP2.ToolgunModeExclusions, toolname, menu)
 							menu\Open()
 
 		return a, b, c, d, e, f
@@ -153,7 +154,9 @@ PatchSpawnIcon = =>
 		if IsValid(lastMenu) and lastMenuFrame == FrameNumber()
 			lastMenuFrame = FrameNumber() + 1
 			lastMenu\AddSpacer()
-			addBlacklistMenuOption(DPP2.ModelBlacklist, @GetModelName()\lower(), lastMenu)
+			lower = @GetModelName()\lower()
+			addBlacklistMenuOption(DPP2.ModelBlacklist, lower, lastMenu)
+			addBlacklistMenuOption(DPP2.ModelExclusions, lower, lastMenu)
 
 hook.Add 'SpawnlistOpenGenericMenu', 'DPP2.ContextMenuCatch', SpawnlistOpenGenericMenu, 8
 hook.Add 'VGUIPanelCreated', 'DPP2.ContextMenuCatch', =>
@@ -191,8 +194,11 @@ hook.Add 'VGUIPanelCreated', 'DPP2.ContextMenuCatch', =>
 				if IsValid(lastMenu) and lastMenuFrame == FrameNumber()
 					lastMenuFrame = FrameNumber() + 1
 					lastMenu\AddSpacer()
+
 					addRestrictionMenuOption(DPP2.SpawnRestrictions, @GetSpawnName(), lastMenu)
+
 					lastMenu\AddSpacer()
+
 					addRestrictionMenuOption(DPP2.PhysgunProtection.RestrictionList, @GetSpawnName(), lastMenu)
 					addRestrictionMenuOption(DPP2.DriveProtection.RestrictionList, @GetSpawnName(), lastMenu)
 					addRestrictionMenuOption(DPP2.PickupProtection.RestrictionList, @GetSpawnName(), lastMenu)
@@ -200,6 +206,27 @@ hook.Add 'VGUIPanelCreated', 'DPP2.ContextMenuCatch', =>
 					addRestrictionMenuOption(DPP2.GravgunProtection.RestrictionList, @GetSpawnName(), lastMenu)
 					addRestrictionMenuOption(DPP2.ToolgunProtection.RestrictionList, @GetSpawnName(), lastMenu)
 					addRestrictionMenuOption(DPP2.DamageProtection.RestrictionList, @GetSpawnName(), lastMenu)
+
+					lastMenu\AddSpacer()
+
+					addBlacklistMenuOption(DPP2.PhysgunProtection.Blacklist, @GetSpawnName(), lastMenu)
+					addBlacklistMenuOption(DPP2.DriveProtection.Blacklist, @GetSpawnName(), lastMenu)
+					addBlacklistMenuOption(DPP2.PickupProtection.Blacklist, @GetSpawnName(), lastMenu)
+					addBlacklistMenuOption(DPP2.UseProtection.Blacklist, @GetSpawnName(), lastMenu)
+					addBlacklistMenuOption(DPP2.GravgunProtection.Blacklist, @GetSpawnName(), lastMenu)
+					addBlacklistMenuOption(DPP2.ToolgunProtection.Blacklist, @GetSpawnName(), lastMenu)
+					addBlacklistMenuOption(DPP2.DamageProtection.Blacklist, @GetSpawnName(), lastMenu)
+
+					lastMenu\AddSpacer()
+
+					addBlacklistMenuOption(DPP2.PhysgunProtection.Exclusions, @GetSpawnName(), lastMenu)
+					addBlacklistMenuOption(DPP2.DriveProtection.Exclusions, @GetSpawnName(), lastMenu)
+					addBlacklistMenuOption(DPP2.PickupProtection.Exclusions, @GetSpawnName(), lastMenu)
+					addBlacklistMenuOption(DPP2.UseProtection.Exclusions, @GetSpawnName(), lastMenu)
+					addBlacklistMenuOption(DPP2.GravgunProtection.Exclusions, @GetSpawnName(), lastMenu)
+					addBlacklistMenuOption(DPP2.ToolgunProtection.Exclusions, @GetSpawnName(), lastMenu)
+					addBlacklistMenuOption(DPP2.DamageProtection.Exclusions, @GetSpawnName(), lastMenu)
+
 					lastMenu\Open()
 		elseif contentType == 'weapon'
 			@OpenMenu_DPP2 = @OpenMenu_DPP2 or @OpenMenu
@@ -210,11 +237,27 @@ hook.Add 'VGUIPanelCreated', 'DPP2.ContextMenuCatch', =>
 				if IsValid(lastMenu) and lastMenuFrame == FrameNumber()
 					lastMenuFrame = FrameNumber() + 1
 					lastMenu\AddSpacer()
+
 					addRestrictionMenuOption(DPP2.SpawnRestrictions, @GetSpawnName(), lastMenu)
+
 					lastMenu\AddSpacer()
+
 					addRestrictionMenuOption(DPP2.PickupProtection.RestrictionList, @GetSpawnName(), lastMenu)
 					addRestrictionMenuOption(DPP2.UseProtection.RestrictionList, @GetSpawnName(), lastMenu)
 					addRestrictionMenuOption(DPP2.GravgunProtection.RestrictionList, @GetSpawnName(), lastMenu)
+
+					lastMenu\AddSpacer()
+
+					addBlacklistMenuOption(DPP2.PickupProtection.Blacklist, @GetSpawnName(), lastMenu)
+					addBlacklistMenuOption(DPP2.UseProtection.Blacklist, @GetSpawnName(), lastMenu)
+					addBlacklistMenuOption(DPP2.GravgunProtection.Blacklist, @GetSpawnName(), lastMenu)
+
+					lastMenu\AddSpacer()
+
+					addBlacklistMenuOption(DPP2.PickupProtection.Exclusions, @GetSpawnName(), lastMenu)
+					addBlacklistMenuOption(DPP2.UseProtection.Exclusions, @GetSpawnName(), lastMenu)
+					addBlacklistMenuOption(DPP2.GravgunProtection.Exclusions, @GetSpawnName(), lastMenu)
+
 					lastMenu\Open()
 		elseif contentType == 'npc'
 			@OpenMenu_DPP2 = @OpenMenu_DPP2 or @OpenMenu
@@ -228,12 +271,31 @@ hook.Add 'VGUIPanelCreated', 'DPP2.ContextMenuCatch', =>
 					classname = list.GetForEdit('NPC')[classname].Class or classname if list.GetForEdit('NPC')[classname]
 					lastMenu\AddSpacer()
 					addRestrictionMenuOption(DPP2.SpawnRestrictions, classname, lastMenu)
+
 					lastMenu\AddSpacer()
+
 					addRestrictionMenuOption(DPP2.PhysgunProtection.RestrictionList, classname, lastMenu)
 					addRestrictionMenuOption(DPP2.ToolgunProtection.RestrictionList, classname, lastMenu)
 					addRestrictionMenuOption(DPP2.UseProtection.RestrictionList, classname, lastMenu)
 					addRestrictionMenuOption(DPP2.GravgunProtection.RestrictionList, classname, lastMenu)
 					addRestrictionMenuOption(DPP2.DamageProtection.RestrictionList, classname, lastMenu)
+
+					lastMenu\AddSpacer()
+
+					addBlacklistMenuOption(DPP2.PhysgunProtection.Blacklist, classname, lastMenu)
+					addBlacklistMenuOption(DPP2.ToolgunProtection.Blacklist, classname, lastMenu)
+					addBlacklistMenuOption(DPP2.UseProtection.Blacklist, classname, lastMenu)
+					addBlacklistMenuOption(DPP2.GravgunProtection.Blacklist, classname, lastMenu)
+					addBlacklistMenuOption(DPP2.DamageProtection.Blacklist, classname, lastMenu)
+
+					lastMenu\AddSpacer()
+
+					addBlacklistMenuOption(DPP2.PhysgunProtection.Exclusions, classname, lastMenu)
+					addBlacklistMenuOption(DPP2.ToolgunProtection.Exclusions, classname, lastMenu)
+					addBlacklistMenuOption(DPP2.UseProtection.Exclusions, classname, lastMenu)
+					addBlacklistMenuOption(DPP2.GravgunProtection.Exclusions, classname, lastMenu)
+					addBlacklistMenuOption(DPP2.DamageProtection.Exclusions, classname, lastMenu)
+
 					lastMenu\Open()
 		elseif contentType == 'vehicle'
 			@OpenMenu_DPP2 = @OpenMenu_DPP2 or @OpenMenu
@@ -245,15 +307,40 @@ hook.Add 'VGUIPanelCreated', 'DPP2.ContextMenuCatch', =>
 					if getdata = list.GetForEdit('Vehicles')[@GetSpawnName()]
 						lastMenuFrame = FrameNumber() + 1
 						lastMenu\AddSpacer()
-						addBlacklistMenuOption(DPP2.ModelBlacklist, getdata.Model, lastMenu) if getdata.Model
+
+						if getdata.Model
+							addBlacklistMenuOption(DPP2.ModelBlacklist, getdata.Model, lastMenu)
+							addBlacklistMenuOption(DPP2.ModelExclusions, getdata.Model, lastMenu)
+
 						addRestrictionMenuOption(DPP2.SpawnRestrictions, getdata.Class, lastMenu)
+
 						lastMenu\AddSpacer()
+
 						addRestrictionMenuOption(DPP2.PhysgunProtection.RestrictionList, getdata.Class, lastMenu)
 						addRestrictionMenuOption(DPP2.ToolgunProtection.RestrictionList, getdata.Class, lastMenu)
 						addRestrictionMenuOption(DPP2.UseProtection.RestrictionList, getdata.Class, lastMenu)
 						addRestrictionMenuOption(DPP2.VehicleProtection.RestrictionList, getdata.Class, lastMenu)
 						addRestrictionMenuOption(DPP2.GravgunProtection.RestrictionList, getdata.Class, lastMenu)
 						addRestrictionMenuOption(DPP2.DamageProtection.RestrictionList, getdata.Class, lastMenu)
+
+						lastMenu\AddSpacer()
+
+						addBlacklistMenuOption(DPP2.PhysgunProtection.Blacklist, getdata.Class, lastMenu)
+						addBlacklistMenuOption(DPP2.ToolgunProtection.Blacklist, getdata.Class, lastMenu)
+						addBlacklistMenuOption(DPP2.UseProtection.Blacklist, getdata.Class, lastMenu)
+						addBlacklistMenuOption(DPP2.VehicleProtection.Blacklist, getdata.Class, lastMenu)
+						addBlacklistMenuOption(DPP2.GravgunProtection.Blacklist, getdata.Class, lastMenu)
+						addBlacklistMenuOption(DPP2.DamageProtection.Blacklist, getdata.Class, lastMenu)
+
+						lastMenu\AddSpacer()
+
+						addBlacklistMenuOption(DPP2.PhysgunProtection.Exclusions, getdata.Class, lastMenu)
+						addBlacklistMenuOption(DPP2.ToolgunProtection.Exclusions, getdata.Class, lastMenu)
+						addBlacklistMenuOption(DPP2.UseProtection.Exclusions, getdata.Class, lastMenu)
+						addBlacklistMenuOption(DPP2.VehicleProtection.Exclusions, getdata.Class, lastMenu)
+						addBlacklistMenuOption(DPP2.GravgunProtection.Exclusions, getdata.Class, lastMenu)
+						addBlacklistMenuOption(DPP2.DamageProtection.Exclusions, getdata.Class, lastMenu)
+
 						lastMenu\Open()
 		elseif contentType == 'model'
 			@OpenMenu_DPP2 = @OpenMenu_DPP2 or @OpenMenu
@@ -264,5 +351,7 @@ hook.Add 'VGUIPanelCreated', 'DPP2.ContextMenuCatch', =>
 				if IsValid(lastMenu) and lastMenuFrame == FrameNumber()
 					lastMenuFrame = FrameNumber() + 1
 					lastMenu\AddSpacer()
-					addBlacklistMenuOption(DPP2.ModelBlacklist, @GetModelName(), lastMenu)
+					lower = @GetModelName()\lower()
+					addBlacklistMenuOption(DPP2.ModelBlacklist, lower, lastMenu)
+					addBlacklistMenuOption(DPP2.ModelExclusions, lower, lastMenu)
 

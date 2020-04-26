@@ -50,12 +50,26 @@ Menus.ModelBlacklistMenu = =>
 	DPP2.ModelBlacklist\BuildCPanel(@)
 
 	button = @Button('gui.dpp2.model_blacklist.window_title')
-	button.DoClick = -> Menus.OpenModelBlacklistFrame()
+	button.DoClick = -> Menus.OpenModelBlacklistFrame(
+		DPP2.ModelBlacklist,
+		'gui.dpp2.model_blacklist.window_title'
+		)
 
-Menus.OpenModelBlacklistFrame = ->
+Menus.ModelExclusionMenu = =>
+	return if not IsValid(@)
+
+	DPP2.ModelExclusions\BuildCPanel(@)
+
+	button = @Button('gui.dpp2.model_exclusions.window_title')
+	button.DoClick = -> Menus.OpenModelBlacklistFrame(
+		DPP2.ModelExclusions,
+		'gui.dpp2.model_exclusions.window_title'
+		)
+
+Menus.OpenModelBlacklistFrame = (target, name) ->
 	self = vgui.Create('DLib_Window')
 	@SetSize(ScrW() - 100, ScrH() - 100)
-	@SetTitle('gui.dpp2.model_blacklist.window_title')
+	@SetTitle(name)
 	@Center()
 	@MakePopup()
 
@@ -74,11 +88,11 @@ Menus.OpenModelBlacklistFrame = ->
 		return if #selected == 0
 
 		with menu = DermaMenu()
-			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelBlacklist.remove_command_identifier)
+			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. target.remove_command_identifier)
 				remove = ->
 					for button in *selected
-						RunConsoleCommand('dpp2_' .. DPP2.ModelBlacklist.remove_command_identifier, button._model)
-				submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. DPP2.ModelBlacklist.identifier .. '_blacklist')
+						RunConsoleCommand('dpp2_' .. target.remove_command_identifier, button._model)
+				submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. target.identifier .. '_' .. target.__class.REGULAR_NAME)
 				button\SetIcon(Menus.Icons.Remove)
 				submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
 
@@ -94,9 +108,9 @@ Menus.OpenModelBlacklistFrame = ->
 				\AddOption('gui.dpp2.property.copyclassname', (-> SetClipboardText(@_model)))\SetIcon(Menus.Icons.Copy)
 				\AddSpacer()
 
-				if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelBlacklist.remove_command_identifier)
-					remove = -> RunConsoleCommand('dpp2_' .. DPP2.ModelBlacklist.remove_command_identifier, @_model)
-					submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. DPP2.ModelBlacklist.identifier .. '_blacklist')
+				if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. target.remove_command_identifier)
+					remove = -> RunConsoleCommand('dpp2_' .. target.remove_command_identifier, @_model)
+					submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. target.identifier .. '_' .. target.__class.REGULAR_NAME)
 					button\SetIcon(Menus.Icons.Remove)
 					submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
 
@@ -107,7 +121,7 @@ Menus.OpenModelBlacklistFrame = ->
 	rebuildList = ->
 		button._mark = true for _, button in pairs(buttons)
 
-		for _, model in SortedPairs(DPP2.ModelBlacklist.listing.values)
+		for _, model in SortedPairs(target.listing.values)
 			if not buttons[model]
 				button = vgui.Create('SpawnIcon', grid)
 				button\SetSize(64, 64)
@@ -168,3 +182,14 @@ hook.Add 'PopulateToolMenu', 'DPP2.Menus', ->
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.blacklist', 'gui.dpp2.toolmenu.blacklist.gravgun', 'gui.dpp2.toolmenu.blacklist.gravgun', '', '', => DPP2.GravgunProtection.Blacklist\BuildCPanel(@)
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.blacklist', 'gui.dpp2.toolmenu.blacklist.toolgun', 'gui.dpp2.toolmenu.blacklist.toolgun', '', '', => DPP2.ToolgunProtection.Blacklist\BuildCPanel(@)
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.blacklist', 'gui.dpp2.toolmenu.blacklist.damage', 'gui.dpp2.toolmenu.blacklist.damage', '', '', => DPP2.DamageProtection.Blacklist\BuildCPanel(@)
+
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.exclusions', 'gui.dpp2.toolmenu.exclusions.model', 'gui.dpp2.toolmenu.exclusions.model', '', '', Menus.ModelExclusionMenu
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.exclusions', 'gui.dpp2.toolmenu.exclusions.physgun', 'gui.dpp2.toolmenu.exclusions.physgun', '', '', => DPP2.PhysgunProtection.Exclusions\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.exclusions', 'gui.dpp2.toolmenu.exclusions.drive', 'gui.dpp2.toolmenu.exclusions.drive', '', '', => DPP2.DriveProtection.Exclusions\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.exclusions', 'gui.dpp2.toolmenu.exclusions.pickup', 'gui.dpp2.toolmenu.exclusions.pickup', '', '', => DPP2.PickupProtection.Exclusions\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.exclusions', 'gui.dpp2.toolmenu.exclusions.use', 'gui.dpp2.toolmenu.exclusions.use', '', '', => DPP2.UseProtection.Exclusions\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.exclusions', 'gui.dpp2.toolmenu.exclusions.vehicle', 'gui.dpp2.toolmenu.exclusions.vehicle', '', '', => DPP2.VehicleProtection.Exclusions\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.exclusions', 'gui.dpp2.toolmenu.exclusions.gravgun', 'gui.dpp2.toolmenu.exclusions.gravgun', '', '', => DPP2.GravgunProtection.Exclusions\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.exclusions', 'gui.dpp2.toolmenu.exclusions.toolgun', 'gui.dpp2.toolmenu.exclusions.toolgun', '', '', => DPP2.ToolgunProtection.Exclusions\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.exclusions', 'gui.dpp2.toolmenu.exclusions.toolgun_mode', 'gui.dpp2.toolmenu.exclusions.toolgun_mode', '', '', => DPP2.ToolgunModeExclusions\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.exclusions', 'gui.dpp2.toolmenu.exclusions.damage', 'gui.dpp2.toolmenu.exclusions.damage', '', '', => DPP2.DamageProtection.Exclusions\BuildCPanel(@)

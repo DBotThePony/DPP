@@ -31,6 +31,10 @@ if SERVER
 	net.pool('dpp2_blist_remove')
 	net.pool('dpp2_blist_replicate')
 
+	net.pool('dpp2_excl_add')
+	net.pool('dpp2_excl_remove')
+	net.pool('dpp2_excl_replicate')
+
 DPP2.DEF = DPP2.DEF or {}
 
 class DPP2.DEF.RestrictionListEntry
@@ -447,6 +451,7 @@ class DPP2.DEF.RestrictionList
 		return entry for entry in *@listing when entry.id == id
 		return false
 
+	IsEnabled: => @@ENABLED\GetBool() and @ENABLED\GetBool()
 	Ask: (classname, ply) =>
 		return true if not @@ENABLED\GetBool() or not @ENABLED\GetBool()
 		group, isAdmin = ply\GetUserGroup(), ply\IsAdmin()
@@ -532,6 +537,12 @@ class DPP2.DEF.Blacklist
 	@REGISTRY_ = {}
 	@nextid = 0
 
+	@@REGULAR_NAME = 'blacklist'
+	@@NET_NAME = 'blist'
+	@@INTERNAL_NAME = 'bl'
+	@@ADDITIONAL_CONVARS = true
+	@@RETURN_MODE = true
+
 	@CAMI_WATCHDOG = DLib.CAMIWatchdog('dpp2_blacklist')
 	@ENABLED = DPP2.CreateConVar('bl_enable', '1', DPP2.TYPE_BOOL)
 
@@ -557,8 +568,8 @@ class DPP2.DEF.Blacklist
 			list\FullReplicate(ply)
 
 	new: (identifier, autocomplete) =>
-		assert(identifier, 'Blacklist registry without identifier')
-		error('Blacklist ' .. identifier .. ' already exists! Can not redefine existing one.') if @@REGISTRY[identifier]
+		assert(identifier, @@__name .. ' registry without identifier')
+		error(@@__name .. ' ' .. identifier .. ' already exists! Can not redefine existing one.') if @@REGISTRY[identifier]
 
 		@@REGISTRY[identifier] = @
 		@id = @@nextid
@@ -569,11 +580,13 @@ class DPP2.DEF.Blacklist
 		@listingDef = DLib.Set()
 		self2 = @
 
-		@ENABLED = DPP2.CreateConVar('bl_' .. identifier .. '_enable', '1', DPP2.TYPE_BOOL)
-		@IS_WHITELIST = DPP2.CreateConVar('bl_' .. identifier .. '_whitelist', '0', DPP2.TYPE_BOOL)
-		@ADMINS_BYPASS = DPP2.CreateConVar('bl_' .. identifier .. '_admin_bypass', '0', DPP2.TYPE_BOOL)
+		@ENABLED = DPP2.CreateConVar(@@INTERNAL_NAME .. '_' .. identifier .. '_enable', '1', DPP2.TYPE_BOOL)
 
-		@cami_name = 'dpp2_bl_' .. identifier .. '_admin'
+		if @@ADDITIONAL_CONVARS
+			@IS_WHITELIST = DPP2.CreateConVar(@@INTERNAL_NAME .. '_' .. identifier .. '_whitelist', '0', DPP2.TYPE_BOOL)
+			@ADMINS_BYPASS = DPP2.CreateConVar(@@INTERNAL_NAME .. '_' .. identifier .. '_admin_bypass', '0', DPP2.TYPE_BOOL)
+
+		@cami_name = 'dpp2_' .. @@INTERNAL_NAME .. '_' .. identifier .. '_admin'
 		@@CAMI_WATCHDOG\Track(@cami_name)
 
 		CAMI.RegisterPrivilege({
@@ -582,23 +595,25 @@ class DPP2.DEF.Blacklist
 			Description: identifier .. ' blacklist admin role (for admin bypass option)'
 		})
 
-		@add_command_identifier = 'add_' .. identifier .. '_blacklist'
-		@remove_command_identifier = 'remove_' .. identifier .. '_blacklist'
+		@add_command_identifier = 'add_' .. identifier .. '_' .. @@REGULAR_NAME
+		@remove_command_identifier = 'remove_' .. identifier .. '_' .. @@REGULAR_NAME
 
 		if SERVER
+			REGULAR_NAME = @@REGULAR_NAME
+
 			DPP2.cmd[@add_command_identifier] = (args = {}) =>
 				val = table.concat(args, ' ')\trim()\lower()
 				return 'command.dpp2.lists.arg_empty' if val == ''
 				return 'command.dpp2.lists.already_in' if self2\Has(val)
 				self2\Add(val)
-				DPP2.Notify(true, nil, 'command.dpp2.blists.added.' .. identifier, @, val)
+				DPP2.Notify(true, nil, 'command.dpp2.' .. REGULAR_NAME .. '.added.' .. identifier, @, val)
 
 			DPP2.cmd[@remove_command_identifier] = (args = {}) =>
 				val = table.concat(args, ' ')\trim()\lower()
 				return 'command.dpp2.lists.arg_empty' if val == ''
 				return 'command.dpp2.lists.already_not' if not self2\Has(val)
 				self2\Remove(val)
-				DPP2.Notify(true, nil, 'command.dpp2.blists.removed.' .. identifier, @, val)
+				DPP2.Notify(true, nil, 'command.dpp2.' .. REGULAR_NAME .. '.removed.' .. identifier, @, val)
 
 		DPP2.cmd_perms[@add_command_identifier] = 'superadmin'
 		DPP2.cmd_perms[@remove_command_identifier] = 'superadmin'
@@ -632,7 +647,7 @@ class DPP2.DEF.Blacklist
 				timer.Simple 1, -> @RequestFromServer()
 			else
 				frames = 0
-				hook.Add 'Think', 'DPP2_bl_' .. @identifier .. '_request', ->
+				hook.Add 'Think', 'DPP2_' .. @@__name .. '_' .. @identifier .. '_request', ->
 					ply = LocalPlayer()
 					return if not IsValid(ply)
 
@@ -641,16 +656,16 @@ class DPP2.DEF.Blacklist
 
 					if frames > 400
 						@RequestFromServer()
-						hook.Remove 'Think', 'DPP2_bl_' .. @identifier .. '_request'
+						hook.Remove 'Think', 'DPP2_' .. @@__name .. '_' .. @identifier .. '_request'
 
-	CallHook: (name, ...) => hook.Run('DPP2_BL_' .. @identifier .. '_' .. name, @, ...)
+	CallHook: (name, ...) => hook.Run('DPP2_' .. @@__name .. '_' .. @identifier .. '_' .. name, @, ...)
 
 	Add: (entry) =>
 		return false if @Has(entry)
 
 		if SERVER
 			@SaveTimer()
-			net.Start('dpp2_blist_add')
+			net.Start('dpp2_' .. @@NET_NAME .. '_add')
 			net.WriteUInt8(@id)
 			net.WriteString(entry)
 			net.Broadcast()
@@ -666,7 +681,7 @@ class DPP2.DEF.Blacklist
 
 		if SERVER
 			@SaveTimer()
-			net.Start('dpp2_blist_remove')
+			net.Start('dpp2_' .. @@NET_NAME .. '_remove')
 			net.WriteUInt8(@id)
 			net.WriteString(entry)
 			net.Broadcast()
@@ -680,36 +695,46 @@ class DPP2.DEF.Blacklist
 	HasDefault: (entry) => @listingDef\Has(entry) -- ???
 
 	Check: (entry) => @Has(entry)
+	IsEnabled: => @@ENABLED\GetBool() and @ENABLED\GetBool()
 	Ask: (entry, ply = NULL) =>
-		return true if not @@ENABLED\GetBool() or not @ENABLED\GetBool()
-		return true if @ADMINS_BYPASS\GetBool() and IsValid(ply) and @@CAMI_WATCHDOG\HasPermission(ply, @cami_name)
+		if @@RETURN_MODE
+			return true if not @@ENABLED\GetBool() or not @ENABLED\GetBool()
+			return true if @ADMINS_BYPASS and @ADMINS_BYPASS\GetBool() and IsValid(ply) and @@CAMI_WATCHDOG\HasPermission(ply, @cami_name)
 
-		if @IS_WHITELIST\GetBool()
-			return @Has(entry)
+			if @IS_WHITELIST and @IS_WHITELIST\GetBool()
+				return @Has(entry)
+			else
+				return not @Has(entry)
 		else
-			return not @Has(entry)
+			return false if not @@ENABLED\GetBool() or not @ENABLED\GetBool()
+			return false if @ADMINS_BYPASS and @ADMINS_BYPASS\GetBool() and IsValid(ply) and @@CAMI_WATCHDOG\HasPermission(ply, @cami_name)
+
+			if @IS_WHITELIST and @IS_WHITELIST\GetBool()
+				return not @Has(entry)
+			else
+				return @Has(entry)
 
 	FullReplicate: (who = player.GetHumans()) =>
 		error('Invalid side') if CLIENT
-		net.Start('dpp2_blist_replicate')
+		net.Start('dpp2_' .. @@NET_NAME .. '_replicate')
 		net.WriteUInt8(@id)
 		net.WriteStringArray(@listing\GetValues())
 		net.Send(who)
 
 	SaveTimer: =>
 		return if not SERVER
-		timer.Create 'DPP2_Save_' .. @identifier .. '_Blacklist', 0.25, 1, ->
+		timer.Create 'DPP2_Save_' .. @identifier .. '_' .. @@__name, 0.25, 1, ->
 			@MakeBackup()
 			@SaveToDisk()
 
 	RequestFromServer: =>
 		return if SERVER
-		net.Start('dpp2_blist_replicate')
+		net.Start('dpp2_' .. @@NET_NAME .. '_replicate')
 		net.WriteString(@identifier)
 		net.SendToServer()
 
 	BuildSaveString: => SERVER and util.TableToJSON(@listing.values, true) or error('Invalid side')
-	DefaultSavePath: => 'dpp2/' .. @identifier .. '_blacklist.json'
+	DefaultSavePath: => 'dpp2/' .. @identifier .. '_' .. @@REGULAR_NAME .. '.json'
 	SaveToDisk: (path = @DefaultSavePath()) => file.Write(path, @BuildSaveString())
 	LoadFrom: (str) =>
 		error('Invalid side') if not SERVER
@@ -717,15 +742,50 @@ class DPP2.DEF.Blacklist
 		rebuild = util.JSONToTable(str)
 		return false if not rebuild
 		@Add(object) for object in *rebuild
-		timer.Remove('DPP2_Save_' .. @identifier .. '_Blacklist')
+		timer.Remove('DPP2_Save_' .. @identifier .. '_' .. @@__name)
 		return true
 
 	MakeBackup: =>
 		path = @DefaultSavePath()
 		return false if not file.Exists(path, 'data')
-		file.Write('dpp2/backup/' .. @identifier .. '_blacklist_' .. os.date('%Y-%m-%d-%H_%M_%S') .. '.json', file.Read(path, 'data'))
+		file.Write('dpp2/backup/' .. @identifier .. '_' .. @@REGULAR_NAME .. '_' .. os.date('%Y-%m-%d-%H_%M_%S') .. '.json', file.Read(path, 'data'))
 		return true
 
 	LoadFromDisk: (path = @DefaultSavePath()) =>
 		return false if not file.Exists(path, 'data')
 		return @LoadFrom(file.Read(path, 'data'))
+
+class DPP2.DEF.Exclusion extends DPP2.DEF.Blacklist
+	@REGISTRY = {}
+	@REGISTRY_ = {}
+	@nextid = 0
+
+	@@REGULAR_NAME = 'exclist'
+	@@NET_NAME = 'excl'
+	@@INTERNAL_NAME = 'el'
+	@@ADDITIONAL_CONVARS = false
+	@@RETURN_MODE = false
+
+	@CAMI_WATCHDOG = DLib.CAMIWatchdog('dpp2_exclusionlist')
+	@ENABLED = DPP2.CreateConVar('excl_enable', '1', DPP2.TYPE_BOOL)
+
+	if CLIENT
+		net.receive 'dpp2_excl_add', ->
+			list, entry = assert(@REGISTRY_[net.ReadUInt8()], 'Missing exclusion registry'), net.ReadString()
+			list\Add(entry)
+
+		net.receive 'dpp2_excl_remove', ->
+			list, entry = assert(@REGISTRY_[net.ReadUInt8()], 'Missing exclusion registry'), net.ReadString()
+			list\Remove(entry)
+
+		net.receive 'dpp2_excl_replicate', ->
+			list, listing = assert(@REGISTRY_[net.ReadUInt8()], 'Missing exclusion registry'), net.ReadStringArray()
+			list.listing = DLib.Set()
+			list\Add(val) for val in *listing
+	else
+		net.Receive 'dpp2_excl_replicate', (_, ply) ->
+			list = @REGISTRY[net.ReadString()]
+			return if not list
+			return if (ply['dpp2_last_full_request_excl_' .. list.identifier] or 0) > RealTime()
+			ply['dpp2_last_full_request_excl_' .. list.identifier] = RealTime() + 30
+			list\FullReplicate(ply)

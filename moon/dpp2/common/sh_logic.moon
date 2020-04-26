@@ -332,6 +332,12 @@ DPP2.ACCESS.CanToolgun = (ply = NULL, ent = NULL, toolgunMode) ->
 	-- allow self tool
 	return true if ply == ent
 	return true, i18n.localize('gui.dpp2.access.status.invalident') if not ent\IsValid()
+
+	if DPP2.ToolgunModeExclusions\Ask(toolgunMode, ply)
+		cangeneric, tstatus = DPP2.ToolgunProtection\CanGeneric(ply, ent)
+		return cangeneric, tstatus if not cangeneric
+		return true, i18n.localize('gui.dpp2.access.status.toolgun_mode_excluded')
+
 	return DPP2.ToolgunProtection\CanTouch(ply, ent)
 
 DPP2.ACCESS.CanDamage = (ply = NULL, ent = NULL) ->

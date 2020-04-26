@@ -100,6 +100,15 @@ blacklists = {
 	DPP2.GravgunProtection.Blacklist
 	DPP2.ToolgunProtection.Blacklist
 	DPP2.DamageProtection.Blacklist
+	'a'
+	DPP2.PhysgunProtection.Exclusions
+	DPP2.DriveProtection.Exclusions
+	DPP2.PickupProtection.Exclusions
+	DPP2.UseProtection.Exclusions
+	DPP2.VehicleProtection.Exclusions
+	DPP2.GravgunProtection.Exclusions
+	DPP2.ToolgunProtection.Exclusions
+	DPP2.DamageProtection.Exclusions
 }
 
 properties.Add('dpp2_copyvector', {
@@ -118,10 +127,11 @@ properties.Add('dpp2_copyvector', {
 				return true if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelBlacklist.add_command_identifier)
 
 		for object in *blacklists
-			if object\Has(classname)
-				return true if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.remove_command_identifier)
-			else
-				return true if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.add_command_identifier)
+			if not isstring(object)
+				if object\Has(classname)
+					return true if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.remove_command_identifier)
+				else
+					return true if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.add_command_identifier)
 
 		for object in *restrictions
 			if object\Has(classname)
@@ -149,13 +159,16 @@ properties.Add('dpp2_copyvector', {
 			\AddSpacer()
 
 			for object in *blacklists
-				if object\Has(classname)
-					if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.remove_command_identifier)
-						submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. object.identifier .. '_blacklist')
-						button\SetIcon(Menus.Icons.Remove)
-						submenu\AddOption('gui.dpp2.menus.remove2', (-> RunConsoleCommand('dpp2_' .. object.remove_command_identifier, model)))\SetIcon(Menus.Icons.Remove)
-				elseif DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.add_command_identifier)
-					\AddOption('gui.dpp2.menu.add_to_' .. object.identifier .. '_blacklist', (-> RunConsoleCommand('dpp2_' .. object.add_command_identifier, model)))\SetIcon(Menus.Icons.AddPlain)
+				if isstring(object)
+					\AddSpacer()
+				else
+					if object\Has(classname)
+						if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.remove_command_identifier)
+							submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. object.identifier .. '_' .. object.__class.REGULAR_NAME)
+							button\SetIcon(Menus.Icons.Remove)
+							submenu\AddOption('gui.dpp2.menus.remove2', (-> RunConsoleCommand('dpp2_' .. object.remove_command_identifier, model)))\SetIcon(Menus.Icons.Remove)
+					elseif DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.add_command_identifier)
+						\AddOption('gui.dpp2.menu.add_to_' .. object.identifier .. '_' .. object.__class.REGULAR_NAME, (-> RunConsoleCommand('dpp2_' .. object.add_command_identifier, model)))\SetIcon(Menus.Icons.AddPlain)
 
 			\AddSpacer()
 

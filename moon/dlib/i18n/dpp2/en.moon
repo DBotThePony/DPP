@@ -30,6 +30,7 @@ gui.dpp2.access.status.yoursettings = 'Your settings'
 gui.dpp2.access.status.toolgun_player = 'Cannot toolgun a player'
 gui.dpp2.access.status.model_blacklist = 'Model is blacklisted'
 gui.dpp2.access.status.toolgun_mode_blocked = 'Toolgun mode restricted'
+gui.dpp2.access.status.toolgun_mode_excluded = 'Toolgun mode excluded from protection'
 
 message.dpp2.owning.owned = 'You now own this entity'
 message.dpp2.owning.owned_contraption = 'You now own this contraption'
@@ -67,6 +68,8 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 	gui.dpp2.cvars[modeID .. '_no_map'] = string.format('%s: Players can not touch map owned props', modeName)
 	gui.dpp2.cvars[modeID .. '_no_map_admin'] = string.format('%s: Admins can not touch map owned props', modeName)
 
+	gui.dpp2.cvars['el_' .. modeID .. '_enable'] = string.format('%s exlusion list enabled', modeName)
+
 	gui.dpp2.cvars['bl_' .. modeID .. '_enable'] = string.format('%s blacklist enabled', modeName)
 	gui.dpp2.cvars['bl_' .. modeID .. '_whitelist'] = string.format('%s blacklist act as whitelist', modeName)
 	gui.dpp2.cvars['bl_' .. modeID .. '_admin_bypass'] = string.format('%s blacklist can be bypassed by admins', modeName)
@@ -84,12 +87,19 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 
 	gui.dpp2.toolmenu.restrictions[modeID] = modeName .. ' restrictions'
 	gui.dpp2.toolmenu.blacklist[modeID] = modeName .. ' blacklist'
+	gui.dpp2.toolmenu.exclusions[modeID] = modeName .. ' exclusions'
 
-	command.dpp2.blists.added[modeID] = '#E added %s to ' .. modeName .. ' blacklist'
-	command.dpp2.blists.removed[modeID] = '#E removed %s from ' .. modeName .. ' blacklist'
+	command.dpp2.blacklist.added[modeID] = '#E added %s to ' .. modeName .. ' blacklist'
+	command.dpp2.blacklist.removed[modeID] = '#E removed %s from ' .. modeName .. ' blacklist'
+
+	command.dpp2.exclist.added[modeID] = '#E added %s to ' .. modeName .. ' exclusion list'
+	command.dpp2.exclist.removed[modeID] = '#E removed %s from ' .. modeName .. ' exclusion list'
 
 	gui.dpp2.menu['add_to_' .. modeID .. '_blacklist'] = 'Add to ' .. modeName .. ' blacklist'
 	gui.dpp2.menu['remove_from_' .. modeID .. '_blacklist'] = 'Remove from ' .. modeName .. ' blacklist'
+
+	gui.dpp2.menu['add_to_' .. modeID .. '_exclist'] = 'Add to ' .. modeName .. ' exclusion list'
+	gui.dpp2.menu['remove_from_' .. modeID .. '_exclist'] = 'Remove from ' .. modeName .. ' exclusion list'
 
 	gui.dpp2.menu['add_to_' .. modeID .. '_restrictions'] = 'Add to ' .. modeName .. ' restriction list...'
 	gui.dpp2.menu['edit_in_' .. modeID .. '_restrictions'] = 'Edit in ' .. modeName .. ' restriction list'
@@ -107,15 +117,22 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 	command.dpp2.already_disabled_for[modeID] = '#E already has ' .. modeName .. ' protection disabled for them!'
 	command.dpp2.already_enabled_for[modeID] = '#E already has ' .. modeName .. ' protection enabled for them!'
 	gui.dpp2.access.status['ownerdisabled_' .. modeID] = modeName .. ' protection for owner is disabled'
+	gui.dpp2.access.status[modeID .. '_exclusion'] = 'Entity classname is excluded from protection'
 
 	gui.dpp2.sharing['share_' .. modeID] = 'Share as ' .. modeName
 
 gui.dpp2.cvars.rl_enable = 'Enable restriction lists'
 gui.dpp2.cvars.bl_enable = 'Enable blacklists'
+gui.dpp2.cvars.excl_enable = 'Enable exclude lists'
 
 gui.dpp2.model_blacklist.window_title = 'Model blacklist visual menu'
+gui.dpp2.model_exclusions.window_title = 'Model exclusion list visual menu'
+
+gui.dpp2.access.status.model_exclusion = 'Model is excluded from protection'
 
 for {modeID, modeName} in *{{'model', 'Model'}, {'toolgun_mode', 'Toolgun mode'}, {'class_spawn', 'Spawn'}}
+	gui.dpp2.cvars['el_' .. modeID .. '_enable'] = string.format('%s explusion list enabled', modeName)
+
 	gui.dpp2.cvars['bl_' .. modeID .. '_enable'] = string.format('%s blacklist enabled', modeName)
 	gui.dpp2.cvars['bl_' .. modeID .. '_whitelist'] = string.format('%s blacklist act as whitelist', modeName)
 	gui.dpp2.cvars['bl_' .. modeID .. '_admin_bypass'] = string.format('%s blacklist can be bypassed by admins', modeName)
@@ -126,6 +143,9 @@ for {modeID, modeName} in *{{'model', 'Model'}, {'toolgun_mode', 'Toolgun mode'}
 
 	gui.dpp2.menu['add_to_' .. modeID .. '_blacklist'] = 'Add to ' .. modeName .. ' blacklist'
 	gui.dpp2.menu['remove_from_' .. modeID .. '_blacklist'] = 'Remove from ' .. modeName .. ' blacklist'
+
+	gui.dpp2.menu['add_to_' .. modeID .. '_exclist'] = 'Add to ' .. modeName .. ' exclusion list'
+	gui.dpp2.menu['remove_from_' .. modeID .. '_exclist'] = 'Remove from ' .. modeName .. ' exclusion list'
 
 	gui.dpp2.menu['add_to_' .. modeID .. '_restrictions'] = 'Add to ' .. modeName .. ' restriction list...'
 	gui.dpp2.menu['edit_in_' .. modeID .. '_restrictions'] = 'Edit in ' .. modeName .. ' restriction list'
@@ -260,8 +280,13 @@ command.dpp2.lists.limit_empty = 'Invalid limit provided'
 command.dpp2.lists.already_in = 'Target list already has that element!'
 command.dpp2.lists.already_not = 'Target list already has no that element!'
 
-command.dpp2.blists.added.model = '#E added %s to blacklist'
-command.dpp2.blists.removed.model = '#E removed %s from blacklist'
+command.dpp2.blacklist.added.model = '#E added %s to model blacklist'
+command.dpp2.blacklist.removed.model = '#E removed %s from model blacklist'
+
+command.dpp2.exclist.added.model = '#E added %s to model exclusion list'
+command.dpp2.exclist.removed.model = '#E removed %s from model exclusion list'
+command.dpp2.exclist.added.toolgun_mode = '#E added %s to toolgun mode exclusion list'
+command.dpp2.exclist.removed.toolgun_mode = '#E removed %s from toolgun mode exclusion list'
 
 message.dpp2.log.spawn.generic = '#E spawned #E'
 message.dpp2.log.spawn.tried_generic = '#E #C tried #C to spawn #E'
@@ -311,6 +336,8 @@ gui.dpp2.toolmenu.utils = 'Utils'
 gui.dpp2.toolmenu.logging = 'Logging settings'
 gui.dpp2.toolmenu.restrictions.toolgun_mode = 'Toolgun mode restrictions'
 gui.dpp2.toolmenu.restrictions.class_spawn = 'Entity restrictions'
+gui.dpp2.toolmenu.exclusions.model = 'Model exclusions'
+gui.dpp2.toolmenu.exclusions.toolgun_mode = 'Toolgun mode exclusions'
 
 gui.dpp2.toolmenu.limits.sbox = 'Sandbox Limits'
 

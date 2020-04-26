@@ -291,26 +291,28 @@ else
 include('dpp2/common/concommands/sh_registry.lua')
 include('dpp2/client/settings/cl_registry_menus.lua') if CLIENT
 
-DPP2.PhysgunProtection = DPP2.DEF.ProtectionDefinition('physgun', nil, true, true)
-DPP2.ToolgunProtection = DPP2.DEF.ProtectionDefinition('toolgun', nil, true, true)
+DPP2.PhysgunProtection = DPP2.DEF.ProtectionDefinition('physgun', nil, true, true, true)
+DPP2.ToolgunProtection = DPP2.DEF.ProtectionDefinition('toolgun', nil, true, true, true)
 
 with DrivePrefab = DPP2.DEF.DefinitionConVarsPrefab()
 	\SetNoWorldTouch(true)
 	\SetNoWorldTouchAdmin(true)
-	DPP2.DriveProtection = DPP2.DEF.ProtectionDefinition('drive', DrivePrefab, true, true)
+	DPP2.DriveProtection = DPP2.DEF.ProtectionDefinition('drive', DrivePrefab, true, true, true)
 
 with AllowMapPrefab = DPP2.DEF.DefinitionConVarsPrefab()
 	\SetNoMapTouch(false)
 	\SetNoMapTouchAdmin(false)
 	\SetNoWorldTouch(false)
 	\SetNoWorldTouchAdmin(false)
-	DPP2.DamageProtection = DPP2.DEF.ProtectionDefinition('damage', AllowMapPrefab, true, true)
-	DPP2.PickupProtection = DPP2.DEF.ProtectionDefinition('pickup', AllowMapPrefab, true, true)
-	DPP2.UseProtection = DPP2.DEF.ProtectionDefinition('use', AllowMapPrefab, true, true)
-	DPP2.VehicleProtection = DPP2.DEF.ProtectionDefinition('vehicle', AllowMapPrefab, true, true)
-	DPP2.GravgunProtection = DPP2.DEF.ProtectionDefinition('gravgun', AllowMapPrefab, true, true)
+	DPP2.DamageProtection = DPP2.DEF.ProtectionDefinition('damage', AllowMapPrefab, true, true, true)
+	DPP2.PickupProtection = DPP2.DEF.ProtectionDefinition('pickup', AllowMapPrefab, true, true, true)
+	DPP2.UseProtection = DPP2.DEF.ProtectionDefinition('use', AllowMapPrefab, true, true, true)
+	DPP2.VehicleProtection = DPP2.DEF.ProtectionDefinition('vehicle', AllowMapPrefab, true, true, true)
+	DPP2.GravgunProtection = DPP2.DEF.ProtectionDefinition('gravgun', AllowMapPrefab, true, true, true)
 
 DPP2.ModelBlacklist = DPP2.DEF.Blacklist('model', DPP2.ModelAutocomplete)
+DPP2.ModelExclusions = DPP2.DEF.Exclusion('model', DPP2.ModelAutocomplete)
+DPP2.ToolgunModeExclusions = DPP2.DEF.Exclusion('toolgun_mode', DPP2.ToolgunModeAutocomplete)
 
 DPP2.ToolgunModeRestrictions = DPP2.DEF.RestrictionList('toolgun_mode', DPP2.ToolgunModeAutocomplete)
 DPP2.SpawnRestrictions = DPP2.DEF.RestrictionList('class_spawn', DPP2.ClassnameAutocomplete)
