@@ -40,12 +40,3 @@ cmds.cleanupnpcs = cmds.freezephys
 cmds.cleanupvehicles = cmds.freezephys
 
 DPP2.cmd_autocomplete[k] = v for k, v in pairs(cmds)
-
-if CLIENT
-	DPP2.cmd_existing.cleanupdisconnected = true
-	DPP2.cmd_existing.freezephysall = true
-	DPP2.cmd_existing.freezephyspanic = true
-	DPP2.cmd_existing.cleanupallnpcs = true
-	DPP2.cmd_existing.cleanupallvehicles = true
-	DPP2.cmd_existing.cleardecals = true
-	DPP2.cmd_existing.cleanupgibs = true

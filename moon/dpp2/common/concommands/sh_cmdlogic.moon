@@ -40,9 +40,19 @@ cmd_perms = {
 	transfercontraption: 'user'
 
 	setvar: 'superadmin'
+
+	import_urs_limits: 'superadmin'
+	import_urm_limits: 'superadmin'
+	import_urs_restricts: 'superadmin'
+	import_urm_restricts: 'superadmin'
+	import_wuma_limits: 'superadmin'
+	import_wuma_restricts: 'superadmin'
 }
 
 DPP2.cmd_perms[k] = v for k, v in pairs(cmd_perms)
+
+if CLIENT
+	DPP2.cmd_existing[k] = true for k in pairs(cmd_perms)
 
 DPP2.cmd_remap = {}
 

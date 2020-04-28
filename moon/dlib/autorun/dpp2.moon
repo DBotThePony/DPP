@@ -312,12 +312,15 @@ with AllowMapPrefab = DPP2.DEF.DefinitionConVarsPrefab()
 	DPP2.VehicleProtection = DPP2.DEF.ProtectionDefinition('vehicle', AllowMapPrefab, true, true, true)
 	DPP2.GravgunProtection = DPP2.DEF.ProtectionDefinition('gravgun', AllowMapPrefab, true, true, true)
 
+DPP2.ModelRestrictions = DPP2.DEF.RestrictionList('model', DPP2.ModelAutocomplete)
 DPP2.ModelBlacklist = DPP2.DEF.Blacklist('model', DPP2.ModelAutocomplete)
 DPP2.ModelExclusions = DPP2.DEF.Exclusion('model', DPP2.ModelAutocomplete)
 DPP2.ToolgunModeExclusions = DPP2.DEF.Exclusion('toolgun_mode', DPP2.ToolgunModeAutocomplete)
 
 DPP2.ToolgunModeRestrictions = DPP2.DEF.RestrictionList('toolgun_mode', DPP2.ToolgunModeAutocomplete)
 DPP2.SpawnRestrictions = DPP2.DEF.RestrictionList('class_spawn', DPP2.ClassnameAutocomplete)
+
+include('dpp2/server/sv_import.lua') if SERVER
 
 include('dpp2/server/concommands/sv_generic.lua') if SERVER
 include('dpp2/common/concommands/sh_generic.lua')

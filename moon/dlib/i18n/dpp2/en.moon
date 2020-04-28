@@ -423,3 +423,24 @@ gui.dpp2.limit_lists.view.limit = 'Limit'
 gui.dpp2.limit.edit_title = 'Editing limits for %s'
 
 message.dpp2.limit.spawn = 'You hit %s limit!'
+
+for name in *{'vehicle', 'prop', 'props', 'npc', 'sent', 'effect', 'ragdoll'}
+	message.dpp2.import.dryrun.limit[name] = 'Gonna import ' .. name .. ' sandbox limit as %s with limit of #d'
+	message.dpp2.import.dryrun.no_limit[name] = 'Not gonna import ' .. name .. ' sandbox limit as %s with limit of #d because such limit already exists'
+
+for name in *{'tool', 'pickup', 'prop', 'sent', 'effect', 'ragdoll', 'vehicle', 'swep', 'npc'}
+	message.dpp2.import.dryrun.restrict[name] = 'Gonna import ' .. name .. ' restriction list as %s with %s groups in it'
+	message.dpp2.import.dryrun.no_restrict[name] = 'Not gonna import ' .. name .. ' restriction list as %s with %s groups in it because such restriction already exists'
+
+message.dpp2.import.dryrun.entlimit = 'Gonna import %s entity limit as %s with limit of #d'
+message.dpp2.import.dryrun.no_entlimit = 'Not gonna import %s entity limit as %s with limit of #d because such limit already exists'
+
+message.dpp2.import.wuma_warning = 'Since WUMA does not have difference between sandbox limits and entity limits, it is basically very hard to determine to which list each restriction belong to. Use with care!'
+message.dpp2.import.wuma_warning2 = 'This is actually faulty design on WUMA\'s side. Perfect import is possible if everything in WUMA list is currently loaded on the server.'
+message.dpp2.import.wuma_warning_restr = 'Importing WUMA restricts is not 100% accurate since DPP/2 treat some stuff more simple, than WUMA does (for less complexity of restriction system). Use with care!'
+message.dpp2.import.done = 'Dry run/Import done.'
+message.dpp2.import.done_dryrun = 'To apply changes, execute the same command, but with "1" as it\'s argument.'
+
+message.dpp2.import.no_file = 'File to import does not exist.'
+message.dpp2.import.empty_file = 'File to import is empty.'
+message.dpp2.import.bad_file = 'File to import is broken.'
