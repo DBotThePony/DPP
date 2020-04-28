@@ -97,7 +97,7 @@ DPP2.DEF.LimitRegistry.__base.OpenMenu = (classname) =>
 			for group, entry in pairs(entries)
 				if value = tonumber(entry\GetValue())
 					entry2 = @Get(classname, group)
-					if value ~= entry2.limit
+					if not entry2 or value ~= entry2.limit
 						RunConsoleCommand('dpp2_' .. @add_command_identifier, classname, group, entry\GetValue())
 				else
 					RunConsoleCommand('dpp2_' .. @remove_command_identifier, classname, group)
@@ -197,9 +197,9 @@ DPP2.DEF.LimitRegistry.__base.BuildCPanel = (panel) =>
 	Menus.QCheckBox(panel, @identifier .. '_limits_enabled')
 	Menus.QCheckBox(panel, @identifier .. '_limits_inclusive')
 
-	if @autocomplete
+	if @add_autocomplete
 		@newItemInput.GetAutoComplete = (_, text) ->
-			fcall = @autocomplete
+			fcall = @add_autocomplete
 			items = fcall(@, text, text, nil, false)
 			return {'...'} if #items > 100
 			return items

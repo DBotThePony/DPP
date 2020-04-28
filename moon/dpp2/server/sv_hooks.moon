@@ -42,13 +42,35 @@ DPP2.PlayerSpawnedSomething = (ply, ent, advancedCheck = false) ->
 	ent.__dpp2_hit = true
 
 	return false if ent\GetEFlags()\band(EFL_KILLME) ~= 0
+	classname = ent\GetClass()
 
-	if not DPP2.SpawnRestrictions\Ask(ent\GetClass(), ply)
+	if not DPP2.SpawnRestrictions\Ask(classname, ply)
 		hook.Run('DPP_SpawnRestrictionHit', ply, ent)
-		DPP2.NotifyError(ply, 5, 'message.dpp2.restriction.spawn', ent\GetClass())
+		DPP2.NotifyError(ply, 5, 'message.dpp2.restriction.spawn', classname)
 		DPP2.LogSpawn('message.dpp2.log.spawn.tried_generic', ply, color_red, DPP2.textcolor, ent)
 		SafeRemoveEntity(ent)
 		return false
+
+	if DPP2.PerEntityLimits.IS_INCLUSIVE\GetBool()
+		check = false
+
+		if entry = DPP2.PerEntityLimits\Get(classname, ply\GetUserGroup())
+			check = not entry.limit or entry.limit > #ply\DPP2GetAllEntsByClass(classname)
+
+		if not check
+			hook.Run('DPP_SpawnLimitHit', ply, ent)
+			DPP2.NotifyError(ply, 5, 'message.dpp2.limit.spawn', classname)
+			DPP2.LogSpawn('message.dpp2.log.spawn.tried_generic', ply, color_red, DPP2.textcolor, ent)
+			SafeRemoveEntity(ent)
+			return false
+	else
+		if entry = DPP2.PerEntityLimits\Get(classname, ply\GetUserGroup())
+			if entry.limit and entry.limit <= #ply\DPP2GetAllEntsByClass(classname)
+				hook.Run('DPP_SpawnLimitHit', ply, ent)
+				DPP2.NotifyError(ply, 5, 'message.dpp2.limit.spawn', classname)
+				DPP2.LogSpawn('message.dpp2.log.spawn.tried_generic', ply, color_red, DPP2.textcolor, ent)
+				SafeRemoveEntity(ent)
+				return false
 
 	fixme = false
 

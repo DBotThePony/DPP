@@ -219,12 +219,13 @@ class DPP2.DEF.LimitRegistry
 
 	@GetByID = (id) => @OBJECTS[id] or false
 
-	new: (identifier) =>
+	new: (identifier, autocomplete) =>
 		@identifier = assert(isstring(identifier) and identifier, 'Identifier must be a string')
 		assert(not @@OBJECTS[identifier], 'Cannot redefine LimitRegistry ' .. identifier .. '!')
 		@@OBJECTS[@identifier] = @
 		table.insert(@@_OBJECTS, @)
 		@listing = {}
+		self2 = @
 
 		@ENABLED = DPP2.CreateConVar(identifier .. '_limits_enabled', '1', DPP2.TYPE_BOOL)
 		@IS_INCLUSIVE = DPP2.CreateConVar(identifier .. '_limits_inclusive', '0', DPP2.TYPE_BOOL)
@@ -232,9 +233,9 @@ class DPP2.DEF.LimitRegistry
 		@add_command_identifier = 'add_' .. identifier .. '_limit'
 		@remove_command_identifier = 'remove_' .. identifier .. '_limit'
 
-		if SERVER
-			self2 = @
+		@add_autocomplete = autocomplete
 
+		if SERVER
 			DPP2.cmd[@add_command_identifier] = (args = {}) =>
 				prop = args[1]
 				group = args[2]
@@ -275,6 +276,75 @@ class DPP2.DEF.LimitRegistry
 
 				entry\Remove()
 				DPP2.Notify(true, nil, 'command.dpp2.limit_lists.removed.' .. identifier, @, prop, group)
+
+		DPP2.cmd_autocomplete[@add_command_identifier] = (args, margs) =>
+			split = DPP2.SplitArguments(args)
+
+			if not split[2]
+				if autocomplete
+					list = autocomplete(@, split[1] or '', margs, nil, false)
+
+					return if not list
+
+					for i, line in ipairs(list)
+						if get = self2\Get(line)
+							list[i] = string.format('%q', line) .. ' "' .. get.group .. '" ' .. tostring(get.limit)
+						else
+							list[i] = string.format('%q', line)
+
+					return list
+
+				return {string.format('%q', split[1])}
+
+			str = string.format('%q', split[1])
+			lastGroup = split[2]\trim()
+			groups = {string.format('%q', lastGroup)}
+
+			for group in pairs(CAMI.GetUsergroups())
+				if group\startsWith(lastGroup)
+					table.insert(groups, string.format('%q', group))
+
+			if not split[3] and margs[#margs] ~= ' '
+				return [str .. ' ' .. group for group in *groups]
+
+			if not split[3]
+				return {str .. ' ' .. groups[1] .. ' <number>'}
+
+			return {str .. ' ' .. string.format('%q %q', lastGroup, split[3])}
+
+		DPP2.cmd_autocomplete[@remove_command_identifier] = (args, margs) =>
+			split = DPP2.SplitArguments(args)
+			return [string.format('%q', elem.class) for elem in *self2.listing] if args == '' or not split[1]
+
+			listing = {}
+
+			for elem in *self2.listing
+				listing[elem.class] = {} if not listing[elem.class]
+				table.insert(listing[elem.class], elem)
+
+			output = {}
+			str = string.format('%q', split[1])
+			local last
+
+			for elem, list in pairs(listing)
+				with lower = elem\lower()
+					if lower == split[1]
+						output = {string.format('%q', elem)}
+						last = list
+						break
+
+					if \startsWith(split[1])
+						table.insert(output, string.format('%q', elem))
+						last = list
+
+			if not last or #output > 1 and not split[2] and margs[#margs] ~= ' '
+				return output
+
+			if split[2]
+				group = split[2]\lower()
+				return [output[1] .. ' ' .. string.format('%q', elem.group) for elem in *last when elem.group\lower()\startsWith(group)]
+			else
+				return [output[1] .. ' ' .. string.format('%q', elem.group) for elem in *last]
 
 		DPP2.cmd_perms[@add_command_identifier] = 'superadmin'
 		DPP2.cmd_perms[@remove_command_identifier] = 'superadmin'
@@ -395,3 +465,4 @@ class DPP2.DEF.LimitRegistry
 		return @LoadFrom(file.Read(path, 'data'))
 
 DPP2.SBoxLimits = DPP2.DEF.LimitRegistry('sbox')
+DPP2.PerEntityLimits = DPP2.DEF.LimitRegistry('entity', DPP2.ClassnameAutocomplete)

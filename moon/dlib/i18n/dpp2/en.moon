@@ -340,6 +340,7 @@ gui.dpp2.toolmenu.exclusions.model = 'Model exclusions'
 gui.dpp2.toolmenu.exclusions.toolgun_mode = 'Toolgun mode exclusions'
 
 gui.dpp2.toolmenu.limits.sbox = 'Sandbox Limits'
+gui.dpp2.toolmenu.limits.entity = 'Per Entity Limits'
 
 gui.dpp2.toolmenu.playerutil.clear = '%s: Cleanup props'
 gui.dpp2.toolmenu.playerutil.freezephys = 'F'
@@ -403,14 +404,22 @@ command.dpp2.sharing.cooldown = 'Command cooldown. Try again after #.2f seconds'
 
 gui.dpp2.cvars.no_host_limits = 'No limits for host player in singleplayer/on listen server'
 gui.dpp2.cvars.sbox_limits_enabled = 'Enable sandbox limits overrides'
-gui.dpp2.cvars.sbox_limits_inclusive = 'Sandbox limits list is inclusive'
+gui.dpp2.cvars.sbox_limits_inclusive = 'Sandbox limit list is inclusive'
+gui.dpp2.cvars.entity_limits_enabled = 'Enable per entity limits'
+gui.dpp2.cvars.entity_limits_inclusive = 'Per entity limit list is inclusive'
 gui.dpp2.cvars.limits_lists_enabled = 'Enable limits lists'
 
 command.dpp2.limit_lists.added.sbox = '#E added %q sandbox limit for group %s as #d'
 command.dpp2.limit_lists.removed.sbox = '#E removed %q sandbox limit for group %s'
 command.dpp2.limit_lists.modified.sbox = '#E modified %q sandbox limit for group %s to #d'
 
+command.dpp2.limit_lists.added.entity = '#E added %q entity limit for group %s as #d'
+command.dpp2.limit_lists.removed.entity = '#E removed %q entity limit for group %s'
+command.dpp2.limit_lists.modified.entity = '#E modified %q entity limit for group %s to #d'
+
 gui.dpp2.limit_lists.view.classname = 'Identifier'
 gui.dpp2.limit_lists.view.group = 'Usergroup'
 gui.dpp2.limit_lists.view.limit = 'Limit'
 gui.dpp2.limit.edit_title = 'Editing limits for %s'
+
+message.dpp2.limit.spawn = 'You hit %s limit!'

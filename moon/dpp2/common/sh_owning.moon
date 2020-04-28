@@ -42,8 +42,9 @@ plyMeta.DPP2GetAllEnts = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DP
 plyMeta.DPP2FindOwned = plyMeta.DPP2GetAllEnts
 plyMeta.DPP2GetAllNPC = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @ and type(ent) == 'NPC']
 plyMeta.DPP2GetAllWeapons = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @ and type(ent) == 'Weapon']
-plyMeta.DPP2GetAllProps = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @ and ent\GetClass() == 'prop_physics']
-plyMeta.DPP2GetAllRagdolls = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @ and ent\GetClass() == 'prop_ragdoll']
+plyMeta.DPP2GetAllProps = => @DPP2GetAllEntsByClass('prop_physics')
+plyMeta.DPP2GetAllEntsByClass = (classname) => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @ and ent\GetClass() == classname]
+plyMeta.DPP2GetAllRagdolls = => @DPP2GetAllEntsByClass('prop_ragdoll')
 
 plyMeta.DPP2HasEnts = =>
 	return true for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @

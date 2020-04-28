@@ -161,6 +161,7 @@ hook.Add 'PopulateToolMenu', 'DPP2.Menus', ->
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.player', 'gui.dpp2.toolmenu.utils', 'gui.dpp2.toolmenu.utils', '', '', Menus.BuildUtilsPanel
 
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.limits', 'gui.dpp2.toolmenu.limits.sbox', 'gui.dpp2.toolmenu.limits.sbox', '', '', => DPP2.SBoxLimits\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.limits', 'gui.dpp2.toolmenu.limits.entity', 'gui.dpp2.toolmenu.limits.entity', '', '', => DPP2.PerEntityLimits\BuildCPanel(@)
 
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.restriction', 'gui.dpp2.toolmenu.restrictions.physgun', 'gui.dpp2.toolmenu.restrictions.physgun', '', '', => DPP2.PhysgunProtection.RestrictionList\BuildCPanel(@)
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.restriction', 'gui.dpp2.toolmenu.restrictions.drive', 'gui.dpp2.toolmenu.restrictions.drive', '', '', => DPP2.DriveProtection.RestrictionList\BuildCPanel(@)
