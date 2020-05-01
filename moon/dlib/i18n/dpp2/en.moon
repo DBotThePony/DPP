@@ -454,3 +454,4 @@ for name in *{'gravgun', 'physgun', 'toolgun', 'damage'}
 
 message.dpp2.import.fpp_db = 'Attention: FPP is being imported from `dpp` config file located in `data/dmysql3/dpp`'
 message.dpp2.import.dpp_db = 'Attention: DPP is being imported from `dpp` config file located in `data/dmysql3/dpp`'
+message.dpp2.import.reloaded_sql_config = 'Database connection config should be reloaded.'

@@ -47,6 +47,8 @@ cmd_perms = {
 	import_urm_restricts: 'superadmin'
 	import_wuma_limits: 'superadmin'
 	import_wuma_restricts: 'superadmin'
+	import_fpp: 'superadmin'
+	import_fpp_reload: 'superadmin'
 }
 
 DPP2.cmd_perms[k] = v for k, v in pairs(cmd_perms)

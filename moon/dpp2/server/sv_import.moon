@@ -329,3 +329,6 @@ DPP2.cmd['import_urm_restricts'] = (args = {}) => URMRestricts(@, not tobool(arg
 DPP2.cmd['import_wuma_limits'] = (args = {}) => WUMALimits(@, not tobool(args[1]))
 DPP2.cmd['import_wuma_restricts'] = (args = {}) => WUMARestricts(@, not tobool(args[1]))
 DPP2.cmd['import_fpp'] = (args = {}) => ImportFPP(@, not tobool(args[1]))
+DPP2.cmd['import_fpp_reload'] = (args = {}) =>
+	DPPLink!\ReloadConfig()
+	DPP2.LMessagePlayer(@, 'message.dpp2.import.reloaded_sql_config')
