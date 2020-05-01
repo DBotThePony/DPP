@@ -256,7 +256,7 @@ FPP_Blocked = {
 ImportFPP = (dryrun = true) =>
 	DPP2.LMessageWarningPlayer(@, 'message.dpp2.import.fpp_db')
 
-	DPPLink!\Query 'SELECT * FROM fpp_blockedmodels1', (data) ->
+	DPPLink!\Query 'SELECT model FROM fpp_blockedmodels1', (data) ->
 		return if not data
 
 		for row in *data
@@ -274,7 +274,7 @@ ImportFPP = (dryrun = true) =>
 		DPP2.LMessagePlayer(@, 'message.dpp2.import.done')
 		DPP2.LMessagePlayer(@, 'message.dpp2.import.done_dryrun') if dryrun
 
-	DPPLink!\Query 'SELECT * FROM fpp_blocked1', (data) ->
+	DPPLink!\Query 'SELECT var, setting FROM fpp_blocked1', (data) ->
 		return if not data
 
 		for row in *data
@@ -293,7 +293,7 @@ ImportFPP = (dryrun = true) =>
 		DPP2.LMessagePlayer(@, 'message.dpp2.import.done')
 		DPP2.LMessagePlayer(@, 'message.dpp2.import.done_dryrun') if dryrun
 
-	DPPLink!\Query 'SELECT * FROM fpp_tooladminonly', (data) ->
+	DPPLink!\Query 'SELECT toolname, adminonly FROM fpp_tooladminonly', (data) ->
 		return if not data
 		registry = DPP2.ToolgunModeRestrictions
 
