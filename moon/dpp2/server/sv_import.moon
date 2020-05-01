@@ -240,6 +240,87 @@ WUMARestricts = (dryrun = true) =>
 	DPP2.LMessagePlayer(@, 'message.dpp2.import.done_dryrun') if dryrun
 	return
 
+local _DPPLink
+
+DPPLink = =>
+	_DPPLink = DMySQL3.Connect('dpp') if not _DPPLink
+	return _DPPLink
+
+FPP_Blocked = {
+	Gravgun1: DPP2.GravgunProtection.Blacklist
+	Physgun1: DPP2.PhysgunProtection.Blacklist
+	Toolgun1: DPP2.ToolgunProtection.Blacklist
+	EntityDamage1: DPP2.DamageProtection.Blacklist
+}
+
+ImportFPP = (dryrun = true) =>
+	DPP2.LMessageWarningPlayer(@, 'message.dpp2.import.fpp_db')
+
+	DPPLink!\Query 'SELECT * FROM fpp_blockedmodels1', (data) ->
+		return if not data
+
+		for row in *data
+			model = row.model\lower()
+
+			if not DPP2.ModelBlacklist\Has(model)
+				if dryrun
+					DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.block_model', model)
+				else
+					DPP2.ModelBlacklist\Add(model)
+					DPP2.Notify(true, nil, 'command.dpp2.' .. DPP2.ModelBlacklist.__class.REGULAR_NAME .. '.added.' .. DPP2.ModelBlacklist.identifier, @, model)
+			elseif dryrun
+				DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.no_block_model', model)
+
+		DPP2.LMessagePlayer(@, 'message.dpp2.import.done')
+		DPP2.LMessagePlayer(@, 'message.dpp2.import.done_dryrun') if dryrun
+
+	DPPLink!\Query 'SELECT * FROM fpp_blocked1', (data) ->
+		return if not data
+
+		for row in *data
+			if registry = FPP_Blocked[row.var]
+				classname = row.setting
+
+				if not registry\Has(classname)
+					if dryrun
+						DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.block_thing_from.' .. registry.identifier, classname)
+					else
+						registry\Add(classname)
+						DPP2.Notify(true, nil, 'command.dpp2.' .. registry.__class.REGULAR_NAME .. '.added.' .. registry.identifier, @, classname)
+				elseif dryrun
+					DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.no_block_thing_from.' .. registry.identifier, classname)
+
+		DPP2.LMessagePlayer(@, 'message.dpp2.import.done')
+		DPP2.LMessagePlayer(@, 'message.dpp2.import.done_dryrun') if dryrun
+
+	DPPLink!\Query 'SELECT * FROM fpp_tooladminonly', (data) ->
+		return if not data
+		registry = DPP2.ToolgunModeRestrictions
+
+		for row in *data
+			identifier = row.toolname
+			if status = tonumber(row.adminonly)
+				if status ~= 0
+					local admins
+
+					if status == 1
+						admins = {'admin', 'superadmin'}
+					elseif status == 2
+						admins = {'superadmin'}
+
+					if dryrun then
+						if registry\Has(identifier)
+							DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.restrict.' .. registry.identifier, identifier, table.concat([string.format('%q', group) for group in *groups], ', '))
+						else
+							DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.no_restrict.' .. registry.identifier, identifier, table.concat([string.format('%q', group) for group in *groups], ', '))
+					else
+						if not registry\Has(identifier)
+							registry\CreateEntry(identifier, grouplist, false)\Replicate()
+							DPP2.Notify(true, nil, 'command.dpp2.rlists.added_ext.' .. registry.identifier, @, identifier, table.concat(groups, ', '), false)
+
+		DPP2.LMessagePlayer(@, 'message.dpp2.import.done')
+		DPP2.LMessagePlayer(@, 'message.dpp2.import.done_dryrun') if dryrun
+
 DPP2.cmd['import_urs_limits'] = (args = {}) => URSLimits(@, not tobool(args[1]))
 DPP2.cmd['import_urm_limits'] = (args = {}) => URMLimits(@, not tobool(args[1]))
 DPP2.cmd['import_urs_restricts'] = (args = {}) => URSRestricts(@, not tobool(args[1]))

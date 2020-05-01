@@ -444,3 +444,13 @@ message.dpp2.import.done_dryrun = 'To apply changes, execute the same command, b
 message.dpp2.import.no_file = 'File to import does not exist.'
 message.dpp2.import.empty_file = 'File to import is empty.'
 message.dpp2.import.bad_file = 'File to import is broken.'
+
+message.dpp2.import.dryrun.block_model = 'Gonna import model %s into blacklist'
+message.dpp2.import.dryrun.block_model = 'Not gonna import model %s into blacklist since said model is already blocked'
+
+for name in *{'gravgun', 'physgun', 'toolgun', 'damage'}
+	message.dpp2.import.dryrun.block_thing_from[name] = 'Gonna import ' .. name .. ' blacklisted classname as %s'
+	message.dpp2.import.dryrun.no_block_thing_from[name] = 'Not gonna import ' .. name .. ' blacklisted classname as %s because such entry already exists'
+
+message.dpp2.import.fpp_db = 'Attention: FPP is being imported from `dpp` config file located in `data/dmysql3/dpp`'
+message.dpp2.import.dpp_db = 'Attention: DPP is being imported from `dpp` config file located in `data/dmysql3/dpp`'
