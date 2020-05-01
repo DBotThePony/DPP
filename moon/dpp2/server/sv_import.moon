@@ -299,6 +299,7 @@ ImportFPP = (dryrun = true) =>
 
 		for row in *data
 			identifier = row.toolname
+
 			if status = tonumber(row.adminonly)
 				if status ~= 0
 					local admins
@@ -315,7 +316,7 @@ ImportFPP = (dryrun = true) =>
 							DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.no_restrict.' .. registry.identifier, identifier, table.concat([string.format('%q', group) for group in *groups], ', '))
 					else
 						if not registry\Has(identifier)
-							registry\CreateEntry(identifier, grouplist, false)\Replicate()
+							registry\CreateEntry(identifier, admins, false)\Replicate()
 							DPP2.Notify(true, nil, 'command.dpp2.rlists.added_ext.' .. registry.identifier, @, identifier, table.concat(groups, ', '), false)
 
 		DPP2.LMessagePlayer(@, 'message.dpp2.import.done')
@@ -327,3 +328,4 @@ DPP2.cmd['import_urs_restricts'] = (args = {}) => URSRestricts(@, not tobool(arg
 DPP2.cmd['import_urm_restricts'] = (args = {}) => URMRestricts(@, not tobool(args[1]))
 DPP2.cmd['import_wuma_limits'] = (args = {}) => WUMALimits(@, not tobool(args[1]))
 DPP2.cmd['import_wuma_restricts'] = (args = {}) => WUMARestricts(@, not tobool(args[1]))
+DPP2.cmd['import_fpp'] = (args = {}) => ImportFPP(@, not tobool(args[1]))
