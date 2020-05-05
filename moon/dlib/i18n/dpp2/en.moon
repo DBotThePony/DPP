@@ -424,13 +424,20 @@ gui.dpp2.limit.edit_title = 'Editing limits for %s'
 
 message.dpp2.limit.spawn = 'You hit %s limit!'
 
-for name in *{'vehicle', 'prop', 'props', 'npc', 'sent', 'effect', 'ragdoll'}
+for name in *{'vehicles', 'props', 'npcs', 'sents', 'effects', 'ragdolls'}
 	message.dpp2.import.dryrun.limit[name] = 'Gonna import ' .. name .. ' sandbox limit as %s with limit of #d'
+	message.dpp2.import.dryrun.limit[name\sub(1, #name - 1)] = message.dpp2.import.dryrun.limit[name]
 	message.dpp2.import.dryrun.no_limit[name] = 'Not gonna import ' .. name .. ' sandbox limit as %s with limit of #d because such limit already exists'
+	message.dpp2.import.dryrun.no_limit[name\sub(1, #name - 1)] = message.dpp2.import.dryrun.no_limit[name]
 
 for name in *{'tool', 'pickup', 'prop', 'sent', 'effect', 'ragdoll', 'vehicle', 'swep', 'npc'}
-	message.dpp2.import.dryrun.restrict[name] = 'Gonna import ' .. name .. ' restriction list as %s with %s groups in it'
-	message.dpp2.import.dryrun.no_restrict[name] = 'Not gonna import ' .. name .. ' restriction list as %s with %s groups in it because such restriction already exists'
+	message.dpp2.import.dryrun.restrict[name] = 'Gonna import ' .. name .. ' restriction as %s with %s groups in it'
+	message.dpp2.import.dryrun.no_restrict[name] = 'Not gonna import ' .. name .. ' restriction as %s with %s groups in it because such restriction already exists'
+
+message.dpp2.import.dryrun.restrict.toolgun = message.dpp2.import.dryrun.restrict.tool
+message.dpp2.import.dryrun.restrict.class_spawn = 'Gonna import classname spawn restriction as %s with %s groups in it'
+message.dpp2.import.dryrun.no_restrict.class_spawn = 'Not gonna import classname restriction as %s with %s groups in it because such restriction already exists'
+message.dpp2.import.dryrun.no_restrict.toolgun = message.dpp2.import.dryrun.no_restrict.tool
 
 message.dpp2.import.dryrun.entlimit = 'Gonna import %s entity limit as %s with limit of #d'
 message.dpp2.import.dryrun.no_entlimit = 'Not gonna import %s entity limit as %s with limit of #d because such limit already exists'

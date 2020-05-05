@@ -466,3 +466,4 @@ class DPP2.DEF.LimitRegistry
 
 DPP2.SBoxLimits = DPP2.DEF.LimitRegistry('sbox')
 DPP2.PerEntityLimits = DPP2.DEF.LimitRegistry('entity', DPP2.ClassnameAutocomplete)
+DPP2.PerModelLimits = DPP2.DEF.LimitRegistry('model', DPP2.ModelAutocomplete)

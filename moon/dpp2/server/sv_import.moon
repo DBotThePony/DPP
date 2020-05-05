@@ -19,9 +19,11 @@
 -- DEALINGS IN THE SOFTWARE.
 
 _URSLimits = (dryrun = true, json) =>
-	if json.prop
-		json.props = json.prop
-		json.prop = nil
+	for name in *{'vehicles', 'props', 'npcs', 'sents', 'effects', 'ragdolls'}
+		name2 = name\sub(1, #name - 1)
+		if json[name2]
+			json[name] = json[name2]
+			json[name2] = nil
 
 	if dryrun
 		for limittype, data in pairs(json)
@@ -162,7 +164,6 @@ WUMALimits = (dryrun = true) =>
 		if entry_data._id == 'WUMA_Limit'
 			target = entlim
 			target = sboxlim if ConVar('sbox_max' .. entry_data.string)
-			print(entry_data.string)
 			target[entry_data.string] = target[entry_data.string] or {}
 			target[entry_data.string][entry_data.usergroup] = entry_data.limit
 
@@ -171,10 +172,10 @@ WUMALimits = (dryrun = true) =>
 	if dryrun
 		for limittype, data in pairs(entlim)
 			for group, limit in pairs(data)
-				if not DPP2.PerEntityLimits\Has(limittype, group)
-					DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.entlimit', limittype, group, limit)
-				else
+				if DPP2.PerEntityLimits\Has(limittype, group)
 					DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.no_entlimit', limittype, group, limit)
+				else
+					DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.entlimit', limittype, group, limit)
 	else
 		for limittype, data in pairs(entlim)
 			for group, limit in pairs(data)
@@ -226,9 +227,9 @@ WUMARestricts = (dryrun = true) =>
 		for registry, data in pairs(target)
 			for identifier, groups in pairs(data)
 				if registry\Has(identifier)
-					DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.restrict.' .. registry.identifier, identifier, table.concat([string.format('%q', group) for group in *groups], ', '))
-				else
 					DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.no_restrict.' .. registry.identifier, identifier, table.concat([string.format('%q', group) for group in *groups], ', '))
+				else
+					DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.restrict.' .. registry.identifier, identifier, table.concat([string.format('%q', group) for group in *groups], ', '))
 	else
 		for registry, data in pairs(target)
 			for identifier, groups in pairs(data)
@@ -311,13 +312,188 @@ ImportFPP = (dryrun = true) =>
 
 					if dryrun then
 						if registry\Has(identifier)
-							DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.restrict.' .. registry.identifier, identifier, table.concat([string.format('%q', group) for group in *groups], ', '))
-						else
 							DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.no_restrict.' .. registry.identifier, identifier, table.concat([string.format('%q', group) for group in *groups], ', '))
+						else
+							DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.restrict.' .. registry.identifier, identifier, table.concat([string.format('%q', group) for group in *groups], ', '))
 					else
 						if not registry\Has(identifier)
 							registry\CreateEntry(identifier, admins, false)\Replicate()
 							DPP2.Notify(true, nil, 'command.dpp2.rlists.added_ext.' .. registry.identifier, @, identifier, table.concat(groups, ', '), false)
+						elseif dryrun
+							DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.no_restrict.' .. registry.identifier, identifier, table.concat([string.format('%q', group) for group in *groups], ', '))
+
+		DPP2.LMessagePlayer(@, 'message.dpp2.import.done')
+		DPP2.LMessagePlayer(@, 'message.dpp2.import.done_dryrun') if dryrun
+
+DPPRestrictTypes = {
+	tool: DPP2.ToolgunProtection.RestrictionList
+	sent: DPP2.SpawnRestrictions
+	vehicle: DPP2.VehicleProtection.RestrictionList
+	swep: DPP2.SpawnRestrictions
+	model: DPP2.ModelRestrictions
+	npc: DPP2.SpawnRestrictions
+	property: DPP2.ToolgunProtection.RestrictionList
+	pickup: DPP2.PickupProtection.RestrictionList
+	--e2function: 'E2Function'
+	--e2afunction: 'E2AFunction'
+}
+
+ImportDPPRestrictions = (dryrun = true) =>
+	DPP2.LMessageWarningPlayer(@, 'message.dpp2.import.dpp_db')
+
+	for restricttype, registry in pairs(DPPRestrictTypes) do
+		DPPLink!\Query 'SELECT `CLASS`, `GROUPS`, `IS_WHITE` FROM dpp_restricted' .. restricttype, (data) ->
+			return if not data
+
+			for row in *data
+				groups = util.JSONToTable(row.GROUPS)
+				identifier = row.CLASS
+				isWhitelist = tobool(row.IS_WHITE)
+
+				if dryrun then
+					if registry\Has(identifier)
+						DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.no_restrict.' .. registry.identifier, identifier, table.concat([string.format('%q', group) for group in *groups], ', '))
+					else
+						DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.restrict.' .. registry.identifier, identifier, table.concat([string.format('%q', group) for group in *groups], ', '))
+				else
+					if not registry\Has(identifier)
+						registry\CreateEntry(identifier, admins, isWhitelist)\Replicate()
+						DPP2.Notify(true, nil, 'command.dpp2.rlists.added_ext.' .. registry.identifier, @, identifier, table.concat(groups, ', '), isWhitelist)
+
+			DPP2.LMessagePlayer(@, 'message.dpp2.import.done')
+			DPP2.LMessagePlayer(@, 'message.dpp2.import.done_dryrun') if dryrun
+
+DPPBlockTypes = {
+	tool: DPP2.ToolgunProtection.Blacklist
+	physgun: DPP2.PhysgunProtection.Blacklist
+	use: DPP2.UseProtection.Blacklist
+	damage: DPP2.DamageProtection.Blacklist
+	gravgun: DPP2.GravgunProtection.Blacklist
+	pickup: DPP2.PickupProtection.Blacklist
+	--toolworld = 'ToolgunWorld',
+}
+
+DPPWhitelistTypes = {
+	tool: DPP2.ToolgunProtection.Exclusions
+	physgun: DPP2.PhysgunProtection.Exclusions
+	use: DPP2.UseProtection.Exclusions
+	damage: DPP2.DamageProtection.Exclusions
+	gravgun: DPP2.GravgunProtection.Exclusions
+	pickup: DPP2.PickupProtection.Exclusions
+
+	property: DPP2.ToolgunProtection.Exclusions
+	propertyt: DPP2.ToolgunModeExclusions
+	toolmode: DPP2.ToolgunModeExclusions
+}
+
+_ImportDPPBlacklists = (identifier, registry, dryrun, iname = 'block_') ->
+	if not registry\Has(identifier)
+		if dryrun
+			DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.' .. iname .. registry.identifier, identifier)
+		else
+			registry\Add(identifier)
+			DPP2.Notify(true, nil, 'command.dpp2.' .. registry.__class.REGULAR_NAME .. '.added.' .. registry.identifier, @, model)
+	elseif dryrun
+		DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.no_' .. iname .. registry.identifier, identifier)
+
+ImportDPPBlacklists = (dryrun = true) =>
+	DPP2.LMessageWarningPlayer(@, 'message.dpp2.import.dpp_db')
+
+	for restricttype, registry in pairs(DPPBlockTypes) do
+		DPPLink!\Query 'SELECT `ENTITY` FROM dpp_blockedentities' .. restricttype, (data) ->
+			return if not data
+
+			for row in *data
+				_ImportDPPBlacklists(row.ENTITY, registry, dryrun)
+
+			DPP2.LMessagePlayer(@, 'message.dpp2.import.done')
+			DPP2.LMessagePlayer(@, 'message.dpp2.import.done_dryrun') if dryrun
+
+	DPPLink!\Query 'SELECT `MODEL` FROM dpp_blockedmodels', (data) ->
+		return if not data
+		registry = DPP2.ModelBlacklist
+
+		for row in *data
+			_ImportDPPBlacklists(row.MODEL, DPP2.ModelBlacklist, dryrun)
+
+		DPP2.LMessagePlayer(@, 'message.dpp2.import.done')
+		DPP2.LMessagePlayer(@, 'message.dpp2.import.done_dryrun') if dryrun
+
+ImportDPPExclusions = (dryrun = true) =>
+	DPP2.LMessageWarningPlayer(@, 'message.dpp2.import.dpp_db')
+
+	for restricttype, registry in pairs(DPPWhitelistTypes) do
+		DPPLink!\Query 'SELECT `ENTITY` FROM dpp_whitelistentities' .. restricttype, (data) ->
+			return if not data
+
+			for row in *data
+				_ImportDPPBlacklists(row.ENTITY, registry, dryrun, 'exclude_')
+
+			DPP2.LMessagePlayer(@, 'message.dpp2.import.done')
+			DPP2.LMessagePlayer(@, 'message.dpp2.import.done_dryrun') if dryrun
+
+ImportDPPLimits = (dryrun = true) =>
+	DPP2.LMessageWarningPlayer(@, 'message.dpp2.import.dpp_db')
+
+	DPPLink!\Query 'SELECT * FROM dpp_sboxlimits', (data) ->
+		return if not data
+
+		for row in *data
+			group = row.UGROUP
+			limit = tonumber(row.ULIMIT)
+			limittype = row.CLASS
+
+			if dryrun
+				if DPP2.SBoxLimits\Has(limittype, group)
+					DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.no_limit.' .. limittype, group, limit)
+				else
+					DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.limit.' .. limittype, group, limit)
+			else
+				if not DPP2.SBoxLimits\Has(limittype, group)
+					DPP2.SBoxLimits\CreateEntry(limittype, group, tonumber(limit))\Replicate()
+					DPP2.Notify(true, nil, 'command.dpp2.limit_lists.added.' .. DPP2.SBoxLimits.identifier, @, limittype, group, limit)
+
+		DPP2.LMessagePlayer(@, 'message.dpp2.import.done')
+		DPP2.LMessagePlayer(@, 'message.dpp2.import.done_dryrun') if dryrun
+
+	DPPLink!\Query 'SELECT * FROM dpp_entitylimits', (data) ->
+		return if not data
+
+		for row in *data
+			group = row.UGROUP
+			limit = tonumber(row.ULIMIT)
+			limittype = row.CLASS
+
+			if dryrun
+				if DPP2.PerEntityLimits\Has(limittype, group)
+					DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.no_entlimit.' .. limittype, group, limit)
+				else
+					DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.entlimit.' .. limittype, group, limit)
+			else
+				if not DPP2.PerEntityLimits\Has(limittype, group)
+					DPP2.PerEntityLimits\CreateEntry(limittype, group, tonumber(limit))\Replicate()
+					DPP2.Notify(true, nil, 'command.dpp2.limit_lists.added.' .. DPP2.PerEntityLimits.identifier, @, limittype, group, limit)
+
+		DPP2.LMessagePlayer(@, 'message.dpp2.import.done')
+		DPP2.LMessagePlayer(@, 'message.dpp2.import.done_dryrun') if dryrun
+
+	DPPLink!\Query 'SELECT * FROM dpp_modellimits', (data) ->
+		return if not data
+
+		for row in *data
+			group = row.UGROUP
+			limit = tonumber(row.ULIMIT)
+			limittype = row.MODEL
+
+			if dryrun
+				if DPP2.PerModelLimits\Has(limittype, group)
+					DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.no_model_limit', limittype, group, limit)
+				else
+					DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.model_limit', limittype, group, limit)
+			else
+				if not DPP2.PerModelLimits\Has(limittype, group)
+					DPP2.PerModelLimits\CreateEntry(limittype, group, tonumber(limit))\Replicate()
+					DPP2.Notify(true, nil, 'command.dpp2.limit_lists.added.' .. DPP2.PerModelLimits.identifier, @, limittype, group, limit)
 
 		DPP2.LMessagePlayer(@, 'message.dpp2.import.done')
 		DPP2.LMessagePlayer(@, 'message.dpp2.import.done_dryrun') if dryrun
@@ -329,6 +505,15 @@ DPP2.cmd['import_urm_restricts'] = (args = {}) => URMRestricts(@, not tobool(arg
 DPP2.cmd['import_wuma_limits'] = (args = {}) => WUMALimits(@, not tobool(args[1]))
 DPP2.cmd['import_wuma_restricts'] = (args = {}) => WUMARestricts(@, not tobool(args[1]))
 DPP2.cmd['import_fpp'] = (args = {}) => ImportFPP(@, not tobool(args[1]))
+DPP2.cmd['import_dpp_exclusions'] = (args = {}) => ImportDPPExclusions(@, not tobool(args[1]))
+DPP2.cmd['import_dpp_blacklists'] = (args = {}) => ImportDPPBlacklists(@, not tobool(args[1]))
+DPP2.cmd['import_dpp_restrictions'] = (args = {}) => ImportDPPRestrictions(@, not tobool(args[1]))
+DPP2.cmd['import_dpp_limits'] = (args = {}) => ImportDPPLimits(@, not tobool(args[1]))
+
 DPP2.cmd['import_fpp_reload'] = (args = {}) =>
+	DPPLink!\ReloadConfig()
+	DPP2.LMessagePlayer(@, 'message.dpp2.import.reloaded_sql_config')
+
+DPP2.cmd['import_dpp_reload'] = (args = {}) =>
 	DPPLink!\ReloadConfig()
 	DPP2.LMessagePlayer(@, 'message.dpp2.import.reloaded_sql_config')
