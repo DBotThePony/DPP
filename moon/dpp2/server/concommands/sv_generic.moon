@@ -130,6 +130,10 @@ cmds = {
 				SafeRemoveEntity(ent)
 				num += 1
 
+			if ent.GetModel and ent\GetModel() and ent\GetModel()\startsWith('models/gibs/')
+				SafeRemoveEntity(ent)
+				num += 1
+
 		DPP2.Notify(true, nil, 'command.dpp2.cleanupgibs', @, num)
 }
 
