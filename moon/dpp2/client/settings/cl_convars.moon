@@ -90,12 +90,23 @@ Menus.PrimaryMenu = =>
 	Menus.QCheckBox(@, 'protection')
 
 	for name in *{'physgun', 'gravgun', 'toolgun', 'use', 'pickup', 'damage', 'vehicle', 'drive'}
-		Menus.QCheckBox(@, name .. '_protection')
-		Menus.QCheckBox(@, name .. '_touch_any')
-		Menus.QCheckBox(@, name .. '_no_world')
-		Menus.QCheckBox(@, name .. '_no_world_admin')
-		Menus.QCheckBox(@, name .. '_no_map')
-		Menus.QCheckBox(@, name .. '_no_map_admin')
+		with spoiler = vgui.Create('DCollapsibleCategory', @)
+			\Dock(TOP)
+			\DockMargin(5, 5, 5, 5)
+			\SetLabel('gui.dpp2.toolmenu.names.' .. name)
+			\SetExpanded(false)
+			canvas = vgui.Create('EditablePanel', spoiler)
+			\SetContents(canvas)
+			dostuff = (a) ->
+				a\SetParent(canvas)
+				a\DockMargin(0, 5, 0, 5)
+
+			dostuff(Menus.QCheckBox(@, name .. '_protection'))
+			dostuff(Menus.QCheckBox(@, name .. '_touch_any'))
+			dostuff(Menus.QCheckBox(@, name .. '_no_world'))
+			dostuff(Menus.QCheckBox(@, name .. '_no_world_admin'))
+			dostuff(Menus.QCheckBox(@, name .. '_no_map'))
+			dostuff(Menus.QCheckBox(@, name .. '_no_map_admin'))
 
 Menus.ClientProtectionModulesMenu = =>
 	return if not IsValid(@)
@@ -103,11 +114,21 @@ Menus.ClientProtectionModulesMenu = =>
 	@CheckBox('gui.dpp2.cvars.cl_protection', 'dpp2_cl_protection')
 
 	for name in *{'physgun', 'gravgun', 'toolgun', 'use', 'pickup', 'damage', 'vehicle', 'drive'}
-		@CheckBox('gui.dpp2.cvars.' .. 'cl_' .. name .. '_protection', 'dpp2_cl_' .. name .. '_protection')
-		@CheckBox('gui.dpp2.cvars.' .. 'cl_' .. name .. '_no_other', 'dpp2_cl_' .. name .. '_no_other')
-		@CheckBox('gui.dpp2.cvars.' .. 'cl_' .. name .. '_no_players', 'dpp2_cl_' .. name .. '_no_players')
-		@CheckBox('gui.dpp2.cvars.' .. 'cl_' .. name .. '_no_world', 'dpp2_cl_' .. name .. '_no_world')
-		@CheckBox('gui.dpp2.cvars.' .. 'cl_' .. name .. '_no_map', 'dpp2_cl_' .. name .. '_no_map')
+		with spoiler = vgui.Create('DCollapsibleCategory', @)
+			\Dock(TOP)
+			\DockMargin(5, 5, 5, 5)
+			\SetLabel('gui.dpp2.toolmenu.names.' .. name)
+			\SetExpanded(false)
+			canvas = vgui.Create('EditablePanel', spoiler)
+			\SetContents(canvas)
+			dostuff = (a) ->
+				a\SetParent(canvas)
+				a\DockMargin(0, 5, 0, 5)
+			dostuff(@CheckBox('gui.dpp2.cvars.' .. 'cl_' .. name .. '_protection', 'dpp2_cl_' .. name .. '_protection'))
+			dostuff(@CheckBox('gui.dpp2.cvars.' .. 'cl_' .. name .. '_no_other', 'dpp2_cl_' .. name .. '_no_other'))
+			dostuff(@CheckBox('gui.dpp2.cvars.' .. 'cl_' .. name .. '_no_players', 'dpp2_cl_' .. name .. '_no_players'))
+			dostuff(@CheckBox('gui.dpp2.cvars.' .. 'cl_' .. name .. '_no_world', 'dpp2_cl_' .. name .. '_no_world'))
+			dostuff(@CheckBox('gui.dpp2.cvars.' .. 'cl_' .. name .. '_no_map', 'dpp2_cl_' .. name .. '_no_map'))
 
 Menus.ClientMenu = =>
 	return if not IsValid(@)

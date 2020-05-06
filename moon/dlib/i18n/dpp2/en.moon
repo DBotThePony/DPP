@@ -88,6 +88,7 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 	gui.dpp2.toolmenu.restrictions[modeID] = modeName .. ' restrictions'
 	gui.dpp2.toolmenu.blacklist[modeID] = modeName .. ' blacklist'
 	gui.dpp2.toolmenu.exclusions[modeID] = modeName .. ' exclusions'
+	gui.dpp2.toolmenu.names[modeID] = modeName
 
 	command.dpp2.blacklist.added[modeID] = '#E added %s to ' .. modeName .. ' blacklist'
 	command.dpp2.blacklist.removed[modeID] = '#E removed %s from ' .. modeName .. ' blacklist'
