@@ -19,6 +19,7 @@
 -- DEALINGS IN THE SOFTWARE.
 
 DPP2.cmd.share = (args = {}, message) =>
+	return 'command.dpp2.generic.invalid_side' if not IsValid(@)
 	return 'command.dpp2.sharing.no_target' if not args[1]
 	return 'command.dpp2.sharing.no_mode' if not args[2]
 	def = DPP2.DEF.ProtectionDefinition\Get(args[2])
@@ -31,6 +32,7 @@ DPP2.cmd.share = (args = {}, message) =>
 	DPP2.Notify(@, nil, 'command.dpp2.sharing.shared', ent, def.identifier)
 
 DPP2.cmd.share_contraption = (args = {}, message) =>
+	return 'command.dpp2.generic.invalid_side' if not IsValid(@)
 	return 'command.dpp2.sharing.no_target' if not args[1]
 	return 'command.dpp2.sharing.no_mode' if not args[2]
 	def = DPP2.DEF.ProtectionDefinition\Get(args[2])
@@ -51,6 +53,7 @@ DPP2.cmd.share_contraption = (args = {}, message) =>
 	DPP2.Notify(@, nil, 'command.dpp2.sharing.shared_contraption', contraption.id, def.identifier)
 
 DPP2.cmd.unshare = (args = {}, message) =>
+	return 'command.dpp2.generic.invalid_side' if not IsValid(@)
 	return 'command.dpp2.sharing.no_target' if not args[1]
 	return 'command.dpp2.sharing.no_mode' if not args[2]
 	def = DPP2.DEF.ProtectionDefinition\Get(args[2])
@@ -63,6 +66,7 @@ DPP2.cmd.unshare = (args = {}, message) =>
 	DPP2.Notify(@, nil, 'command.dpp2.sharing.un_shared', ent, def.identifier)
 
 DPP2.cmd.unshare_contraption = (args = {}, message) =>
+	return 'command.dpp2.generic.invalid_side' if not IsValid(@)
 	return 'command.dpp2.sharing.no_target' if not args[1]
 	return 'command.dpp2.sharing.no_mode' if not args[2]
 	def = DPP2.DEF.ProtectionDefinition\Get(args[2])

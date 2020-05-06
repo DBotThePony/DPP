@@ -91,6 +91,7 @@ AddCSLuaFile('dpp2/client/cl_owning.lua')
 AddCSLuaFile('dpp2/client/cl_transfer.lua')
 AddCSLuaFile('dpp2/client/cl_properties.lua')
 AddCSLuaFile('dpp2/client/cl_sharing.lua')
+AddCSLuaFile('dpp2/client/cl_misc.lua')
 AddCSLuaFile('dpp2/client/settings/cl_convars.lua')
 AddCSLuaFile('dpp2/client/settings/cl_menus.lua')
 AddCSLuaFile('dpp2/client/settings/cl_registry_menus.lua')
@@ -134,6 +135,7 @@ include('dpp2/client/cl_count.lua') if CLIENT
 include('dpp2/common/sh_cppi.lua')
 include('dpp2/common/sh_fpp_bridge.lua')
 include('dpp2/server/sv_logging.lua') if SERVER
+include('dpp2/client/cl_misc.lua') if CLIENT
 
 if SERVER
 	net.pool('dpp2_notify')

@@ -222,3 +222,36 @@ DPP2.FindEntityFromArg = (str, ply = CLIENT and LocalPlayer() or error('You must
 	return ent if IsValid(ent)
 	return ent for ent in *ply\DPP2FindOwned() when tostring(ent) == str
 	return NULL
+
+DPP2.SpewEntityInspectionOutput = (ent = NULL) =>
+	if not IsValid(ent)
+		DPP2.LMessagePlayer(@, 'message.dpp2.inspect.invalid_entity')
+	else
+		DPP2.LMessagePlayer(@, 'message.dpp2.inspect.result.class', ent\GetClass() or 'undefined')
+
+		pos = ent\GetPos()
+		DPP2.LMessagePlayer(@, 'message.dpp2.inspect.result.position', pos.x, pos.y, pos.z) if pos
+
+		ang = ent\GetAngles()
+		DPP2.LMessagePlayer(@, 'message.dpp2.inspect.result.angles', ang.p, pos.y, pos.r) if ang
+
+		ang = ent\EyeAngles()
+		DPP2.LMessagePlayer(@, 'message.dpp2.inspect.result.eye_angles', ang.p, pos.y, pos.r) if ang
+
+		DPP2.LMessagePlayer(@, 'message.dpp2.inspect.result.table_size', table.Count(ent\GetTable()))
+		DPP2.LMessagePlayer(@, 'message.dpp2.inspect.result.health', ent\Health())
+		DPP2.LMessagePlayer(@, 'message.dpp2.inspect.result.max_health', ent\GetMaxHealth())
+
+		ownerEntity, ownerSteamID, ownerNickname, ownerUniqueID = ent\DPP2GetOwner()
+
+		if ownerSteamID ~= 'world'
+			DPP2.LMessagePlayer(@, 'message.dpp2.inspect.result.owner_entity', ownerEntity) if IsValid(ownerEntity)
+			DPP2.LMessagePlayer(@, 'message.dpp2.inspect.result.owner_steamid', ownerSteamID)
+			DPP2.LMessagePlayer(@, 'message.dpp2.inspect.result.owner_nickname', ownerNickname or '')
+			DPP2.LMessagePlayer(@, 'message.dpp2.inspect.result.owner_uniqueid', ownerUniqueID)
+		else
+			DPP2.LMessagePlayer(@, 'message.dpp2.inspect.result.unowned')
+
+		DPP2.LMessagePlayer(@, 'message.dpp2.inspect.result.model', ent\GetModel() or 'undefined')
+		DPP2.LMessagePlayer(@, 'message.dpp2.inspect.result.skin', ent\GetSkin() or 'undefined')
+		DPP2.LMessagePlayer(@, 'message.dpp2.inspect.result.bodygroup_count', table.Count(ent\GetBodyGroups() or {}))

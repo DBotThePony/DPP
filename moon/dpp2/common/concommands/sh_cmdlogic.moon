@@ -31,6 +31,8 @@ cmd_perms = {
 	freezephysall: 'admin'
 	freezephyspanic: 'superadmin'
 
+	inspect: 'superadmin'
+
 	transfertoworld: 'admin'
 	transfertoworldent: 'admin'
 	transfertoworldcontraption: 'admin'

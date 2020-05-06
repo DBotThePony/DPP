@@ -21,6 +21,7 @@
 import DPP2 from _G
 
 net.pool('dpp2_cleardecals')
+net.pool('dpp2_inspect')
 
 cmds = {
 	cleanup: (args = {}, message) =>
@@ -135,6 +136,28 @@ cmds = {
 				num += 1
 
 		DPP2.Notify(true, nil, 'command.dpp2.cleanupgibs', @, num)
+
+	inspect: (args = {}) =>
+		return 'command.dpp2.generic.invalid_side' if not IsValid(@)
+
+		tr = util.TraceLine({
+			start: @EyePos()
+			endpos: @EyePos() + @EyeAngles()\Forward() * 32000
+			mask: MASK_ALL
+			filter: @
+		})
+
+		ent = tr.Entity
+
+		net.Start('dpp2_inspect')
+		net.WriteBool(IsValid(ent))
+		net.WriteEntity(ent) if IsValid(ent)
+		net.Send(@)
+
+		DPP2.Notify(@, nil, 'message.dpp2.inspect.check_console')
+		DPP2.LMessagePlayer(@, 'message.dpp2.inspect.serverside')
+		DPP2.SpewEntityInspectionOutput(@, ent)
+		DPP2.LMessagePlayer(@, 'message.dpp2.inspect.footer')
 }
 
 DPP2.cmd[k] = v for k, v in pairs(cmds)

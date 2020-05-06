@@ -488,3 +488,28 @@ for name in *{'gravgun', 'physgun', 'toolgun', 'damage'}
 message.dpp2.import.fpp_db = 'Attention: FPP is being imported from `dpp` config file located in `data/dmysql3/dpp`'
 message.dpp2.import.dpp_db = 'Attention: DPP is being imported from `dpp` config file located in `data/dmysql3/dpp`'
 message.dpp2.import.reloaded_sql_config = 'Database connection config should be reloaded.'
+
+message.dpp2.inspect.invalid_entity = 'Trace did not hit any entity'
+message.dpp2.inspect.check_console = 'Check console for inspect results'
+
+message.dpp2.inspect.clientside = '-- CLIENTSIDE OUTPUT'
+message.dpp2.inspect.serverside = '-- SERVERSIDE OUTPUT'
+message.dpp2.inspect.footer = '--------------------------------------'
+
+message.dpp2.inspect.result.class = 'Inspecting classname: %s'
+message.dpp2.inspect.result.position = 'Entity position: Vector(#f, #f, #f)'
+message.dpp2.inspect.result.angles = 'Entity angles: Angle(#f, #f, #f)'
+message.dpp2.inspect.result.eye_angles = 'Entity "eye" angles: Angle(#f, #f, #f)'
+message.dpp2.inspect.result.table_size = 'Table size: #d'
+message.dpp2.inspect.result.health = 'Health: #d'
+message.dpp2.inspect.result.max_health = 'Max health: #d'
+
+message.dpp2.inspect.result.owner_entity = 'Owner: #E'
+message.dpp2.inspect.result.owner_steamid = 'Owner SteamID: %s'
+message.dpp2.inspect.result.owner_nickname = 'Owner Nickname: %s'
+message.dpp2.inspect.result.owner_uniqueid = 'Owner UniqueID: %s'
+
+message.dpp2.inspect.result.unowned = 'Entity is not owned'
+message.dpp2.inspect.result.model = 'Model: %s'
+message.dpp2.inspect.result.skin = 'Skin: %s'
+message.dpp2.inspect.result.bodygroup_count = 'Amount of bodygroups: #d'
