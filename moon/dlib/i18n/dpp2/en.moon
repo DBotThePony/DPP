@@ -105,6 +105,10 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 	gui.dpp2.menu['edit_in_' .. modeID .. '_restrictions'] = 'Edit in ' .. modeName .. ' restriction list'
 	gui.dpp2.menu['remove_from_' .. modeID .. '_restrictions'] = 'Remove from ' .. modeName .. ' restriction list'
 
+	gui.dpp2.menu['add_to_' .. modeID .. '_limits'] = 'Add to ' .. modeName .. ' limit list...'
+	gui.dpp2.menu['edit_in_' .. modeID .. '_limits'] = 'Edit in ' .. modeName .. ' limit list'
+	gui.dpp2.menu['remove_from_' .. modeID .. '_limits'] = 'Remove from ' .. modeName .. ' limit list'
+
 	gui.dpp2.disable_protection[modeID] = 'Disable ' .. modeName .. ' protection'
 
 	command.dpp2.rlists.added[modeID] = '#E added %q to ' .. modeName .. ' restriction list with whitelist status set to %s'
@@ -120,6 +124,18 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 	gui.dpp2.access.status[modeID .. '_exclusion'] = 'Entity classname is excluded from protection'
 
 	gui.dpp2.sharing['share_' .. modeID] = 'Share as ' .. modeName
+
+command.dpp2.rlists.added.model = '#E added %q to model restriction list with whitelist status set to %s'
+command.dpp2.rlists.added_ext.model = '#E added %q to model restriction list with %q groups in it and whitelist status set to %s'
+command.dpp2.rlists.updated.model = '#E updated %q in model restriction list with %q groups in it and whitelist status set to %s'
+command.dpp2.rlists.removed.model = '#E removed %q from model restriction list'
+
+do
+	modeID = 'model'
+	modeName = 'Model'
+	gui.dpp2.menu['add_to_' .. modeID .. '_limits'] = 'Add to ' .. modeName .. ' limit list...'
+	gui.dpp2.menu['edit_in_' .. modeID .. '_limits'] = 'Edit in ' .. modeName .. ' limit list'
+	gui.dpp2.menu['remove_from_' .. modeID .. '_limits'] = 'Remove from ' .. modeName .. ' limit list'
 
 gui.dpp2.cvars.rl_enable = 'Enable restriction lists'
 gui.dpp2.cvars.bl_enable = 'Enable blacklists'
@@ -272,7 +288,8 @@ message.dpp2.property.transferent.noplayer = 'Target player has left the server'
 message.dpp2.property.transfercontraption.nolongervalid = 'Contraption is no longer valid'
 
 message.dpp2.blacklist.model_blocked = 'Model %s is in blacklist'
-message.dpp2.blacklist.models_blocked = '#d entities were removed since some of them had blacklisted model'
+message.dpp2.blacklist.model_restricted = 'Model %s is restricted from your usergroup'
+message.dpp2.blacklist.models_blocked = '#d entities were removed since some of them had blacklisted/restricted model'
 
 command.dpp2.lists.arg_empty = 'You provided empty argument'
 command.dpp2.lists.group_empty = 'Missing group name!'
@@ -319,6 +336,7 @@ gui.dpp2.toolcategory.restriction = 'Restriction lists'
 gui.dpp2.toolcategory.blacklist = 'Blacklists'
 gui.dpp2.toolcategory.player = 'Player utils'
 gui.dpp2.toolcategory.limits = 'Limits'
+gui.dpp2.toolcategory.exclusions = 'Exclusions'
 
 gui.dpp2.toolmenu.select_tool = 'Select this tool'
 gui.dpp2.toolmenu.select_tool2 = 'Deploy this tool'
@@ -336,11 +354,13 @@ gui.dpp2.toolmenu.utils = 'Utils'
 gui.dpp2.toolmenu.logging = 'Logging settings'
 gui.dpp2.toolmenu.restrictions.toolgun_mode = 'Toolgun mode restrictions'
 gui.dpp2.toolmenu.restrictions.class_spawn = 'Entity restrictions'
+gui.dpp2.toolmenu.restrictions.model = 'Model restrictions'
 gui.dpp2.toolmenu.exclusions.model = 'Model exclusions'
 gui.dpp2.toolmenu.exclusions.toolgun_mode = 'Toolgun mode exclusions'
 
 gui.dpp2.toolmenu.limits.sbox = 'Sandbox Limits'
 gui.dpp2.toolmenu.limits.entity = 'Per Entity Limits'
+gui.dpp2.toolmenu.limits.model = 'Per Model Limits'
 
 gui.dpp2.toolmenu.playerutil.clear = '%s: Cleanup props'
 gui.dpp2.toolmenu.playerutil.freezephys = 'F'
@@ -407,6 +427,8 @@ gui.dpp2.cvars.sbox_limits_enabled = 'Enable sandbox limits overrides'
 gui.dpp2.cvars.sbox_limits_inclusive = 'Sandbox limit list is inclusive'
 gui.dpp2.cvars.entity_limits_enabled = 'Enable per entity limits'
 gui.dpp2.cvars.entity_limits_inclusive = 'Per entity limit list is inclusive'
+gui.dpp2.cvars.model_limits_enabled = 'Enable per model limits'
+gui.dpp2.cvars.model_limits_inclusive = 'Per model limit list is inclusive'
 gui.dpp2.cvars.limits_lists_enabled = 'Enable limits lists'
 
 command.dpp2.limit_lists.added.sbox = '#E added %q sandbox limit for group %s as #d'
@@ -416,6 +438,10 @@ command.dpp2.limit_lists.modified.sbox = '#E modified %q sandbox limit for group
 command.dpp2.limit_lists.added.entity = '#E added %q entity limit for group %s as #d'
 command.dpp2.limit_lists.removed.entity = '#E removed %q entity limit for group %s'
 command.dpp2.limit_lists.modified.entity = '#E modified %q entity limit for group %s to #d'
+
+command.dpp2.limit_lists.added.model = '#E added %q model limit for group %s as #d'
+command.dpp2.limit_lists.removed.model = '#E removed %q model limit for group %s'
+command.dpp2.limit_lists.modified.model = '#E modified %q model limit for group %s to #d'
 
 gui.dpp2.limit_lists.view.classname = 'Identifier'
 gui.dpp2.limit_lists.view.group = 'Usergroup'

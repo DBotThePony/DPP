@@ -111,6 +111,13 @@ blacklists = {
 	DPP2.DamageProtection.Exclusions
 }
 
+modelstuff = {
+	DPP2.ModelBlacklist
+	DPP2.ModelExclusions
+	DPP2.ModelRestrictions
+	DPP2.PerModelLimits
+}
+
 properties.Add('dpp2_copyvector', {
 	MenuLabel: 'gui.dpp2.property.restrictions'
 	Order: 1680
@@ -121,10 +128,11 @@ properties.Add('dpp2_copyvector', {
 		classname = ent\GetClass()
 
 		if model = ent\GetModel()
-			if DPP2.ModelBlacklist\Has(model)
-				return true if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelBlacklist.remove_command_identifier)
-			else
-				return true if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelBlacklist.add_command_identifier)
+			for object in *modelstuff
+				if object\Has(model)
+					return true if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.remove_command_identifier)
+				else
+					return true if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.add_command_identifier)
 
 		for object in *blacklists
 			if not isstring(object)
@@ -139,6 +147,13 @@ properties.Add('dpp2_copyvector', {
 			else
 				return true if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.add_command_identifier)
 
+		do
+			object = DPP2.PerEntityLimits
+			if object\Has(classname)
+				return true if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.remove_command_identifier)
+			else
+				return true if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.add_command_identifier)
+
 		return false
 
 	Action: (ent = NULL) =>
@@ -147,6 +162,18 @@ properties.Add('dpp2_copyvector', {
 		classname = ent\GetClass()
 
 		with menu = option\AddSubMenu()
+			addrestriction = (object, classname) ->
+				if object\Has(classname)
+					if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.add_command_identifier)
+						\AddOption('gui.dpp2.menu.edit_in_' .. object.identifier .. '_restrictions', (-> object\OpenMenu(classname)))\SetIcon(Menus.Icons.Add)
+
+					if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.remove_command_identifier)
+						submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. object.identifier .. '_restrictions')
+						button\SetIcon(Menus.Icons.Remove)
+						submenu\AddOption('gui.dpp2.menus.remove2', (-> RunConsoleCommand('dpp2_' .. object.remove_command_identifier, classname)))\SetIcon(Menus.Icons.Remove)
+				elseif DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.add_command_identifier)
+					\AddOption('gui.dpp2.menu.add_to_' .. object.identifier .. '_restrictions', (-> object\OpenMenu(classname)))\SetIcon(Menus.Icons.Add)
+
 			if model = ent\GetModel()
 				if DPP2.ModelBlacklist\Has(model)
 					if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelBlacklist.remove_command_identifier)
@@ -155,6 +182,31 @@ properties.Add('dpp2_copyvector', {
 						submenu\AddOption('gui.dpp2.menus.remove2', (-> RunConsoleCommand('dpp2_' .. DPP2.ModelBlacklist.remove_command_identifier, model)))\SetIcon(Menus.Icons.Remove)
 				elseif DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelBlacklist.add_command_identifier)
 					\AddOption('gui.dpp2.menu.add_to_model_blacklist', (-> RunConsoleCommand('dpp2_' .. DPP2.ModelBlacklist.add_command_identifier, model)))\SetIcon(Menus.Icons.AddPlain)
+
+				if DPP2.ModelExclusions\Has(model)
+					if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelExclusions.remove_command_identifier)
+						submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_model_exclist')
+						button\SetIcon(Menus.Icons.Remove)
+						submenu\AddOption('gui.dpp2.menus.remove2', (-> RunConsoleCommand('dpp2_' .. DPP2.ModelExclusions.remove_command_identifier, model)))\SetIcon(Menus.Icons.Remove)
+				elseif DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelExclusions.add_command_identifier)
+					\AddOption('gui.dpp2.menu.add_to_model_exclist', (-> RunConsoleCommand('dpp2_' .. DPP2.ModelExclusions.add_command_identifier, model)))\SetIcon(Menus.Icons.AddPlain)
+
+				if DPP2.PerModelLimits\Has(model)
+					if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.PerModelLimits.add_command_identifier)
+						edit = -> DPP2.PerModelLimits\OpenMenu(model)
+						\AddOption('gui.dpp2.menu.edit_in_' .. DPP2.PerModelLimits.identifier .. '_limits', edit)\SetIcon(Menus.Icons.Edit)
+
+					if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.PerModelLimits.remove_command_identifier)
+						remove = -> RunConsoleCommand('dpp2_' .. DPP2.PerModelLimits.remove_command_identifier, model, entry.group) for entry in *DPP2.PerModelLimits\GetByClass(model)
+						submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. DPP2.PerModelLimits.identifier .. '_limits')
+						button\SetIcon(Menus.Icons.Remove)
+						submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
+				else
+					if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.PerModelLimits.add_command_identifier)
+						add = -> DPP2.PerModelLimits\OpenMenu(model)
+						\AddOption('gui.dpp2.menu.add_to_' .. DPP2.PerModelLimits.identifier .. '_limits', add)\SetIcon(Menus.Icons.Add)
+
+				addrestriction(DPP2.ModelRestrictions, model)
 
 			\AddSpacer()
 
@@ -166,21 +218,12 @@ properties.Add('dpp2_copyvector', {
 						if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.remove_command_identifier)
 							submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. object.identifier .. '_' .. object.__class.REGULAR_NAME)
 							button\SetIcon(Menus.Icons.Remove)
-							submenu\AddOption('gui.dpp2.menus.remove2', (-> RunConsoleCommand('dpp2_' .. object.remove_command_identifier, model)))\SetIcon(Menus.Icons.Remove)
+							submenu\AddOption('gui.dpp2.menus.remove2', (-> RunConsoleCommand('dpp2_' .. object.remove_command_identifier, classname)))\SetIcon(Menus.Icons.Remove)
 					elseif DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.add_command_identifier)
 						\AddOption('gui.dpp2.menu.add_to_' .. object.identifier .. '_' .. object.__class.REGULAR_NAME, (-> RunConsoleCommand('dpp2_' .. object.add_command_identifier, model)))\SetIcon(Menus.Icons.AddPlain)
 
 			\AddSpacer()
 
 			for object in *restrictions
-				if object\Has(classname)
-					if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.add_command_identifier)
-						\AddOption('gui.dpp2.menu.edit_in_' .. object.identifier .. '_restrictions', (-> object\OpenMenu(classname)))\SetIcon(Menus.Icons.Add)
-
-					if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.remove_command_identifier)
-						submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. object.identifier .. '_restrictions')
-						button\SetIcon(Menus.Icons.Remove)
-						submenu\AddOption('gui.dpp2.menus.remove2', (-> RunConsoleCommand('dpp2_' .. object.remove_command_identifier, model)))\SetIcon(Menus.Icons.Remove)
-				elseif DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.add_command_identifier)
-					\AddOption('gui.dpp2.menu.add_to_' .. object.identifier .. '_restrictions', (-> object\OpenMenu(classname)))\SetIcon(Menus.Icons.AddPlain)
+				addrestriction(object, classname)
 })

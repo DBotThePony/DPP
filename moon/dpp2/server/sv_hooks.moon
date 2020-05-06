@@ -55,7 +55,7 @@ DPP2.PlayerSpawnedSomething = (ply, ent, advancedCheck = false) ->
 		check = false
 
 		if entry = DPP2.PerEntityLimits\Get(classname, ply\GetUserGroup())
-			check = not entry.limit or entry.limit > #ply\DPP2GetAllEntsByClass(classname)
+			check = not entry.limit or entry.limit >= #ply\DPP2GetAllEntsByClass(classname)
 
 		if not check
 			hook.Run('DPP_SpawnLimitHit', ply, ent)
@@ -127,11 +127,54 @@ DPP2.PlayerSpawnedSomething = (ply, ent, advancedCheck = false) ->
 	hook.Run('DPP_PlayerSpawn', ply, ent)
 	return true
 
-PreventModelSpawn = (ply, model = ent and ent\GetModel() or 'wtf', ent, nonotify) ->
-	if not DPP2.ModelBlacklist\Ask(model\lower(), ply)
+PreventModelSpawn = (ply, model = ent and ent\GetModel() or 'wtf', ent = NULL, nonotify = false) ->
+	model = model\lower()
+
+	if not DPP2.ModelBlacklist\Ask(model, ply)
 		DPP2.NotifyError(ply, nil, 'message.dpp2.blacklist.model_blocked', model) if not nonotify
-		SafeRemoveEntity(ent) if IsValid(ent)
+		SafeRemoveEntity(ent)
 		return false
+
+	if not DPP2.ModelRestrictions\Ask(model, ply)
+		DPP2.NotifyError(ply, nil, 'message.dpp2.blacklist.model_restricted', model) if not nonotify
+		SafeRemoveEntity(ent)
+		return false
+
+	if DPP2.PerModelLimits.IS_INCLUSIVE\GetBool()
+		check = false
+
+		if entry = DPP2.PerModelLimits\Get(model, ply\GetUserGroup())
+			if entry.limit
+				count = 0
+
+				for ent2 in *ply\DPP2GetAllEnts()
+						if ent2\GetModel() == model
+							count += 1
+							break if entry.limit < count
+
+				check = entry.limit >= count
+
+		if not check
+			hook.Run('DPP_ModelLimitHit', ply, model, ent)
+			DPP2.NotifyError(ply, 5, 'message.dpp2.limit.spawn', model) if not nonotify
+			DPP2.LogSpawn('message.dpp2.log.spawn.tried_generic', ply, color_red, DPP2.textcolor, ent) if IsValid(ent)
+			SafeRemoveEntity(ent)
+			return false
+	else
+		if entry = DPP2.PerModelLimits\Get(model, ply\GetUserGroup())
+			if entry.limit
+				count = 0
+				for ent2 in *ply\DPP2GetAllEnts()
+					if ent2\GetModel() == model
+						count += 1
+						break if entry.limit < count
+
+				if entry.limit < count
+					hook.Run('DPP_ModelLimitHit', ply, model, ent)
+					DPP2.NotifyError(ply, 5, 'message.dpp2.limit.spawn', model) if not nonotify
+					DPP2.LogSpawn('message.dpp2.log.spawn.tried_generic', ply, color_red, DPP2.textcolor, ent) if IsValid(ent)
+					SafeRemoveEntity(ent)
+					return false
 
 	return true
 

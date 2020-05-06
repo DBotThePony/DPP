@@ -95,11 +95,12 @@ DPP2.DEF.LimitRegistry.__base.OpenMenu = (classname) =>
 		\SetText('gui.misc.apply')
 		.DoClick = ->
 			for group, entry in pairs(entries)
+				entry2 = @Get(classname, group)
+
 				if value = tonumber(entry\GetValue())
-					entry2 = @Get(classname, group)
 					if not entry2 or value ~= entry2.limit
 						RunConsoleCommand('dpp2_' .. @add_command_identifier, classname, group, entry\GetValue())
-				else
+				elseif entry2
 					RunConsoleCommand('dpp2_' .. @remove_command_identifier, classname, group)
 
 			frame\Close()

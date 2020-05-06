@@ -377,6 +377,8 @@ class DPP2.DEF.LimitRegistry
 		return entry for entry in *@listing when entry\Is(classname, group)
 		return false
 
+	GetByClass: (classname) => [entry for entry in *@listing when entry\Is(classname)]
+
 	AddEntry: (entry) =>
 		return false if @Has(entry.classname, entry.group)
 		table.insert(@listing, entry)

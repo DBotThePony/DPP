@@ -47,6 +47,23 @@ addRestrictionMenuOption = (classname, menu) =>
 				add = -> @OpenMenu(classname)
 				\AddOption('gui.dpp2.menu.add_to_' .. @identifier .. '_restrictions', add)\SetIcon(Menus.Icons.Add)
 
+addLimitMenuOption = (classname, menu) =>
+	with menu
+		if @Has(classname)
+			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. @add_command_identifier)
+				edit = -> @OpenMenu(classname)
+				\AddOption('gui.dpp2.menu.edit_in_' .. @identifier .. '_limits', edit)\SetIcon(Menus.Icons.Edit)
+
+			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. @remove_command_identifier)
+				remove = -> RunConsoleCommand('dpp2_' .. @remove_command_identifier, classname, entry.group) for entry in *@GetByClass(classname)
+				submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_' .. @identifier .. '_limits')
+				button\SetIcon(Menus.Icons.Remove)
+				submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
+		else
+			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. @add_command_identifier)
+				add = -> @OpenMenu(classname)
+				\AddOption('gui.dpp2.menu.add_to_' .. @identifier .. '_limits', add)\SetIcon(Menus.Icons.Add)
+
 addBlacklistMenuOption = (classname, menu) =>
 	with menu
 		if @Has(classname)
@@ -69,6 +86,8 @@ SpawnlistOpenGenericMenu = =>
 
 	hitRemove = false
 	hitAdd = false
+	hitRemove2 = false
+	hitAdd2 = false
 
 	for model in *models
 		if DPP2.ModelBlacklist\Has(model)
@@ -76,9 +95,14 @@ SpawnlistOpenGenericMenu = =>
 		else
 			hitAdd = true
 
-		break if hitRemove and hitAdd
+		if DPP2.ModelExclusions\Has(model)
+			hitRemove2 = true
+		else
+			hitAdd2 = true
 
-	return if not hitRemove and not hitAdd
+		break if hitRemove and hitAdd and hitRemove2 and hitAdd2
+
+	return if not hitRemove and not hitAdd and not hitRemove2 and not hitAdd2 -- a?
 
 	local menu
 
@@ -89,22 +113,39 @@ SpawnlistOpenGenericMenu = =>
 
 	menu\AddSpacer()
 
-	if hitRemove and DPP2.cmd_perm_watchdog\HasPermission('dpp2_remove_model_blacklist')
+	if hitRemove and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelBlacklist.remove_command_identifier)
 		lastMenuFrame = FrameNumber() + 1
 		remove = ->
 			for model in *models
 				if DPP2.ModelBlacklist\Has(model)
-					RunConsoleCommand('dpp2_remove_model_blacklist', model)
+					RunConsoleCommand('dpp2_' .. DPP2.ModelBlacklist.remove_command_identifier, model)
 		submenu, button = menu\AddSubMenu('gui.dpp2.menu.remove_from_model_blacklist')
 		button\SetIcon(Menus.Icons.Remove)
 		submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
 
-	if hitAdd and DPP2.cmd_perm_watchdog\HasPermission('dpp2_add_model_blacklist')
+	if hitAdd and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelBlacklist.add_command_identifier)
 		add = ->
 			for model in *models
 				if not DPP2.ModelBlacklist\Has(model)
-					RunConsoleCommand('dpp2_add_model_blacklist', model)
+					RunConsoleCommand('dpp2_' .. DPP2.ModelBlacklist.add_command_identifier, model)
 		menu\AddOption('gui.dpp2.menu.add_to_model_blacklist', add)\SetIcon(Menus.Icons.AddPlain)
+
+	if hitRemove2 and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelExclusions.remove_command_identifier)
+		lastMenuFrame = FrameNumber() + 1
+		remove = ->
+			for model in *models
+				if DPP2.ModelExclusions\Has(model)
+					RunConsoleCommand('dpp2_' .. DPP2.ModelExclusions.remove_command_identifier, model)
+		submenu, button = menu\AddSubMenu('gui.dpp2.menu.remove_from_model_exclist')
+		button\SetIcon(Menus.Icons.Remove)
+		submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
+
+	if hitAdd2 and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelExclusions.add_command_identifier)
+		add = ->
+			for model in *models
+				if not DPP2.ModelExclusions\Has(model)
+					RunConsoleCommand('dpp2_' .. DPP2.ModelExclusions.add_command_identifier, model)
+		menu\AddOption('gui.dpp2.menu.add_to_model_exclist', add)\SetIcon(Menus.Icons.AddPlain)
 
 DPP2.ToolStuff = {}
 local catchButtons
@@ -146,6 +187,12 @@ PatchToolPanel = =>
 
 		return a, b, c, d, e, f
 
+modelthing = (model, lastMenu) ->
+	addBlacklistMenuOption(DPP2.ModelBlacklist, model, lastMenu)
+	addBlacklistMenuOption(DPP2.ModelExclusions, model, lastMenu)
+	addRestrictionMenuOption(DPP2.ModelRestrictions, model, lastMenu)
+	addLimitMenuOption(DPP2.PerModelLimits, model, lastMenu)
+
 PatchSpawnIcon = =>
 	@OpenMenu_DPP2 = @OpenMenu_DPP2 or @OpenMenu
 	@OpenMenu = =>
@@ -154,9 +201,7 @@ PatchSpawnIcon = =>
 		if IsValid(lastMenu) and lastMenuFrame == FrameNumber()
 			lastMenuFrame = FrameNumber() + 1
 			lastMenu\AddSpacer()
-			lower = @GetModelName()\lower()
-			addBlacklistMenuOption(DPP2.ModelBlacklist, lower, lastMenu)
-			addBlacklistMenuOption(DPP2.ModelExclusions, lower, lastMenu)
+			modelthing(@GetModelName()\lower(), lastMenu)
 
 hook.Add 'SpawnlistOpenGenericMenu', 'DPP2.ContextMenuCatch', SpawnlistOpenGenericMenu, 8
 hook.Add 'VGUIPanelCreated', 'DPP2.ContextMenuCatch', =>
@@ -309,8 +354,7 @@ hook.Add 'VGUIPanelCreated', 'DPP2.ContextMenuCatch', =>
 						lastMenu\AddSpacer()
 
 						if getdata.Model
-							addBlacklistMenuOption(DPP2.ModelBlacklist, getdata.Model, lastMenu)
-							addBlacklistMenuOption(DPP2.ModelExclusions, getdata.Model, lastMenu)
+							modelthing(getdata.Model, lastMenu)
 
 						addRestrictionMenuOption(DPP2.SpawnRestrictions, getdata.Class, lastMenu)
 
@@ -352,6 +396,5 @@ hook.Add 'VGUIPanelCreated', 'DPP2.ContextMenuCatch', =>
 					lastMenuFrame = FrameNumber() + 1
 					lastMenu\AddSpacer()
 					lower = @GetModelName()\lower()
-					addBlacklistMenuOption(DPP2.ModelBlacklist, lower, lastMenu)
-					addBlacklistMenuOption(DPP2.ModelExclusions, lower, lastMenu)
+					modelthing(lower, lastMenu)
 
