@@ -27,6 +27,7 @@ DPP2.CL_DRAW_OWNER = DPP2.CreateClientConVar('cl_draw_owner', '1', DPP2.TYPE_BOO
 DPP2.CL_SIMPLE_OWNER = DPP2.CreateClientConVar('cl_simple_owner', '0', DPP2.TYPE_BOOL)
 DPP2.CL_SHOW_ENTITY_NAME = DPP2.CreateClientConVar('cl_entity_name', '1', DPP2.TYPE_BOOL)
 DPP2.CL_SHOW_ENTITY_INFO = DPP2.CreateClientConVar('cl_entity_info', '1', DPP2.TYPE_BOOL)
+DPP2.CL_DONT_PROCESS_CONTRAPTIONS = DPP2.CreateClientConVar('cl_no_contraptions', '0', DPP2.TYPE_BOOL)
 
 entMeta.DPP2GetOwner = =>
 	if @GetNWString('dpp2_owner_steamid', '-1') == '-1'

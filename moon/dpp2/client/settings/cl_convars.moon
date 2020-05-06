@@ -133,6 +133,8 @@ Menus.ClientProtectionModulesMenu = =>
 Menus.ClientMenu = =>
 	return if not IsValid(@)
 
+	@CheckBox('gui.dpp2.cvars.cl_draw_owner', 'dpp2_cl_draw_owner')
 	@CheckBox('gui.dpp2.cvars.cl_simple_owner', 'dpp2_cl_simple_owner')
 	@CheckBox('gui.dpp2.cvars.cl_entity_name', 'dpp2_cl_entity_name')
 	@CheckBox('gui.dpp2.cvars.cl_entity_info', 'dpp2_cl_entity_info')
+	@CheckBox('gui.dpp2.cvars.cl_no_contraptions', 'dpp2_cl_no_contraptions')

@@ -342,7 +342,7 @@ class DPP2.DEF.ProtectionDefinition
 		return false, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_blacklist') if @classnameBlacklist and not @classnameBlacklist\Ask(classname, ply)
 		return true, i18n.localize('gui.dpp2.access.status.disabled') if not @IsEnabled()
 
-	CanTouch: (ply = NULL, ent = NULL) =>
+	CanTouch: (ply = NULL, ent = NULL, processContraptions = SERVER or not DPP2.CL_DONT_PROCESS_CONTRAPTIONS\GetBool()) =>
 		cangeneric, tstatus = @CanGeneric(ply, ent)
 		return cangeneric, tstatus if cangeneric ~= nil
 		contraption = ent\DPP2GetContraption()
@@ -358,7 +358,7 @@ class DPP2.DEF.ProtectionDefinition
 
 		steamid = ply\SteamID()
 
-		check = not DPP2.ModelBlacklist\IsEnabled() and
+		check = not processContraptions or not DPP2.ModelBlacklist\IsEnabled() and
 			(not @classnameExclusionList or not @classnameExclusionList\IsEnabled()) and
 			(not @classnameBlacklist or not @classnameBlacklist\IsEnabled()) and
 			(not @classnameRestriction or not @classnameRestriction\IsEnabled())
