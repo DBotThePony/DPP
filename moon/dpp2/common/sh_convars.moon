@@ -43,8 +43,16 @@ GravGunPunt = (ply = NULL, wep = NULL) ->
 
 hook.Add 'GravGunPunt', 'DPP2.AntiPropkill', GravGunPunt, 6
 
+
+CAMI.RegisterPrivilege({
+	Name: 'dpp2_ignore_antispam'
+	MinAccess: 'admin'
+	Description: 'DPP/2 threat this player as target of antispam ignore logic'
+})
+
 -- Antispam
 DPP2.ENABLE_ANTISPAM = DPP2.CreateConVar('antispam', '1', DPP2.TYPE_BOOL)
+DPP2.ANTISPAM_IGNORE_ADMINS = DPP2.CreateConVar('antispam_ignore_admins', '0', DPP2.TYPE_BOOL)
 DPP2.ANTISPAM_COLLISIONS = DPP2.CreateConVar('antispam_collisions', '0', DPP2.TYPE_BOOL)
 -- DPP2.ANTISPAM_MAX_EXPLOSIONS = DPP2.CreateConVar('antispam_explosions', '1', DPP2.TYPE_BOOL)
 

@@ -199,6 +199,7 @@ gui.dpp2.cvars.apropkill_throw = 'Prevent prop throwing'
 gui.dpp2.cvars.apropkill_punt = 'Prevent gravgun punt'
 
 gui.dpp2.cvars.antispam = 'Antispam main switch'
+gui.dpp2.cvars.antispam_ignore_admins = 'Antispam ignores administration'
 gui.dpp2.cvars.antispam_unfreeze = 'Unfreeze antispam'
 gui.dpp2.cvars.antispam_unfreeze_div = 'Unfreeze antispam time multiplier'
 gui.dpp2.cvars.antispam_collisions = 'Prevent spawning prop inside prop'

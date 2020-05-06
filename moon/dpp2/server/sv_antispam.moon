@@ -22,6 +22,9 @@ import DPP2 from _G
 
 QUEUE = {}
 
+watchdog = DLib.CAMIWatchdog('dpp2_antispam')
+watchdog\Track('dpp2_ignore_antispam')
+
 OnPhysgunReload = (physgun, ply) ->
 	return if not DPP2.ENABLE_ANTISPAM\GetBool()
 	return if not DPP2.ANTISPAM_UNFREEZE\GetBool()
@@ -82,6 +85,7 @@ ComputeVolume2 = =>
 DPP2.AntispamCheck = (ply = NULL, doNotify = true, ent, constrained, autoGhost = false) ->
 	return true if not DPP2.ENABLE_ANTISPAM\GetBool()
 	return true if not DPP2.ANTISPAM_SPAM\GetBool() and not DPP2.ANTISPAM_VOLUME_SPAM\GetBool()
+	return true if DPP2.ANTISPAM_IGNORE_ADMINS\GetBool() and watchdog\HasPermission(ply, 'dpp2_ignore_antispam')
 
 	if ply.__dpp2_antispam_volume and ply.__dpp2_antispam_volume >= DPP2.ANTISPAM_VOLUME_THRESHOLD2\GetFloat()
 		recomputeAntispamValues()
@@ -118,6 +122,7 @@ DPP2.AntispamCheck = (ply = NULL, doNotify = true, ent, constrained, autoGhost =
 DPP2.QueueAntispam = (ply = NULL, ent = NULL, constrained = {}, doNotify = true) ->
 	return true if not DPP2.ENABLE_ANTISPAM\GetBool()
 	return true if not DPP2.ANTISPAM_SPAM\GetBool() and not DPP2.ANTISPAM_VOLUME_SPAM\GetBool()
+	return true if DPP2.ANTISPAM_IGNORE_ADMINS\GetBool() and watchdog\HasPermission(ply, 'dpp2_ignore_antispam')
 	return false if not DPP2.AntispamCheck(ply, doNotify, ent, constrained)
 
 	for i, {ent2} in ipairs(QUEUE)

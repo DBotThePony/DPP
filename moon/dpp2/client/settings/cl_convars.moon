@@ -53,6 +53,7 @@ Menus.AntispamMenu = =>
 	return if not IsValid(@)
 
 	Menus.QCheckBox(@, 'antispam')
+	Menus.QCheckBox(@, 'antispam_ignore_admins')
 	Menus.QCheckBox(@, 'antispam_unfreeze')
 	Menus.QSlider(@, 'antispam_unfreeze_div', 0.01, 10, 2)
 	Menus.QCheckBox(@, 'antispam_collisions')
