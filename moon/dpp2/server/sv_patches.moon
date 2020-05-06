@@ -18,7 +18,8 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-import debug, type, DPP2 from _G
+import debug, type, DPP2, DLib from _G
+import i18n from DLib
 
 -- Undo patch
 if undo
@@ -73,3 +74,34 @@ if duplicator and duplicator.CopyEntTable
 		ret = duplicator._DPP2_CopyEntTable(ent, ...)
 		hook.Run('OnEntityCopyTableFinish', ent, ret) if IsValid(ent) and istable(ret)
 		return ret
+
+
+PatchE2 = ->
+	Compiler = Compiler or E2Lib and E2Lib.Compiler
+	return if not Compiler
+
+	Compiler.DPP2_GetFunction = Compiler.DPP2_GetFunction or Compiler.GetFunction
+	Compiler.DPP2_Execute = Compiler.DPP2_Execute or Compiler.Execute
+
+	Compiler.GetFunction = (instr, Name, Args, ...) =>
+		if IsValid(@__dpp2_owner)
+			if not DPP2.E2FunctionRestrictions\Ask(Name, @__dpp2_owner)
+				@Error(i18n.localize('message.dpp2.restriction.e2fn', Name), instr)
+				return
+
+		return Compiler.DPP2_GetFunction(@, instr, Name, Args, ...)
+
+	Compiler.Execute = (...) ->
+		instance = setmetatable({}, Compiler)
+		varname, varvalue = debug.getlocal(2, 1)
+		instance.__dpp2_owner = varvalue\DPP2GetOwner() if IsValid(varvalue) and varvalue\DPP2IsOwned()
+
+		if E2Lib
+			return xpcall(Compiler.Process, E2Lib.errorHandler, instance, ...)
+		else
+			return pcall(Compiler.Process, instance, ...)
+
+if AreEntitiesAvailable()
+	PatchE2()
+else
+	hook.Add 'InitPostEntity', 'DPP2.PatchE2Compiler', PatchE2, 2

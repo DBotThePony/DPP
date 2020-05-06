@@ -321,6 +321,7 @@ DPP2.ToolgunModeExclusions = DPP2.DEF.Exclusion('toolgun_mode', DPP2.ToolgunMode
 
 DPP2.ToolgunModeRestrictions = DPP2.DEF.RestrictionList('toolgun_mode', DPP2.ToolgunModeAutocomplete)
 DPP2.SpawnRestrictions = DPP2.DEF.RestrictionList('class_spawn', DPP2.ClassnameAutocomplete)
+DPP2.E2FunctionRestrictions = DPP2.DEF.RestrictionList('e2fn')
 
 include('dpp2/server/sv_import.lua') if SERVER
 

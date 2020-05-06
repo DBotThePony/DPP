@@ -39,6 +39,7 @@ message.dpp2.notice.cleanup = ' props has been cleaned up.'
 message.dpp2.warn.trap = 'Your entity seems to stuck in someone. Interact with it to unghost!'
 message.dpp2.warn.collisions = 'Your entity seems to stuck in other prop. Interact with it to unghost!'
 message.dpp2.restriction.spawn = '%q classname is restricted from you'
+message.dpp2.restriction.e2fn = 'DPP/2: Expression 2 function %q is restricted from you'
 
 gui.dpp2.chosepnl.buttons.to_chosen = 'Pick >'
 gui.dpp2.chosepnl.buttons.to_available = '< Move back'
@@ -130,6 +131,15 @@ command.dpp2.rlists.added.model = '#E added %q to model restriction list with wh
 command.dpp2.rlists.added_ext.model = '#E added %q to model restriction list with %q groups in it and whitelist status set to %s'
 command.dpp2.rlists.updated.model = '#E updated %q in model restriction list with %q groups in it and whitelist status set to %s'
 command.dpp2.rlists.removed.model = '#E removed %q from model restriction list'
+
+command.dpp2.rlists.added.e2fn = '#E added %q to Expression 2 Function restriction list with whitelist status set to %s'
+command.dpp2.rlists.added_ext.e2fn = '#E added %q to Expression 2 Function restriction list with %q groups in it and whitelist status set to %s'
+command.dpp2.rlists.updated.e2fn = '#E updated %q in Expression 2 Function restriction list with %q groups in it and whitelist status set to %s'
+command.dpp2.rlists.removed.e2fn = '#E removed %q from Expression 2 Function restriction list'
+
+gui.dpp2.cvars.rl_e2fn_enable = 'Enable Expression 2 restrictions'
+gui.dpp2.cvars.rl_e2fn_invert = 'Enable Expression 2 restriction list is inverted'
+gui.dpp2.cvars.rl_e2fn_invert_all = 'Enable Expression 2 restriction list is fully inverted'
 
 do
 	modeID = 'model'
@@ -357,6 +367,7 @@ gui.dpp2.toolmenu.logging = 'Logging settings'
 gui.dpp2.toolmenu.restrictions.toolgun_mode = 'Toolgun mode restrictions'
 gui.dpp2.toolmenu.restrictions.class_spawn = 'Entity restrictions'
 gui.dpp2.toolmenu.restrictions.model = 'Model restrictions'
+gui.dpp2.toolmenu.restrictions.e2fn = 'Expression 2 Restrictions'
 gui.dpp2.toolmenu.exclusions.model = 'Model exclusions'
 gui.dpp2.toolmenu.exclusions.toolgun_mode = 'Toolgun mode exclusions'
 
