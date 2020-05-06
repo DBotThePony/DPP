@@ -313,17 +313,21 @@ class DPP2.DEF.ProtectionDefinition
 			if getply
 				return true, i18n.exists(@ownerDisabledStatusString) and i18n.localize(@ownerDisabledStatusString) or i18n.localize('gui.dpp2.access.status.ownerdisabled') if @IsDisabledForPlayer(getply)
                 return true if @camiwatchdog\HasPermission(ply, @otherPermString) and @adminTouchAny\GetBool()
-				return getply\CheckDLibFriendInOverride(ply, @friendID)
+				return true if getply\CheckDLibFriendInOverride(ply, @friendID)
+				return false, i18n.localize('gui.dpp2.access.status.friend')
 
 			return true, i18n.localize('gui.dpp2.access.status.ownerdisabled') if @IsDisabledForSteamID(other)
 			return true if @camiwatchdog\HasPermission(ply, @otherPermString) and @adminTouchAny\GetBool()
 
 			steamid = ply\SteamID()
-			return @friendsCache[other][steamid], i18n.localize('gui.dpp2.access.status.friend') if @friendsCache[other] and @friendsCache[other][steamid] ~= nil
+
+			if @friendsCache[other] and @friendsCache[other][steamid] ~= nil
+				return false, i18n.localize('gui.dpp2.access.status.friend') if not @friendsCache[other][steamid]
+				return true
 		elseif IsValid(other)
 			return true, i18n.exists(@ownerDisabledStatusString) and i18n.localize(@ownerDisabledStatusString) or i18n.localize('gui.dpp2.access.status.ownerdisabled') if @IsDisabledForPlayer(other)
             return true if @camiwatchdog\HasPermission(ply, @otherPermString) and @adminTouchAny\GetBool()
-			return other\CheckDLibFriendInOverride(ply, @friendID), i18n.localize('gui.dpp2.access.status.friend')
+			return true if other\CheckDLibFriendInOverride(ply, @friendID)
 
 		return false, i18n.localize('gui.dpp2.access.status.friend')
 
