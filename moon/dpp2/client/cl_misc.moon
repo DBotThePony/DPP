@@ -27,3 +27,9 @@ net.receive 'dpp2_inspect', ->
 	DPP2.LMessagePlayer(LocalPlayer(), 'message.dpp2.inspect.footer')
 
 net.receive 'dpp2_cleargibs', -> SafeRemoveEntity(ent) for ent in *ents.FindByClass('class C_PhysPropClientside')
+
+net.receive 'dpp2_cleardecals', ->
+	ply = net.ReadEntity() if net.ReadBool()
+	DPP2.Notify(true, nil, 'command.dpp2.cleardecals', ply or NULL)
+	RunConsoleCommand('r_cleardecals')
+	game.RemoveRagdolls()
