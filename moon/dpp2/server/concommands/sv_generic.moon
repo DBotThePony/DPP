@@ -21,6 +21,7 @@
 import DPP2 from _G
 
 net.pool('dpp2_cleardecals')
+net.pool('dpp2_cleargibs')
 net.pool('dpp2_inspect')
 
 cmds = {
@@ -124,6 +125,9 @@ cmds = {
 		net.Broadcast()
 
 	cleanupgibs: (args = {}) =>
+		net.Start('dpp2_cleargibs')
+		net.Broadcast()
+
 		num = 0
 
 		for ent in *ents.GetAll()

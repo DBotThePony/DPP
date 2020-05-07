@@ -25,3 +25,5 @@ net.receive 'dpp2_inspect', ->
 	DPP2.LMessagePlayer(LocalPlayer(), 'message.dpp2.inspect.clientside')
 	DPP2.SpewEntityInspectionOutput(LocalPlayer(), ent)
 	DPP2.LMessagePlayer(LocalPlayer(), 'message.dpp2.inspect.footer')
+
+net.receive 'dpp2_cleargibs', -> SafeRemoveEntity(ent) for ent in *ents.FindByClass('class C_PhysPropClientside')
