@@ -153,6 +153,8 @@ class DPP2.ContraptionHolder
 
 		DPP2.ContraptionHolder\Invalidate()
 
+		hook.Run 'DPP2_ContraptionRemove', @
+
 		return @
 
 	NetworkToPlayer: (ply) =>

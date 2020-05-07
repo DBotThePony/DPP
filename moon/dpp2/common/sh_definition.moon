@@ -132,6 +132,7 @@ class DPP2.DEF.ProtectionDefinition
 		DLib.friends.Register(@friendID, 'gui.dpp2.buddystatus.' .. @identifier, true)
 
 		hook.Add 'DPP2_ContraptionUpdate', 'DPP2_Def' .. @identifier, (...) -> @ClearCache(...)
+		hook.Add 'DPP2_ContraptionRemove', 'DPP2_Def' .. @identifier, (contraption) -> @ClearCache(contraption, contraption.rev, contraption.rev)
 		@cache = {}
 
 		CAMI.RegisterPrivilege({
