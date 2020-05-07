@@ -61,6 +61,8 @@ gui.dpp2.cvars.upforgrabs_timer = 'Up for grabs timeout'
 gui.dpp2.cvars.no_tool_player = 'Disallow to toolgun players'
 gui.dpp2.cvars.no_tool_player_admin = 'Disallow to toolgun players as admin'
 
+gui.dpp2.cvars.no_def_cache = 'Disable CanTouch() cache. THIS IS PERFROMANCE HEAVY AND SHOULD BE UTILIZED FOR DEBUGGING PURPOSES.'
+
 for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'drive', 'Prop Drive'}, {'damage', 'Damage'}, {'pickup', 'Pickups'}, {'use', '+use'}, {'vehicle', 'Vehicles'}, {'gravgun', 'Gravity Gun'}}
 	gui.dpp2.cvars[modeID .. '_protection'] = string.format('Enable %s protection module', modeName)
 	gui.dpp2.cvars[modeID .. '_touch_any'] = string.format('%s: Admins can touch anything', modeName)

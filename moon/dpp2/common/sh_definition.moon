@@ -23,6 +23,8 @@ import i18n from DLib
 
 DPP2.DEF = DPP2.DEF or {}
 
+DPP2.NO_DEF_CACHE = DPP2.CreateConVar('no_def_cache', '0', DPP2.TYPE_BOOL)
+
 class DPP2.DEF.DefinitionConVarsPrefab
 	new: =>
 		@enabled = true
@@ -372,7 +374,7 @@ class DPP2.DEF.ProtectionDefinition
 		steamid = ply\SteamID()
 		cachekey = steamid .. '_' .. contraption.id .. '_' .. contraption.rev if contraption
 
-		if contraption and @cache[cachekey]
+		if contraption and @cache[cachekey] and not DPP2.NO_DEF_CACHE\GetBool()
 			return unpack(@cache[cachekey], 1, 4)
 
 		result, a, b, c = @_CanTouch(ply, ent, processContraptions)
