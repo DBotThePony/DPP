@@ -321,8 +321,8 @@ command.dpp2.exclist.removed.toolgun_mode = '#E removed %s from toolgun mode exc
 message.dpp2.log.spawn.generic = '#E spawned #E'
 message.dpp2.log.spawn.tried_generic = '#E #C tried #C to spawn #E'
 message.dpp2.log.spawn.tried_plain = '#E #C tried #C to spawn %q'
-message.dpp2.log.spawn.giveswep = '#E gave himself swep #C%s'
-message.dpp2.log.spawn.giveswep_valid = '#E gave himself swep #E'
+message.dpp2.log.spawn.giveswep = '#E gave themselves swep #C%s'
+message.dpp2.log.spawn.giveswep_valid = '#E gave themselves swep #E'
 message.dpp2.log.spawn.prop = '#E spawned #E [%s]'
 message.dpp2.log.in_next = 'Logging continues in %s'
 
