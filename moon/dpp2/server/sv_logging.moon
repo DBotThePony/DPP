@@ -59,8 +59,8 @@ makestr = (...) ->
 
 DPP2.Log = (...) ->
 	return if not DPP2.ENABLE_LOGGING\GetBool()
-	DPP2.LMessage(...) if DPP2.ECHO_LOG\GetBool()
-	varg = {...}
+	DPP2.LMessage(DLib.string.qdate() .. ' - ', ...) if DPP2.ECHO_LOG\GetBool()
+	varg = {DLib.string.qdate() .. ' - ', ...}
 
 	if DPP2.ECHO_LOG_CLIENTS\GetBool()
 		data = {}
