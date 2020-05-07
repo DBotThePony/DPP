@@ -323,6 +323,27 @@ DPP2.ToolgunModeRestrictions = DPP2.DEF.RestrictionList('toolgun_mode', DPP2.Too
 DPP2.SpawnRestrictions = DPP2.DEF.RestrictionList('class_spawn', DPP2.ClassnameAutocomplete)
 DPP2.E2FunctionRestrictions = DPP2.DEF.RestrictionList('e2fn')
 
+table.insert(DPP2.ContraptionHolder.RSSTUFF, DPP2.ModelRestrictions)
+
+table.insert(DPP2.ContraptionHolder.RSSTUFF, DPP2.DamageProtection.RestrictionList)
+table.insert(DPP2.ContraptionHolder.RSSTUFF, DPP2.PickupProtection.RestrictionList)
+table.insert(DPP2.ContraptionHolder.RSSTUFF, DPP2.UseProtection.RestrictionList)
+table.insert(DPP2.ContraptionHolder.RSSTUFF, DPP2.VehicleProtection.RestrictionList)
+table.insert(DPP2.ContraptionHolder.RSSTUFF, DPP2.GravgunProtection.RestrictionList)
+table.insert(DPP2.ContraptionHolder.RSSTUFF, DPP2.PhysgunProtection.RestrictionList)
+table.insert(DPP2.ContraptionHolder.RSSTUFF, DPP2.DriveProtection.RestrictionList)
+
+table.insert(DPP2.ContraptionHolder.BLSTUFF, DPP2.ModelBlacklist)
+table.insert(DPP2.ContraptionHolder.BLSTUFF, DPP2.ModelExclusions)
+
+table.insert(DPP2.ContraptionHolder.RSSTUFF, DPP2.DamageProtection.Blacklist)
+table.insert(DPP2.ContraptionHolder.RSSTUFF, DPP2.PickupProtection.Blacklist)
+table.insert(DPP2.ContraptionHolder.RSSTUFF, DPP2.UseProtection.Blacklist)
+table.insert(DPP2.ContraptionHolder.RSSTUFF, DPP2.VehicleProtection.Blacklist)
+table.insert(DPP2.ContraptionHolder.RSSTUFF, DPP2.GravgunProtection.Blacklist)
+table.insert(DPP2.ContraptionHolder.RSSTUFF, DPP2.PhysgunProtection.Blacklist)
+table.insert(DPP2.ContraptionHolder.RSSTUFF, DPP2.DriveProtection.Blacklist)
+
 include('dpp2/server/sv_import.lua') if SERVER
 
 include('dpp2/server/concommands/sv_generic.lua') if SERVER

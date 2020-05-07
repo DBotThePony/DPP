@@ -37,6 +37,9 @@ class DPP2.ContraptionHolder
 	@NEXT_ID = nextidP
 	@OBJECTS = {}
 
+	@BLSTUFF = {}
+	@RSSTUFF = {}
+
 	@GetByID = (id) =>
 		assert(type(id) == 'number', 'Invalid ID provided')
 
@@ -71,6 +74,18 @@ class DPP2.ContraptionHolder
 		@networked = {} if SERVER
 		@lastWalk = 0
 		table.insert(@@OBJECTS, @)
+		@rev = 0
+
+		for object in *@@BLSTUFF
+			hook.Add 'DPP2_' .. object.__class.__name .. '_' .. object.identifier .. '_EntryAdded', @, @TriggerUpdate
+			hook.Add 'DPP2_' .. object.__class.__name .. '_' .. object.identifier .. '_EntryRemoved', @, @TriggerUpdate
+
+		for object in *@@RSSTUFF
+			hook.Add 'DPP2_' .. object.identifier .. '_EntryAdded', @, @TriggerUpdate
+			hook.Add 'DPP2_' .. object.identifier .. '_EntryRemoved', @, @TriggerUpdate
+			hook.Add 'DPP2_' .. object.identifier .. '_GroupAdded', @, @TriggerUpdate
+			hook.Add 'DPP2_' .. object.identifier .. '_GroupRemoved', @, @TriggerUpdate
+			hook.Add 'DPP2_' .. object.identifier .. '_WhitelistStatusUpdated', @, @TriggerUpdate
 
 	GetID: => @id
 
@@ -86,12 +101,17 @@ class DPP2.ContraptionHolder
 	EntitiesByOwner: (owner = NULL) => [ent for ent in *@ents when ent\DPP2GetOwner() == owner]
 	EntitiesByStringOwner: (owner = '') => [ent for ent in *@ents when ent\DPP2GetOwnerSteamID() == owner]
 
+	TriggerUpdate: =>
+		@rev += 1
+		hook.Run 'DPP2_ContraptionUpdate', @, @rev, @rev - 1
+
 	AddEntity: (ent = NULL) =>
 		return false if not IsValid(ent)
 		return false if ent.__dpp2_contraption == @
 		return false if ent.IsConstraint and ent\IsConstraint()
 		ent.__dpp2_contraption\RemoveEntity(ent) if ent.__dpp2_contraption
 		table.insert(@ents, ent)
+		@TriggerUpdate()
 		return true
 
 	RemoveEntity: (ent = NULL, InvalidateNow = true) =>
@@ -247,6 +267,8 @@ class DPP2.ContraptionHolder
 		DPP2.Notify(newOwner, 'message.dpp2.owning.owned_contraption') if hit
 		DPP2.DoTransfer(fents, newOwner)
 
+		@TriggerUpdate()
+
 		return hit
 
 	Ghost: => ent\DPP2Ghost() for ent in *@ents when IsValid(ent)
@@ -254,6 +276,8 @@ class DPP2.ContraptionHolder
 
 	Revalidate: =>
 		return false if not @IsValid()
+
+		@TriggerUpdate()
 
 		for ent in *@ents
 			if not entMeta.IsValid(ent)
@@ -271,6 +295,8 @@ class DPP2.ContraptionHolder
 		return true
 
 	Invalidate: (withMarkForDeath = false, networkDiff = true) =>
+		@TriggerUpdate()
+
 		for ent in *@ents
 			if not IsValid(ent)
 				prev = @ents

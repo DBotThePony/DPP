@@ -129,6 +129,9 @@ class DPP2.DEF.ProtectionDefinition
 		DPP2.Message('Missing langstring for gui.dpp2.buddystatus.' .. @identifier) if DLib.i18n.localize('gui.dpp2.buddystatus.' .. @identifier) == 'gui.dpp2.buddystatus.' .. @identifier
 		DLib.friends.Register(@friendID, 'gui.dpp2.buddystatus.' .. @identifier, true)
 
+		hook.Add 'DPP2_ContraptionUpdate', 'DPP2_Def' .. @identifier, (...) -> @ClearCache(...)
+		@cache = {}
+
 		CAMI.RegisterPrivilege({
 			Name: 'dpp2_' .. @identifier .. '_admin'
 			MinAccess: 'admin'
@@ -280,9 +283,28 @@ class DPP2.DEF.ProtectionDefinition
 		@friendsCache[steamid] = nil
 		@disabledCache[steamid] = nil
 
+	ClearCache: (contraption, revNew, revOld) =>
+		ending = '_' .. contraption.id .. '_' .. revOld
+		removal = {}
+
+		for key in pairs(@cache)
+			if key\endsWith(ending)
+				table.insert(removal, key)
+
+		@cache[key] = nil for key in *removal
+
 	PlayerDisconnected: (ply = NULL) =>
-		@friendsCache[ply\SteamID()] = {ply2\SteamID(), ply2\CheckDLibFriendInOverride(ply, @friendID) for ply2 in *player.GetAll()}
-		@disabledCache[ply\SteamID()] = @IsDisabledForPlayer(ply)
+		steamid = ply\SteamID()
+		@friendsCache[steamid] = {ply2\SteamID(), ply2\CheckDLibFriendInOverride(ply, @friendID) for ply2 in *player.GetAll()}
+		@disabledCache[steamid] = @IsDisabledForPlayer(ply)
+
+		removal = {}
+
+		for key in pairs(@cache)
+			if key\startsWith(steamid)
+				table.insert(removal, key)
+
+		@cache[key] = nil for key in *removal
 
 	CanTouchWorld: (ply = NULL) =>
 		return true if not ply\IsValid()
@@ -345,6 +367,20 @@ class DPP2.DEF.ProtectionDefinition
 	CanTouch: (ply = NULL, ent = NULL, processContraptions = SERVER or not DPP2.CL_DONT_PROCESS_CONTRAPTIONS\GetBool()) =>
 		cangeneric, tstatus = @CanGeneric(ply, ent)
 		return cangeneric, tstatus if cangeneric ~= nil
+
+		contraption = ent\DPP2GetContraption()
+		steamid = ply\SteamID()
+		cachekey = steamid .. '_' .. contraption.id .. '_' .. contraption.rev if contraption
+
+		if contraption and @cache[cachekey]
+			return unpack(@cache[cachekey], 1, 4)
+
+		result, a, b, c = @_CanTouch(ply, ent, processContraptions)
+		@cache[cachekey] = {result, a, b, c} if contraption
+
+		return result, a, b, c
+
+	_CanTouch: (ply = NULL, ent = NULL, processContraptions = SERVER or not DPP2.CL_DONT_PROCESS_CONTRAPTIONS\GetBool()) =>
 		contraption = ent\DPP2GetContraption()
 
 		if not contraption
