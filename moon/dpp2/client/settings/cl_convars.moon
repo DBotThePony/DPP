@@ -140,3 +140,4 @@ Menus.ClientMenu = =>
 	@CheckBox('gui.dpp2.cvars.cl_no_contraptions', 'dpp2_cl_no_contraptions')
 	@Help('')
 	@CheckBox('gui.dpp2.cvars.cl_no_players', 'cl_no_players')
+	@CheckBox('gui.dpp2.cvars.cl_no_func', 'cl_no_func')
