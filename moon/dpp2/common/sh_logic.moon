@@ -70,6 +70,7 @@ class DPP2.ContraptionHolder
 		@owners = {}
 		@ownersFull = {}
 		@ownersStateNotShared = {}
+		@types = {}
 		@id = id
 		@networked = {} if SERVER
 		@lastWalk = 0
@@ -309,12 +310,15 @@ class DPP2.ContraptionHolder
 		@owners = {}
 		@ownersFull = {}
 		@ownersStateNotShared = {def.identifier, {} for def in *DPP2.DEF.ProtectionDefinition.OBJECTS}
+		@types = {}
 
 		for ent in *@ents
+			gtype = type(ent)
 			ent.__dpp2_contraption = @
 			owner, ownerSteamID = ent\DPP2GetOwner()
 			table.insert(@owners, owner) if not table.qhasValue(@owners, owner)
 			table.insert(@ownersFull, ownerSteamID) if not table.qhasValue(@ownersFull, ownerSteamID)
+			table.insert(@types, gtype) if not table.qhasValue(@types, gtype)
 
 			if ownerSteamID ~= 'world' and ownerSteamID ~= 'map'
 				for def in *DPP2.DEF.ProtectionDefinition.OBJECTS
@@ -341,6 +345,9 @@ entMeta.DPP2IsGhosted = => @GetNWBool('dpp2_ghost', false)
 DPP2.ACCESS = DPP2.ACCESS or {}
 
 import i18n from DLib
+
+DPP2.ALLOW_DAMAGE_NPC = DPP2.CreateConVar('allow_damage_npc', '1', DPP2.TYPE_BOOL)
+DPP2.ALLOW_DAMAGE_VEHICLE = DPP2.CreateConVar('allow_damage_vehicle', '1', DPP2.TYPE_BOOL)
 
 DPP2.ACCESS.CanPhysgun = (ply = NULL, ent = NULL) ->
 	return true if not ply\IsValid()
@@ -371,6 +378,24 @@ DPP2.ACCESS.CanToolgun = (ply = NULL, ent = NULL, toolgunMode) ->
 DPP2.ACCESS.CanDamage = (ply = NULL, ent = NULL) ->
 	return true if not ply\IsValid()
 	return false, i18n.localize('gui.dpp2.access.status.invalident') if not ent\IsValid()
+
+	ALLOW_DAMAGE_NPC = DPP2.ALLOW_DAMAGE_NPC\GetBool()
+	ALLOW_DAMAGE_VEHICLE = DPP2.ALLOW_DAMAGE_VEHICLE\GetBool()
+
+	if contraption = ent\DPP2GetContraption()
+		for etype in *contraption.types
+			if etype == 'Vehicle' and ALLOW_DAMAGE_VEHICLE
+				return true, i18n.localize('gui.dpp2.access.status.damage_allowed')
+
+			if (etype == 'NPC' or etype == 'NextBot') and ALLOW_DAMAGE_NPC
+				return true, i18n.localize('gui.dpp2.access.status.damage_allowed')
+
+	if ent\IsVehicle() and ALLOW_DAMAGE_VEHICLE
+		return true, i18n.localize('gui.dpp2.access.status.damage_allowed')
+
+	if (ent\IsNPC() or type(ent) == 'NextBot') and ALLOW_DAMAGE_VEHICLE
+		return true, i18n.localize('gui.dpp2.access.status.damage_allowed')
+
 	return DPP2.DamageProtection\CanTouch(ply, ent)
 
 DPP2.ACCESS.CanPickup = (ply = NULL, ent = NULL) ->

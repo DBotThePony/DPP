@@ -32,6 +32,8 @@ gui.dpp2.access.status.model_blacklist = 'Model is blacklisted'
 gui.dpp2.access.status.toolgun_mode_blocked = 'Toolgun mode restricted'
 gui.dpp2.access.status.toolgun_mode_excluded = 'Toolgun mode excluded from protection'
 
+gui.dpp2.access.status.damage_allowed = 'Damage allowed'
+
 message.dpp2.owning.owned = 'You now own this entity'
 message.dpp2.owning.owned_contraption = 'You now own this contraption'
 message.dpp2.notice.upforgrabs = ' props are now up for grabs!'
@@ -189,6 +191,9 @@ gui.dpp2.cvars.log_spawns = 'Log entity spawns'
 gui.dpp2.cvars.log_toolgun = 'Log toolgun usage'
 gui.dpp2.cvars.log_tranfer = 'Log transfers'
 gui.dpp2.cvars.log_write = 'Write log to disk'
+
+gui.dpp2.cvars.allow_damage_npc = 'Always allow to damage NPCs'
+gui.dpp2.cvars.allow_damage_vehicle = 'Always allow to damage Vehicles'
 
 gui.dpp2.cvars.cl_protection = 'Main power switch'
 

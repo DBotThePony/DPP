@@ -38,6 +38,9 @@ Menus.SecondaryMenu = =>
 	Menus.QCheckBox(@, 'entity_name')
 	Menus.QCheckBox(@, 'entity_info')
 
+	Menus.QCheckBox(@, 'allow_damage_npc')
+	Menus.QCheckBox(@, 'allow_damage_vehicle')
+
 Menus.LoggingMenu = =>
 	return if not IsValid(@)
 
