@@ -29,6 +29,8 @@ DPP2.CL_SHOW_ENTITY_NAME = DPP2.CreateClientConVar('cl_entity_name', '1', DPP2.T
 DPP2.CL_SHOW_ENTITY_INFO = DPP2.CreateClientConVar('cl_entity_info', '1', DPP2.TYPE_BOOL)
 DPP2.CL_DONT_PROCESS_CONTRAPTIONS = DPP2.CreateClientConVar('cl_no_contraptions', '0', DPP2.TYPE_BOOL)
 
+DPP2.CL_DONT_SHOW_PLAYERS = DPP2.CreateClientConVar('cl_no_players', '1', DPP2.TYPE_BOOL)
+
 entMeta.DPP2GetOwner = =>
 	if @GetNWString('dpp2_owner_steamid', '-1') == '-1'
 		return NULL, 'world', 'World', 'world'
@@ -80,6 +82,7 @@ GetOwnerText = ->
 	CL_SIMPLE_OWNER = DPP2.CL_SIMPLE_OWNER\GetBool() or DPP2.SIMPLE_OWNER\GetBool()
 
 	return if not tr.Hit or not tr.Entity\IsValid()
+	return if tr.Entity\IsPlayer() and DPP2.CL_DONT_SHOW_PLAYERS\GetBool()
 	owner, ownerSteamID, ownerName = tr.Entity\DPP2GetOwner()
 	--ownerName = tr.Entity\Nick() if tr.Entity\IsPlayer()
 	ownerName = string.format('%s\n%s', ownerName, tostring(tr.Entity)) if not CL_SIMPLE_OWNER and not tr.Entity\IsPlayer() and DPP2.CL_SHOW_ENTITY_INFO\GetBool() and DPP2.SHOW_ENTITY_INFO\GetBool()

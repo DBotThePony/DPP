@@ -197,6 +197,7 @@ gui.dpp2.cvars.cl_simple_owner = 'Simple owner display (FPP Style)'
 gui.dpp2.cvars.cl_entity_name = 'Show entity print name'
 gui.dpp2.cvars.cl_entity_info = 'Show entity info'
 gui.dpp2.cvars.cl_no_contraptions = 'Don\'t fully process contraptions. Can improve framerate with huge contraptions.'
+gui.dpp2.cvars.cl_no_players = 'Don\'t show ownership window when hovering over players.'
 
 gui.dpp2.cvars.draw_owner = 'Serverside override: Draw ownership'
 gui.dpp2.cvars.simple_owner = 'Serverside override: Simple owner display (FPP Style)'
