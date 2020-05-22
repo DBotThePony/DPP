@@ -53,7 +53,7 @@ Menus.ModelBlacklistMenu = =>
 	button.DoClick = -> Menus.OpenModelBlacklistFrame(
 		DPP2.ModelBlacklist,
 		'gui.dpp2.model_blacklist.window_title'
-		)
+	)
 
 Menus.ModelExclusionMenu = =>
 	return if not IsValid(@)
@@ -64,7 +64,30 @@ Menus.ModelExclusionMenu = =>
 	button.DoClick = -> Menus.OpenModelBlacklistFrame(
 		DPP2.ModelExclusions,
 		'gui.dpp2.model_exclusions.window_title'
-		)
+	)
+
+Menus.ModelRestrictionMenu = =>
+	return if not IsValid(@)
+
+	DPP2.ModelRestrictions\BuildCPanel(@)
+
+	button = @Button('gui.dpp2.model_exclusions.window_title')
+	button.DoClick = -> Menus.OpenModelRestricitonFrame(
+		DPP2.ModelRestrictions,
+		'gui.dpp2.model_restrictions.window_title'
+	)
+
+Menus.ModelLimitMenu = =>
+	return if not IsValid(@)
+
+	DPP2.PerModelLimits\BuildCPanel(@)
+
+	button = @Button('gui.dpp2.model_limits.window_title')
+	button.DoClick = -> Menus.OpenModelRestricitonFrame(
+		DPP2.PerModelLimits,
+		'gui.dpp2.model_restrictions.window_title',
+		false
+	)
 
 Menus.OpenModelBlacklistFrame = (target, name) ->
 	self = vgui.Create('DLib_Window')
@@ -76,7 +99,9 @@ Menus.OpenModelBlacklistFrame = (target, name) ->
 	scroll = vgui.Create('DScrollPanel', @)
 	scroll\DockMargin(5, 5, 5, 5)
 	scroll\Dock(FILL)
+
 	canvas = scroll\GetCanvas()
+
 	grid = vgui.Create('DTileLayout', canvas)
 	grid\Dock(FILL)
 	grid\SetSelectionCanvas(true)
@@ -143,8 +168,109 @@ Menus.OpenModelBlacklistFrame = (target, name) ->
 
 	rebuildList()
 
-	hook.Add 'DPP2_BL_' .. DPP2.ModelBlacklist.identifier .. '_EntryAdded', @, -> timer.Create 'DPP2_RebuildModelBlacklistVisualMenu', 0.1, 1, rebuildList
-	hook.Add 'DPP2_BL_' .. DPP2.ModelBlacklist.identifier .. '_EntryRemoved', @, -> timer.Create 'DPP2_RebuildModelBlacklistVisualMenu', 0.1, 1, rebuildList
+	hook.Add 'DPP2_' .. target.__class.__name .. '_' .. target.identifier .. '_EntryAdded', @, -> timer.Create 'DPP2_RebuildModelVisualMenu' .. target.identifier, 0.1, 1, rebuildList
+	hook.Add 'DPP2_' .. target.__class.__name .. '_' .. target.identifier .. '_EntryRemoved', @, -> timer.Create 'DPP2_RebuildModelVisualMenu' .. target.identifier, 0.1, 1, rebuildList
+
+Menus.OpenModelRestricitonFrame = (target, name, mode = true) ->
+	self = vgui.Create('DLib_Window')
+	@SetSize(ScrW() - 100, ScrH() - 100)
+	@SetTitle(name)
+	@Center()
+	@MakePopup()
+
+	scroll = vgui.Create('DScrollPanel', @)
+	scroll\DockMargin(5, 5, 5, 5)
+	scroll\Dock(FILL)
+
+	canvas = scroll\GetCanvas()
+
+	grid = vgui.Create('DTileLayout', canvas)
+	grid\Dock(FILL)
+	grid\SetSelectionCanvas(true)
+	grid\SetDnD(false)
+
+	buttons = {}
+
+	openMultipleMenu = (selected = grid\GetSelectedChildren()) ->
+		return if #selected == 0
+
+		with menu = DermaMenu()
+			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. target.remove_command_identifier)
+				remove = ->
+					for button in *selected
+						if mode
+							RunConsoleCommand('dpp2_' .. target.remove_command_identifier, button._model)
+						else
+							RunConsoleCommand('dpp2_' .. target.remove_command_identifier, button._model, entry.group) for entry in *target\GetByClass(button._model)
+
+				submenu, button = \AddSubMenu('gui.dpp2.menus.remove')
+				button\SetIcon(Menus.Icons.Remove)
+				submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
+
+			\Open()
+
+	grid.DoRightClick = openMultipleMenu
+
+	openButtonMenu = =>
+		selected = grid\GetSelectedChildren()
+
+		if #selected == 0
+			with menu = DermaMenu()
+				\AddOption('gui.dpp2.property.copyclassname', (-> SetClipboardText(@_model)))\SetIcon(Menus.Icons.Copy)
+				\AddSpacer()
+
+				if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. target.add_command_identifier)
+					edit = -> target\OpenMenu(@_model)
+					\AddOption('gui.dpp2.menus.edit', edit)\SetIcon(Menus.Icons.Edit)
+
+				if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. target.remove_command_identifier)
+					remove = ->
+						if mode
+							RunConsoleCommand('dpp2_' .. target.remove_command_identifier, @_model)
+						else
+							RunConsoleCommand('dpp2_' .. target.remove_command_identifier, @_model, entry.group) for entry in *target\GetByClass(@_model)
+					submenu, button = \AddSubMenu('gui.dpp2.menus.remove')
+					button\SetIcon(Menus.Icons.Remove)
+					submenu\AddOption('gui.dpp2.menus.remove2', remove)\SetIcon(Menus.Icons.Remove)
+
+				\Open()
+		else
+			openMultipleMenu(selected)
+
+	rebuildList = ->
+		button._mark = true for _, button in pairs(buttons)
+		listModels = {}
+		table.insert(listModels, object.class) for object in *target.listing when not table.qhasValue(listModels, object.class)
+		table.sort(listModels)
+
+		for model in *listModels
+			if not buttons[model]
+				button = vgui.Create('SpawnIcon', grid)
+				button\SetSize(64, 64)
+				button\SetModel(model)
+				button\SetTooltip(model)
+				button._model = model
+
+				button.DoClick = openButtonMenu
+				button.DoRightClick = button.DoClick
+				button.OpenMenu = button.DoClick
+
+				buttons[model] = button
+			else
+				buttons[model]._mark = false
+
+		button\Remove() for _, button in pairs(buttons) when button._mark
+		buttons = {_, button for _, button in pairs(buttons) when not button._mark}
+		grid\Layout()
+
+	rebuildList()
+
+	if mode
+		hook.Add 'DPP2_' .. target.identifier .. '_EntryAdded', @, -> timer.Create 'DPP2_RebuildModelRVisualMenu' .. target.identifier, 0.1, 1, rebuildList
+		hook.Add 'DPP2_' .. target.identifier .. '_EntryRemoved', @, -> timer.Create 'DPP2_RebuildModelRVisualMenu' .. target.identifier, 0.1, 1, rebuildList
+	else
+		hook.Add 'DPP2_Limits_' .. target.identifier .. '_EntryAdded', @, -> timer.Create 'DPP2_RebuildModelRVisualMenu' .. target.identifier, 0.1, 1, rebuildList
+		hook.Add 'DPP2_Limits_' .. target.identifier .. '_EntryRemoved', @, -> timer.Create 'DPP2_RebuildModelRVisualMenu' .. target.identifier, 0.1, 1, rebuildList
 
 hook.Add 'PopulateToolMenu', 'DPP2.Menus', ->
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.client', 'gui.dpp2.toolmenu.client_protection', 'gui.dpp2.toolmenu.client_protection', '', '', Menus.ClientProtectionModulesMenu
@@ -162,7 +288,7 @@ hook.Add 'PopulateToolMenu', 'DPP2.Menus', ->
 
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.limits', 'gui.dpp2.toolmenu.limits.sbox', 'gui.dpp2.toolmenu.limits.sbox', '', '', => DPP2.SBoxLimits\BuildCPanel(@)
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.limits', 'gui.dpp2.toolmenu.limits.entity', 'gui.dpp2.toolmenu.limits.entity', '', '', => DPP2.PerEntityLimits\BuildCPanel(@)
-	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.limits', 'gui.dpp2.toolmenu.limits.model', 'gui.dpp2.toolmenu.limits.model', '', '', => DPP2.PerModelLimits\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.limits', 'gui.dpp2.toolmenu.limits.model', 'gui.dpp2.toolmenu.limits.model', '', '', Menus.ModelLimitMenu
 
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.restriction', 'gui.dpp2.toolmenu.restrictions.physgun', 'gui.dpp2.toolmenu.restrictions.physgun', '', '', => DPP2.PhysgunProtection.RestrictionList\BuildCPanel(@)
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.restriction', 'gui.dpp2.toolmenu.restrictions.drive', 'gui.dpp2.toolmenu.restrictions.drive', '', '', => DPP2.DriveProtection.RestrictionList\BuildCPanel(@)
@@ -174,7 +300,7 @@ hook.Add 'PopulateToolMenu', 'DPP2.Menus', ->
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.restriction', 'gui.dpp2.toolmenu.restrictions.toolgun_mode', 'gui.dpp2.toolmenu.restrictions.toolgun_mode', '', '', => DPP2.ToolgunModeRestrictions\BuildCPanel(@)
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.restriction', 'gui.dpp2.toolmenu.restrictions.damage', 'gui.dpp2.toolmenu.restrictions.damage', '', '', => DPP2.DamageProtection.RestrictionList\BuildCPanel(@)
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.restriction', 'gui.dpp2.toolmenu.restrictions.class_spawn', 'gui.dpp2.toolmenu.restrictions.class_spawn', '', '', => DPP2.SpawnRestrictions\BuildCPanel(@)
-	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.restriction', 'gui.dpp2.toolmenu.restrictions.model', 'gui.dpp2.toolmenu.restrictions.model', '', '', => DPP2.ModelRestrictions\BuildCPanel(@)
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.restriction', 'gui.dpp2.toolmenu.restrictions.model', 'gui.dpp2.toolmenu.restrictions.model', '', '', Menus.ModelRestrictionMenu
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.restriction', 'gui.dpp2.toolmenu.restrictions.e2fn', 'gui.dpp2.toolmenu.restrictions.e2fn', '', '', => DPP2.E2FunctionRestrictions\BuildCPanel(@)
 
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.blacklist', 'gui.dpp2.toolmenu.blacklist.model', 'gui.dpp2.toolmenu.blacklist.model', '', '', Menus.ModelBlacklistMenu

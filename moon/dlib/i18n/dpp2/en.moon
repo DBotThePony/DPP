@@ -158,6 +158,8 @@ gui.dpp2.cvars.excl_enable = 'Enable exclude lists'
 
 gui.dpp2.model_blacklist.window_title = 'Model blacklist visual menu'
 gui.dpp2.model_exclusions.window_title = 'Model exclusion list visual menu'
+gui.dpp2.model_restrictions.window_title = 'Model restriction list visual menu'
+gui.dpp2.model_limits.window_title = 'Model limit list visual menu'
 
 gui.dpp2.access.status.model_exclusion = 'Model is excluded from protection'
 
