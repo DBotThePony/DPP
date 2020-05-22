@@ -199,6 +199,8 @@ gui.dpp2.cvars.cl_entity_info = 'Show entity info'
 gui.dpp2.cvars.cl_no_contraptions = 'Don\'t fully process contraptions. Can improve framerate with huge contraptions.'
 gui.dpp2.cvars.cl_no_players = 'Don\'t show ownership status when looking at players.'
 gui.dpp2.cvars.cl_no_func = 'Don\'t show ownership status when looking at func_* or doors'
+gui.dpp2.cvars.cl_no_map = 'Don\'t show ownership status when looking at map created entities'
+gui.dpp2.cvars.cl_no_world = 'Don\'t show ownership status when looking at world owned entities'
 
 gui.dpp2.cvars.draw_owner = 'Serverside override: Draw ownership'
 gui.dpp2.cvars.simple_owner = 'Serverside override: Simple owner display (FPP Style)'

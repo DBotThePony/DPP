@@ -31,6 +31,8 @@ DPP2.CL_DONT_PROCESS_CONTRAPTIONS = DPP2.CreateClientConVar('cl_no_contraptions'
 
 DPP2.CL_DONT_SHOW_PLAYERS = DPP2.CreateClientConVar('cl_no_players', '1', DPP2.TYPE_BOOL)
 DPP2.CL_DONT_SHOW_FUNC = DPP2.CreateClientConVar('cl_no_func', '1', DPP2.TYPE_BOOL)
+DPP2.CL_DONT_SHOW_MAP_PROPS = DPP2.CreateClientConVar('cl_no_map', '1', DPP2.TYPE_BOOL)
+DPP2.CL_DONT_SHOW_WORLD_PROPS = DPP2.CreateClientConVar('cl_no_world', '0', DPP2.TYPE_BOOL)
 
 entMeta.DPP2GetOwner = =>
 	if @GetNWString('dpp2_owner_steamid', '-1') == '-1'
@@ -85,6 +87,8 @@ GetOwnerText = ->
 	return if not tr.Hit or not tr.Entity\IsValid()
 	return if tr.Entity\IsPlayer() and DPP2.CL_DONT_SHOW_PLAYERS\GetBool()
 	return if tr.Entity\GetClass() and (tr.Entity\GetClass()\startsWith('func_') or tr.Entity\GetClass()\startsWith('prop_door')) and DPP2.CL_DONT_SHOW_FUNC\GetBool()
+	return if tr.Entity\DPP2CreatedByMap() and not tr.Entity\DPP2IsOwned() and DPP2.CL_DONT_SHOW_MAP_PROPS\GetBool()
+	return if not tr.Entity\DPP2IsOwned() and DPP2.CL_DONT_SHOW_WORLD_PROPS\GetBool()
 	owner, ownerSteamID, ownerName = tr.Entity\DPP2GetOwner()
 	--ownerName = tr.Entity\Nick() if tr.Entity\IsPlayer()
 	ownerName = string.format('%s\n%s', ownerName, tostring(tr.Entity)) if not CL_SIMPLE_OWNER and not tr.Entity\IsPlayer() and DPP2.CL_SHOW_ENTITY_INFO\GetBool() and DPP2.SHOW_ENTITY_INFO\GetBool()

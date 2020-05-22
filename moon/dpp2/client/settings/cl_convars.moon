@@ -141,3 +141,5 @@ Menus.ClientMenu = =>
 	@Help('')
 	@CheckBox('gui.dpp2.cvars.cl_no_players', 'cl_no_players')
 	@CheckBox('gui.dpp2.cvars.cl_no_func', 'cl_no_func')
+	@CheckBox('gui.dpp2.cvars.cl_no_map', 'cl_no_map')
+	@CheckBox('gui.dpp2.cvars.cl_no_world', 'cl_no_world')
