@@ -206,6 +206,8 @@ gui.dpp2.cvars.cl_no_players = 'Don\'t show ownership status when looking at pla
 gui.dpp2.cvars.cl_no_func = 'Don\'t show ownership status when looking at func_* or doors'
 gui.dpp2.cvars.cl_no_map = 'Don\'t show ownership status when looking at map created entities'
 gui.dpp2.cvars.cl_no_world = 'Don\'t show ownership status when looking at world owned entities'
+gui.dpp2.cvars.cl_ownership_in_vehicle = 'Display ownership while in vehicle'
+gui.dpp2.cvars.cl_ownership_in_vehicle_always = 'Always display ownership while in vehicle'
 
 gui.dpp2.cvars.draw_owner = 'Serverside override: Draw ownership'
 gui.dpp2.cvars.simple_owner = 'Serverside override: Simple owner display (FPP Style)'

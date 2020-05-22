@@ -34,6 +34,9 @@ DPP2.CL_DONT_SHOW_FUNC = DPP2.CreateClientConVar('cl_no_func', '1', DPP2.TYPE_BO
 DPP2.CL_DONT_SHOW_MAP_PROPS = DPP2.CreateClientConVar('cl_no_map', '1', DPP2.TYPE_BOOL)
 DPP2.CL_DONT_SHOW_WORLD_PROPS = DPP2.CreateClientConVar('cl_no_world', '0', DPP2.TYPE_BOOL)
 
+DPP2.CL_DISPLAY_OWNER_IN_VEHICLE = DPP2.CreateClientConVar('cl_ownership_in_vehicle', '1', DPP2.TYPE_BOOL)
+DPP2.CL_DISPLAY_OWNER_IN_VEHICLE_ALWAYS = DPP2.CreateClientConVar('cl_ownership_in_vehicle_always', '0', DPP2.TYPE_BOOL)
+
 entMeta.DPP2GetOwner = =>
 	if @GetNWString('dpp2_owner_steamid', '-1') == '-1'
 		return NULL, 'world', 'World', 'world'
@@ -73,12 +76,33 @@ CAN_NOT_TOUCH = HUDCommons.CreateColor('dpp2_cant_touch', 'DPP/2 Can\'t touch te
 GetOwnerText = ->
 	return if not DPP2.CL_DRAW_OWNER\GetBool() or not DPP2.DRAW_OWNER\GetBool()
 
+	CL_DISPLAY_OWNER_IN_VEHICLE = DPP2.CL_DISPLAY_OWNER_IN_VEHICLE\GetBool()
+	CL_DISPLAY_OWNER_IN_VEHICLE_ALWAYS = DPP2.CL_DISPLAY_OWNER_IN_VEHICLE_ALWAYS\GetBool()
+
 	ply = DLib.HUDCommons.SelectPlayer()
+	invehicle = ply\InVehicle()
+
+	if invehicle
+		return if not CL_DISPLAY_OWNER_IN_VEHICLE
+		return if not CL_DISPLAY_OWNER_IN_VEHICLE_ALWAYS and not ply\GetAllowWeaponsInVehicle()
+
+	filter = {GetViewEntity(), ply}
+
+	if invehicle
+		vehicle = ply\GetVehicle()
+
+		if IsValid(vehicle)
+			contraption = vehicle\DPP2GetContraption()
+
+			if contraption
+				table.append(filter, contraption.ents)
+			else
+				table.insert(filter, vehicle)
 
 	tr = util.TraceLine({
 		start: lastEyePos
 		endpos: lastEyePos + lastEyeAngles\Forward() * 16834
-		filter: {GetViewEntity(), ply}
+		filter: filter
 		mask: MASK_ALL
 	})
 
