@@ -65,6 +65,17 @@ DPP2.CL_ENABLE_PROTECTION = DPP2.CreateClientConVar('cl_protection', '1', DPP2.T
 DPP2.NO_TOOLGUN_PLAYER = DPP2.CreateConVar('no_tool_player', '1', DPP2.TYPE_BOOL)
 DPP2.NO_TOOLGUN_PLAYER_ADMIN = DPP2.CreateConVar('no_tool_player_admin', '0', DPP2.TYPE_BOOL)
 
+if CLIENT
+	DPP2.CL_ENABLE_NOTIFICATIONS = DPP2.CreateClientConVar('cl_notify', '1', DPP2.TYPE_BOOL)
+	DPP2.CL_ENABLE_NOTIFICATIONS_GENERIC = DPP2.CreateClientConVar('cl_notify_generic', '1', DPP2.TYPE_BOOL)
+	DPP2.CL_ENABLE_NOTIFICATIONS_ERROR = DPP2.CreateClientConVar('cl_notify_error', '1', DPP2.TYPE_BOOL)
+	DPP2.CL_ENABLE_NOTIFICATIONS_HINT = DPP2.CreateClientConVar('cl_notify_hint', '1', DPP2.TYPE_BOOL)
+	DPP2.CL_ENABLE_NOTIFICATIONS_UNDO = DPP2.CreateClientConVar('cl_notify_undo', '1', DPP2.TYPE_BOOL)
+	DPP2.CL_ENABLE_NOTIFICATIONS_CLEANUP = DPP2.CreateClientConVar('cl_notify_cleanup', '1', DPP2.TYPE_BOOL)
+
+	DPP2.CL_NOTIFICATION_TIME_MULTIPLIER = DPP2.CreateClientConVar('cl_notify_timemul', '1', DPP2.TYPE_UFLOAT)
+	DPP2.CL_NOTIFICATION_SOUND = DPP2.CreateClientConVar('cl_notify_sound', '1', DPP2.TYPE_BOOL)
+
 CAMI.RegisterPrivilege({
 	Name: 'dpp2_log'
 	MinAccess: 'admin'
@@ -255,29 +266,39 @@ else
 
 	DPP2.Notify = (length = 5, ...) =>
 		strings = [arg for arg in *DPP2.LMessage(...) when type(arg) == 'string']
-		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_GENERIC, length)
-		playsound('buttons/lightswitch2.wav')
+		return if not DPP2.CL_ENABLE_NOTIFICATIONS\GetBool()
+		return if not DPP2.CL_ENABLE_NOTIFICATIONS_GENERIC\GetBool()
+		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_GENERIC, length * DPP2.CL_NOTIFICATION_TIME_MULTIPLIER\GetFloat())
+		playsound('buttons/lightswitch2.wav') if DPP2.CL_NOTIFICATION_SOUND\GetBool()
 
 	DPP2.NotifyError = (length = 5, ...) =>
 		strings = [arg for arg in *DPP2.LMessageError(...) when type(arg) == 'string']
-		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_ERROR, length)
-		playsound('buttons/button10.wav')
+		return if not DPP2.CL_ENABLE_NOTIFICATIONS\GetBool()
+		return if not DPP2.CL_ENABLE_NOTIFICATIONS_ERROR\GetBool()
+		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_ERROR, length * DPP2.CL_NOTIFICATION_TIME_MULTIPLIER\GetFloat())
+		playsound('buttons/button10.wav') if DPP2.CL_NOTIFICATION_SOUND\GetBool()
 
 	DPP2.NotifyUndo = (length = 5, ...) =>
 		strings = [arg for arg in *DPP2.LMessage(...) when type(arg) == 'string']
-		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_UNDO, length)
-		playsound('buttons/button15.wav')
+		return if not DPP2.CL_ENABLE_NOTIFICATIONS\GetBool()
+		return if not DPP2.CL_ENABLE_NOTIFICATIONS_UNDO\GetBool()
+		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_UNDO, length * DPP2.CL_NOTIFICATION_TIME_MULTIPLIER\GetFloat())
+		playsound('buttons/button15.wav') if DPP2.CL_NOTIFICATION_SOUND\GetBool()
 
 	DPP2.NotifyCleanup = (length = 5, ...) =>
 		strings = [arg for arg in *DPP2.LMessage(...) when type(arg) == 'string']
-		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_CLEANUP, length)
-		playsound('buttons/button15.wav')
+		return if not DPP2.CL_ENABLE_NOTIFICATIONS\GetBool()
+		return if not DPP2.CL_ENABLE_NOTIFICATIONS_CLEANUP\GetBool()
+		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_CLEANUP, length * DPP2.CL_NOTIFICATION_TIME_MULTIPLIER\GetFloat())
+		playsound('buttons/button15.wav') if DPP2.CL_NOTIFICATION_SOUND\GetBool()
 
 	DPP2.NotifyHint = (length = 5, ...) =>
 		DPP2.LMessage('[HINT] ', ...)
 		strings = [arg for arg in *DPP2.LFormatMessageRaw(...) when type(arg) == 'string']
-		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_HINT, length)
-		playsound('buttons/combine_button1.wav')
+		return if not DPP2.CL_ENABLE_NOTIFICATIONS\GetBool()
+		return if not DPP2.CL_ENABLE_NOTIFICATIONS_HINT\GetBool()
+		notification.AddLegacy(table.concat(strings, ' '), NOTIFY_HINT, length * DPP2.CL_NOTIFICATION_TIME_MULTIPLIER\GetFloat())
+		playsound('buttons/combine_button1.wav') if DPP2.CL_NOTIFICATION_SOUND\GetBool()
 
 	net.receive 'dpp2_notify', ->
 		switch net.ReadUInt8()

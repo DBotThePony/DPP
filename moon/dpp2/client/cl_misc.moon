@@ -30,6 +30,6 @@ net.receive 'dpp2_cleargibs', -> SafeRemoveEntity(ent) for ent in *ents.FindByCl
 
 net.receive 'dpp2_cleardecals', ->
 	ply = net.ReadEntity() if net.ReadBool()
-	DPP2.Notify(true, nil, 'command.dpp2.cleardecals', ply or NULL)
+	DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleardecals', ply or NULL)
 	RunConsoleCommand('r_cleardecals')
 	game.RemoveRagdolls()

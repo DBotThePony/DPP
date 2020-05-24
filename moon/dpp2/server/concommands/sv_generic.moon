@@ -39,37 +39,37 @@ cmds = {
 		ply = DPP2.FindPlayerInCommand(str)
 		return 'command.dpp2.generic.notarget' if not ply
 		SafeRemoveEntity(ent) for ent in *ply\DPP2FindOwned()
-		DPP2.Notify(true, nil, 'command.dpp2.cleanup', @, ply)
+		DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanup', @, ply)
 
 	cleanupnpcs: (args = {}, message) =>
 		str = table.concat(args, ' ')
 		ply = DPP2.FindPlayerInCommand(str)
 		return 'command.dpp2.generic.notarget' if not ply
 		SafeRemoveEntity(ent) for ent in *ply\DPP2FindOwned() when ent\IsNPC() or type(ent) == 'NextBot'
-		DPP2.Notify(true, nil, 'command.dpp2.cleanupnpcs', @, ply)
+		DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanupnpcs', @, ply)
 
 	cleanupvehicles: (args = {}, message) =>
 		str = table.concat(args, ' ')
 		ply = DPP2.FindPlayerInCommand(str)
 		return 'command.dpp2.generic.notarget' if not ply
 		SafeRemoveEntity(ent) for ent in *ply\DPP2FindOwned() when ent\IsVehicle()
-		DPP2.Notify(true, nil, 'command.dpp2.cleanupvehicles', @, ply)
+		DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanupvehicles', @, ply)
 
 	cleanupallnpcs: (args = {}, message) =>
 		SafeRemoveEntity(ent) for ent in *DPP2.FindOwned() when ent\IsNPC() or type(ent) == 'NextBot'
-		DPP2.Notify(true, nil, 'command.dpp2.cleanupallnpcs', @)
+		DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanupallnpcs', @)
 
 	cleanupall: (args = {}, message) =>
 		SafeRemoveEntity(ent) for ent in *DPP2.FindOwned()
-		DPP2.Notify(true, nil, 'command.dpp2.cleanupall', @)
+		DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanupall', @)
 
 	cleanupallvehicles: (args = {}, message) =>
 		SafeRemoveEntity(ent) for ent in *DPP2.FindOwned() when ent\IsVehicle()
-		DPP2.Notify(true, nil, 'command.dpp2.cleanupallvehicles', @)
+		DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanupallvehicles', @)
 
 	cleanupdisconnected: (args = {}) =>
 		SafeRemoveEntity(ent) for ent in *DPP2.FindOwned() when not ent\DPP2OwnerIsValid()
-		DPP2.Notify(true, nil, 'command.dpp2.cleanupdisconnected', @)
+		DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanupdisconnected', @)
 
 	freezephys: (args = {}, message) =>
 		str = table.concat(args, ' ')
@@ -139,7 +139,7 @@ cmds = {
 				SafeRemoveEntity(ent)
 				num += 1
 
-		DPP2.Notify(true, nil, 'command.dpp2.cleanupgibs', @, num)
+		DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanupgibs', @, num)
 
 	inspect: (args = {}) =>
 		return 'command.dpp2.generic.invalid_side' if not IsValid(@)

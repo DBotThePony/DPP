@@ -211,6 +211,15 @@ gui.dpp2.cvars.cl_no_world = 'Don\'t show ownership status when looking at world
 gui.dpp2.cvars.cl_ownership_in_vehicle = 'Display ownership while in vehicle'
 gui.dpp2.cvars.cl_ownership_in_vehicle_always = 'Always display ownership while in vehicle'
 
+gui.dpp2.cvars.cl_notify = 'Display notifications on screen'
+gui.dpp2.cvars.cl_notify_generic = 'Display generic notifications on screen'
+gui.dpp2.cvars.cl_notify_error = 'Display error notifications on screen'
+gui.dpp2.cvars.cl_notify_hint = 'Display hint notifications on screen'
+gui.dpp2.cvars.cl_notify_undo = 'Display undo notifications on screen'
+gui.dpp2.cvars.cl_notify_cleanup = 'Display cleanup notifications on screen'
+gui.dpp2.cvars.cl_notify_sound = 'Enable notification sounds'
+gui.dpp2.cvars.cl_notify_timemul = 'Notification time multiplier'
+
 gui.dpp2.cvars.draw_owner = 'Serverside override: Draw ownership'
 gui.dpp2.cvars.simple_owner = 'Serverside override: Simple owner display (FPP Style)'
 gui.dpp2.cvars.entity_name = 'Serverside override: Show entity print name'
@@ -227,6 +236,7 @@ gui.dpp2.cvars.apropkill_punt = 'Prevent gravgun punt'
 
 gui.dpp2.cvars.antispam = 'Antispam main switch'
 gui.dpp2.cvars.antispam_ignore_admins = 'Antispam ignores administration'
+gui.dpp2.help.antispam_ignore_admins = 'Keep in mind that turning\nantispam_ignore_admins on might make you forget\nto tune antispam settngs properly\nfor regular players\n(and make them feel insulted by antispam)'
 gui.dpp2.cvars.antispam_unfreeze = 'Unfreeze antispam'
 gui.dpp2.cvars.antispam_unfreeze_div = 'Unfreeze antispam time multiplier'
 gui.dpp2.cvars.antispam_collisions = 'Prevent spawning prop inside prop'
