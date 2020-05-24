@@ -220,6 +220,11 @@ gui.dpp2.cvars.cl_notify_cleanup = 'Display cleanup notifications on screen'
 gui.dpp2.cvars.cl_notify_sound = 'Enable notification sounds'
 gui.dpp2.cvars.cl_notify_timemul = 'Notification time multiplier'
 
+gui.dpp2.cvars.cl_properties = 'Enable DPP/2 prop properties'
+gui.dpp2.cvars.cl_properties_regular = 'Enable regular properties'
+gui.dpp2.cvars.cl_properties_admin = 'Enable admin properties'
+gui.dpp2.cvars.cl_properties_restrictions = 'Enable restriction properties'
+
 gui.dpp2.cvars.draw_owner = 'Serverside override: Draw ownership'
 gui.dpp2.cvars.simple_owner = 'Serverside override: Simple owner display (FPP Style)'
 gui.dpp2.cvars.entity_name = 'Serverside override: Show entity print name'

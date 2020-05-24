@@ -25,6 +25,8 @@ properties.Add('dpp2_transferent', {
 	MenuIcon: 'icon16/pencil_go.png'
 
 	Filter: (ent, ply = LocalPlayer()) =>
+		return false if not DPP2.CL_ENABLE_PROPERTIES\GetBool()
+		return false if not DPP2.CL_ENABLE_PROPERTIES_REGULAR\GetBool()
 		return false if not IsValid(ent)
 		return #player.GetHumans() > 1 and ent\DPP2GetOwner() == ply and DPP2.cmd_perm_watchdog\HasPermission('dpp2_transferent')
 
@@ -50,6 +52,8 @@ properties.Add('dpp2_transfercontraption', {
 	MenuIcon: 'icon16/folder_go.png'
 
 	Filter: (ent, ply = LocalPlayer()) =>
+		return false if not DPP2.CL_ENABLE_PROPERTIES\GetBool()
+		return false if not DPP2.CL_ENABLE_PROPERTIES_REGULAR\GetBool()
 		return false if not IsValid(ent)
 		return #player.GetHumans() > 1 and ent\DPP2HasContraption() and ent\DPP2GetContraption()\HasOwner(ply) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_transferent')
 
@@ -76,6 +80,8 @@ properties.Add('dpp2_transfertoworldent', {
 	MenuIcon: 'icon16/world_go.png'
 
 	Filter: (ent, ply = LocalPlayer()) =>
+		return false if not DPP2.CL_ENABLE_PROPERTIES\GetBool()
+		return false if not DPP2.CL_ENABLE_PROPERTIES_ADMIN\GetBool()
 		return false if not IsValid(ent)
 		return ent\DPP2GetOwner() == ply and DPP2.cmd_perm_watchdog\HasPermission('dpp2_transfertoworldent')
 
@@ -91,6 +97,8 @@ properties.Add('dpp2_transfertoworldcontraption', {
 	MenuIcon: 'icon16/world_link.png'
 
 	Filter: (ent, ply = LocalPlayer()) =>
+		return false if not DPP2.CL_ENABLE_PROPERTIES\GetBool()
+		return false if not DPP2.CL_ENABLE_PROPERTIES_ADMIN\GetBool()
 		return false if not IsValid(ent)
 		return ent\DPP2HasContraption() and ent\DPP2GetContraption()\HasOwner(ply) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_transfertoworldcontraption')
 

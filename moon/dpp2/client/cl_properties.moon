@@ -22,15 +22,22 @@ import DPP2 from _G
 import Menus from DPP2
 import i18n from DLib
 
+DPP2.CL_ENABLE_PROPERTIES = DPP2.CreateClientConVar('cl_properties', '1', DPP2.TYPE_BOOL)
+DPP2.CL_ENABLE_PROPERTIES_REGULAR = DPP2.CreateClientConVar('cl_properties_regular', '1', DPP2.TYPE_BOOL)
+DPP2.CL_ENABLE_PROPERTIES_ADMIN = DPP2.CreateClientConVar('cl_properties_admin', '1', DPP2.TYPE_BOOL)
+DPP2.CL_ENABLE_PROPERTIES_RESTRICTIONS = DPP2.CreateClientConVar('cl_properties_restrictions', '1', DPP2.TYPE_BOOL)
+
 properties.Add('dpp2_copymodel', {
 	MenuLabel: 'gui.dpp2.property.copymodel'
 	Order: 1650
 	MenuIcon: Menus.Icons.Copy
 
 	Filter: (ent = NULL, ply = LocalPlayer()) =>
+		return false if not DPP2.CL_ENABLE_PROPERTIES\GetBool()
+		return false if not DPP2.CL_ENABLE_PROPERTIES_REGULAR\GetBool()
 		@MenuIcon = Menus.Icons.Copy
-		return if not ent\IsValid()
-		return if not ent\GetModel() or ent\GetModel()\trim() == ''
+		return false if not ent\IsValid()
+		return false if not ent\GetModel() or ent\GetModel()\trim() == ''
 		return true
 
 	Action: (ent = NULL) =>
@@ -43,6 +50,8 @@ properties.Add('dpp2_copyclassname', {
 	MenuIcon: Menus.Icons.Copy
 
 	Filter: (ent = NULL, ply = LocalPlayer()) =>
+		return false if not DPP2.CL_ENABLE_PROPERTIES\GetBool()
+		return false if not DPP2.CL_ENABLE_PROPERTIES_REGULAR\GetBool()
 		@MenuIcon = Menus.Icons.Copy
 		return false if not ent\IsValid()
 		return false if not ent\GetClass() or ent\GetClass()\trim() == ''
@@ -58,6 +67,8 @@ properties.Add('dpp2_copyangles', {
 	MenuIcon: Menus.Icons.Angle
 
 	Filter: (ent = NULL, ply = LocalPlayer()) =>
+		return false if not DPP2.CL_ENABLE_PROPERTIES\GetBool()
+		return false if not DPP2.CL_ENABLE_PROPERTIES_REGULAR\GetBool()
 		@MenuIcon = Menus.Icons.Angle
 		return ent\IsValid()
 
@@ -72,6 +83,8 @@ properties.Add('dpp2_copyvector', {
 	MenuIcon: Menus.Icons.Vector
 
 	Filter: (ent = NULL, ply = LocalPlayer()) =>
+		return false if not DPP2.CL_ENABLE_PROPERTIES\GetBool()
+		return false if not DPP2.CL_ENABLE_PROPERTIES_REGULAR\GetBool()
 		return ent\IsValid()
 
 	Action: (ent = NULL) =>
@@ -124,6 +137,8 @@ properties.Add('dpp2_copyvector', {
 	MenuIcon: Menus.Icons.Restrict
 
 	Filter: (ent = NULL, ply = LocalPlayer()) =>
+		return false if not DPP2.CL_ENABLE_PROPERTIES\GetBool()
+		return false if not DPP2.CL_ENABLE_PROPERTIES_RESTRICTIONS\GetBool()
 		return false if not ent\IsValid()
 		classname = ent\GetClass()
 

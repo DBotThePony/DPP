@@ -153,3 +153,5 @@ Menus.ClientMenu = =>
 	@Help('')
 	@CheckBox('gui.dpp2.cvars.cl_notify' .. a, 'dpp2_cl_notify' .. a) for a in *{'', '_generic', '_error', '_hint', '_undo', '_cleanup', '_sound'}
 	@NumSlider('gui.dpp2.cvars.cl_notify_timemul', 'dpp2_cl_notify_timemul', 0, 10, 2)
+	@Help('')
+	@CheckBox('gui.dpp2.cvars.cl_properties' .. a, 'dpp2_cl_properties' .. a) for a in *{'', '_regular', '_admin', '_restrictions'}
