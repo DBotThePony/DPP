@@ -194,6 +194,8 @@ PlayerDisconnected = =>
 			DPP2.NotifyUndoAll(6, nick, 'message.dpp2.notice.cleanup')
 			SafeRemoveEntity(ent) for ent in *find
 
+	return
+
 hook.Add 'PlayerDisconnected', 'DPP2.Owning', PlayerDisconnected, -2
 
 player_connect = (data) ->
@@ -201,12 +203,14 @@ player_connect = (data) ->
 	steamid = data.networkid
 	timer.Pause 'DPP2.UpForGrabs.' .. steamid
 	timer.Pause 'DPP2.Cleanup.' .. steamid
+	return
 
 player_disconnect = (data) ->
 	return if data.bot == 1
 	steamid = data.networkid
 	timer.UnPause 'DPP2.UpForGrabs.' .. steamid
 	timer.UnPause 'DPP2.Cleanup.' .. steamid
+	return
 
 gameevent.Listen('player_connect')
 gameevent.Listen('player_disconnect')

@@ -206,6 +206,10 @@ gui.dpp2.cvars.log_toolgun = 'Log toolgun usage'
 gui.dpp2.cvars.log_tranfer = 'Log transfers'
 gui.dpp2.cvars.log_write = 'Write log to disk'
 
+gui.dpp2.cvars.physgun_undo = 'Allow physgun undo'
+gui.dpp2.cvars.cl_physgun_undo = 'Enable physgun undo'
+gui.dpp2.cvars.cl_physgun_undo_custom = 'Use separate undo history for physgun'
+
 gui.dpp2.cvars.allow_damage_npc = 'Always allow to damage NPCs'
 gui.dpp2.cvars.allow_damage_vehicle = 'Always allow to damage Vehicles'
 
@@ -575,3 +579,7 @@ message.dpp2.inspect.result.skin = 'Skin: %s'
 message.dpp2.inspect.result.bodygroup_count = 'Amount of bodygroups: #d'
 
 gui.dpp2.property.arm_creator = 'Arm creator with this'
+
+gui.dpp2.undo.physgun = 'Undo physgun movement'
+gui.dpp2.undo.physgun_help = 'To undo a physgun move, use dpp2_undo_physgun concommand'
+gui.dpp2.undo.physgun_nothing = 'Nothing to undo'

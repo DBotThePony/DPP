@@ -65,6 +65,8 @@ DPP2.CL_ENABLE_PROTECTION = DPP2.CreateClientConVar('cl_protection', '1', DPP2.T
 DPP2.NO_TOOLGUN_PLAYER = DPP2.CreateConVar('no_tool_player', '1', DPP2.TYPE_BOOL)
 DPP2.NO_TOOLGUN_PLAYER_ADMIN = DPP2.CreateConVar('no_tool_player_admin', '0', DPP2.TYPE_BOOL)
 
+DPP2.PHYSGUN_UNDO = DPP2.CreateConVar('physgun_undo', '1', DPP2.TYPE_BOOL)
+
 if CLIENT
 	DPP2.CL_ENABLE_NOTIFICATIONS = DPP2.CreateClientConVar('cl_notify', '1', DPP2.TYPE_BOOL)
 	DPP2.CL_ENABLE_NOTIFICATIONS_GENERIC = DPP2.CreateClientConVar('cl_notify_generic', '1', DPP2.TYPE_BOOL)
@@ -75,6 +77,9 @@ if CLIENT
 
 	DPP2.CL_NOTIFICATION_TIME_MULTIPLIER = DPP2.CreateClientConVar('cl_notify_timemul', '1', DPP2.TYPE_UFLOAT)
 	DPP2.CL_NOTIFICATION_SOUND = DPP2.CreateClientConVar('cl_notify_sound', '1', DPP2.TYPE_BOOL)
+
+	DPP2.CL_PHYSGUN_UNDO = DPP2.CreateClientConVar('cl_physgun_undo', '0', DPP2.TYPE_BOOL)
+	DPP2.CL_PHYSGUN_UNDO_CUSTOM = DPP2.CreateClientConVar('cl_physgun_undo_custom', '1', DPP2.TYPE_BOOL)
 
 CAMI.RegisterPrivilege({
 	Name: 'dpp2_log'
@@ -147,6 +152,7 @@ include('dpp2/common/sh_cppi.lua')
 include('dpp2/common/sh_fpp_bridge.lua')
 include('dpp2/server/sv_logging.lua') if SERVER
 include('dpp2/client/cl_misc.lua') if CLIENT
+include('dpp2/server/sv_physgun_undo.lua') if SERVER
 
 if SERVER
 	net.pool('dpp2_notify')
