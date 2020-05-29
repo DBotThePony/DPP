@@ -27,6 +27,141 @@ DPP2.CL_ENABLE_PROPERTIES_REGULAR = DPP2.CreateClientConVar('cl_properties_regul
 DPP2.CL_ENABLE_PROPERTIES_ADMIN = DPP2.CreateClientConVar('cl_properties_admin', '1', DPP2.TYPE_BOOL)
 DPP2.CL_ENABLE_PROPERTIES_RESTRICTIONS = DPP2.CreateClientConVar('cl_properties_restrictions', '1', DPP2.TYPE_BOOL)
 
+lockmodes = {
+	DPP2.PhysgunProtection
+	DPP2.DriveProtection
+	DPP2.ToolgunProtection
+	DPP2.DamageProtection
+	DPP2.PickupProtection
+	DPP2.UseProtection
+	DPP2.VehicleProtection
+	DPP2.GravgunProtection
+}
+
+properties.Add('dpp2_lock_self', {
+	MenuLabel: 'gui.dpp2.property.lock_self.top'
+	Order: 401
+	MenuIcon: Menus.Icons.LockTool
+
+	Filter: (ent = NULL, ply = LocalPlayer()) =>
+		return false if not DPP2.CL_ENABLE_PROPERTIES\GetBool()
+		return false if not DPP2.CL_ENABLE_PROPERTIES_REGULAR\GetBool()
+		@MenuIcon = Menus.Icons.LockTool
+		return false if not ent\IsValid()
+		-- return false if hook.Run('CanProperty', ply, 'dpp2_lock_self', ent) == false
+		return false if ent\IsNPC() or ent\IsPlayer() or type(ent) == 'NextBot'
+
+		for object in *lockmodes
+			if not object\IsLockedSelf(ply, ent) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.lock_self_name)
+				return true
+
+		return false
+
+	MenuOpen: (option, ent = NULL, tr, ply = LocalPlayer()) =>
+		with menu = option\AddSubMenu()
+			for object in *lockmodes
+				if not object\IsLockedSelf(ply, ent) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.lock_self_name)
+					menu\AddOption('gui.dpp2.property.lock_self.' .. object.identifier, -> RunConsoleCommand('dpp2_' .. object.lock_self_name, ent\EntIndex()))\SetIcon(Menus.Icons.LockTool)
+
+	Action: (ent = NULL, tr, ply = LocalPlayer()) =>
+		for object in *lockmodes
+			if not object\IsLockedSelf(ply, ent) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.lock_self_name)
+				RunConsoleCommand('dpp2_' .. object.lock_self_name, ent\EntIndex())
+})
+
+properties.Add('dpp2_unlock_self', {
+	MenuLabel: 'gui.dpp2.property.unlock_self.top'
+	Order: 402
+	MenuIcon: Menus.Icons.UnLockTool
+
+	Filter: (ent = NULL, ply = LocalPlayer()) =>
+		return false if not DPP2.CL_ENABLE_PROPERTIES\GetBool()
+		return false if not DPP2.CL_ENABLE_PROPERTIES_REGULAR\GetBool()
+		@MenuIcon = Menus.Icons.UnLockTool
+		return false if not ent\IsValid()
+		-- return false if hook.Run('CanProperty', ply, 'dpp2_unlock_self', ent) == false
+		return false if ent\IsNPC() or ent\IsPlayer() or type(ent) == 'NextBot'
+
+		for object in *lockmodes
+			if object\IsLockedSelf(ply, ent) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.unlock_self_name)
+				return true
+
+		return false
+
+	MenuOpen: (option, ent = NULL, tr, ply = LocalPlayer()) =>
+		with menu = option\AddSubMenu()
+			for object in *lockmodes
+				if object\IsLockedSelf(ply, ent) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.unlock_self_name)
+					menu\AddOption('gui.dpp2.property.unlock_self.' .. object.identifier, -> RunConsoleCommand('dpp2_' .. object.unlock_self_name, ent\EntIndex()))\SetIcon(Menus.Icons.UnLockTool)
+
+	Action: (ent = NULL, tr, ply = LocalPlayer()) =>
+		for object in *lockmodes
+			if object\IsLockedSelf(ply, ent) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.unlock_self_name)
+				RunConsoleCommand('dpp2_' .. object.unlock_self_name, ent\EntIndex())
+})
+
+properties.Add('dpp2_lock_others', {
+	MenuLabel: 'gui.dpp2.property.lock_others.top'
+	Order: 403
+	MenuIcon: Menus.Icons.LockTool
+
+	Filter: (ent = NULL, ply = LocalPlayer()) =>
+		return false if not DPP2.CL_ENABLE_PROPERTIES\GetBool()
+		return false if not DPP2.CL_ENABLE_PROPERTIES_REGULAR\GetBool()
+		@MenuIcon = Menus.Icons.LockTool
+		return false if not ent\IsValid() or ent\DPP2GetOwner() ~= ply
+		-- return false if hook.Run('CanProperty', ply, 'dpp2_lock_others', ent) == false
+		return false if ent\IsNPC() or ent\IsPlayer() or type(ent) == 'NextBot'
+
+		for object in *lockmodes
+			if not object\IsLockedOthers(ent) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.lock_others_name)
+				return true
+
+		return false
+
+	MenuOpen: (option, ent = NULL, tr, ply = LocalPlayer()) =>
+		with menu = option\AddSubMenu()
+			for object in *lockmodes
+				if not object\IsLockedOthers(ent) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.lock_others_name)
+					menu\AddOption('gui.dpp2.property.lock_others.' .. object.identifier, -> RunConsoleCommand('dpp2_' .. object.lock_others_name, ent\EntIndex()))\SetIcon(Menus.Icons.LockTool)
+
+	Action: (ent = NULL, tr, ply = LocalPlayer()) =>
+		for object in *lockmodes
+			if not object\IsLockedOthers(ent) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.lock_others_name)
+				RunConsoleCommand('dpp2_' .. object.lock_others_name, ent\EntIndex())
+})
+
+properties.Add('dpp2_unlock_others', {
+	MenuLabel: 'gui.dpp2.property.unlock_others.top'
+	Order: 404
+	MenuIcon: Menus.Icons.LockTool
+
+	Filter: (ent = NULL, ply = LocalPlayer()) =>
+		return false if not DPP2.CL_ENABLE_PROPERTIES\GetBool()
+		return false if not DPP2.CL_ENABLE_PROPERTIES_REGULAR\GetBool()
+		@MenuIcon = Menus.Icons.LockTool
+		return false if not ent\IsValid() or ent\DPP2GetOwner() ~= ply
+		-- return false if hook.Run('CanProperty', ply, 'dpp2_unlock_others', ent) == false
+		return false if ent\IsNPC() or ent\IsPlayer() or type(ent) == 'NextBot'
+
+		for object in *lockmodes
+			if object\IsLockedOthers(ent) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.unlock_others_name)
+				return true
+
+		return false
+
+	MenuOpen: (option, ent = NULL, tr, ply = LocalPlayer()) =>
+		with menu = option\AddSubMenu()
+			for object in *lockmodes
+				if object\IsLockedOthers(ent) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.unlock_others_name)
+					menu\AddOption('gui.dpp2.property.unlock_others.' .. object.identifier, -> RunConsoleCommand('dpp2_' .. object.unlock_others_name, ent\EntIndex()))\SetIcon(Menus.Icons.LockTool)
+
+	Action: (ent = NULL, tr, ply = LocalPlayer()) =>
+		for object in *lockmodes
+			if object\IsLockedOthers(ent) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.unlock_others_name)
+				RunConsoleCommand('dpp2_' .. object.unlock_others_name, ent\EntIndex())
+})
+
 properties.Add('dpp2_copymodel', {
 	MenuLabel: 'gui.dpp2.property.copymodel'
 	Order: 1650

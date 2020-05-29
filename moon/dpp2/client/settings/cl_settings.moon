@@ -38,6 +38,11 @@ Menus._Icons = {
 	ShareContraption: 'icon16/lock_add.png'
 	ShareAllContraption: 'icon16/lock_go.png'
 	UnShareContraption: 'icon16/lock_delete.png'
+
+	LockTool: 'icon16/lock.png'
+	UnLockTool: 'icon16/lock_open.png'
+	LockToolAll: 'icon16/lock_go.png'
+	UnLockToolAll: 'icon16/lock_delete.png'
 }
 
 Menus.Icons = setmetatable({}, {

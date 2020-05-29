@@ -31,6 +31,8 @@ gui.dpp2.access.status.toolgun_player = 'Cannot toolgun a player'
 gui.dpp2.access.status.model_blacklist = 'Model is blacklisted'
 gui.dpp2.access.status.toolgun_mode_blocked = 'Toolgun mode restricted'
 gui.dpp2.access.status.toolgun_mode_excluded = 'Toolgun mode excluded from protection'
+gui.dpp2.access.status.lock_self = 'Your self lock'
+gui.dpp2.access.status.lock_other = 'Owner others lock'
 
 gui.dpp2.access.status.damage_allowed = 'Damage allowed'
 
@@ -94,6 +96,11 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 	gui.dpp2.toolmenu.blacklist[modeID] = modeName .. ' blacklist'
 	gui.dpp2.toolmenu.exclusions[modeID] = modeName .. ' exclusions'
 	gui.dpp2.toolmenu.names[modeID] = modeName
+
+	gui.dpp2.property.lock_self[modeID] = 'Lock ' .. modeName .. ' usage'
+	gui.dpp2.property.unlock_self[modeID] = 'Unlock ' .. modeName .. ' usage'
+	gui.dpp2.property.lock_others[modeID] = gui.dpp2.property.lock_self[modeID]
+	gui.dpp2.property.unlock_others[modeID] = gui.dpp2.property.unlock_self[modeID]
 
 	command.dpp2.blacklist.added[modeID] = '#E added %s to ' .. modeName .. ' blacklist'
 	command.dpp2.blacklist.removed[modeID] = '#E removed %s from ' .. modeName .. ' blacklist'
@@ -325,6 +332,10 @@ gui.dpp2.property.transfercontraption = 'Transfer this contraption...'
 gui.dpp2.property.transfertoworldcontraption = 'Transfer this contraption to world'
 
 gui.dpp2.property.restrictions = 'DPP/2 Restrictions'
+gui.dpp2.property.lock_self.top = 'Lock myself...'
+gui.dpp2.property.unlock_self.top = 'Unlock myself...'
+gui.dpp2.property.lock_others.top = 'Lock others...'
+gui.dpp2.property.unlock_others.top = 'Unlock others...'
 
 message.dpp2.property.transferent.nolongervalid = 'Entity is no longer valid'
 message.dpp2.property.transferent.noplayer = 'Target player has left the server'

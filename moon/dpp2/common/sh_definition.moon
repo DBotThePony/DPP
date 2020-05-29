@@ -110,6 +110,8 @@ class DPP2.DEF.ProtectionDefinition
 
 		@clEnabledName = 'dpp2_cl_' .. @identifier .. '_protection'
 		@disableNWName = 'dpp2_' .. @identifier .. '_dp'
+		@lock_self_nwname = 'dpp2_' .. @identifier .. '_ls'
+		@lock_others_nwname = 'dpp2_' .. @identifier .. '_lo'
 
 		@clientNoTouchOtherName = 'dpp2_cl_' .. @identifier .. '_no_other'
 		@clientNoWorldName = 'dpp2_cl_' .. @identifier .. '_no_world'
@@ -163,6 +165,11 @@ class DPP2.DEF.ProtectionDefinition
 
         self2 = @
 
+		@lock_self_name = 'lock_self_' .. identifier
+		@unlock_self_name = 'unlock_self_' .. identifier
+		@lock_others_name = 'lock_others_' .. identifier
+		@unlock_others_name = 'unlock_others_' .. identifier
+
 		if SERVER
 			DPP2.cmd['switchpmode_' .. identifier] = (args = {}) =>
 				str = table.concat(args, ' ')
@@ -191,6 +198,34 @@ class DPP2.DEF.ProtectionDefinition
 				self2\DisableProtectionFor(ply)
 				DPP2.Notify(true, nil, 'command.dpp2.enabled_for.' .. identifier, @, ply)
 
+            DPP2.cmd[@lock_self_name] = (args = {}) =>
+				ent = DPP2.FindEntityFromArg(table.concat(args, ' '), @)
+				return 'command.dpp2.generic.notarget' if not IsValid(ent) or ent\IsPlayer() or ent\IsNPC() or type(ent) == 'NextBot'
+				self2\LockSelf(@, ent)
+				DPP2.Notify(@, nil, 'command.dpp2.lock_self.' .. identifier, ent)
+
+            DPP2.cmd[@unlock_self_name] = (args = {}) =>
+				ent = DPP2.FindEntityFromArg(table.concat(args, ' '), @)
+				return 'command.dpp2.generic.notarget' if not IsValid(ent) or ent\IsPlayer() or ent\IsNPC() or type(ent) == 'NextBot'
+				self2\UnLockSelf(@, ent)
+				DPP2.Notify(@, nil, 'command.dpp2.un_lock_self.' .. identifier, ent)
+
+            DPP2.cmd[@lock_others_name] = (args = {}) =>
+				ent = DPP2.FindEntityFromArg(table.concat(args, ' '), @)
+				return 'command.dpp2.generic.notarget' if not IsValid(ent) or ent\IsPlayer() or ent\IsNPC() or type(ent) == 'NextBot'
+				return 'command.dpp2.transferent.not_owner' if ent\DPP2GetOwner() ~= @
+				self2\LockOthers(ent)
+				DPP2.Notify(@, nil, 'command.dpp2.lock_others.' .. identifier, ent)
+
+            DPP2.cmd[@unlock_others_name] = (args = {}) =>
+				ent = DPP2.FindEntityFromArg(table.concat(args, ' '), @)
+				return 'command.dpp2.generic.notarget' if not IsValid(ent) or ent\IsPlayer() or ent\IsNPC() or type(ent) == 'NextBot'
+				return 'command.dpp2.transferent.not_owner' if ent\DPP2GetOwner() ~= @
+				self2\UnLockOthers(ent)
+				DPP2.Notify(@, nil, 'command.dpp2.un_lock_others.' .. identifier, ent)
+
+		DPP2.cmd_perms[@lock_self_name] = 'user'
+		DPP2.cmd_perms[@lock_others_name] = 'user'
 		DPP2.cmd_perms['switchpmode_' .. identifier] = 'CAMI_dpp2_' .. @identifier .. '_switchmode'
 		DPP2.cmd_perms['protection_disable_' .. identifier .. '_for'] = 'CAMI_dpp2_' .. @identifier .. '_switchmode'
 		DPP2.cmd_perms['protection_enable_' .. identifier .. '_for'] = 'CAMI_dpp2_' .. @identifier .. '_switchmode'
@@ -218,6 +253,41 @@ class DPP2.DEF.ProtectionDefinition
 	DisableProtectionFor: (ply) =>
 		error('Invalid side') if CLIENT
 		ply\SetNWBool(@disableNWName, true)
+		return @
+
+	LockSelf: (ply, ent) =>
+		error('Invalid side') if CLIENT
+		--ent\SetNWBool(@lock_self_nwname, true)
+		--ply[@lock_self_nwname] = ply[@lock_self_nwname] or {}
+		--ply[@lock_self_nwname][ent] = true
+		ent\SetNWBool(@lock_self_nwname .. '_' .. ply\SteamID64(), true)
+		return @
+
+	IsLockedSelf: (ply, ent) =>
+		--return false if not ply[@lock_self_nwname]
+		--return ply[@lock_self_nwname][ent] == true
+		return ent\GetNWBool(@lock_self_nwname .. '_' .. ply\SteamID64(), false)
+
+	UnLockSelf: (ply, ent) =>
+		error('Invalid side') if CLIENT
+		--ent\SetNWBool(@lock_self_nwname, false)
+		--return @ if not ply[@lock_self_nwname]
+		--ply[@lock_self_nwname][ent] = nil
+		ent\SetNWBool(@lock_self_nwname .. '_' .. ply\SteamID64(), false)
+		return @
+
+	LockOthers: (ent) =>
+		error('Invalid side') if CLIENT
+		ent\SetNWBool(@lock_others_nwname, true)
+		return @
+
+	IsLockedOthers: (ent) =>
+		return false if not ent\IsValid()
+		return ent\GetNWBool(@lock_others_nwname, false)
+
+	UnLockOthers: (ent) =>
+		error('Invalid side') if CLIENT
+		ent\SetNWBool(@lock_others_nwname, false)
 		return @
 
 	IsDisabledForPlayer: (ply = NULL) =>
@@ -360,6 +430,8 @@ class DPP2.DEF.ProtectionDefinition
 		return true if not ply\IsValid()
 		return false if not ent\IsValid()
 		return false, i18n.localize('gui.dpp2.access.status.yoursettings') if ent\IsPlayer() and ply\GetInfoBool(@clientNoPlayersName, false)
+		return false, i18n.localize('gui.dpp2.access.status.lock_self') if @IsLockedSelf(ply, ent)
+		return false, i18n.localize('gui.dpp2.access.status.lock_other') if ent\DPP2GetOwner() ~= ply and @IsLockedOthers(ent)
 		return true if ent\IsPlayer()
 		classname = ent\GetClass()
 		return false, i18n.localize('gui.dpp2.access.status.model_blacklist') if not DPP2.ModelBlacklist\Ask(ent\GetModel(), ply)

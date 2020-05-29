@@ -61,7 +61,7 @@ cmd_perms = {
 DPP2.cmd_perms[k] = v for k, v in pairs(cmd_perms)
 
 if CLIENT
-	DPP2.cmd_existing[k] = true for k in pairs(cmd_perms)
+	DPP2.cmd_existing[k] = true for k in pairs(DPP2.cmd_perms)
 
 DPP2.cmd_remap = {}
 
