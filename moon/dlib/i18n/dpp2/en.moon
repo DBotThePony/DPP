@@ -97,8 +97,8 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 	gui.dpp2.toolmenu.exclusions[modeID] = modeName .. ' exclusions'
 	gui.dpp2.toolmenu.names[modeID] = modeName
 
-	gui.dpp2.property.lock_self[modeID] = 'Lock ' .. modeName .. ' usage'
-	gui.dpp2.property.unlock_self[modeID] = 'Unlock ' .. modeName .. ' usage'
+	gui.dpp2.property.lock_self[modeID] = 'Restrict ' .. modeName .. ' usage'
+	gui.dpp2.property.unlock_self[modeID] = 'Allow ' .. modeName .. ' usage'
 	gui.dpp2.property.lock_others[modeID] = gui.dpp2.property.lock_self[modeID]
 	gui.dpp2.property.unlock_others[modeID] = gui.dpp2.property.unlock_self[modeID]
 
@@ -332,10 +332,10 @@ gui.dpp2.property.transfercontraption = 'Transfer this contraption...'
 gui.dpp2.property.transfertoworldcontraption = 'Transfer this contraption to world'
 
 gui.dpp2.property.restrictions = 'DPP/2 Restrictions'
-gui.dpp2.property.lock_self.top = 'Lock myself...'
-gui.dpp2.property.unlock_self.top = 'Unlock myself...'
-gui.dpp2.property.lock_others.top = 'Lock others...'
-gui.dpp2.property.unlock_others.top = 'Unlock others...'
+gui.dpp2.property.lock_self.top = 'Restrict myself...'
+gui.dpp2.property.unlock_self.top = 'Allow myself...'
+gui.dpp2.property.lock_others.top = 'Restrict others...'
+gui.dpp2.property.unlock_others.top = 'Allow others...'
 
 message.dpp2.property.transferent.nolongervalid = 'Entity is no longer valid'
 message.dpp2.property.transferent.noplayer = 'Target player has left the server'
