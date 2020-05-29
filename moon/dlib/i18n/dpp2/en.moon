@@ -573,3 +573,5 @@ message.dpp2.inspect.result.unowned = 'Entity is not owned'
 message.dpp2.inspect.result.model = 'Model: %s'
 message.dpp2.inspect.result.skin = 'Skin: %s'
 message.dpp2.inspect.result.bodygroup_count = 'Amount of bodygroups: #d'
+
+gui.dpp2.property.arm_creator = 'Arm creator with this'

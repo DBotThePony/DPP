@@ -162,6 +162,69 @@ properties.Add('dpp2_unlock_others', {
 				RunConsoleCommand('dpp2_' .. object.unlock_others_name, ent\EntIndex())
 })
 
+do
+	SENT = '0'
+	VEHICLE = '1'
+	NPC = '2'
+	WEAPON = '3'
+	PROP = '4'
+
+	properties.Add('dpp2_arm_creator', {
+		MenuLabel: 'gui.dpp2.property.arm_creator'
+		Order: 878
+		MenuIcon: Menus.Icons.Wrench2
+		CreatorType: 0
+		-- CreatorArg: 'none'
+		CreatorName: ''
+
+		Filter: (ent = NULL, ply = LocalPlayer()) =>
+			return false if not DPP2.CL_ENABLE_PROPERTIES\GetBool()
+			return false if not DPP2.CL_ENABLE_PROPERTIES_REGULAR\GetBool()
+			@MenuIcon = Menus.Icons.Wrench2
+			return false if not ent\IsValid()
+			return false if not IsValid(ply\GetWeapon('gmod_tool'))
+			-- return false if hook.Run('CanProperty', ply, 'dpp2_arm_creator', ent) == false
+			return false if ent\IsPlayer() or ent\GetClass()\startsWith('prop_door') or ent\GetClass()\startsWith('func_') or ent\GetClass()\startsWith('prop_dynamic')
+
+			gtype = type(ent)
+
+			if gtype == 'Weapon'
+				@CreatorName = ent\GetClass()
+				@CreatorArg = nil
+				@CreatorType = WEAPON
+			elseif gtype == 'NPC'
+				@CreatorName = ent\GetClass()
+				@CreatorArg = IsValid(ent\GetActiveWeapon()) and ent\GetActiveWeapon()\GetClass() or 'none'
+				@CreatorType = NPC
+			elseif gtype == 'Vehicle'
+				@CreatorArg = nil
+				@CreatorType = VEHICLE
+				@CreatorName = ent.VehicleName or ent\GetPrintNameDLib() or 'Jeep'
+			elseif gtype == 'Entity'
+				gclass = ent\GetClass()
+
+				if gclass == 'prop_physics'
+					@CreatorArg = nil
+					@CreatorType = PROP
+					@CreatorName = ent\GetModel()
+				elseif gclass == 'prop_effect'
+					@CreatorArg = nil
+					@CreatorType = PROP
+					@CreatorName = ent\GetChildren()[1] and ent\GetChildren()[1]\GetModel() or ent\GetModel() -- ???
+				else
+					@CreatorArg = nil
+					@CreatorType = SENT
+					@CreatorName = ent\GetClass()
+
+			return true
+
+		Action: (ent = NULL, tr, ply = LocalPlayer()) =>
+			RunConsoleCommand('creator_type', @CreatorType)
+			RunConsoleCommand('creator_arg', @CreatorArg) if @CreatorArg
+			RunConsoleCommand('creator_name', @CreatorName)
+			input.SelectWeapon(ply\GetWeapon('gmod_tool'))
+	})
+
 properties.Add('dpp2_copymodel', {
 	MenuLabel: 'gui.dpp2.property.copymodel'
 	Order: 1650
