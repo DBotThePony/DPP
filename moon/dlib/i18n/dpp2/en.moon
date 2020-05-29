@@ -102,6 +102,11 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 	gui.dpp2.property.lock_others[modeID] = gui.dpp2.property.lock_self[modeID]
 	gui.dpp2.property.unlock_others[modeID] = gui.dpp2.property.unlock_self[modeID]
 
+	command.dpp2.lock_self[modeID] = 'Restricted yourself from touch of #E in ' .. modeName .. ' protection module'
+	command.dpp2.unlock_self[modeID] = 'Allowed yourself to touch #E in ' .. modeName .. ' protection module'
+	command.dpp2.lock_others[modeID] = 'Restricted others from touch of #E in ' .. modeName .. ' protection module'
+	command.dpp2.unlock_others[modeID] = 'Allowed others to touch #E in ' .. modeName .. ' protection module'
+
 	command.dpp2.blacklist.added[modeID] = '#E added %s to ' .. modeName .. ' blacklist'
 	command.dpp2.blacklist.removed[modeID] = '#E removed %s from ' .. modeName .. ' blacklist'
 

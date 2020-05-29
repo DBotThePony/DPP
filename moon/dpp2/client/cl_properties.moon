@@ -83,7 +83,7 @@ properties.Add('dpp2_unlock_self', {
 		return false if ent\IsNPC() or ent\IsPlayer() or type(ent) == 'NextBot'
 
 		for object in *lockmodes
-			if object\IsLockedSelf(ply, ent) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.unlock_self_name)
+			if object\IsLockedSelf(ply, ent)
 				return true
 
 		return false
@@ -91,12 +91,12 @@ properties.Add('dpp2_unlock_self', {
 	MenuOpen: (option, ent = NULL, tr, ply = LocalPlayer()) =>
 		with menu = option\AddSubMenu()
 			for object in *lockmodes
-				if object\IsLockedSelf(ply, ent) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.unlock_self_name)
+				if object\IsLockedSelf(ply, ent)
 					menu\AddOption('gui.dpp2.property.unlock_self.' .. object.identifier, -> RunConsoleCommand('dpp2_' .. object.unlock_self_name, ent\EntIndex()))\SetIcon(Menus.Icons.UnLockTool)
 
 	Action: (ent = NULL, tr, ply = LocalPlayer()) =>
 		for object in *lockmodes
-			if object\IsLockedSelf(ply, ent) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.unlock_self_name)
+			if object\IsLockedSelf(ply, ent)
 				RunConsoleCommand('dpp2_' .. object.unlock_self_name, ent\EntIndex())
 })
 
@@ -145,7 +145,7 @@ properties.Add('dpp2_unlock_others', {
 		return false if ent\IsNPC() or ent\IsPlayer() or type(ent) == 'NextBot'
 
 		for object in *lockmodes
-			if object\IsLockedOthers(ent) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.unlock_others_name)
+			if object\IsLockedOthers(ent)
 				return true
 
 		return false
@@ -153,12 +153,12 @@ properties.Add('dpp2_unlock_others', {
 	MenuOpen: (option, ent = NULL, tr, ply = LocalPlayer()) =>
 		with menu = option\AddSubMenu()
 			for object in *lockmodes
-				if object\IsLockedOthers(ent) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.unlock_others_name)
+				if object\IsLockedOthers(ent)
 					menu\AddOption('gui.dpp2.property.unlock_others.' .. object.identifier, -> RunConsoleCommand('dpp2_' .. object.unlock_others_name, ent\EntIndex()))\SetIcon(Menus.Icons.LockTool)
 
 	Action: (ent = NULL, tr, ply = LocalPlayer()) =>
 		for object in *lockmodes
-			if object\IsLockedOthers(ent) and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.unlock_others_name)
+			if object\IsLockedOthers(ent)
 				RunConsoleCommand('dpp2_' .. object.unlock_others_name, ent\EntIndex())
 })
 

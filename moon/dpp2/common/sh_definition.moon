@@ -199,18 +199,21 @@ class DPP2.DEF.ProtectionDefinition
 				DPP2.Notify(true, nil, 'command.dpp2.enabled_for.' .. identifier, @, ply)
 
             DPP2.cmd[@lock_self_name] = (args = {}) =>
+				return 'command.dpp2.generic.invalid_side' if not IsValid(@)
 				ent = DPP2.FindEntityFromArg(table.concat(args, ' '), @)
 				return 'command.dpp2.generic.notarget' if not IsValid(ent) or ent\IsPlayer() or ent\IsNPC() or type(ent) == 'NextBot'
 				self2\LockSelf(@, ent)
 				DPP2.Notify(@, nil, 'command.dpp2.lock_self.' .. identifier, ent)
 
             DPP2.cmd[@unlock_self_name] = (args = {}) =>
+				return 'command.dpp2.generic.invalid_side' if not IsValid(@)
 				ent = DPP2.FindEntityFromArg(table.concat(args, ' '), @)
 				return 'command.dpp2.generic.notarget' if not IsValid(ent) or ent\IsPlayer() or ent\IsNPC() or type(ent) == 'NextBot'
 				self2\UnLockSelf(@, ent)
-				DPP2.Notify(@, nil, 'command.dpp2.un_lock_self.' .. identifier, ent)
+				DPP2.Notify(@, nil, 'command.dpp2.unlock_self.' .. identifier, ent)
 
             DPP2.cmd[@lock_others_name] = (args = {}) =>
+				return 'command.dpp2.generic.invalid_side' if not IsValid(@)
 				ent = DPP2.FindEntityFromArg(table.concat(args, ' '), @)
 				return 'command.dpp2.generic.notarget' if not IsValid(ent) or ent\IsPlayer() or ent\IsNPC() or type(ent) == 'NextBot'
 				return 'command.dpp2.transferent.not_owner' if ent\DPP2GetOwner() ~= @
@@ -218,11 +221,17 @@ class DPP2.DEF.ProtectionDefinition
 				DPP2.Notify(@, nil, 'command.dpp2.lock_others.' .. identifier, ent)
 
             DPP2.cmd[@unlock_others_name] = (args = {}) =>
+				return 'command.dpp2.generic.invalid_side' if not IsValid(@)
 				ent = DPP2.FindEntityFromArg(table.concat(args, ' '), @)
 				return 'command.dpp2.generic.notarget' if not IsValid(ent) or ent\IsPlayer() or ent\IsNPC() or type(ent) == 'NextBot'
 				return 'command.dpp2.transferent.not_owner' if ent\DPP2GetOwner() ~= @
 				self2\UnLockOthers(ent)
-				DPP2.Notify(@, nil, 'command.dpp2.un_lock_others.' .. identifier, ent)
+				DPP2.Notify(@, nil, 'command.dpp2.unlock_others.' .. identifier, ent)
+		else
+			DPP2.cmd_autocomplete[@lock_self_name] = (args, margs) => DPP2.AutocompleteOwnedEntityArgument(args, false, true, (ent) -> not self2\IsLockedSelf(@, ent))
+			DPP2.cmd_autocomplete[@unlock_self_name] = (args, margs) => DPP2.AutocompleteOwnedEntityArgument(args, false, true, (ent) -> self2\IsLockedSelf(@, ent))
+			DPP2.cmd_autocomplete[@lock_others_name] = (args, margs) => DPP2.AutocompleteOwnedEntityArgument(args, true, true, (ent) -> not self2\IsLockedOthers(ent))
+			DPP2.cmd_autocomplete[@unlock_others_name] = (args, margs) => DPP2.AutocompleteOwnedEntityArgument(args, true, true, (ent) -> self2\IsLockedOthers(ent))
 
 		DPP2.cmd_perms[@lock_self_name] = 'user'
 		DPP2.cmd_perms[@lock_others_name] = 'user'
