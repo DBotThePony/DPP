@@ -78,6 +78,12 @@ DPP2.AUTO_GHOST_SIZE = DPP2.CreateConVar('antispam_ghost_size', '300000', DPP2.T
 DPP2.AUTO_GHOST_BY_AABB = DPP2.CreateConVar('antispam_ghost_aabb', '0', DPP2.TYPE_BOOL)
 DPP2.AUTO_GHOST_AABB_SIZE = DPP2.CreateConVar('antispam_ghost_aabb_size', '400000', DPP2.TYPE_UINT)
 
+DPP2.AUTO_BLACKLIST_BY_SIZE = DPP2.CreateConVar('antispam_block_by_size', '0', DPP2.TYPE_BOOL)
+DPP2.AUTO_BLACKLIST_SIZE = DPP2.CreateConVar('antispam_block_size', '300000', DPP2.TYPE_UINT)
+
+DPP2.AUTO_BLACKLIST_BY_AABB = DPP2.CreateConVar('antispam_block_aabb', '0', DPP2.TYPE_BOOL)
+DPP2.AUTO_BLACKLIST_AABB_SIZE = DPP2.CreateConVar('antispam_block_aabb_size', '400000', DPP2.TYPE_UINT)
+
 -- Logging
 DPP2.ENABLE_LOGGING = DPP2.CreateConVar('log', '1', DPP2.TYPE_BOOL)
 DPP2.ECHO_LOG = DPP2.CreateConVar('log_echo', '1', DPP2.TYPE_BOOL)

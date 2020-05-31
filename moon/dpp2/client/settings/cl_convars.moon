@@ -71,10 +71,16 @@ Menus.AntispamMenu = =>
 	Menus.QSlider(@, 'antispam_spam_vol_threshold', 1, 1000000000)
 	Menus.QSlider(@, 'antispam_spam_vol_threshold2', 1, 1000000000)
 	Menus.QSlider(@, 'antispam_spam_vol_cooldown', 1, 1000000000)
+	@Help('')
 	Menus.QCheckBox(@, 'antispam_ghost_by_size')
 	Menus.QSlider(@, 'antispam_ghost_size', 1, 1000000)
 	Menus.QCheckBox(@, 'antispam_ghost_aabb')
 	Menus.QSlider(@, 'antispam_ghost_aabb_size', 1, 10000000)
+	@Help('')
+	Menus.QCheckBox(@, 'antispam_block_by_size')
+	Menus.QSlider(@, 'antispam_block_size', 1, 1000000)
+	Menus.QCheckBox(@, 'antispam_block_aabb')
+	Menus.QSlider(@, 'antispam_block_aabb_size', 1, 10000000)
 
 Menus.AntipropkillMenu = =>
 	return if not IsValid(@)

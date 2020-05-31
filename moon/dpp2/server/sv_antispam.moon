@@ -75,11 +75,13 @@ ComputeVolume = =>
 
 			return num
 
-ComputeVolume2 = =>
+DPP2._ComputeVolume2 = =>
 	mins, maxs = @OBBMins(), @OBBMaxs()
 	square = (maxs.x - mins.x)\abs() * (maxs.y - mins.y)\abs()
 	cubic = square * (maxs.z - mins.z)\abs()
 	return square * cubic
+
+ComputeVolume2 = DPP2._ComputeVolume2
 
 -- returns false if we need to disallow spawn in-place
 DPP2.AntispamCheck = (ply = NULL, doNotify = true, ent, constrained, autoGhost = false) ->

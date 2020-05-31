@@ -176,6 +176,38 @@ PreventModelSpawn = (ply, model = ent and ent\GetModel() or 'wtf', ent = NULL, n
 					SafeRemoveEntity(ent)
 					return false
 
+	if DPP2.ENABLE_ANTISPAM\GetBool() and IsValid(ent)
+		hit = false
+
+		if DPP2.AUTO_BLACKLIST_BY_SIZE\GetBool()
+			volume1 = DPP2.AUTO_BLACKLIST_SIZE\GetFloat()
+			volume2 = 0
+			phys = ent\GetPhysicsObject()
+			volume2 = phys\GetVolume() if IsValid(phys)
+
+			if volume1 <= volume2 and not DPP2.ModelBlacklist\Has(model)
+				DPP2.ModelBlacklist\Add(model)
+				DPP2.Notify(true, nil, 'message.dpp2.autoblacklist.added_volume', model)
+				hit = true
+
+				if not DPP2.ModelBlacklist\Ask(model, ply)
+					DPP2.NotifyError(ply, nil, 'message.dpp2.blacklist.model_blocked', model) if not nonotify
+					SafeRemoveEntity(ent)
+					return false
+
+		if DPP2.AUTO_BLACKLIST_BY_AABB\GetBool() and not hit
+			volume1 = DPP2.AUTO_BLACKLIST_AABB_SIZE\GetFloat()
+			volume2 = DPP2._ComputeVolume2(ent)
+
+			if volume1 <= volume2 and not DPP2.ModelBlacklist\Has(model)
+				DPP2.ModelBlacklist\Add(model)
+				DPP2.Notify(true, nil, 'message.dpp2.autoblacklist.added_aabb', model)
+
+				if not DPP2.ModelBlacklist\Ask(model, ply)
+					DPP2.NotifyError(ply, nil, 'message.dpp2.blacklist.model_blocked', model) if not nonotify
+					SafeRemoveEntity(ent)
+					return false
+
 	return true
 
 PlayerSpawnedEffect = (ply = NULL, model = 'models/error.mdl', ent = NULL) ->

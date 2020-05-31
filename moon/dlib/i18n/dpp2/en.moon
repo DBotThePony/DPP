@@ -275,8 +275,14 @@ gui.dpp2.cvars.antispam_spam_vol_cooldown = 'Spam volume cooldown multiplier'
 gui.dpp2.cvars.antispam_ghost_by_size = 'Ghost props based on volume'
 gui.dpp2.cvars.antispam_ghost_size = 'Volume limit'
 
-gui.dpp2.cvars.antispam_ghost_aabb = 'Ghost props based on volume'
+gui.dpp2.cvars.antispam_ghost_aabb = 'Ghost props based on AABB'
 gui.dpp2.cvars.antispam_ghost_aabb_size = 'AABB size limit'
+
+gui.dpp2.cvars.antispam_block_by_size = 'Auto blacklist models based on volume'
+gui.dpp2.cvars.antispam_block_size = 'Volume limit'
+
+gui.dpp2.cvars.antispam_block_aabb = 'Auto blacklist models based on AABB'
+gui.dpp2.cvars.antispam_block_aabb_size = 'AABB size limit'
 
 message.dpp2.antispam.hint_ghosted = '%d entities were ghosted because of spam'
 message.dpp2.antispam.hint_removed = '%d entities were removed because of spam'
@@ -583,3 +589,6 @@ gui.dpp2.property.arm_creator = 'Arm creator with this'
 gui.dpp2.undo.physgun = 'Undo physgun movement'
 gui.dpp2.undo.physgun_help = 'To undo a physgun move, use dpp2_undo_physgun concommand'
 gui.dpp2.undo.physgun_nothing = 'Nothing to undo'
+
+message.dpp2.autoblacklist.added_volume = 'Model %q were auto added to model blacklist based on phys volume'
+message.dpp2.autoblacklist.added_aabb = 'Model %q were auto added to model blacklist based on AABB'
