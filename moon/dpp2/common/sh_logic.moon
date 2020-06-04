@@ -385,10 +385,10 @@ DPP2.ACCESS.CanDamage = (ply = NULL, ent = NULL) ->
 	if contraption = ent\DPP2GetContraption()
 		for etype in *contraption.types
 			if etype == 'Vehicle' and ALLOW_DAMAGE_VEHICLE
-				return true, i18n.localize('gui.dpp2.access.status.damage_allowed')
+				return true, i18n.localize('gui.dpp2.access.status.damage_allowed'), i18n.localize('gui.dpp2.access.status.contraption_ext', contraption\GetID())
 
 			if (etype == 'NPC' or etype == 'NextBot') and ALLOW_DAMAGE_NPC
-				return true, i18n.localize('gui.dpp2.access.status.damage_allowed')
+				return true, i18n.localize('gui.dpp2.access.status.damage_allowed'), i18n.localize('gui.dpp2.access.status.contraption_ext', contraption\GetID())
 
 	if ent\IsVehicle() and ALLOW_DAMAGE_VEHICLE
 		return true, i18n.localize('gui.dpp2.access.status.damage_allowed')
