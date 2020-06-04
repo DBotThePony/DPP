@@ -25,12 +25,21 @@ entMeta = FindMetaTable('Entity')
 nextidP = 0
 nextidP = DPP2.ContraptionHolder.NEXT_ID or 0 if DPP2.ContraptionHolder
 
-doWalkParent = (target, level) =>
+doWalkParent = (target, root) =>
+	if istable(@)
+		for _, ent in pairs(@)
+			if IsValid(ent) and (root or not target[ent])
+				target[ent] = ent
+				doWalkParent(children, target, false) for _, children in pairs(ent\GetChildren())
+				doWalkParent(ent\GetParent(), target, false)
+
+		return target
+
 	return target if not IsValid(@)
-	return target if target[@] and level <= 0
+	return target if target[@] and not root
 	target[@] = @
-	doWalkParent(children, target, level - 1) for _, children in pairs(@GetChildren())
-	doWalkParent(@GetParent(), target, level - 1)
+	doWalkParent(children, target, false) for _, children in pairs(@GetChildren())
+	doWalkParent(@GetParent(), target, false)
 	return target
 
 class DPP2.ContraptionHolder
@@ -221,7 +230,7 @@ class DPP2.ContraptionHolder
 		@ownersFull = {}
 		@ownersStateNotShared = {}
 
-		find = _find or doWalkParent(frompoint, constraint.GetAllConstrainedEntities(frompoint), 1)
+		find = _find or doWalkParent(constraint.GetAllConstrainedEntities(frompoint), {}, true)
 		find = {ent, ent for ent in pairs(find) when not ent\IsVehicle() or ent\DPP2IsOwned()} if not _find
 		setup = {}
 
