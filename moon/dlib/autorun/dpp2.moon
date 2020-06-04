@@ -114,6 +114,7 @@ AddCSLuaFile('dpp2/client/settings/cl_registry_menus.lua')
 AddCSLuaFile('dpp2/client/settings/cl_settings.lua')
 AddCSLuaFile('dpp2/client/settings/cl_playerutil.lua')
 AddCSLuaFile('dpp2/client/cl_spawnmenu.lua')
+AddCSLuaFile('dpp2/client/cl_hud.lua')
 AddCSLuaFile('dpp2/common/concommands/sh_cmdlogic.lua')
 AddCSLuaFile('dpp2/common/concommands/sh_generic.lua')
 AddCSLuaFile('dpp2/common/concommands/sh_registry.lua')
@@ -132,6 +133,7 @@ include('dpp2/common/sh_functions.lua')
 include('dpp2/common/sh_owning.lua')
 include('dpp2/client/cl_owning.lua') if CLIENT
 include('dpp2/server/sv_owning.lua') if SERVER
+include('dpp2/client/cl_hud.lua') if CLIENT
 include('dpp2/common/sh_registry.lua')
 include('dpp2/common/sh_logic.lua')
 include('dpp2/common/sh_hooks.lua')

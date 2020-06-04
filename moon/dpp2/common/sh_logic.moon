@@ -28,14 +28,14 @@ nextidP = DPP2.ContraptionHolder.NEXT_ID or 0 if DPP2.ContraptionHolder
 doWalkParent = (target, root) =>
 	if istable(@)
 		for _, ent in pairs(@)
-			if IsValid(ent) and (root or not target[ent])
+			if IsValid(ent) and (root or not target[ent]) and not ent\IsPlayer()
 				target[ent] = ent
 				doWalkParent(children, target, false) for _, children in pairs(ent\GetChildren())
 				doWalkParent(ent\GetParent(), target, false)
 
 		return target
 
-	return target if not IsValid(@)
+	return target if not IsValid(@) or @IsPlayer()
 	return target if target[@] and not root
 	target[@] = @
 	doWalkParent(children, target, false) for _, children in pairs(@GetChildren())
@@ -221,6 +221,10 @@ class DPP2.ContraptionHolder
 		error('Invalid side') if CLIENT
 		error('Tried to use a NULL entity!') if not IsValid(frompoint)
 
+		if frompoint\IsPlayer()
+			@Invalidate()
+			return false
+
 		oldEnts = @ents
 		ent.__dpp2_contraption = nil for ent in *@ents when IsValid(ent) and ent.__dpp2_contraption == @
 		@lastWalk = RealTime() + 0.1
@@ -253,6 +257,23 @@ class DPP2.ContraptionHolder
 			timer.Create 'DPP2_ContraptionDiff_' .. @id, 0.2, 1, -> @NetworkDiff(oldEnts) if @IsValid()
 
 		return true
+
+	CalculateWorldAABB: =>
+		mins, maxs = @ents[1]\WorldSpaceAABB()
+
+		for ent in *@ents
+			if IsValid(ent)
+				mins2, maxs2 = ent\WorldSpaceAABB()
+
+				mins.x = mins2.x if mins2.x < mins.x
+				mins.y = mins2.y if mins2.y < mins.y
+				mins.z = mins2.z if mins2.z < mins.z
+
+				maxs.x = maxs2.x if maxs2.x > maxs.x
+				maxs.y = maxs2.y if maxs2.y > maxs.y
+				maxs.z = maxs2.z if maxs2.z > maxs.z
+
+		return mins, maxs
 
 	From: (ents = @ents) =>
 		for ent in *ents

@@ -215,6 +215,7 @@ gui.dpp2.cvars.allow_damage_vehicle = 'Always allow to damage Vehicles'
 
 gui.dpp2.cvars.cl_protection = 'Main power switch'
 
+gui.dpp2.cvars.cl_draw_contraption_aabb = 'Draw contraption\'s AABB (can drastically reduce performance)'
 gui.dpp2.cvars.cl_draw_owner = 'Draw ownership'
 gui.dpp2.cvars.cl_simple_owner = 'Simple owner display (FPP Style)'
 gui.dpp2.cvars.cl_entity_name = 'Show entity print name'
