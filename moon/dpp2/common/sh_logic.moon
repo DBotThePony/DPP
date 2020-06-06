@@ -408,14 +408,27 @@ import i18n from DLib
 DPP2.ALLOW_DAMAGE_NPC = DPP2.CreateConVar('allow_damage_npc', '1', DPP2.TYPE_BOOL)
 DPP2.ALLOW_DAMAGE_VEHICLE = DPP2.CreateConVar('allow_damage_vehicle', '1', DPP2.TYPE_BOOL)
 
+checksurf = (ply, ent) ->
+	return true if not DPP2.ENABLE_ANTIPROPKILL\GetBool() or not DPP2.ANTIPROPKILL_SURF\GetBool()
+	contraption = ent\DPP2GetContraption()
+	return true if not contraption
+
+	for ent in *contraption.ents
+		if ent\IsValid() and ent\IsVehicle() and ent\GetDriver() == ply
+			return false
+
+	return true
+
 DPP2.ACCESS.CanPhysgun = (ply = NULL, ent = NULL) ->
 	return true if not ply\IsValid()
 	return false, i18n.localize('gui.dpp2.access.status.invalident') if not ent\IsValid()
+	return false, i18n.localize('gui.dpp2.access.status.no_surf'), i18n.localize('gui.dpp2.access.status.contraption_ext', ent\DPP2GetContraption()\GetID()) if not checksurf(ply, ent)
 	return DPP2.PhysgunProtection\CanTouch(ply, ent)
 
 DPP2.ACCESS.CanDrive = (ply = NULL, ent = NULL) ->
 	return true if not ply\IsValid()
 	return false, i18n.localize('gui.dpp2.access.status.invalident') if not ent\IsValid()
+	return false, i18n.localize('gui.dpp2.access.status.no_surf'), i18n.localize('gui.dpp2.access.status.contraption_ext', ent\DPP2GetContraption()\GetID()) if not checksurf(ply, ent)
 	return DPP2.DriveProtection\CanTouch(ply, ent)
 
 DPP2.ACCESS.CanToolgun = (ply = NULL, ent = NULL, toolgunMode) ->

@@ -33,6 +33,7 @@ gui.dpp2.access.status.toolgun_mode_blocked = 'Toolgun mode restricted'
 gui.dpp2.access.status.toolgun_mode_excluded = 'Toolgun mode excluded from protection'
 gui.dpp2.access.status.lock_self = 'Your self lock'
 gui.dpp2.access.status.lock_other = 'Owner others lock'
+gui.dpp2.access.status.no_surf = 'Antisurf'
 
 gui.dpp2.access.status.damage_allowed = 'Damage allowed'
 
@@ -255,6 +256,7 @@ gui.dpp2.cvars.apropkill_trap = 'Prevent prop trapping'
 gui.dpp2.cvars.apropkill_push = 'Prevent prop pushing'
 gui.dpp2.cvars.apropkill_throw = 'Prevent prop throwing'
 gui.dpp2.cvars.apropkill_punt = 'Prevent gravgun punt'
+gui.dpp2.cvars.apropkill_surf = 'Prevent prop surf (heavily depends on antiproppush)'
 
 gui.dpp2.cvars.antispam = 'Antispam main switch'
 gui.dpp2.cvars.antispam_ignore_admins = 'Antispam ignores administration'
