@@ -91,6 +91,7 @@ Menus.AntipropkillMenu = =>
 	Menus.QCheckBox(@, 'apropkill_damage_nveh')
 	Menus.QCheckBox(@, 'apropkill_trap')
 	Menus.QCheckBox(@, 'apropkill_push')
+	Menus.QCheckBox(@, 'apropkill_surf')
 	Menus.QCheckBox(@, 'apropkill_throw')
 	Menus.QCheckBox(@, 'apropkill_punt')
 

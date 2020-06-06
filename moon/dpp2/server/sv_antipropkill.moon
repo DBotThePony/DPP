@@ -77,12 +77,22 @@ DPP2.APKTriggerPhysgunDrop = (ply = NULL, ent = NULL) ->
 				DPP2.NotifyHint(ply, 5, 'message.dpp2.warn.trap')
 				return
 
-inc = (by_) =>
+inc = (by_, ply) =>
 	if contraption = @DPP2GetContraption()
 		prev = contraption._pushing
-		contraption._pushing = contraption._pushing + by_
+		contraption._pushing = contraption._pushing + (by_ and 1 or -1)
 
-		if prev == 0 and by_ > 0
+		if not DPP2.ANTIPROPKILL_SURF\GetBool()
+			if by_
+				if ply and not table.qhasValue(contraption._pushing_r, ply)
+					table.insert(contraption._pushing_r, ply)
+					ent\CollisionRulesChanged() for ent in *contraption.ents
+			else
+				if ply and table.qhasValue(contraption._pushing_r, ply)
+					table.RemoveByValue(contraption._pushing_r, ply)
+					ent\CollisionRulesChanged() for ent in *contraption.ents
+
+		if prev == 0 and by_
 			for ent in *contraption.ents
 				if not ent.__dpp2_pushing or ent.__dpp2_pushing == 0
 					ent.__dpp2_prev_col_check = ent\GetCustomCollisionCheck()
@@ -90,31 +100,42 @@ inc = (by_) =>
 					ent\CollisionRulesChanged()
 
 				ent.__dpp2_contraption_pushing = true
-		elseif prev > 0 and by_ < 0 and contraption._pushing == 0
+		elseif prev > 0 and not by_ and contraption._pushing == 0
 			for ent in *contraption.ents
 				if ent.__dpp2_contraption_pushing
 					ent\SetCustomCollisionCheck(ent.__dpp2_prev_col_check)
 					ent\CollisionRulesChanged()
 					ent.__dpp2_contraption_pushing = nil
+					ent.__dpp2_prev_col_check = nil
 
 		return
 
 	prev = @__dpp2_pushing or 0
-	@__dpp2_pushing = (@__dpp2_pushing or 0) + by_
+	@__dpp2_pushing = (@__dpp2_pushing or 0) + (by_ and 1 or -1)
+	@__dpp2_pushing_r = @__dpp2_pushing_r or {}
 
-	if prev == 0 and by_ > 0
+	if not DPP2.ANTIPROPKILL_SURF\GetBool()
+		if by_
+			table.insert(@__dpp2_pushing_r, ply) if ply and not table.qhasValue(@__dpp2_pushing_r, ply)
+			@CollisionRulesChanged()
+		else
+			table.RemoveByValue(@__dpp2_pushing_r, ply) if ply and table.qhasValue(@__dpp2_pushing_r, ply)
+			@CollisionRulesChanged()
+
+	if prev == 0 and by_
 		@__dpp2_prev_col_check = @GetCustomCollisionCheck()
 		@SetCustomCollisionCheck(true)
 		@CollisionRulesChanged()
-	elseif prev > 0 and by_ < 0 and @__dpp2_pushing == 0
+	elseif prev > 0 and not by_ and @__dpp2_pushing == 0
 		@SetCustomCollisionCheck(@__dpp2_prev_col_check)
 		@CollisionRulesChanged()
+		@__dpp2_prev_col_check = nil
 
 PhysgunDrop2 = (ply = NULL, ent = NULL) ->
 	return if not DPP2.ENABLE_ANTIPROPKILL\GetBool()
 	return if not DPP2.ANTIPROPKILL_PUSH\GetBool()
 	return if ent\IsPlayer()
-	inc(ent, -1)
+	inc(ent, false, ply)
 	return
 
 PhysgunDrop3 = (ply = NULL, ent = NULL) ->
@@ -130,14 +151,21 @@ PhysgunPickup = (ply = NULL, ent = NULL) ->
 	return if not DPP2.ENABLE_ANTIPROPKILL\GetBool()
 	return if not DPP2.ANTIPROPKILL_PUSH\GetBool()
 	return if ent\IsPlayer()
-	inc(ent, 1)
+	inc(ent, true, ply)
 	return
 
 ShouldCollide = (ent1, ent2) ->
+	return if not DPP2.ENABLE_ANTIPROPKILL\GetBool()
 	c1, c2 = ent1\DPP2GetContraption(), ent2\DPP2GetContraption()
 	return if (not ent1.__dpp2_pushing or ent1.__dpp2_pushing < 1) and (not ent2.__dpp2_pushing or ent2.__dpp2_pushing < 1) and (not c1 or c1._pushing < 1) and (not c2 or c2._pushing < 1)
 	return if not ent1\IsPlayer() and not ent2\IsPlayer()
-	return false
+	if DPP2.ANTIPROPKILL_SURF\GetBool()
+		return false
+	else
+		ply = ent1\IsPlayer() and ent1 or ent2
+		ent = ply == ent1 and ent2 or ent1
+		contraption = ent == ent1 and c1 or ent == ent2 and c2
+		return false if not table.qhasValue(contraption and contraption._pushing_r or ent.__dpp2_pushing_r, ply)
 
 EntityTakeDamage = (dmg) =>
 	return if not DPP2.ENABLE_ANTIPROPKILL\GetBool()

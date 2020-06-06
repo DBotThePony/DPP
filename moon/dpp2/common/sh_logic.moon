@@ -86,6 +86,7 @@ class DPP2.ContraptionHolder
 		table.insert(@@OBJECTS, @)
 		@rev = 0
 		@_pushing = 0
+		@_pushing_r = {}
 
 		for object in *@@BLSTUFF
 			hook.Add 'DPP2_' .. object.__class.__name .. '_' .. object.identifier .. '_EntryAdded', @, @TriggerUpdate
@@ -260,6 +261,8 @@ class DPP2.ContraptionHolder
 			if ent.__dpp2_contraption and ent.__dpp2_contraption ~= @ and #ent.__dpp2_contraption.ents >= #oldEnts and ent.__dpp2_contraption ~= ask
 				ent.__dpp2_contraption\Walk(frompoint, @, find)
 				ent.__dpp2_contraption._pushing = @_pushing\max(ent.__dpp2_contraption._pushing)
+				table.append(ent.__dpp2_contraption._pushing_r, @_pushing_r)
+				table.deduplicate(ent.__dpp2_contraption._pushing_r)
 				@MarkForDeath(true)
 				return false
 
@@ -358,6 +361,12 @@ class DPP2.ContraptionHolder
 
 		if @_pushing > 0
 			for ent in *@ents
+				if ent.__dpp2_pushing and ent.__dpp2_pushing ~= 0
+					ent.__dpp2_pushing = 0
+					ent\SetCustomCollisionCheck(ent.__dpp2_prev_col_check)
+					ent\CollisionRulesChanged()
+					ent.__dpp2_prev_col_check = nil
+
 				if not ent.__dpp2_contraption_pushing
 					ent.__dpp2_contraption_pushing = true
 

@@ -256,7 +256,7 @@ gui.dpp2.cvars.apropkill_trap = 'Prevent prop trapping'
 gui.dpp2.cvars.apropkill_push = 'Prevent prop pushing'
 gui.dpp2.cvars.apropkill_throw = 'Prevent prop throwing'
 gui.dpp2.cvars.apropkill_punt = 'Prevent gravgun punt'
-gui.dpp2.cvars.apropkill_surf = 'Prevent prop surf (heavily depends on antiproppush)'
+gui.dpp2.cvars.apropkill_surf = 'Prevent prop surf\n(depends on antiproppush and\nsitting mod like DSit)'
 
 gui.dpp2.cvars.antispam = 'Antispam main switch'
 gui.dpp2.cvars.antispam_ignore_admins = 'Antispam ignores administration'
