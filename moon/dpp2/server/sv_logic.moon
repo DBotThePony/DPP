@@ -100,7 +100,7 @@ hook.Add 'EntityRemoved', 'DPP2.Contraptions', =>
 GhostPhysObj = =>
 	motion = @IsMotionEnabled()
 	gravity = @IsGravityEnabled()
-	mass = @GetMass()
+	--mass = @GetMass()
 	collisions = @IsCollisionEnabled()
 	angvel = @GetAngleVelocity()
 	vel = @GetVelocity()
@@ -108,7 +108,7 @@ GhostPhysObj = =>
 	@EnableMotion(false)
 	@EnableGravity(false)
 	@EnableCollisions(false)
-	@SetMass(1)
+	--@SetMass(1)
 	@Sleep()
 
 	return ->
@@ -116,7 +116,7 @@ GhostPhysObj = =>
 		@EnableMotion(motion)
 		@EnableGravity(gravity)
 		@EnableCollisions(collisions)
-		@SetMass(mass)
+		--@SetMass(mass)
 		@Wake()
 		@AddAngleVelocity(angvel)
 		@SetVelocity(vel)

@@ -18,30 +18,103 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-import DPP2 from _G
+import DPP2, DLib from _G
 
 DPP2.APKTriggerPhysgunDrop = (ply = NULL, ent = NULL) ->
 	return if not DPP2.ENABLE_ANTIPROPKILL\GetBool()
 	return if not DPP2.ANTIPROPKILL_TRAP\GetBool()
 	return if not ply\IsValid() or not ent\IsValid()
 	return if ent\IsPlayer()
-	return if ent\DPP2IsGhosted()
-	return if ent\GetSolid() == SOLID_NONE
 
-	for ent2 in *ents.FindInBox(ent\WorldSpaceAABB())
-		if ent2\IsPlayer() and ent2 ~= ply and not ent2\InVehicle()
-			ent\DPP2Ghost()
+	contraption = ent\DPP2GetContraption()
+
+	if contraption
+		mins, maxs = contraption\CalculateWorldAABB()
+		infmaxs = Vector(maxs.x, maxs.y, 0x7FFF)
+		players = player.GetAll()
+		check = {}
+
+		hit = false
+
+		for ply in *player.GetAll()
+			mins_, maxs_ = ply\GetHull()
+			pos = ply\GetPos()
+
+			mins_\Add(pos)
+			maxs_\Add(pos)
+
+			cond_ = DLib.vector.IsPositionInsideBox(mins_, mins, maxs) or DLib.vector.IsPositionInsideBox(maxs_, mins, maxs) or (
+				mins_.z < mins.z and DLib.vector.IsPositionInsideBox(maxs_, mins, infmaxs)
+			)
+
+			if cond_
+				for ent in *contraption.ents
+					if IsValid(ent) and ent\GetSolid() ~= SOLID_NONE and not ent\DPP2IsGhosted()
+						mins__, maxs__ = ent\WorldSpaceAABB()
+						cond = DLib.vector.IsPositionInsideBox(mins_, mins__, maxs__) or DLib.vector.IsPositionInsideBox(maxs_, mins__, maxs__)
+
+						if not cond
+							infmaxs__ = Vector(maxs__.x, maxs__.y, 0x7FFF)
+							cond = mins_.z < mins__.z and DLib.vector.IsPositionInsideBox(maxs_, mins__, infmaxs__)
+
+						if cond
+							hit = true
+							break
+
+				break if hit
+
+		if hit
+			ent\DPP2Ghost() for ent in *contraption.ents when IsValid(ent) and not ent\DPP2IsGhosted()
 			DPP2.NotifyHint(ply, 5, 'message.dpp2.warn.trap')
 			return
+	else
+		return if ent\DPP2IsGhosted()
+		return if ent\GetSolid() == SOLID_NONE
+
+		for ent2 in *ents.FindInBox(ent\WorldSpaceAABB())
+			if ent2\IsPlayer() and ent2 ~= ply and not ent2\InVehicle()
+				ent\DPP2Ghost()
+				DPP2.NotifyHint(ply, 5, 'message.dpp2.warn.trap')
+				return
+
+inc = (by_) =>
+	if contraption = @DPP2GetContraption()
+		prev = contraption._pushing
+		contraption._pushing = contraption._pushing + by_
+
+		if prev == 0 and by_ > 0
+			for ent in *contraption.ents
+				if not ent.__dpp2_pushing or ent.__dpp2_pushing == 0
+					ent.__dpp2_prev_col_check = ent\GetCustomCollisionCheck()
+					ent\SetCustomCollisionCheck(true)
+					ent\CollisionRulesChanged()
+
+				ent.__dpp2_contraption_pushing = true
+		elseif prev > 0 and by_ < 0 and contraption._pushing == 0
+			for ent in *contraption.ents
+				if ent.__dpp2_contraption_pushing
+					ent\SetCustomCollisionCheck(ent.__dpp2_prev_col_check)
+					ent\CollisionRulesChanged()
+					ent.__dpp2_contraption_pushing = nil
+
+		return
+
+	prev = @__dpp2_pushing or 0
+	@__dpp2_pushing = (@__dpp2_pushing or 0) + by_
+
+	if prev == 0 and by_ > 0
+		@__dpp2_prev_col_check = @GetCustomCollisionCheck()
+		@SetCustomCollisionCheck(true)
+		@CollisionRulesChanged()
+	elseif prev > 0 and by_ < 0 and @__dpp2_pushing == 0
+		@SetCustomCollisionCheck(@__dpp2_prev_col_check)
+		@CollisionRulesChanged()
 
 PhysgunDrop2 = (ply = NULL, ent = NULL) ->
 	return if not DPP2.ENABLE_ANTIPROPKILL\GetBool()
 	return if not DPP2.ANTIPROPKILL_PUSH\GetBool()
-	ent.__dpp2_pushing = (ent.__dpp2_pushing or 0) - 1
-	return if ent.__dpp2_pushing > 0
-	ent\CollisionRulesChanged()
-	ent\SetCustomCollisionCheck(ent.__dpp2_prev_col_check)
-	ent\CollisionRulesChanged()
+	return if ent\IsPlayer()
+	inc(ent, -1)
 	return
 
 PhysgunDrop3 = (ply = NULL, ent = NULL) ->
@@ -57,16 +130,12 @@ PhysgunPickup = (ply = NULL, ent = NULL) ->
 	return if not DPP2.ENABLE_ANTIPROPKILL\GetBool()
 	return if not DPP2.ANTIPROPKILL_PUSH\GetBool()
 	return if ent\IsPlayer()
-	ent.__dpp2_pushing = (ent.__dpp2_pushing or 0) + 1
-	return if ent.__dpp2_pushing > 1
-	ent\CollisionRulesChanged()
-	ent.__dpp2_prev_col_check = ent\GetCustomCollisionCheck()
-	ent\SetCustomCollisionCheck(true)
-	ent\CollisionRulesChanged()
+	inc(ent, 1)
 	return
 
 ShouldCollide = (ent1, ent2) ->
-	return if (not ent1.__dpp2_pushing or ent1.__dpp2_pushing < 1) and (not ent2.__dpp2_pushing or ent2.__dpp2_pushing < 1)
+	c1, c2 = ent1\DPP2GetContraption(), ent2\DPP2GetContraption()
+	return if (not ent1.__dpp2_pushing or ent1.__dpp2_pushing < 1) and (not ent2.__dpp2_pushing or ent2.__dpp2_pushing < 1) and (not c1 or c1._pushing < 1) and (not c2 or c2._pushing < 1)
 	return if not ent1\IsPlayer() and not ent2\IsPlayer()
 	return false
 

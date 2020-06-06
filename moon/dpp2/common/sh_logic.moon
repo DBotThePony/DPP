@@ -85,6 +85,7 @@ class DPP2.ContraptionHolder
 		@lastWalk = 0
 		table.insert(@@OBJECTS, @)
 		@rev = 0
+		@_pushing = 0
 
 		for object in *@@BLSTUFF
 			hook.Add 'DPP2_' .. object.__class.__name .. '_' .. object.identifier .. '_EntryAdded', @, @TriggerUpdate
@@ -136,6 +137,14 @@ class DPP2.ContraptionHolder
 
 		return false if not hit
 		ent.__dpp2_contraption = nil
+
+		if SERVER and ent.__dpp2_contraption_pushing
+			ent.__dpp2_contraption_pushing = nil
+
+			if not ent.__dpp2_pushing or ent.__dpp2_pushing == 0
+				ent\SetCustomCollisionCheck(@__dpp2_prev_col_check)
+				ent\CollisionRulesChanged()
+
 		@Invalidate() if InvalidateNow
 
 		return true
@@ -226,6 +235,15 @@ class DPP2.ContraptionHolder
 			return false
 
 		oldEnts = @ents
+
+		for ent in *oldEnts
+			if ent.__dpp2_contraption_pushing
+				ent.__dpp2_contraption_pushing = nil
+
+				if not ent.__dpp2_pushing or ent.__dpp2_pushing == 0
+					ent\SetCustomCollisionCheck(@__dpp2_prev_col_check)
+					ent\CollisionRulesChanged()
+
 		ent.__dpp2_contraption = nil for ent in *@ents when IsValid(ent) and ent.__dpp2_contraption == @
 		@lastWalk = RealTime() + 0.1
 		@nextNetwork = RealTime() + 1
@@ -241,6 +259,7 @@ class DPP2.ContraptionHolder
 		for ent in pairs(find)
 			if ent.__dpp2_contraption and ent.__dpp2_contraption ~= @ and #ent.__dpp2_contraption.ents >= #oldEnts and ent.__dpp2_contraption ~= ask
 				ent.__dpp2_contraption\Walk(frompoint, @, find)
+				ent.__dpp2_contraption._pushing = @_pushing\max(ent.__dpp2_contraption._pushing)
 				@MarkForDeath(true)
 				return false
 
@@ -336,6 +355,16 @@ class DPP2.ContraptionHolder
 				@ents = [ent for ent in *@ents when IsValid(ent)]
 				@NetworkDiff(prev) if SERVER and networkDiff and (#@ents > 0 or not withMarkForDeath)
 				break
+
+		if @_pushing > 0
+			for ent in *@ents
+				if not ent.__dpp2_contraption_pushing
+					ent.__dpp2_contraption_pushing = true
+
+					if not ent.__dpp2_pushing or ent.__dpp2_pushing == 0
+						ent.__dpp2_prev_col_check = ent\GetCustomCollisionCheck()
+						ent\SetCustomCollisionCheck(true)
+						ent\CollisionRulesChanged()
 
 		@owners = {}
 		@ownersFull = {}
