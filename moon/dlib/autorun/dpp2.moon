@@ -93,6 +93,7 @@ CAMI.RegisterPrivilege({
 	Description: 'Change DPP/2 ConVars'
 })
 
+AddCSLuaFile('dpp2/common/sh_convars.lua')
 AddCSLuaFile('dpp2/common/sh_logic.lua')
 AddCSLuaFile('dpp2/common/sh_owning.lua')
 AddCSLuaFile('dpp2/common/sh_hooks.lua')
