@@ -94,6 +94,8 @@ GetOwnerText = ->
 		mask: MASK_ALL
 	})
 
+	return if not tr -- FIXME: util.TraceLine called too early
+
 	CL_SIMPLE_OWNER = DPP2.CL_SIMPLE_OWNER\GetBool() or DPP2.SIMPLE_OWNER\GetBool()
 
 	return if not tr.Hit or not tr.Entity\IsValid()
