@@ -33,3 +33,71 @@ net.receive 'dpp2_cleardecals', ->
 	DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleardecals', ply or NULL)
 	RunConsoleCommand('r_cleardecals')
 	game.RemoveRagdolls()
+
+concommand.Add 'dpp2_import_fpp_friends', ->
+	friends = sql.Query('SELECT * FROM `FPP_Buddies`')
+
+	if not friends
+		DPP2.Message('message.dpp2.import.no_fpp_table')
+		return
+
+	num = 0
+
+	for row in *friends
+		num += 1
+
+		with DLib.friends
+			.UpdateFriendType(row.steamid, 'dpp2_use', tobool(row.playeruse))
+			.UpdateFriendType(row.steamid, 'dpp2_pickup', tobool(row.playeruse))
+			.UpdateFriendType(row.steamid, 'dpp2_vehicle', tobool(row.playeruse))
+			.UpdateFriendType(row.steamid, 'dpp2_toolgun', tobool(row.toolgun))
+			.UpdateFriendType(row.steamid, 'dpp2_physgun', tobool(row.physgun))
+			.UpdateFriendType(row.steamid, 'dpp2_drive', tobool(row.physgun))
+			.UpdateFriendType(row.steamid, 'dpp2_gravgun', tobool(row.gravgun))
+			.UpdateFriendType(row.steamid, 'dpp2_damage', tobool(row.entitydamage))
+
+	DLib.friends.Flush()
+	DPP2.Message('message.dpp2.import.fpp_friends', num)
+
+do
+	targets = {
+		physgun: {'physgun', 'drive'}
+		gravgun: 'gravgun'
+		toolgun: 'toolgun'
+		use: 'use'
+		vehicle: 'vehicle'
+		damage: 'damage'
+		pickup: 'pickup'
+	}
+
+	concommand.Add 'dpp2_import_dpp_friends', ->
+		num = 0
+
+		do
+			data = sql.Query('SELECT * FROM `dpp_friends`')
+
+			if data then
+				for row in *data
+					steamid = row.STEAMID
+					modes = util.JSONToTable(row.MODES)
+
+					if modes
+						for mode, status in pairs(modes)
+							for target in *(istable(targets[mode]) and targets[mode] or {targets[mode]})
+								DLib.friends.UpdateFriendType(steamid, 'dpp2_' .. target, status)
+								num += 1
+
+				sql.Query('DROP TABLE dpp_friends')
+
+
+		for source, _target in pairs(targets)
+			data = sql.EQuery('SELECT `steamid`, `status` FROM `dlib_friends` WHERE `friendid` = ' .. SQLStr('dpp_' .. source))
+
+			if data
+				for target in *(istable(_target) and _target or {_target})
+					for row in *data
+						DLib.friends.UpdateFriendType(row.steamid, 'dpp2_' .. target, tobool(row.status))
+						num += 1
+
+		DLib.friends.Flush()
+		DPP2.Message('message.dpp2.import.dpp_friends', num)

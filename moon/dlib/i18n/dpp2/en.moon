@@ -417,6 +417,7 @@ gui.dpp2.toolmenu.playermode = 'Player protection'
 
 gui.dpp2.toolmenu.client_protection = 'Protection settings'
 gui.dpp2.toolmenu.client_settings = 'General settings'
+gui.dpp2.toolmenu.client_commands = 'Utilities'
 gui.dpp2.toolmenu.primary = 'Primary settings'
 gui.dpp2.toolmenu.secondary = 'Secondary settings'
 gui.dpp2.toolmenu.antipropkill = 'Antipropkill settings'
@@ -595,3 +596,9 @@ gui.dpp2.undo.physgun_nothing = 'Nothing to undo'
 
 message.dpp2.autoblacklist.added_volume = 'Model %q were auto added to model blacklist based on phys volume'
 message.dpp2.autoblacklist.added_aabb = 'Model %q were auto added to model blacklist based on AABB'
+
+message.dpp2.import.dpp_friends = 'Imported #d entries found in DPP friends.'
+message.dpp2.import.fpp_friends = 'Imported #d entries found in FPP friends.'
+message.dpp2.import.no_fpp_table = 'FPP friend table does not exist, nothing to import'
+message.dpp2.import.button_dpp_friends = 'Import DPP friends'
+message.dpp2.import.button_fpp_friends = 'Import FPP friends'

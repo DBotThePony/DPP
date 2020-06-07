@@ -277,9 +277,16 @@ Menus.OpenModelRestricitonFrame = (target, name, mode = true) ->
 		hook.Add 'DPP2_Limits_' .. target.identifier .. '_EntryAdded', @, -> timer.Create 'DPP2_RebuildModelRVisualMenu' .. target.identifier, 0.1, 1, rebuildList
 		hook.Add 'DPP2_Limits_' .. target.identifier .. '_EntryRemoved', @, -> timer.Create 'DPP2_RebuildModelRVisualMenu' .. target.identifier, 0.1, 1, rebuildList
 
+Menus.ClientCommands = =>
+	return if not IsValid(@)
+
+	@Button('message.dpp2.import.button_dpp_friends', 'dpp2_import_dpp_friends')
+	@Button('message.dpp2.import.button_fpp_friends', 'dpp2_import_fpp_friends')
+
 hook.Add 'PopulateToolMenu', 'DPP2.Menus', ->
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.client', 'gui.dpp2.toolmenu.client_protection', 'gui.dpp2.toolmenu.client_protection', '', '', Menus.ClientProtectionModulesMenu
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.client', 'gui.dpp2.toolmenu.client_settings', 'gui.dpp2.toolmenu.client_settings', '', '', Menus.ClientMenu
+	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.client', 'gui.dpp2.toolmenu.client_commands', 'gui.dpp2.toolmenu.client_commands', '', '', Menus.ClientCommands
 
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.main', 'gui.dpp2.toolmenu.primary', 'gui.dpp2.toolmenu.primary', '', '', Menus.PrimaryMenu
 	spawnmenu.AddToolMenuOption 'DPP/2', 'gui.dpp2.toolcategory.main', 'gui.dpp2.toolmenu.secondary', 'gui.dpp2.toolmenu.secondary', '', '', Menus.SecondaryMenu
