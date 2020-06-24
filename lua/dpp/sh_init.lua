@@ -49,6 +49,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ]])
 
+MsgC([[
+DPP IS OUTDATED !!!
+DPP IS OUTDATED !!!
+DPP IS OUTDATED !!!
+DPP IS OUTDATED !!!
+
+UPGRADE TO DPP/2 FROM https://steamcommunity.com/sharedfiles/filedetails/?id=2122489895
+UPGRADE TO DPP/2 FROM https://steamcommunity.com/sharedfiles/filedetails/?id=2122489895
+UPGRADE TO DPP/2 FROM https://steamcommunity.com/sharedfiles/filedetails/?id=2122489895
+UPGRADE TO DPP/2 FROM https://steamcommunity.com/sharedfiles/filedetails/?id=2122489895
+]])
+
+timer.Simple(0, MsgC:Wrap([[
+DPP IS OUTDATED !!!
+DPP IS OUTDATED !!!
+DPP IS OUTDATED !!!
+DPP IS OUTDATED !!!
+
+UPGRADE TO DPP/2 FROM https://steamcommunity.com/sharedfiles/filedetails/?id=2122489895
+UPGRADE TO DPP/2 FROM https://steamcommunity.com/sharedfiles/filedetails/?id=2122489895
+UPGRADE TO DPP/2 FROM https://steamcommunity.com/sharedfiles/filedetails/?id=2122489895
+UPGRADE TO DPP/2 FROM https://steamcommunity.com/sharedfiles/filedetails/?id=2122489895
+]]))
+
 function DPP.FindBestLevel()
 	local last
 	local current = 1
