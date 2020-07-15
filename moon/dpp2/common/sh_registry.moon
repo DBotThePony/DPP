@@ -256,7 +256,11 @@ class DPP2.DEF.RestrictionListEntry
 	Is: (classname) => @class == classname
 	Ask: (classname, group, isAdmin) =>
 		return if classname ~= @class
-		return @isWhitelist if table.qhasValue(@groups, group)
+
+		if @isWhitelist
+			return table.qhasValue(@groups, group)
+		else
+			return false if table.qhasValue(@groups, group)
 
 class DPP2.DEF.RestrictionList
 	@LISTS = {}
