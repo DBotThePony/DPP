@@ -26,7 +26,7 @@ entMeta = FindMetaTable('Entity')
 entMeta.DPP2CreatedByMap = => not @IsPlayer() and @CreatedByMap()
 entMeta.__DPP2_SetParent = entMeta.__DPP2_SetParent or entMeta.SetParent
 
-entMeta.SetParent = (parent, ...) =>
+entMeta.SetParent = (parent = NULL, ...) =>
 	return @__DPP2_SetParent(parent, ...) if @IsPlayer() or parent\IsPlayer()
 
 	oldParent = @GetParent()
