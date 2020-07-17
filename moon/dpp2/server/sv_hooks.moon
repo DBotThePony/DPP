@@ -345,12 +345,18 @@ PlayerSpawnSWEP = (ply = NULL, classname = 'base_entity', definition = {ClassNam
 		DPP2.LogSpawn('message.dpp2.log.spawn.tried_plain', ply, color_red, DPP2.textcolor, classname)
 		return false
 
+PlayerCanPickupItem = (ply = NULL, ent = NULL) ->
+	return if not IsValid(ply) or not IsValid(ent)
+	return false if not DPP2.PickupProtection.Blacklist\Ask(ent\GetClass(), ply)
+	return false if not DPP2.PickupProtection.RestrictionList\Ask(ent\GetClass(), ply)
+
 hooksToReg = {
 	:PlayerSpawnedEffect, :PlayerSpawnedProp, :PlayerSpawnedRagdoll
 	:PlayerSpawnedNPC, :PlayerSpawnedSENT, :PlayerSpawnedSWEP
 	:PlayerSpawnedVehicle, :PlayerSpawnEffect, :PlayerSpawnProp
 	:PlayerSpawnRagdoll, :PlayerSpawnObject, :PlayerSpawnVehicle
 	:PlayerSpawnNPC, :PlayerSpawnSENT, :PlayerGiveSWEP, :PlayerSpawnSWEP
+	:PlayerCanPickupItem, PlayerCanPickupWeapon: PlayerCanPickupItem
 }
 
 hook.Add(name, 'DPP2.SpawnHooks', func, -4) for name, func in pairs(hooksToReg)

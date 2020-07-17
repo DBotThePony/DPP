@@ -463,10 +463,11 @@ class DPP2.DEF.RestrictionList
 		for entry in *@listing
 			status = entry\Ask(classname, group, isAdmin)
 
-			if @INVERT\GetBool() or @INVERT_ALL\GetBool()
-				return not status if status ~= nil
-			else
-				return status if status ~= nil
+			if status ~= nil
+				if @INVERT\GetBool() or @INVERT_ALL\GetBool()
+					return not status
+				else
+					return status
 
 		return not @INVERT_ALL\GetBool()
 
