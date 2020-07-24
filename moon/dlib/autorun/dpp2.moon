@@ -395,6 +395,6 @@ if CLIENT
 
 	include('dpp2/client/cl_spawnmenu.lua')
 
-DPP2.Message(string.format('DPP/2 Startup took %.2f ms', SysTime() - startup))
+DPP2.Message(string.format('DPP/2 Startup took %.2f ms', (SysTime() - startup) * 1000))
 
 return
