@@ -81,32 +81,36 @@ plyMeta.LimitHit = (mode) =>
 
 cache = {}
 
-plyMeta.CheckLimit = (mode, notify = SERVER) =>
-	assert(isstring(mode), 'Mode should be a string')
-	return true if game.SinglePlayer()
-	return true if DPP2.NO_LIMIT_FOR_HOST\GetBool() and (not game.IsDedicated() or game.IPAddress() == 'loopback' or game.GetIPAddress() == '0.0.0.0:0') and @EntIndex() == 1
+patch = ->
+	plyMeta.CheckLimit = (mode, notify = SERVER) =>
+		assert(isstring(mode), 'Mode should be a string')
+		return true if game.SinglePlayer()
+		return true if DPP2.NO_LIMIT_FOR_HOST\GetBool() and (not game.IsDedicated() or game.GetIPAddress() == 'loopback' or game.GetIPAddress() == '0.0.0.0:0') and @EntIndex() == 1
 
-	mode = mode\lower()
-	cache[mode] = cache[mode] or assert(ConVar('sbox_max' .. mode), 'No such ConVar: sbox_max' .. mode)
+		mode = mode\lower()
+		cache[mode] = cache[mode] or assert(ConVar('sbox_max' .. mode), 'No such ConVar: sbox_max' .. mode)
 
-	entry = DPP2.SBoxLimits\Get(mode, @GetUserGroup()) if DPP2.SBoxLimits\IsEnabled()
-	limit = entry and entry.limit or cache[mode]\GetInt()
-	limit = 0 if not entry and DPP2.SBoxLimits\IsEnabled() and DPP2.SBoxLimits\IsInclusive()
+		entry = DPP2.SBoxLimits\Get(mode, @GetUserGroup()) if DPP2.SBoxLimits\IsEnabled()
+		limit = entry and entry.limit or cache[mode]\GetInt()
+		limit = 0 if not entry and DPP2.SBoxLimits\IsEnabled() and DPP2.SBoxLimits\IsInclusive()
 
-	return true if limit < 0
+		return true if limit < 0
 
-	if limit <= @GetCount(mode)
-		if notify
-			if CLIENT
-				hook.Run('LimitHit', mode)
-			else
-				net.Start('dpp2_limithit')
-				net.WriteString(mode)
-				net.Send(@)
+		if limit <= @GetCount(mode)
+			if notify
+				if CLIENT
+					hook.Run('LimitHit', mode)
+				else
+					net.Start('dpp2_limithit')
+					net.WriteString(mode)
+					net.Send(@)
 
-		return false
+			return false
 
-	return true
+		return true
+
+patch()
+hook.Add 'Initialize', 'DPP2.PatchCheckLimit', patch
 
 nextid = DPP2.DEF.LimitEntry and DPP2.DEF.LimitEntry.NEXT_ID or 0
 
