@@ -602,3 +602,5 @@ message.dpp2.import.fpp_friends = 'Imported #d entries found in FPP friends.'
 message.dpp2.import.no_fpp_table = 'FPP friend table does not exist, nothing to import'
 message.dpp2.import.button_dpp_friends = 'Import DPP friends'
 message.dpp2.import.button_fpp_friends = 'Import FPP friends'
+
+message.dpp2.error.empty_constraint = 'Entity:GetConstrainedEntities() returned nothing?!'

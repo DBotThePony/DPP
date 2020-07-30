@@ -448,13 +448,14 @@ hook.Add 'Think', 'DPP2.CheckEntitiesOwnage', ->
 	for constraint in *checkConstraints
 		ent1, ent2 = constraint\GetConstrainedEntities()
 
-		if ctime == ent1.__dpp2_spawn_frame and ctime == ent2.__dpp2_spawn_frame
-			if ent1\DPP2IsOwned() and ent1\DPP2OwnerIsValid()
-				DPP2.PlayerSpawnedSomething(ent1\DPP2GetOwner(), constraint, true)
-			elseif ent2\DPP2IsOwned() and ent2\DPP2OwnerIsValid()
-				DPP2.PlayerSpawnedSomething(ent2\DPP2GetOwner(), constraint, true)
-
-		class1, class2 = ent1\GetClass(), ent2\GetClass()
+		if IsValid(ent1) and IsValid(ent2)
+			if ctime == ent1.__dpp2_spawn_frame and ctime == ent2.__dpp2_spawn_frame
+				if ent1\DPP2IsOwned() and ent1\DPP2OwnerIsValid()
+					DPP2.PlayerSpawnedSomething(ent1\DPP2GetOwner(), constraint, true)
+				elseif ent2\DPP2IsOwned() and ent2\DPP2OwnerIsValid()
+					DPP2.PlayerSpawnedSomething(ent2\DPP2GetOwner(), constraint, true)
+		else
+			DPP2.MessageError('message.dpp2.error.empty_constraint', ' ', constraint, type(ent1), type(ent2))
 
 hook.Add 'OnEntityCreated', 'DPP2.CheckEntitiesOwnage', =>
 	DPP2._Spawn_CheckFrame = CurTimeL()
