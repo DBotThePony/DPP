@@ -18,7 +18,8 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-import DPP2 from _G
+import DPP2, DLib from _G
+import net from DLib
 
 DPP2.NO_LIMIT_FOR_HOST = DPP2.CreateConVar('no_host_limits', '1', DPP2.TYPE_BOOL)
 DPP2.LIMITS_LIST_ENABLED = DPP2.CreateConVar('limits_lists_enabled', '1', DPP2.TYPE_BOOL)

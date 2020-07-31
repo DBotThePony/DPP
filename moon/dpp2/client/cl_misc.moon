@@ -18,6 +18,9 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
+import DPP2, DLib from _G
+import net from DLib
+
 net.receive 'dpp2_inspect', ->
 	ent = NULL
 	ent = net.ReadEntity() if net.ReadBool()

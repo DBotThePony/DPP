@@ -18,7 +18,8 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-import DPP2 from _G
+import DPP2, DLib from _G
+import net from DLib
 
 net.pool('dpp2_cleardecals')
 net.pool('dpp2_cleargibs')

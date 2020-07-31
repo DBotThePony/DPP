@@ -19,6 +19,7 @@
 -- DEALINGS IN THE SOFTWARE.
 
 import DPP2, type, table, net from _G
+import net from DLib
 
 entMeta = FindMetaTable('Entity')
 

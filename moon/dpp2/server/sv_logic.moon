@@ -18,8 +18,9 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-import DPP2, type, table, player from _G
+import DPP2, type, table, player, DLib from _G
 import IsValid from FindMetaTable('Entity')
+import net from DLib
 
 entMeta = FindMetaTable('Entity')
 

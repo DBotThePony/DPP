@@ -18,6 +18,9 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
+import DPP2, DLib from _G
+import net from DLib
+
 net.pool('dpp2_limithit')
 net.pool('dpp2_limitlist_replicate')
 net.pool('dpp2_limitlist_clear')

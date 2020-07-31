@@ -21,6 +21,7 @@
 import DPP2, DLib from _G
 import i18n from DLib
 import Menus from DPP2
+import net from DLib
 
 net.receive 'dpp2_limitlist_clear', ->
 	identifier = net.ReadString()

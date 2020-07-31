@@ -18,7 +18,8 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-import IsValid, table, DPP2, type, error, assert, constraint, net, SERVER, CLIENT from _G
+import IsValid, table, DPP2, type, error, assert, constraint, SERVER, CLIENT, DLib from _G
+import net from DLib
 
 entMeta = FindMetaTable('Entity')
 

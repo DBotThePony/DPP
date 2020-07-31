@@ -18,7 +18,8 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-import DPP2, type, table, DLib, string, net from _G
+import DPP2, type, table, DLib, string, DLib from _G
+import net from DLib
 
 if SERVER
 	net.pool('dpp2_list_entry_create')

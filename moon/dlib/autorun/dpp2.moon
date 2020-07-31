@@ -19,6 +19,7 @@
 -- DEALINGS IN THE SOFTWARE.
 
 import DLib, notification, net, DLib from _G
+import net from DLib
 
 export DPP2
 _G.DPP2 = DPP2 or {}
