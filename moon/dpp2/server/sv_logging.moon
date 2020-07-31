@@ -63,13 +63,9 @@ DPP2.Log = (...) ->
 	varg = {DLib.string.qdate() .. ' - ', ...}
 
 	if DPP2.ECHO_LOG_CLIENTS\GetBool()
-		data = {}
-
 		for ply in *player.GetAll()
 			if watchdog\HasPermission(ply, 'dpp2_log')
-				data[ply] = DLib.i18n.rebuildTableByLang(varg, ply.DLib_Lang or 'en', DPP2.textcolor)
-
-		table.insert(sendQueue, data)
+				DPP2.LMessagePlayer(ply, unpack(varg))
 
 	combined(makestr(...))
 
@@ -90,10 +86,3 @@ DPP2.LogToolgun = (...) ->
 	return if not DPP2.ENABLE_LOGGING_TOOLGUN\GetBool()
 	DPP2.Log(...)
 	toolgun(makestr(...))
-
-DPP2.SendNextLogChunk = ->
-	pop = table.remove(sendQueue, 1)
-	return if not pop
-	DPP2.MessagePlayer(ply, unpack(data)) for ply, data in pairs(pop) when IsValid(ply)
-
-hook.Add 'Think', 'DPP2.SendNextLogChunk', DPP2.SendNextLogChunk
