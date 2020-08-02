@@ -65,7 +65,7 @@ DPP2.Log = (...) ->
 	if DPP2.ECHO_LOG_CLIENTS\GetBool()
 		for ply in *player.GetAll()
 			if watchdog\HasPermission(ply, 'dpp2_log')
-				DPP2.LMessagePlayer(ply, unpack(varg))
+				DPP2.MessagePlayer(ply, unpack(DLib.i18n.rebuildTableByLang(varg, ply.DLib_Lang or 'en', DPP2.textcolor)))
 
 	combined(makestr(...))
 
