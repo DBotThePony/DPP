@@ -40,6 +40,7 @@ plyMeta = FindMetaTable('Player')
 plyMeta.GetCount = (mode, minus = 0) =>
 	assert(isstring(mode), 'Mode should be a string')
 	assert(isnumber(minus), 'Minus should be a number')
+	return 0 if not @IsValid()
 
 	return @GetNWUInt('dpp2_count_' .. mode, 0) if CLIENT
 	steamid = @IsBot() and @UniqueID() or @SteamID()
@@ -58,6 +59,7 @@ plyMeta.AddCount = (mode, ent) =>
 	assert(isstring(mode), 'Mode should be a string')
 	assert(IsValid(ent), 'Tried to use a NULL Entity!')
 	return if CLIENT
+	return if not @IsValid()
 
 	steamid = @IsBot() and @UniqueID() or @SteamID()
 	PlayerCounts[steamid] = {} if not PlayerCounts[steamid]
@@ -70,6 +72,7 @@ plyMeta.AddCount = (mode, ent) =>
 
 plyMeta.LimitHit = (mode) =>
 	assert(isstring(mode), 'Mode should be a string')
+	return if not @IsValid()
 
 	if CLIENT
 		hook.Run('LimitHit', mode)
