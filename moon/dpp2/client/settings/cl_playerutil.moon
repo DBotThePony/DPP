@@ -48,13 +48,29 @@ Menus.BuildPlyerModeRow = (ply) =>
 Menus.BuildPlayerModePanel = =>
 	return if not IsValid(@)
 
-	for ply in *player.GetAll()
-		with spoiler = vgui.Create('DCollapsibleCategory', @)
-			\Dock(TOP)
-			\DockMargin(5, 5, 5, 5)
-			\SetLabel(ply\Nick())
-			\SetExpanded(false)
-			Menus.BuildPlyerModeRow(spoiler, ply)
+	panels = {}
+
+	Update = ->
+		panel\Remove() for panel in *panels when IsValid(panel)
+		panels = {}
+
+		for ply in *player.GetAll()
+			with spoiler = vgui.Create('DCollapsibleCategory', @)
+				table.insert(panels, spoiler)
+				\Dock(TOP)
+				\DockMargin(5, 5, 5, 5)
+				\SetLabel(ply\Nick())
+				\SetExpanded(false)
+				Menus.BuildPlyerModeRow(spoiler, ply)
+
+	Update()
+	hook.Add 'OnEntityCreated', @, (ent) =>
+		if ent\IsPlayer()
+			timer.Simple 0, Update
+
+	hook.Add 'EntityRemoved', @, (ent) =>
+		if ent\IsPlayer()
+			timer.Simple 0, Update
 
 Menus.BuildUtilsPanel = =>
 	@Button('gui.dpp2.toolmenu.util.cleardecals', 'dpp2_cleardecals')
@@ -71,29 +87,144 @@ Menus.BuildCleanupPanel = =>
 	@Button('gui.dpp2.toolmenu.playerutil.clear_vehicles', 'dpp2_cleanupvehicles')\DockMargin(5, 5, 5, 5)
 	@Button('gui.dpp2.toolmenu.playerutil.clear_disconnected', 'dpp2_cleanupdisconnected')\DockMargin(5, 5, 5, 5)
 
-	for ply in *player.GetAll()
-		with row = vgui.Create('EditablePanel', @)
-			\Dock(TOP)
-			\DockPadding(5, 5, 5, 5)
-			\SetTall(32)
+	panels = {}
 
-			with vgui.Create('DLib_Avatar', row)
-				\Dock(LEFT)
-				\DockMargin(0, 0, 5, 0)
-				\SetSteamID(ply\SteamID())
-				timer.Simple 0, -> \SetWide(\GetTall())
+	Update = ->
+		panel\Remove() for panel in *panels when IsValid(panel)
+		panels = {}
 
-			with vgui.Create('DButton', row)
-				\Dock(FILL)
-				\DockMargin(0, 0, 0, 0)
-				\SetText('gui.dpp2.toolmenu.playerutil.clear', ply\Nick())
-				.DoClick = -> RunConsoleCommand('dpp2_cleanup', ply\UserID())
+		for ply in *player.GetAll()
+			with row = vgui.Create('EditablePanel', @)
+				table.insert(panels, row)
+				\Dock(TOP)
+				\DockPadding(5, 5, 5, 5)
+				\SetTall(32)
 
-			with vgui.Create('DButton', row)
-				\Dock(LEFT)
-				\DockMargin(0, 0, 5, 0)
-				\SetText('gui.dpp2.toolmenu.playerutil.freezephys')
-				\SetTooltip(DLib.i18n.localize('gui.dpp2.toolmenu.playerutil.freezephys_tip'))
-				.DoClick = -> RunConsoleCommand('dpp2_freezephys', ply\UserID())
-				\SizeToContents()
-				\SetWide(\GetWide()\max(32))
+				with vgui.Create('DLib_Avatar', row)
+					\Dock(LEFT)
+					\DockMargin(0, 0, 5, 0)
+					\SetSteamID(ply\SteamID())
+					timer.Simple 0, -> \SetWide(\GetTall())
+
+				with vgui.Create('DButton', row)
+					\Dock(FILL)
+					\DockMargin(0, 0, 0, 0)
+					\SetText('gui.dpp2.toolmenu.playerutil.clear', ply\Nick())
+					.DoClick = -> RunConsoleCommand('dpp2_cleanup', ply\UserID())
+
+				with vgui.Create('DButton', row)
+					\Dock(LEFT)
+					\DockMargin(0, 0, 5, 0)
+					\SetText('gui.dpp2.toolmenu.playerutil.freezephys')
+					\SetTooltip(DLib.i18n.localize('gui.dpp2.toolmenu.playerutil.freezephys_tip'))
+					.DoClick = -> RunConsoleCommand('dpp2_freezephys', ply\UserID())
+					\SizeToContents()
+					\SetWide(\GetWide()\max(32))
+
+	Update()
+	hook.Add 'OnEntityCreated', @, (ent) =>
+		if ent\IsPlayer()
+			timer.Simple 0, Update
+
+	hook.Add 'EntityRemoved', @, (ent) =>
+		if ent\IsPlayer()
+			timer.Simple 0, Update
+
+Menus.BuildTransferFallbackPanel = =>
+	return if not IsValid(@)
+
+	lply = LocalPlayer()
+
+	panels = {}
+
+	Update = ->
+		panel\Remove() for panel in *panels when IsValid(panel)
+		panels = {}
+
+		for ply in *player.GetAll()
+			if ply ~= lply
+				with row = vgui.Create('EditablePanel', @)
+					table.insert(panels, row)
+					\Dock(TOP)
+					\DockPadding(5, 5, 5, 5)
+					\SetTall(32)
+
+					with vgui.Create('DLib_Avatar', row)
+						\Dock(LEFT)
+						\DockMargin(0, 0, 5, 0)
+						\SetSteamID(ply\SteamID())
+						timer.Simple 0, -> \SetWide(\GetTall())
+
+					with vgui.Create('DCheckBoxLabel', row)
+						\Dock(FILL)
+						\DockMargin(0, 5, 0, 0)
+						\SetText('gui.dpp2.toolmenu.playertransferfallback', ply\Nick())
+						\SetChecked(lply\GetNWEntity('dpp2_transfer_fallback', NULL) == ply)
+
+						ignore = false
+
+						.Think = ->
+							ignore = true
+
+							if lply\GetNWEntity('dpp2_transfer_fallback', NULL) == ply
+								\SetChecked(true)
+							else
+								\SetChecked(false)
+
+							ignore = false
+
+						.Button.OnChange = (newvalue) ->
+							return if ignore
+
+							if lply\GetNWEntity('dpp2_transfer_fallback', NULL) ~= ply
+								RunConsoleCommand('dpp2_transferfallback', ply\UserID())
+							else
+								RunConsoleCommand('dpp2_transferunfallback')
+
+	Update()
+	hook.Add 'OnEntityCreated', @, (ent) =>
+		if ent\IsPlayer()
+			timer.Simple 0, Update
+
+	hook.Add 'EntityRemoved', @, (ent) =>
+		if ent\IsPlayer()
+			timer.Simple 0, Update
+
+Menus.BuildTransferPanel = =>
+	return if not IsValid(@)
+
+	lply = LocalPlayer()
+
+	panels = {}
+
+	Update = ->
+		panel\Remove() for panel in *panels when IsValid(panel)
+		panels = {}
+
+		for ply in *player.GetAll()
+			if ply ~= lply
+				with row = vgui.Create('EditablePanel', @)
+					table.insert(panels, row)
+					\Dock(TOP)
+					\DockPadding(5, 5, 5, 5)
+					\SetTall(32)
+
+					with vgui.Create('DLib_Avatar', row)
+						\Dock(LEFT)
+						\DockMargin(0, 0, 5, 0)
+						\SetSteamID(ply\SteamID())
+						timer.Simple 0, -> \SetWide(\GetTall())
+
+					with vgui.Create('DButton', row)
+						\Dock(FILL)
+						\DockMargin(0, 0, 0, 0)
+						\SetText('gui.dpp2.toolmenu.playertransfer', ply\Nick())
+						.DoClick = -> RunConsoleCommand('dpp2_transfer', ply\UserID())
+	Update()
+	hook.Add 'OnEntityCreated', @, (ent) =>
+		if ent\IsPlayer()
+			timer.Simple 0, Update
+
+	hook.Add 'EntityRemoved', @, (ent) =>
+		if ent\IsPlayer()
+			timer.Simple 0, Update
