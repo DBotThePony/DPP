@@ -152,10 +152,13 @@ entMeta.DPP2CheckUpForGrabs = (newOwner = NULL) =>
 	return true
 
 PlayerInitialSpawn = =>
-	return if not @SteamID()
-	return if @IsBot()
-	timer.Remove 'DPP2.UpForGrabs.' .. @SteamID()
-	timer.Remove 'DPP2.Cleanup.' .. @SteamID()
+	--return if not @SteamID()
+	--return if @IsBot()
+
+	steamid = @SteamID() or @UniqueID()
+
+	timer.Remove 'DPP2.UpForGrabs.' .. steamid
+	timer.Remove 'DPP2.Cleanup.' .. steamid
 
 	for ent in *DPP2.GetAllEntsBySteamID(@SteamID())
 		ent\DPP2SetOwner(@)
@@ -166,15 +169,33 @@ PlayerInitialSpawn = =>
 hook.Add 'PlayerInitialSpawn', 'DPP2.Owning', PlayerInitialSpawn, -2
 
 PlayerDisconnected = =>
-	return if not @SteamID()
-	return if @IsBot()
+	--return if not @SteamID()
+	--return if @IsBot()
 
 	return if not @DPP2HasEnts()
 
-	steamid = @SteamID()
+	steamid = @SteamID() or @UniqueID()
 	nick = @Nick()
 	nick ..= ' (' .. @SteamName() .. ')' if @SteamName and @SteamName() ~= nick
 	nick = string.format('%s<%s>', nick, @SteamID())
+
+	if DPP2.ENABLE_AUTOFREEZE\GetBool()
+		ProtectedCall ->
+			find = DPP2.GetAllEntsBySteamID(steamid)
+			return if #find == 0
+
+			DPP2.NotifyUndoAll(6, 'message.dpp2.notice.frozen', nick)
+
+			if DPP2.ENABLE_AUTOGHOST\GetBool()
+				ent\DPP2Ghost() for ent in *find
+			else
+				for ent in *find
+					phys = ent\DPP2GetPhys()
+
+					if istable(phys)
+						phys2\EnableMotion(false) for phys2 in *phys
+					else
+						phys\EnableMotion(false)
 
 	if DPP2.ENABLE_UP_FOR_GRABS\GetBool() and not (DPP2.ENABLE_CLEANUP\GetBool() and DPP2.UP_FOR_GRABS_TIMER\GetFloat() >= DPP2.CLEANUP_TIMER\GetFloat())
 		timer.Create 'DPP2.UpForGrabs.' .. steamid, DPP2.UP_FOR_GRABS_TIMER\GetFloat(), 1, ->

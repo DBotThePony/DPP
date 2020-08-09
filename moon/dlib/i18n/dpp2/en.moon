@@ -59,6 +59,9 @@ gui.dpp2.cvars.protection = 'Main power switch for all protection modules'
 
 gui.dpp2.cvars.autocleanup = 'Cleanup disconnected players props on timer'
 gui.dpp2.cvars.autocleanup_timer = 'Cleanup timer'
+gui.dpp2.cvars.autofreeze = 'Freeze physobjs of disconnected players'
+gui.dpp2.cvars.autoghost = 'Ghost entities instead of freezing'
+message.dpp2.notice.frozen = '%s props are frozen!'
 
 gui.dpp2.cvars.upforgrabs = 'Enable Up For Grabs timer'
 gui.dpp2.cvars.upforgrabs_timer = 'Up for grabs timeout'

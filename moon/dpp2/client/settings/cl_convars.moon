@@ -41,6 +41,13 @@ Menus.SecondaryMenu = =>
 	Menus.QCheckBox(@, 'allow_damage_npc')
 	Menus.QCheckBox(@, 'allow_damage_vehicle')
 
+	Menus.QCheckBox(@, 'upforgrabs')
+	Menus.QSlider(@, 'upforgrabs_timer', 1, 600)
+	Menus.QCheckBox(@, 'autocleanup')
+	Menus.QSlider(@, 'autocleanup_timer', 1, 900)
+	Menus.QCheckBox(@, 'autofreeze')
+	Menus.QCheckBox(@, 'autoghost')
+
 Menus.LoggingMenu = =>
 	return if not IsValid(@)
 
