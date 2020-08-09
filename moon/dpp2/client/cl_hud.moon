@@ -18,8 +18,9 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-import NULL, type, player, DPP2, string from _G
+import NULL, type, player, DPP2, string, util from _G
 import HUDCommons from DLib
+import Vector from _G
 
 DPP2.CL_DRAW_CONTRAPTION_AABB = DPP2.CreateClientConVar('cl_draw_contraption_aabb', '0', DPP2.TYPE_BOOL)
 
@@ -209,10 +210,25 @@ HUDPaint2 = (_, pw, ph) ->
 	if tr.Hit and IsValid(tr.Entity)
 		if contraption = tr.Entity.__dpp2_contraption
 			faces = DLib.vector.ExtractFaces(contraption\CalculateWorldAABB())
+			mins, maxs = contraption\CalculateWorldAABB()
 
-			for face in *faces
-				for i3 = 2, 4
-					render.DrawLine(face[i3 - 1], face[i3], color_cyan)
+			a, b, c, d = mins, Vector(maxs.x, mins.y, mins.z), Vector(mins.x, maxs.y, mins.z), Vector(maxs.x, maxs.y, mins.z)
+			e, f, g, k = Vector(mins.x, maxs.y, maxs.z), Vector(mins.x, mins.y, maxs.z), Vector(maxs.x, mins.y, maxs.z), maxs
+
+			render.DrawLine(a, b, color_cyan)
+			render.DrawLine(a, c, color_cyan)
+			render.DrawLine(c, d, color_cyan)
+			render.DrawLine(b, d, color_cyan)
+
+			render.DrawLine(a, f, color_cyan)
+			render.DrawLine(b, g, color_cyan)
+			render.DrawLine(c, e, color_cyan)
+			render.DrawLine(d, k, color_cyan)
+
+			render.DrawLine(f, g, color_cyan)
+			render.DrawLine(f, e, color_cyan)
+			render.DrawLine(e, k, color_cyan)
+			render.DrawLine(g, k, color_cyan)
 
 	cam.End3D()
 
