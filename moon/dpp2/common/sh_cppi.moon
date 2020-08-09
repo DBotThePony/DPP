@@ -70,3 +70,13 @@ entMeta.CPPICanUse = (ply = NULL) => DPP2.ACCESS.CanUse(ply, @)
 entMeta.CPPIDrive = (ply = NULL) => DPP2.ACCESS.CanDrive(ply, @)
 entMeta.CPPICanProperty = (ply = NULL, toolMode = 'remover') => DPP2.ACCESS.CanToolgun(ply, @, toolMode)
 entMeta.CPPICanEditVariable = (ply = NULL, key, val, editTable) => DPP2.ACCESS.CanToolgun(ply, @, 'edit')
+
+arefriends = (a, b) ->
+	return true for def in *DPP2.DEF.ProtectionDefinition.OBJECTS when def\AreFriends(a, b)
+	return false
+
+hook.Add 'DLib_FriendModified', 'DPP/2', =>
+	timer.Create 'DPP2.FireCPPIFriendsHook_' .. @EntIndex(), 0, 1, ->
+		return if not @IsValid()
+		rebuild = {ply for ply in *player.GetAll() when ply ~= @ and arefriends(@, ply)}
+		hook.Run('CPPIFriendsChanged', @, rebuild)
