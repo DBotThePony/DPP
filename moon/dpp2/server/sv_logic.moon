@@ -26,12 +26,31 @@ entMeta = FindMetaTable('Entity')
 
 entMeta.DPP2CreatedByMap = => not @IsPlayer() and @CreatedByMap()
 entMeta.__DPP2_SetParent = entMeta.__DPP2_SetParent or entMeta.SetParent
+entMeta.__DPP2_SetMoveParent = entMeta.__DPP2_SetMoveParent or entMeta.SetMoveParent
 
 entMeta.SetParent = (parent = NULL, ...) =>
 	return @__DPP2_SetParent(parent, ...) if @IsPlayer() or parent\IsPlayer()
 
 	oldParent = @GetParent()
 	a, b, c, d, e, f, g, k = @__DPP2_SetParent(parent, ...)
+
+	if oldParent ~= parent
+		if not @__dpp2_contraption
+			@__dpp2_contraption = DPP2.ContraptionHolder()
+			@__dpp2_contraption\Walk(@)
+		elseif @__dpp2_contraption.lastWalk < RealTime()
+			@__dpp2_contraption\Walk(@)
+		else
+			timer.Create 'DPP2_WalkContraption_' .. @__dpp2_contraption.id, 0.25, 1, ->
+				@__dpp2_contraption\Walk(@) if @IsValid() and @__dpp2_contraption and @__dpp2_contraption\IsValid() and @__dpp2_contraption.lastWalk < RealTime()
+
+	return a, b, c, d, e, f, g, k
+
+entMeta.SetMoveParent = (parent = NULL, ...) =>
+	return @__DPP2_SetMoveParent(parent, ...) if @IsPlayer() or parent\IsPlayer()
+
+	oldParent = @GetMoveParent()
+	a, b, c, d, e, f, g, k = @__DPP2_SetMoveParent(parent, ...)
 
 	if oldParent ~= parent
 		if not @__dpp2_contraption
