@@ -608,7 +608,7 @@ message.dpp2.import.no_fpp_table = 'FPP friend table does not exist, nothing to 
 message.dpp2.import.button_dpp_friends = 'Import DPP friends'
 message.dpp2.import.button_fpp_friends = 'Import FPP friends'
 
-message.dpp2.error.empty_constraint = 'Entity:GetConstrainedEntities() returned nothing?!'
+message.dpp2.error.empty_constraint = 'Entity:GetConstrainedEntities() returned invalid entities?!'
 
 gui.dpp2.toolmenu.playertransfer = 'Transfer everything to %s'
 gui.dpp2.toolmenu.playertransferfallback = 'Mark %s player as trasnfer fallback'
