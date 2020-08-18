@@ -259,7 +259,7 @@ class DPP2.ContraptionHolder
 		setup = {}
 
 		for ent in pairs(find)
-			if ent.__dpp2_contraption and ent.__dpp2_contraption ~= @ and #ent.__dpp2_contraption.ents >= #oldEnts and ent.__dpp2_contraption ~= ask
+			if ent.__dpp2_contraption and ent.__dpp2_contraption ~= @ and #ent.__dpp2_contraption.ents > #oldEnts and ent.__dpp2_contraption ~= ask
 				ent.__dpp2_contraption\Walk(frompoint, @, find)
 				ent.__dpp2_contraption._pushing = @_pushing\max(ent.__dpp2_contraption._pushing)
 				table.append(ent.__dpp2_contraption._pushing_r, @_pushing_r)
