@@ -269,20 +269,20 @@ class DPP2.DEF.ProtectionDefinition
 		--ent\SetNWBool(@lock_self_nwname, true)
 		--ply[@lock_self_nwname] = ply[@lock_self_nwname] or {}
 		--ply[@lock_self_nwname][ent] = true
-		ent\SetNWBool(@lock_self_nwname .. '_' .. ply\SteamID64(), true)
+		ent\SetNWBool(@lock_self_nwname .. '_' .. (game.SinglePlayer() and '0' or ply\SteamID64()), true)
 		return @
 
 	IsLockedSelf: (ply, ent) =>
 		--return false if not ply[@lock_self_nwname]
 		--return ply[@lock_self_nwname][ent] == true
-		return ent\GetNWBool(@lock_self_nwname .. '_' .. ply\SteamID64(), false)
+		return ent\GetNWBool(@lock_self_nwname .. '_' .. (game.SinglePlayer() and '0' or ply\SteamID64()), false)
 
 	UnLockSelf: (ply, ent) =>
 		error('Invalid side') if CLIENT
 		--ent\SetNWBool(@lock_self_nwname, false)
 		--return @ if not ply[@lock_self_nwname]
 		--ply[@lock_self_nwname][ent] = nil
-		ent\SetNWBool(@lock_self_nwname .. '_' .. ply\SteamID64(), false)
+		ent\SetNWBool(@lock_self_nwname .. '_' .. (game.SinglePlayer() and '0' or ply\SteamID64()), false)
 		return @
 
 	LockOthers: (ent) =>
