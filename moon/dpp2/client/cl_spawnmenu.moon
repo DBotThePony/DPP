@@ -86,8 +86,12 @@ SpawnlistOpenGenericMenu = =>
 
 	hitRemove = false
 	hitAdd = false
+
 	hitRemove2 = false
 	hitAdd2 = false
+
+	hitRemove3 = false
+	hitAdd3 = false
 
 	for model in *models
 		if DPP2.ModelBlacklist\Has(model)
@@ -100,9 +104,14 @@ SpawnlistOpenGenericMenu = =>
 		else
 			hitAdd2 = true
 
-		break if hitRemove and hitAdd and hitRemove2 and hitAdd2
+		if DPP2.ModelRestrictions\Has(model)
+			hitRemove3 = true
+		else
+			hitAdd3 = true
 
-	return if not hitRemove and not hitAdd and not hitRemove2 and not hitAdd2 -- a?
+		break if hitRemove and hitAdd and hitRemove2 and hitAdd2 and hitRemove3 and hitAdd3
+
+	return if not hitRemove and not hitAdd and not hitRemove2 and not hitAdd2 and not hitRemove3 -- a?
 
 	local menu
 
@@ -146,6 +155,18 @@ SpawnlistOpenGenericMenu = =>
 				if not DPP2.ModelExclusions\Has(model)
 					RunConsoleCommand('dpp2_' .. DPP2.ModelExclusions.add_command_identifier, model)
 		menu\AddOption('gui.dpp2.menu.add_to_model_exclist', add)\SetIcon(Menus.Icons.AddPlain)
+
+	if hitAdd3 and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelRestrictions.add_command_identifier)
+		action = -> DPP2.ModelRestrictions\OpenMultiMenu(models)
+		menu\AddOption('gui.dpp2.menu.add_to_model_restrictions', action)\SetIcon(Menus.Icons.AddPlain)
+
+	if hitRemove3 and DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelRestrictions.add_command_identifier)
+		action = ->
+			for model in *models
+				if DPP2.ModelRestrictions\Has(model)
+					RunConsoleCommand('dpp2_' .. DPP2.ModelRestrictions.remove_command_identifier, model)
+
+		menu\AddOption('gui.dpp2.menu.remove_from_model_restrictions', action)\SetIcon(Menus.Icons.Remove)
 
 DPP2.ToolStuff = {}
 local catchButtons

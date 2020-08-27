@@ -54,6 +54,7 @@ gui.dpp2.chosepnl.add.add = 'Add'
 gui.dpp2.chosepnl.add.entry = 'Add custom choice'
 gui.dpp2.restriction.is_whitelist = 'Group list act as whitelist'
 gui.dpp2.restriction.edit_title = 'Editing %q restriction'
+gui.dpp2.restriction.edit_multi_title = 'Editing multi restriction'
 
 gui.dpp2.cvars.protection = 'Main power switch for all protection modules'
 

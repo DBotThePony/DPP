@@ -181,6 +181,47 @@ DPP2.DEF.RestrictionList.__base.OpenMenu = (classname) =>
 
 	return frame
 
+DPP2.DEF.RestrictionList.__base.OpenMultiMenu = (classnames) =>
+	isWhitelist = false
+	groupsAvailable = [group for group in pairs(CAMI.GetUsergroups())]
+	groupsChosen = {}
+
+	frame = vgui.Create('DLib_Window')
+	frame\SetSize(ScreenSize(200), ScreenSize(300))
+	frame\Center()
+	frame\MakePopup()
+	frame\SetTitle('gui.dpp2.restriction.edit_multi_title')
+
+	whitelistcheckbox = vgui.Create('DCheckBoxLabel', frame)
+	whitelistcheckbox\Dock(TOP)
+	whitelistcheckbox\SetText('gui.dpp2.restriction.is_whitelist')
+	whitelistcheckbox\SetChecked(isWhitelist)
+	whitelistcheckbox\DockMargin(0, 5, 0, 5)
+
+	canvas = vgui.Create('EditablePanel', frame)
+	canvas\Dock(FILL)
+
+	selectable = Menus.MultChooseMenu()
+	selectable\SetCanAddChoices(true)
+	selectable\Add(group, group, false) for group in *groupsAvailable
+	selectable\Add(group, group, true) for group in *groupsChosen
+	selectable\BuildOntoCanvas(canvas)
+
+	finish = ->
+		value = selectable\GetChosenValues()
+
+		if #value == 0
+			for classname in *classnames
+				RunConsoleCommand('dpp2_' .. @remove_command_identifier, classname)
+				return
+
+		for classname in *classnames
+			RunConsoleCommand('dpp2_' .. @add_command_identifier, classname, table.concat(value, ','), whitelistcheckbox\GetChecked() and '1' or '0')
+
+	selectable\AddButtonsTo(nil, frame, finish)
+
+	return frame
+
 DPP2.DEF.Blacklist.__base.RebuildListView = =>
 	return if not IsValid(@listView)
 
