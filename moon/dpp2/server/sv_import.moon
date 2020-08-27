@@ -386,7 +386,7 @@ DPPWhitelistTypes = {
 	toolmode: DPP2.ToolgunModeExclusions
 }
 
-_ImportDPPBlacklists = (identifier, registry, dryrun, iname = 'block_') ->
+_ImportDPPBlacklists = (identifier, registry, dryrun, iname = 'block_') =>
 	if not registry\Has(identifier)
 		if dryrun
 			DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.' .. iname .. registry.identifier, identifier)
@@ -404,7 +404,7 @@ ImportDPPBlacklists = (dryrun = true) =>
 			return if not data
 
 			for row in *data
-				_ImportDPPBlacklists(row.ENTITY, registry, dryrun)
+				_ImportDPPBlacklists(@, row.ENTITY, registry, dryrun)
 
 			DPP2.LMessagePlayer(@, 'message.dpp2.import.done')
 			DPP2.LMessagePlayer(@, 'message.dpp2.import.done_dryrun') if dryrun
@@ -414,7 +414,7 @@ ImportDPPBlacklists = (dryrun = true) =>
 		registry = DPP2.ModelBlacklist
 
 		for row in *data
-			_ImportDPPBlacklists(row.MODEL, DPP2.ModelBlacklist, dryrun)
+			_ImportDPPBlacklists(@, row.MODEL, DPP2.ModelBlacklist, dryrun)
 
 		DPP2.LMessagePlayer(@, 'message.dpp2.import.done')
 		DPP2.LMessagePlayer(@, 'message.dpp2.import.done_dryrun') if dryrun
