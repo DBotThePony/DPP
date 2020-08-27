@@ -68,7 +68,11 @@ DPP2.DEF.LimitRegistry.__base.RebuildListView = =>
 	@listView\Clear()
 
 	sorted = [e for e in *@listing]
-	table.sort sorted, (a, b) -> a.class < b.class and a.group < b.group
+	table.sort sorted, (a, b) ->
+		if a.class == b.class
+			return a.group < b.group
+
+		return a.class < b.class
 
 	for entry in *sorted
 		@listView\AddLine(entry.class, entry.group, entry.limit)._entry = entry
