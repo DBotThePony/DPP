@@ -357,7 +357,7 @@ ImportDPPRestrictions = (dryrun = true) =>
 						DPP2.LMessagePlayer(@, 'message.dpp2.import.dryrun.restrict.' .. registry.identifier, identifier, table.concat([string.format('%q', group) for group in *groups], ', '))
 				else
 					if not registry\Has(identifier)
-						registry\CreateEntry(identifier, admins, isWhitelist)\Replicate()
+						registry\CreateEntry(identifier, groups, isWhitelist)\Replicate()
 						DPP2.Notify(true, nil, 'command.dpp2.rlists.added_ext.' .. registry.identifier, @, identifier, table.concat(groups, ', '), isWhitelist)
 
 			DPP2.LMessagePlayer(@, 'message.dpp2.import.done')
