@@ -427,7 +427,7 @@ ImportDPPExclusions = (dryrun = true) =>
 			return if not data
 
 			for row in *data
-				_ImportDPPBlacklists(row.ENTITY, registry, dryrun, 'exclude_')
+				_ImportDPPBlacklists(@, row.ENTITY, registry, dryrun, 'exclude_')
 
 			DPP2.LMessagePlayer(@, 'message.dpp2.import.done')
 			DPP2.LMessagePlayer(@, 'message.dpp2.import.done_dryrun') if dryrun
