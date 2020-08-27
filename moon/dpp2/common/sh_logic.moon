@@ -282,7 +282,8 @@ class DPP2.ContraptionHolder
 		return true
 
 	CalculateWorldAABB: =>
-		mins, maxs = @ents[1]\WorldSpaceAABB()
+		mins, maxs = @ents[1]\WorldSpaceAABB() if IsValid(@ents[1])
+		mins, maxs = Vector(), Vector() if not IsValid(@ents[1])
 
 		for ent in *@ents
 			if IsValid(ent)
