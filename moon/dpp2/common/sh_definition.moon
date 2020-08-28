@@ -491,7 +491,7 @@ class DPP2.DEF.ProtectionDefinition
 					return false, i18n.localize('gui.dpp2.access.status.friend'), i18n.localize('gui.dpp2.access.status.contraption_ext', contraption\GetID()) if ownerSteamID ~= 'world' and not @CanTouchOther(ply, ownerSteamID)
 		else
 			for ent2 in *contraption.ents
-				if IsValid(ent2) and ent2 ~= ent
+				if IsValid(ent2)
 					owner, ownerSteamID, ownerNick = ent2\DPP2GetOwner()
 					classname2 = ent2\GetClass()
 					mdl2 = ent2\GetModel()
