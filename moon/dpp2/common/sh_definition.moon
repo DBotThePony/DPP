@@ -466,14 +466,15 @@ class DPP2.DEF.ProtectionDefinition
 		return cangeneric, tstatus if cangeneric ~= nil
 
 		contraption = ent\DPP2GetContraption()
+		return @_CanTouch(ply, ent, processContraptions) if not contraption
 		steamid = ply\SteamID()
-		cachekey = steamid .. '_' .. contraption.id .. '_' .. contraption.rev if contraption
+		cachekey = steamid .. '_' .. contraption.id .. '_' .. contraption.rev
 
 		if contraption and @cache[cachekey] and not DPP2.NO_DEF_CACHE\GetBool()
 			return unpack(@cache[cachekey], 1, 4)
 
 		result, a, b, c = @_CanTouch(ply, ent, processContraptions)
-		@cache[cachekey] = {result, a, b, c} if contraption
+		@cache[cachekey] = {result, a, b, c}
 
 		return result, a, b, c
 
