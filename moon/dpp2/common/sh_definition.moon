@@ -391,6 +391,7 @@ class DPP2.DEF.ProtectionDefinition
 		@ClearPlayerCache(ply)
 
 	ClearPlayerCache: (ply = NULL) =>
+		steamid = ply\SteamID()
 		removal = {}
 
 		for key in pairs(@cache)
@@ -421,6 +422,11 @@ class DPP2.DEF.ProtectionDefinition
 		return true if not ply\IsValid()
 		return @CanTouchWorld(ply) if other == 'world'
 		return @CanTouchMap(ply) if other == 'map'
+
+		changed = ply\GetInfoBool(@clientNoTouchOtherName, false) ~= ply[@clientNoTouchOtherName]
+		ply[@clientNoTouchOtherName] = ply\GetInfoBool(@clientNoTouchOtherName, false)
+		@ClearPlayerCache(ply) if changed
+
 		return false, i18n.localize('gui.dpp2.access.status.yoursettings') if ply\GetInfoBool(@clientNoTouchOtherName, false)
 		return true if not @IsEnabled()
 
