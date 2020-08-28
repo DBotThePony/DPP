@@ -108,6 +108,14 @@ class DPP2.DEF.ProtectionDefinition
 		@noMapTouch =           DPP2.CreateConVar(@identifier .. '_no_map', prefab\GetNoMapTouch(),                   DPP2.TYPE_BOOL)
 		@noMapTouchAdmin =      DPP2.CreateConVar(@identifier .. '_no_map_admin', prefab\GetNoMapTouchAdmin(),        DPP2.TYPE_BOOL)
 
+		clearcachecallback = -> @ClearEntireCache()
+		cvars.AddChangeCallback('dpp2_' .. @identifier .. '_protection', clearcachecallback, 'DPP2')
+		cvars.AddChangeCallback('dpp2_' .. @identifier .. '_touch_any', clearcachecallback, 'DPP2')
+		cvars.AddChangeCallback('dpp2_' .. @identifier .. '_no_world', clearcachecallback, 'DPP2')
+		cvars.AddChangeCallback('dpp2_' .. @identifier .. '_no_world_admin', clearcachecallback, 'DPP2')
+		cvars.AddChangeCallback('dpp2_' .. @identifier .. '_no_map', clearcachecallback, 'DPP2')
+		cvars.AddChangeCallback('dpp2_' .. @identifier .. '_no_map_admin', clearcachecallback, 'DPP2')
+
 		@clEnabledName = 'dpp2_cl_' .. @identifier .. '_protection'
 		@disableNWName = 'dpp2_' .. @identifier .. '_dp'
 		@lock_self_nwname = 'dpp2_' .. @identifier .. '_ls'
@@ -380,6 +388,9 @@ class DPP2.DEF.ProtectionDefinition
 		@friendsCache[steamid] = {ply2\SteamID(), ply2\CheckDLibFriendInOverride(ply, @friendID) for ply2 in *player.GetAll()}
 		@disabledCache[steamid] = @IsDisabledForPlayer(ply)
 
+		@ClearPlayerCache(ply)
+
+	ClearPlayerCache: (ply = NULL) =>
 		removal = {}
 
 		for key in pairs(@cache)
@@ -387,6 +398,8 @@ class DPP2.DEF.ProtectionDefinition
 				table.insert(removal, key)
 
 		@cache[key] = nil for key in *removal
+
+	ClearEntireCache: => @cache = {}
 
 	CanTouchWorld: (ply = NULL) =>
 		return true if not ply\IsValid()
