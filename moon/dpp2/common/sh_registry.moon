@@ -54,6 +54,12 @@ class DPP2.DEF.RestrictionListEntry
 	if CLIENT
 		@IncomingNetworkObject = (id, list) =>
 			entry = @ReadPayload()
+			entry2 = list\Get(entry.class)
+
+			if entry2
+				ErrorNoHalt('[DPP/2] RestrictionListEntry collision! Replacing old one with one from network! (' .. entry.class .. ')\n')
+				entry2\Remove(true)
+
 			entry\SetID(id)
 			entry\Bind(list)
 			list\AddEntry(entry)
