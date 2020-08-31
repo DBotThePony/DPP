@@ -446,15 +446,16 @@ DPP2.ACCESS.CanToolgun = (ply = NULL, ent = NULL, toolgunMode) ->
 	error('Invalid toolgun mode type. It must be a string! typeof' .. type(toolgunMode)) if type(toolgunMode) ~= 'string'
 	return true if not ply\IsValid()
 	return false, i18n.localize('gui.dpp2.access.status.toolgun_mode_blocked') if not DPP2.ToolgunModeRestrictions\Ask(toolgunMode, ply)
+
+	if DPP2.ToolgunModeExclusions\Ask(toolgunMode, ply)
+		cangeneric, tstatus = DPP2.ToolgunProtection\CanGeneric(ply, ent)
+		return cangeneric, tstatus if cangeneric ~= nil
+		return true, i18n.localize('gui.dpp2.access.status.toolgun_mode_excluded')
+
 	return false, i18n.localize('gui.dpp2.access.status.toolgun_player') if ent\IsPlayer() and DPP2.NO_TOOLGUN_PLAYER\GetBool() and (not DPP2.ToolgunProtection\IsAdmin(ply) or DPP2.NO_TOOLGUN_PLAYER_ADMIN\GetBool() and DPP2.ToolgunProtection\IsAdmin(ply))
 	-- allow self tool
 	return true if ply == ent
 	return true, i18n.localize('gui.dpp2.access.status.invalident') if not ent\IsValid()
-
-	if DPP2.ToolgunModeExclusions\Ask(toolgunMode, ply)
-		cangeneric, tstatus = DPP2.ToolgunProtection\CanGeneric(ply, ent)
-		return cangeneric, tstatus if not cangeneric
-		return true, i18n.localize('gui.dpp2.access.status.toolgun_mode_excluded')
 
 	return DPP2.ToolgunProtection\CanTouch(ply, ent)
 
