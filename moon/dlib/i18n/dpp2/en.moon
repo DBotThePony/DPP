@@ -181,7 +181,7 @@ gui.dpp2.model_limits.window_title = 'Model limit list visual menu'
 gui.dpp2.access.status.model_exclusion = 'Model is excluded from protection'
 
 for {modeID, modeName} in *{{'model', 'Model'}, {'toolgun_mode', 'Toolgun mode'}, {'class_spawn', 'Spawn'}}
-	gui.dpp2.cvars['el_' .. modeID .. '_enable'] = string.format('%s explusion list enabled', modeName)
+	gui.dpp2.cvars['el_' .. modeID .. '_enable'] = string.format('%s exclusion list enabled', modeName)
 
 	gui.dpp2.cvars['bl_' .. modeID .. '_enable'] = string.format('%s blacklist enabled', modeName)
 	gui.dpp2.cvars['bl_' .. modeID .. '_whitelist'] = string.format('%s blacklist act as whitelist', modeName)
