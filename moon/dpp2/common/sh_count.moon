@@ -360,20 +360,7 @@ class DPP2.DEF.LimitRegistry
 		@LoadFromDisk() if SERVER
 
 		if CLIENT
-			if IsValid(LocalPlayer())
-				timer.Simple 1, -> @RequestFromServer()
-			else
-				frames = 0
-				hook.Add 'Think', 'DPP2_Limits_' .. identifier .. '_request', ->
-					ply = LocalPlayer()
-					return if not IsValid(ply)
-
-					if ply\GetVelocity()\Length() > 0
-						frames += 1
-
-					if frames > 400
-						@RequestFromServer()
-						hook.Remove 'Think', 'DPP2_Limits_' .. identifier .. '_request'
+			timer.Simple 1, -> @RequestFromServer()
 
 	GetByID: (id) =>
 		return entry for entry in *@listing when entry.id == id

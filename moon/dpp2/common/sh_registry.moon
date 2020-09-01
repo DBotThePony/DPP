@@ -419,20 +419,7 @@ class DPP2.DEF.RestrictionList
 		@LoadFromDisk() if SERVER
 
 		if CLIENT
-			if IsValid(LocalPlayer())
-				timer.Simple 1, -> @RequestFromServer()
-			else
-				frames = 0
-				hook.Add 'Think', 'DPP2_' .. @identifier .. '_request', ->
-					ply = LocalPlayer()
-					return if not IsValid(ply)
-
-					if ply\GetVelocity()\Length() > 0
-						frames += 1
-
-					if frames > 400
-						@RequestFromServer()
-						hook.Remove 'Think', 'DPP2_' .. @identifier .. '_request'
+			timer.Simple 1, -> @RequestFromServer()
 
 	CallHook: (name, entry, ...) => hook.Run('DPP2_' .. @identifier .. '_' .. name, @, entry, ...)
 	AddEntry: (entry) =>
@@ -655,20 +642,7 @@ class DPP2.DEF.Blacklist
 		@LoadFromDisk() if SERVER
 
 		if CLIENT
-			if IsValid(LocalPlayer())
-				timer.Simple 1, -> @RequestFromServer()
-			else
-				frames = 0
-				hook.Add 'Think', 'DPP2_' .. @@__name .. '_' .. @identifier .. '_request', ->
-					ply = LocalPlayer()
-					return if not IsValid(ply)
-
-					if ply\GetVelocity()\Length() > 0
-						frames += 1
-
-					if frames > 400
-						@RequestFromServer()
-						hook.Remove 'Think', 'DPP2_' .. @@__name .. '_' .. @identifier .. '_request'
+			timer.Simple 1, -> @RequestFromServer()
 
 	CallHook: (name, ...) => hook.Run('DPP2_' .. @@__name .. '_' .. @identifier .. '_' .. name, @, ...)
 
