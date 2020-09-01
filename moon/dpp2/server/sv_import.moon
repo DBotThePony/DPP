@@ -326,13 +326,13 @@ ImportFPP = (dryrun = true) =>
 		DPP2.LMessagePlayer(@, 'message.dpp2.import.done_dryrun') if dryrun
 
 DPPRestrictTypes = {
-	tool: DPP2.ToolgunProtection.RestrictionList
+	tool: DPP2.ToolgunModeRestrictions
 	sent: DPP2.SpawnRestrictions
 	vehicle: DPP2.VehicleProtection.RestrictionList
 	swep: DPP2.SpawnRestrictions
 	model: DPP2.ModelRestrictions
 	npc: DPP2.SpawnRestrictions
-	property: DPP2.ToolgunProtection.RestrictionList
+	property: DPP2.ToolgunModeRestrictions
 	pickup: DPP2.PickupProtection.RestrictionList
 	--e2function: 'E2Function'
 	--e2afunction: 'E2AFunction'
