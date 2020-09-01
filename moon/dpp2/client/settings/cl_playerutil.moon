@@ -104,7 +104,7 @@ Menus.BuildCleanupPanel = =>
 					\Dock(LEFT)
 					\DockMargin(0, 0, 5, 0)
 					\SetSteamID(ply\SteamID())
-					timer.Simple 0, -> \SetWide(\GetTall())
+					timer.Simple 0, -> \SetWide(\GetTall()) if \IsValid()
 
 				with vgui.Create('DButton', row)
 					\Dock(FILL)
@@ -153,7 +153,7 @@ Menus.BuildTransferFallbackPanel = =>
 						\Dock(LEFT)
 						\DockMargin(0, 0, 5, 0)
 						\SetSteamID(ply\SteamID())
-						timer.Simple 0, -> \SetWide(\GetTall())
+						timer.Simple 0, -> \SetWide(\GetTall()) if \IsValid()
 
 					with vgui.Create('DCheckBoxLabel', row)
 						\Dock(FILL)
@@ -213,7 +213,7 @@ Menus.BuildTransferPanel = =>
 						\Dock(LEFT)
 						\DockMargin(0, 0, 5, 0)
 						\SetSteamID(ply\SteamID())
-						timer.Simple 0, -> \SetWide(\GetTall())
+						timer.Simple 0, -> \SetWide(\GetTall()) if \IsValid()
 
 					with vgui.Create('DButton', row)
 						\Dock(FILL)
