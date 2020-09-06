@@ -433,7 +433,7 @@ properties.Add('dpp2_copyvector', {
 							button\SetIcon(Menus.Icons.Remove)
 							submenu\AddOption('gui.dpp2.menus.remove2', (-> RunConsoleCommand('dpp2_' .. object.remove_command_identifier, classname)))\SetIcon(Menus.Icons.Remove)
 					elseif DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.add_command_identifier)
-						\AddOption('gui.dpp2.menu.add_to_' .. object.identifier .. '_' .. object.__class.REGULAR_NAME, (-> RunConsoleCommand('dpp2_' .. object.add_command_identifier, model)))\SetIcon(Menus.Icons.AddPlain)
+						\AddOption('gui.dpp2.menu.add_to_' .. object.identifier .. '_' .. object.__class.REGULAR_NAME, (-> RunConsoleCommand('dpp2_' .. object.add_command_identifier, classname)))\SetIcon(Menus.Icons.AddPlain)
 
 			\AddSpacer()
 
