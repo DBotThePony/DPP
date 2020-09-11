@@ -39,7 +39,11 @@ cmds = {
 
 		ply = DPP2.FindPlayerInCommand(str)
 		return 'command.dpp2.generic.notarget' if not ply
-		SafeRemoveEntity(ent) for ent in *ply\DPP2FindOwned()
+
+		for ent in *ply\DPP2FindOwned()
+			if not ent\IsWeapon() or not IsValid(ent\GetOwner())
+				SafeRemoveEntity(ent)
+
 		DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanup', @, ply)
 
 	cleanupnpcs: (args = {}, message) =>
@@ -61,7 +65,10 @@ cmds = {
 		DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanupallnpcs', @)
 
 	cleanupall: (args = {}, message) =>
-		SafeRemoveEntity(ent) for ent in *DPP2.FindOwned()
+		for ent in *DPP2.FindOwned()
+			if not ent\IsWeapon() or not IsValid(ent\GetOwner())
+				SafeRemoveEntity(ent)
+
 		DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanupall', @)
 
 	cleanupallvehicles: (args = {}, message) =>
