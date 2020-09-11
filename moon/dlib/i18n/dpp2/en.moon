@@ -613,3 +613,7 @@ message.dpp2.error.empty_constraint = 'Entity:GetConstrainedEntities() returned 
 
 gui.dpp2.toolmenu.playertransfer = 'Transfer everything to %s'
 gui.dpp2.toolmenu.playertransferfallback = 'Mark %s player as trasnfer fallback'
+
+gui.dpp2.property.cleanup = 'Cleanup entities of owner'
+gui.dpp2.property.cleanupnpcs = 'Cleanup NPCs of owner'
+gui.dpp2.property.cleanupvehicles = 'Cleanup Vehicles of owner'

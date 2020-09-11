@@ -38,6 +38,47 @@ lockmodes = {
 	DPP2.GravgunProtection
 }
 
+properties.Add('dpp2_cleanup', {
+	MenuLabel: 'gui.dpp2.property.cleanup'
+	Order: 1655
+	MenuIcon: Menus.Icons.CleanupMenu
+
+	Filter: (ent = NULL, ply = LocalPlayer()) => ent\DPP2IsOwned() and DPP2.cmd_perm_watchdog\HasPermission('dpp2_cleanup')
+	MenuOpen: (option, ent = NULL, tr, ply = LocalPlayer()) =>
+		with menu = option\AddSubMenu()
+			menu\AddOption('gui.dpp2.menus.remove2', -> RunConsoleCommand('dpp2_cleanup', ent\DPP2GetOwner()\UserID()))\SetIcon(Menus.Icons.Confirm)
+
+	Action: (ent = NULL, tr, ply = LocalPlayer()) =>
+})
+
+properties.Add('dpp2_cleanupnpcs', {
+	MenuLabel: 'gui.dpp2.property.cleanupnpcs'
+	Order: 1656
+	MenuIcon: Menus.Icons.CleanupMenu
+
+	Filter: (ent = NULL, ply = LocalPlayer()) => ent\IsNPC() and ent\DPP2IsOwned() and DPP2.cmd_perm_watchdog\HasPermission('dpp2_cleanupnpcs')
+
+	MenuOpen: (option, ent = NULL, tr, ply = LocalPlayer()) =>
+		with menu = option\AddSubMenu()
+			menu\AddOption('gui.dpp2.menus.remove2', -> RunConsoleCommand('dpp2_cleanupnpcs', ent\DPP2GetOwner()\UserID()))\SetIcon(Menus.Icons.Confirm)
+
+	Action: (ent = NULL, tr, ply = LocalPlayer()) =>
+})
+
+properties.Add('dpp2_cleanupvehicles', {
+	MenuLabel: 'gui.dpp2.property.cleanupvehicles'
+	Order: 1657
+	MenuIcon: Menus.Icons.CleanupMenu
+
+	Filter: (ent = NULL, ply = LocalPlayer()) => ent\IsVehicle() and ent\DPP2IsOwned() and DPP2.cmd_perm_watchdog\HasPermission('dpp2_cleanupvehicles')
+
+	MenuOpen: (option, ent = NULL, tr, ply = LocalPlayer()) =>
+		with menu = option\AddSubMenu()
+			menu\AddOption('gui.dpp2.menus.remove2', -> RunConsoleCommand('dpp2_cleanupvehicles', ent\DPP2GetOwner()\UserID()))\SetIcon(Menus.Icons.Confirm)
+
+	Action: (ent = NULL, tr, ply = LocalPlayer()) =>
+})
+
 properties.Add('dpp2_lock_self', {
 	MenuLabel: 'gui.dpp2.property.lock_self.top'
 	Order: 401

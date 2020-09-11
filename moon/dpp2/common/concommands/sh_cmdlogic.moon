@@ -61,6 +61,12 @@ cmd_perms = {
 	import_dpp_reload: 'superadmin'
 }
 
+local watchdog
+
+if CLIENT
+	watchdog = DLib.CAMIWatchdog('dpp2_client_cmd')
+	DPP2.cmd_perm_watchdog = watchdog
+
 DPP2.cmd_perms[k] = v for k, v in pairs(cmd_perms)
 
 if CLIENT
@@ -145,8 +151,6 @@ if SERVER
 			DPP2.cmd_remap[cmdName] = (ply, args) -> execute(ply, nil, args)
 elseif not game.SinglePlayer()
 	DPP2.cmd_existing[cmd] = true for cmd in pairs(DPP2.cmd_autocomplete)
-	watchdog = DLib.CAMIWatchdog('dpp2_client_cmd')
-	DPP2.cmd_perm_watchdog = watchdog
 
 	for cmdName in pairs(DPP2.cmd_existing)
 		execute = (cmd = '', args = {}) =>
