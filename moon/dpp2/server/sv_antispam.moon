@@ -65,7 +65,7 @@ ComputeVolume = =>
 		when 1
 			phys = @GetPhysicsObject()
 			return 0 if not IsValid(phys)
-			return phys\GetVolume()
+			return phys\GetVolume() or 0
 		else
 			num = 0
 
@@ -74,6 +74,8 @@ ComputeVolume = =>
 				num += phys\GetVolume() if IsValid(phys)
 
 			return num
+
+	return 0
 
 DPP2._ComputeVolume2 = =>
 	mins, maxs = @OBBMins(), @OBBMaxs()
