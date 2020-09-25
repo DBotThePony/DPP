@@ -30,6 +30,7 @@ DPP2.DoTransfer = (fents = {}, ply = NULL) ->
 				if udata.Owner ~= ply
 					removeAll = true
 					everHit = false
+					udata.Entities = udata.Entities or {}
 
 					for ent in *udata.Entities
 						hit = false
