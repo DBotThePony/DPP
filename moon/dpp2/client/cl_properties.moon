@@ -260,6 +260,7 @@ do
 			return true
 
 		Action: (ent = NULL, tr, ply = LocalPlayer()) =>
+			RunConsoleCommand('gmod_toolmode', 'creator')
 			RunConsoleCommand('creator_type', @CreatorType)
 			RunConsoleCommand('creator_arg', @CreatorArg) if @CreatorArg
 			RunConsoleCommand('creator_name', @CreatorName)
