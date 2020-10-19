@@ -58,7 +58,7 @@ DPP2.DoTransfer = (fents = {}, ply = NULL) ->
 						else
 							toremove2 = {}
 
-							for index2, ent in inpairs(udata.Entities)
+							for index2, ent in pairs(udata.Entities)
 								hit = false
 
 								for ent2 in *fents
