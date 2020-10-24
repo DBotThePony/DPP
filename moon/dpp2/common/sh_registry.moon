@@ -329,6 +329,7 @@ class DPP2.DEF.RestrictionList
 				if entry = self2\Get(prop)
 					entry\SetGroups([group\trim() for group in *groups\trim()\split(',')])
 					entry\SwitchIsWhitelist(isWhitelist) if args[3] and args[3]\trim() ~= ''
+					self2\SaveTimer()
 					DPP2.Notify(true, nil, 'command.dpp2.rlists.updated.' .. identifier, @, prop, (#entry.groups ~= 0 and table.concat(entry.groups, ', ') or '<none>'), entry.isWhitelist)
 					return
 
