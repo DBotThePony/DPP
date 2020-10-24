@@ -242,7 +242,10 @@ class DPP2.DEF.RestrictionListEntry
 	Replicate: =>
 		error('Invalid side') if CLIENT
 		error('Removed') if @removed
-		return false if @@REPLICATION_PAUSED
+
+		if @@REPLICATION_PAUSED
+			@replicated = true
+			return false
 
 		if not @replicated
 			@replicated = true
@@ -503,7 +506,12 @@ class DPP2.DEF.RestrictionList
 			return false
 
 		DPP2.DEF.RestrictionListEntry\PauseReplication()
-		@AddEntry(DPP2.DEF.RestrictionListEntry\Deserialize(object)\Bind(@)) for object in *rebuild
+
+		for object in *rebuild
+			construct = DPP2.DEF.RestrictionListEntry\Deserialize(object)\Bind(@)
+			@AddEntry(construct)
+			construct\Replicate()
+
 		DPP2.DEF.RestrictionListEntry\UnpauseReplication()
 
 		@FullReplicate() if player.GetCount() ~= 0
