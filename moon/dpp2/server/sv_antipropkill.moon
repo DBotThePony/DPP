@@ -86,15 +86,15 @@ inc = (by_, ply) =>
 			if by_
 				if ply and not table.qhasValue(contraption._pushing_r, ply)
 					table.insert(contraption._pushing_r, ply)
-					ent\CollisionRulesChanged() for ent in *contraption.ents
+					ent\CollisionRulesChanged() for ent in *contraption.ents when ent\IsValid()
 			else
 				if ply and table.qhasValue(contraption._pushing_r, ply)
 					table.RemoveByValue(contraption._pushing_r, ply)
-					ent\CollisionRulesChanged() for ent in *contraption.ents
+					ent\CollisionRulesChanged() for ent in *contraption.ents when ent\IsValid()
 
 		if prev == 0 and by_
 			for ent in *contraption.ents
-				if not ent.__dpp2_pushing or ent.__dpp2_pushing == 0
+				if ent\IsValid() and (not ent.__dpp2_pushing or ent.__dpp2_pushing == 0)
 					ent.__dpp2_prev_col_check = ent\GetCustomCollisionCheck()
 					ent\SetCustomCollisionCheck(true)
 					ent\CollisionRulesChanged()
@@ -102,7 +102,7 @@ inc = (by_, ply) =>
 				ent.__dpp2_contraption_pushing = true
 		elseif prev > 0 and not by_ and contraption._pushing == 0
 			for ent in *contraption.ents
-				if ent.__dpp2_contraption_pushing
+				if ent\IsValid() and ent.__dpp2_contraption_pushing
 					ent\SetCustomCollisionCheck(ent.__dpp2_prev_col_check)
 					ent\CollisionRulesChanged()
 					ent.__dpp2_contraption_pushing = nil
