@@ -79,13 +79,14 @@ Menus.BuildUtilsPanel = =>
 Menus.BuildCleanupPanel = =>
 	return if not IsValid(@)
 
-	@Button('gui.dpp2.toolmenu.playerutil.freezephysall', 'dpp2_freezephysall')\DockMargin(5, 5, 5, 5)
-	@Button('gui.dpp2.toolmenu.util.cleanupgibs', 'dpp2_cleanupgibs')\DockMargin(5, 5, 5, 5)
-	@Button('gui.dpp2.toolmenu.playerutil.freezephyspanic', 'dpp2_freezephyspanic')\DockMargin(5, 5, 5, 5)
-	@Button('gui.dpp2.toolmenu.playerutil.clear_all', 'dpp2_cleanupall')\DockMargin(5, 5, 5, 5)
-	@Button('gui.dpp2.toolmenu.playerutil.clear_npcs', 'dpp2_cleanupnpcs')\DockMargin(5, 5, 5, 5)
-	@Button('gui.dpp2.toolmenu.playerutil.clear_vehicles', 'dpp2_cleanupvehicles')\DockMargin(5, 5, 5, 5)
-	@Button('gui.dpp2.toolmenu.playerutil.clear_disconnected', 'dpp2_cleanupdisconnected')\DockMargin(5, 5, 5, 5)
+	@Button('gui.dpp2.toolmenu.playerutil.freezephysall', 'dpp2_freezephysall')
+	@Button('gui.dpp2.toolmenu.util.cleanupgibs', 'dpp2_cleanupgibs')
+	@Button('gui.dpp2.toolmenu.playerutil.freezephyspanic', 'dpp2_freezephyspanic')
+	@Button('gui.dpp2.toolmenu.playerutil.clear_all', 'dpp2_cleanupall')
+	@Button('gui.dpp2.toolmenu.playerutil.clear_npcs', 'dpp2_cleanupnpcs')
+	@Button('gui.dpp2.toolmenu.playerutil.clear_vehicles', 'dpp2_cleanupvehicles')
+	@Button('gui.dpp2.toolmenu.playerutil.clear_disconnected', 'dpp2_cleanupdisconnected')
+	@Help('')
 
 	panels = {}
 
@@ -97,6 +98,7 @@ Menus.BuildCleanupPanel = =>
 			with row = vgui.Create('EditablePanel', @)
 				table.insert(panels, row)
 				\Dock(TOP)
+				\DockMargin(5, 0, 5, 0)
 				\DockPadding(5, 5, 5, 5)
 				\SetTall(32)
 
