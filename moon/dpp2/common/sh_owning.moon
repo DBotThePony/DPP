@@ -36,9 +36,10 @@ entMeta.DPP2GetIsUpForGrabs = => @GetNWBool('dpp2_ufg', false)
 entMeta.DPP2OwnerIsValid = => @GetNWEntity('dpp2_ownerent', NULL)\IsValid()
 entMeta.DPP2IsOwnerValid = => @GetNWEntity('dpp2_ownerent', NULL)\IsValid()
 entMeta.DPP2IsOwnerTrackedByUID = => @GetNWBool('dpp2_owner_uid_track', false)
-entMeta.DPP2GetOwnerSteamID = => select(2, @DPP2GetOwner())
-entMeta.DPP2GetOwnerUID = => select(4, @DPP2GetOwner())
+entMeta.DPP2GetOwnerSteamID = => @GetNWString('dpp2_owner_steamid')
+entMeta.DPP2GetOwnerUID = => @GetNWString('dpp2_owner_uid', 'world')
 entMeta.DPP2GetOwnerName = => select(3, @DPP2GetOwner())
+entMeta.DPP2GetOwnerPID = => @GetNWInt('dpp2_owner_pid', -1)
 
 plyMeta.DPP2GetAllEnts = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @]
 plyMeta.DPP2FindOwned = plyMeta.DPP2GetAllEnts
@@ -70,6 +71,13 @@ DPP2.GetAllNPCBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\D
 DPP2.GetAllWeaponsBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID() == @ and type(ent) == 'Weapon']
 DPP2.GetAllPropsBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID() == @ and ent\GetClass() == 'prop_physics']
 DPP2.GetAllRagdollsBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID() == @ and ent\GetClass() == 'prop_ragdoll']
+
+DPP2.GetAllEntsByPID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerPID() == @]
+DPP2.GetAllEntitiesByPID = DPP2.GetAllEntsByUID
+DPP2.GetAllNPCByPID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerPID() == @ and type(ent) == 'NPC']
+DPP2.GetAllWeaponsByPID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerPID() == @ and type(ent) == 'Weapon']
+DPP2.GetAllPropsByPID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerPID() == @ and ent\GetClass() == 'prop_physics']
+DPP2.GetAllRagdollsByPID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerPID() == @ and ent\GetClass() == 'prop_ragdoll']
 
 DPP2.GetAllEntsByUID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerUID() == @]
 DPP2.GetAllEntitiesByUID = DPP2.GetAllEntsByUID

@@ -30,9 +30,9 @@ entMeta.DPP2SetUpForGrabs = (val) =>
 
 entMeta.DPP2GetOwner = =>
 	if @GetNWString('dpp2_owner_steamid', '-1') == '-1'
-		return NULL, 'world', 'World', 'world'
-	else
-		return @GetNWEntity('dpp2_ownerent', NULL), @GetNWString('dpp2_owner_steamid'), @_dpp2_last_nick, @GetNWString('dpp2_owner_uid', 'world')
+		return NULL, 'world', 'World', 'world', -1
+
+	return @GetNWEntity('dpp2_ownerent', NULL), @GetNWString('dpp2_owner_steamid'), @_dpp2_last_nick, @GetNWString('dpp2_owner_uid', 'world'), @GetNWInt('dpp2_owner_pid', -1)
 
 entMeta.DPP2SetOwner = (newOwner = NULL) =>
 	return false if type(@) == 'Player'
@@ -60,16 +60,19 @@ entMeta.DPP2SetOwner = (newOwner = NULL) =>
 		hook.Run('DPP2.NotifyOwnerChange', @, @GetNWEntity('dpp2_ownerent', NULL), newOwner)
 		hook.Run('DPP2.NotifySteamIDOwnerChange', @, @GetNWString('dpp2_owner_steamid', '-1'), newOwner\IsValid() and newOwner\SteamID() or '-1')
 		hook.Run('DPP2.NotifyUIDOwnerChange', @, @GetNWString('dpp2_owner_uid', '-1'), newOwner\IsValid() and newOwner\UniqueID() or '-1')
+		hook.Run('DPP2.NotifyPlayerIDOwnerChange', @, @GetNWInt('dpp2_owner_pid', -1), newOwner\IsValid() and newOwner\UserID() or -1)
 
 	if newOwner == NULL
 		@SetNWEntity('dpp2_ownerent', NULL)
 		@SetNWString('dpp2_owner_steamid', '-1')
 		@SetNWString('dpp2_owner_uid', '-1')
+		@SetNWInt('dpp2_owner_pid', -1)
 		@_dpp2_last_nick = nil
 	else
 		@SetNWEntity('dpp2_ownerent', newOwner)
 		@SetNWString('dpp2_owner_steamid', newOwner\SteamID())
 		@SetNWString('dpp2_owner_uid', newOwner\UniqueID())
+		@SetNWInt('dpp2_owner_pid', newOwner\UserID())
 		@_dpp2_last_nick = newOwner\Nick()
 		@_dpp2_last_nick = @_dpp2_last_nick .. ' (' .. newOwner\SteamName() .. ')' if newOwner.SteamName and newOwner\SteamName() ~= newOwner\Nick()
 

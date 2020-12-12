@@ -25,12 +25,16 @@ entMeta = FindMetaTable('Entity')
 
 entMeta.DPP2GetOwner = =>
 	if @GetNWString('dpp2_owner_steamid', '-1') == '-1'
-		return NULL, 'world', 'World', 'world'
+		return NULL, 'world', 'World', 'world', -1
+
+	local ownerName
+
+	owner, ownerSteamID = @GetNWEntity('dpp2_ownerent', NULL), @GetNWString('dpp2_owner_steamid')
+
+	if IsValid(owner) and owner\IsPlayer()
+		ownerName = owner\Nick()
+		ownerName .. ' (' .. owner\SteamName() .. ')' if owner.SteamName and owner\SteamName() ~= ownerName
 	else
-		owner, ownerSteamID, ownerName = @GetNWEntity('dpp2_ownerent', NULL), @GetNWString('dpp2_owner_steamid'), DLib.LastNickFormatted(@GetNWString('dpp2_owner_steamid')), @GetNWString('dpp2_owner_uid', 'world')
+		ownerName = DLib.LastNickFormatted(ownerSteamID)
 
-		if IsValid(owner) and owner\IsPlayer()
-			ownerName = owner\Nick()
-			ownerName .. ' (' .. owner\SteamName() .. ')' if owner.SteamName and owner\SteamName() ~= ownerName
-
-		return owner, ownerSteamID, ownerName
+	return owner, ownerSteamID, ownerName, @GetNWString('dpp2_owner_uid', 'world'), @GetNWInt('dpp2_owner_pid', -1)
