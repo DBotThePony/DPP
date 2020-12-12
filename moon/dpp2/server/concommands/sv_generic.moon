@@ -37,28 +37,61 @@ cmds = {
 			when 'vehicles'
 				return DPP2.cmd_remap.cleanupallvehicles(@)
 
-		ply = DPP2.FindPlayerInCommand(str)
-		return 'command.dpp2.generic.notarget' if not ply
+		plyID = DPP2.FindPlayerUserIDInCommand(str, true)
+		return 'command.dpp2.generic.notarget' if not plyID
 
-		for ent in *ply\DPP2FindOwned()
+		findProps = DPP2.GetAllEntsByPID(plyID)
+		return 'command.dpp2.generic.notarget' if #findProps == 0
+
+		ply = Player(plyID)
+		findInfo = DPP2.GetAllKnownPlayersInfo(plyID) if not IsValid(ply)
+
+		for ent in *findProps
 			if not ent\IsWeapon() or not IsValid(ent\GetOwner())
 				SafeRemoveEntity(ent)
 
-		DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanup', @, ply)
+		if findInfo
+			DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanup_plain', @, findInfo.name, findInfo.steamid, findInfo.pid)
+		else
+			DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanup', @, ply)
 
 	cleanupnpcs: (args = {}, message) =>
 		str = table.concat(args, ' ')
-		ply = DPP2.FindPlayerInCommand(str)
-		return 'command.dpp2.generic.notarget' if not ply
-		SafeRemoveEntity(ent) for ent in *ply\DPP2FindOwned() when ent\IsNPC() or type(ent) == 'NextBot'
-		DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanupnpcs', @, ply)
+
+		plyID = DPP2.FindPlayerUserIDInCommand(str, true)
+		return 'command.dpp2.generic.notarget' if not plyID
+
+		findProps = DPP2.GetAllEntsByPID(plyID)
+		return 'command.dpp2.generic.notarget' if #findProps == 0
+
+		ply = Player(plyID)
+		findInfo = DPP2.GetAllKnownPlayersInfo(plyID) if not IsValid(ply)
+
+		SafeRemoveEntity(ent) for ent in *findProps when ent\IsNPC() or type(ent) == 'NextBot'
+
+		if findInfo
+			DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanupnpcs_plain', @, findInfo.name, findInfo.steamid, findInfo.pid)
+		else
+			DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanupnpcs', @, ply)
 
 	cleanupvehicles: (args = {}, message) =>
 		str = table.concat(args, ' ')
-		ply = DPP2.FindPlayerInCommand(str)
-		return 'command.dpp2.generic.notarget' if not ply
-		SafeRemoveEntity(ent) for ent in *ply\DPP2FindOwned() when ent\IsVehicle()
-		DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanupvehicles', @, ply)
+
+		plyID = DPP2.FindPlayerUserIDInCommand(str, true)
+		return 'command.dpp2.generic.notarget' if not plyID
+
+		findProps = DPP2.GetAllEntsByPID(plyID)
+		return 'command.dpp2.generic.notarget' if #findProps == 0
+
+		ply = Player(plyID)
+		findInfo = DPP2.GetAllKnownPlayersInfo(plyID) if not IsValid(ply)
+
+		SafeRemoveEntity(ent) for ent in *findProps when ent\IsVehicle()
+
+		if findInfo
+			DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanupvehicles_plain', @, findInfo.name, findInfo.steamid, findInfo.pid)
+		else
+			DPP2.NotifyCleanup(true, nil, 'command.dpp2.cleanupvehicles', @, ply)
 
 	cleanupallnpcs: (args = {}, message) =>
 		SafeRemoveEntity(ent) for ent in *DPP2.FindOwned() when ent\IsNPC() or type(ent) == 'NextBot'
@@ -81,10 +114,17 @@ cmds = {
 
 	freezephys: (args = {}, message) =>
 		str = table.concat(args, ' ')
-		ply = DPP2.FindPlayerInCommand(str)
-		return 'command.dpp2.generic.notarget' if not ply
 
-		for ent in *ply\DPP2FindOwned()
+		plyID = DPP2.FindPlayerUserIDInCommand(str, true)
+		return 'command.dpp2.generic.notarget' if not plyID
+
+		findProps = DPP2.GetAllEntsByPID(plyID)
+		return 'command.dpp2.generic.notarget' if #findProps == 0
+
+		ply = Player(plyID)
+		findInfo = DPP2.GetAllKnownPlayersInfo(plyID) if not IsValid(ply)
+
+		for ent in *findProps
 			if phys = ent\DPP2GetPhys()
 				if type(phys) == 'table'
 					phys2\EnableMotion(false) for phys2 in *phys

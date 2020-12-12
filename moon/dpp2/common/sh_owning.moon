@@ -65,6 +65,38 @@ plyMeta.DPP2HasRagdolls = =>
 	return true for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @ and ent\GetClass() == 'prop_ragdoll'
 	return false
 
+DPP2.GetAllKnownPlayersInfo = (plyID) ->
+	if plyID
+		for i, ent in ipairs(ents.GetAll())
+			owner, steamid, name, uid, pid = ent\DPP2GetOwner()
+
+			if pid == plyID
+				return {
+					ent: owner
+					steamid: steamid
+					:name
+					:uid
+					:pid
+				}
+
+		return false
+
+	output = {}
+
+	for i, ent in ipairs(ents.GetAll())
+		owner, steamid, name, uid, pid = ent\DPP2GetOwner()
+
+		if pid ~= -1 and not output[pid]
+			output[pid] = {
+				ent: owner
+				steamid: steamid
+				:name
+				:uid
+				:pid
+			}
+
+	return output
+
 DPP2.GetAllEntsBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID() == @]
 DPP2.GetAllEntitiesBySteamID = DPP2.GetAllEntsBySteamID
 DPP2.GetAllNPCBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID() == @ and type(ent) == 'NPC']

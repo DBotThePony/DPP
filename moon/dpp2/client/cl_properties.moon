@@ -46,7 +46,7 @@ properties.Add('dpp2_cleanup', {
 	Filter: (ent = NULL, ply = LocalPlayer()) => ent\DPP2IsOwned() and DPP2.cmd_perm_watchdog\HasPermission('dpp2_cleanup')
 	MenuOpen: (option, ent = NULL, tr, ply = LocalPlayer()) =>
 		with menu = option\AddSubMenu()
-			menu\AddOption('gui.dpp2.menus.remove2', -> RunConsoleCommand('dpp2_cleanup', ent\DPP2GetOwner()\UserID()))\SetIcon(Menus.Icons.Confirm)
+			menu\AddOption('gui.dpp2.menus.remove2', -> RunConsoleCommand('dpp2_cleanup', ent\DPP2GetOwnerPID()))\SetIcon(Menus.Icons.Confirm)
 
 	Action: (ent = NULL, tr, ply = LocalPlayer()) =>
 })
@@ -60,7 +60,7 @@ properties.Add('dpp2_cleanupnpcs', {
 
 	MenuOpen: (option, ent = NULL, tr, ply = LocalPlayer()) =>
 		with menu = option\AddSubMenu()
-			menu\AddOption('gui.dpp2.menus.remove2', -> RunConsoleCommand('dpp2_cleanupnpcs', ent\DPP2GetOwner()\UserID()))\SetIcon(Menus.Icons.Confirm)
+			menu\AddOption('gui.dpp2.menus.remove2', -> RunConsoleCommand('dpp2_cleanupnpcs', ent\DPP2GetOwnerPID()))\SetIcon(Menus.Icons.Confirm)
 
 	Action: (ent = NULL, tr, ply = LocalPlayer()) =>
 })
@@ -74,7 +74,7 @@ properties.Add('dpp2_cleanupvehicles', {
 
 	MenuOpen: (option, ent = NULL, tr, ply = LocalPlayer()) =>
 		with menu = option\AddSubMenu()
-			menu\AddOption('gui.dpp2.menus.remove2', -> RunConsoleCommand('dpp2_cleanupvehicles', ent\DPP2GetOwner()\UserID()))\SetIcon(Menus.Icons.Confirm)
+			menu\AddOption('gui.dpp2.menus.remove2', -> RunConsoleCommand('dpp2_cleanupvehicles', ent\DPP2GetOwnerPID()))\SetIcon(Menus.Icons.Confirm)
 
 	Action: (ent = NULL, tr, ply = LocalPlayer()) =>
 })

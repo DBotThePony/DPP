@@ -108,7 +108,7 @@ DPP2.FindPlayerInCommand = (str = '') ->
 		ply = Player(num)
 		return ply if IsValid(ply)
 
-	-- todo: better comprasion
+	-- todo: better comparison
 	findPly = false
 
 	for ply in *player.GetAll()
@@ -127,62 +127,90 @@ DPP2.FindPlayerInCommand = (str = '') ->
 
 	return findPly
 
-DPP2.FindPlayersInArgument = (str = '', filter, nobots = false) ->
+DPP2.FindPlayerUserIDInCommand = (str = '', allow_any = false) ->
+	str = str\trim()\lower()
+	return false if str == ''
+
+	if str\startsWith('steam_')
+		getplayer = player.GetBySteamID(str\upper())
+		return getplayer\UserID() if getplayer
+		return getplayer
+
+	if num = str\tonumber()
+		return num if allow_any
+		return num if IsValid(Player(num))
+
+	-- todo: better comparison
+	findPly = false
+
+	for ply in *player.GetAll()
+		nick = ply\Nick()\lower()
+		return ply\UserID() if nick == str
+
+		if nick\find(str)
+			findPly = ply
+
+		if ply.SteamName
+			nick = ply\SteamName()\lower()
+			return ply\UserID() if nick == str
+
+			if nick\find(str)
+				findPly = ply
+
+	return findPly\UserID() if findPly
+	return findPly
+
+DPP2.FindPlayersInArgument = (str = '', filter, nobots = false, any_player = false) ->
 	filter = LocalPlayer() if CLIENT and filter == true
 
 	if nobots
 		filter = {} if not filter
 		filter = {filter} if type(filter) ~= 'table'
-		table.insert(filter, ply) for ply in *player.GetAll() when ply\IsBot()
+		table.insert(filter, ply) for ply in *player_list when ply\IsBot()
+
+	filter = {} if not filter
+	filter = {filter} if not istable(filter)
+	filter = for ply in *filter
+		if isnumber(ply)
+			ply
+		else
+			ply\UserID()
+
+	-- player_list = player.GetAll()
+	player_list = DPP2.GetAllKnownPlayersInfo()
 
 	str = str\trim()\lower()
 	return {DLib.i18n.localize('command.dpp2.hint.player')} if str == ''
 
 	if str\startsWith('steam_')
 		plyFind = player.GetBySteamID(str\upper())
-		return {DLib.i18n.localize('command.dpp2.hint.player')} if plyFind and plyFind == lply
-		return {plyFind\Nick()} if plyFind and plyFind ~= lply
-		output = [ply\SteamID() for ply in *player.GetAll() when ply\SteamID()\lower()\startsWith(str) and ply ~= lply]
+		return {DLib.i18n.localize('command.dpp2.hint.player')} if plyFind and table.qhasValue(filter, plyFind\UserID())
+		return {plyFind\Nick()} if plyFind and not table.qhasValue(filter, plyFind\UserID())
+		output = [ply.steamid for ply in *player_list when ply.steamid\lower()\startsWith(str) and not table.qhasValue(filter, ply.uid)]
 		return #output ~= 0 and output or {DLib.i18n.localize('command.dpp2.hint.none')}
 
 	if num = str\tonumber()
 		ply = Player(num)
-		return {DLib.i18n.localize('command.dpp2.hint.player')} if IsValid(ply) and ply == lply
-		return {ply\Nick()} if IsValid(ply) and ply ~= lply
-		output = [ply\Nick() for ply in *player.GetAll() when ply\UserID()\tostring()\startsWith(str) and ply ~= lply]
+		return {DLib.i18n.localize('command.dpp2.hint.player')} if IsValid(ply) and table.qhasValue(filter, ply\UserID())
+		getply = player_list[num] if not table.qhasValue(filter, num)
+		return {getply.name} if getply
+		return {ply\Nick()} if IsValid(ply) and not table.qhasValue(filter, ply\UserID())
+		output = [ply.name for ply in *player_list when ply.uid\tostring()\startsWith(str) and not table.qhasValue(filter, ply.uid)]
 		return #output ~= 0 and output or {DLib.i18n.localize('command.dpp2.hint.none')}
 
 	findPly = {}
 
-	if not filter
-		for ply in *player.GetAll()
-			nick = ply\Nick()\lower()
+	for ply in *player_list
+		if not table.qhasValue(filter, ply.uid)
+			nick = ply.name\lower()
+
 			if nick == str or nick\find(str)
-				table.insert(findPly, ply\Nick())
-			elseif ply.SteamName
-				nick = ply\SteamName()\lower()
+				table.insert(findPly, ply.name)
+			elseif IsValid(ply.ent) and ply.ent.SteamName
+				nick = ply.ent\SteamName()\lower()
+
 				if nick == str or nick\find(str)
-					table.insert(findPly, ply\SteamName())
-	elseif type(filter) == 'Player'
-		for ply in *player.GetAll()
-			if filter ~= ply
-				nick = ply\Nick()\lower()
-				if nick == str or nick\find(str)
-					table.insert(findPly, ply\Nick())
-				elseif ply.SteamName
-					nick = ply\SteamName()\lower()
-					if nick == str or nick\find(str)
-						table.insert(findPly, ply\SteamName())
-	else
-		for ply in *player.GetAll()
-			if not table.qhasValue(filter, ply)
-				nick = ply\Nick()\lower()
-				if nick == str or nick\find(str)
-					table.insert(findPly, ply\Nick())
-				elseif ply.SteamName
-					nick = ply\SteamName()\lower()
-					if nick == str or nick\find(str)
-						table.insert(findPly, ply\SteamName())
+					table.insert(findPly, ply.ent\SteamName())
 
 	return #findPly ~= 0 and findPly or {DLib.i18n.localize('command.dpp2.hint.none')}
 
