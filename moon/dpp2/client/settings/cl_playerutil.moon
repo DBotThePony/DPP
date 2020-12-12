@@ -118,7 +118,7 @@ Menus.BuildCleanupPanel = =>
 					\Dock(LEFT)
 					\DockMargin(0, 0, 5, 0)
 					\SetText('gui.dpp2.toolmenu.playerutil.freezephys')
-					\SetTooltip(DLib.i18n.localize('gui.dpp2.toolmenu.playerutil.freezephys_tip'))
+					\SetTooltip(DLib.I18n.Localize('gui.dpp2.toolmenu.playerutil.freezephys_tip'))
 					.DoClick = -> RunConsoleCommand('dpp2_freezephys', ply\UserID())
 					\SizeToContents()
 					\SetWide(\GetWide()\max(32))

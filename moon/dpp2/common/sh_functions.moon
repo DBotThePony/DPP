@@ -180,23 +180,23 @@ DPP2.FindPlayersInArgument = (str = '', filter, nobots = false, any_player = fal
 	player_list = DPP2.GetAllKnownPlayersInfo()
 
 	str = str\trim()\lower()
-	return {DLib.i18n.localize('command.dpp2.hint.player')} if str == ''
+	return {DLib.I18n.Localize('command.dpp2.hint.player')} if str == ''
 
 	if str\startsWith('steam_')
 		plyFind = player.GetBySteamID(str\upper())
-		return {DLib.i18n.localize('command.dpp2.hint.player')} if plyFind and table.qhasValue(filter, plyFind\UserID())
+		return {DLib.I18n.Localize('command.dpp2.hint.player')} if plyFind and table.qhasValue(filter, plyFind\UserID())
 		return {plyFind\Nick()} if plyFind and not table.qhasValue(filter, plyFind\UserID())
 		output = [ply.steamid for ply in *player_list when ply.steamid\lower()\startsWith(str) and not table.qhasValue(filter, ply.uid)]
-		return #output ~= 0 and output or {DLib.i18n.localize('command.dpp2.hint.none')}
+		return #output ~= 0 and output or {DLib.I18n.Localize('command.dpp2.hint.none')}
 
 	if num = str\tonumber()
 		ply = Player(num)
-		return {DLib.i18n.localize('command.dpp2.hint.player')} if IsValid(ply) and table.qhasValue(filter, ply\UserID())
+		return {DLib.I18n.Localize('command.dpp2.hint.player')} if IsValid(ply) and table.qhasValue(filter, ply\UserID())
 		getply = player_list[num] if not table.qhasValue(filter, num)
 		return {getply.name} if getply
 		return {ply\Nick()} if IsValid(ply) and not table.qhasValue(filter, ply\UserID())
 		output = [ply.name for ply in *player_list when ply.uid\tostring()\startsWith(str) and not table.qhasValue(filter, ply.uid)]
-		return #output ~= 0 and output or {DLib.i18n.localize('command.dpp2.hint.none')}
+		return #output ~= 0 and output or {DLib.I18n.Localize('command.dpp2.hint.none')}
 
 	findPly = {}
 
@@ -212,7 +212,7 @@ DPP2.FindPlayersInArgument = (str = '', filter, nobots = false, any_player = fal
 				if nick == str or nick\find(str)
 					table.insert(findPly, ply.ent\SteamName())
 
-	return #findPly ~= 0 and findPly or {DLib.i18n.localize('command.dpp2.hint.none')}
+	return #findPly ~= 0 and findPly or {DLib.I18n.Localize('command.dpp2.hint.none')}
 
 DPP2.AutocompleteOwnedEntityArgument = (str2, owned = CLIENT, format = false, filter) ->
 	owned = nil if SERVER

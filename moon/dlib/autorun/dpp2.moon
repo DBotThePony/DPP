@@ -42,8 +42,8 @@ DPP2.CVarsRegistry = {}
 
 DPP2.CreateConVar = (cvarName, cvarDef, cvarType) ->
 	cvarDesc = 'gui.dpp2.cvars.' .. cvarName
-	DPP2.Message('Missing langstring for: ' .. cvarName .. '; unlocalized name: ' .. cvarDesc) if not DLib.i18n.exists(cvarDesc)
-	obj = DLib.util.CreateSharedConvar('dpp2_' .. cvarName, cvarDef, DLib.i18n.localize(cvarDesc))
+	DPP2.Message('Missing langstring for: ' .. cvarName .. '; unlocalized name: ' .. cvarDesc) if not DLib.I18n.Exists(cvarDesc)
+	obj = DLib.util.CreateSharedConvar('dpp2_' .. cvarName, cvarDef, DLib.I18n.Localize(cvarDesc))
 	table.insert(DPP2.CVarsRegistry, {cvar: obj, :cvarName, :cvarDef, :cvarDesc, :cvarType})
 	return obj
 
@@ -52,14 +52,14 @@ if CLIENT
 
 	DPP2.CreateClientConVar = (cvarName, cvarDef, cvarType, userinfo = true) ->
 		cvarDesc = 'gui.dpp2.cvars.' .. cvarName
-		DPP2.Message('Missing langstring for: ' .. cvarName .. '; unlocalized name: ' .. cvarDesc) if not DLib.i18n.exists(cvarDesc)
-		obj = CreateConVar('dpp2_' .. cvarName, cvarDef, userinfo and {FCVAR_USERINFO, FCVAR_ARCHIVE} or {FCVAR_ARCHIVE}, DLib.i18n.localize(cvarDesc))
+		DPP2.Message('Missing langstring for: ' .. cvarName .. '; unlocalized name: ' .. cvarDesc) if not DLib.I18n.Exists(cvarDesc)
+		obj = CreateConVar('dpp2_' .. cvarName, cvarDef, userinfo and {FCVAR_USERINFO, FCVAR_ARCHIVE} or {FCVAR_ARCHIVE}, DLib.I18n.Localize(cvarDesc))
 		table.insert(DPP2.ClientCVarsRegistry, {cvar: obj, :cvarName, :cvarDef, :cvarDesc, :cvarType, :userinfo})
 		return obj
 
-DLib.i18n.reload('dpp2')
+DLib.I18n.Reload('dpp2')
 
-DPP2.CheckPhrase = (name) -> DPP2.Message('Missing langstring for: ' .. name) if not DLib.i18n.exists(name)
+DPP2.CheckPhrase = (name) -> DPP2.Message('Missing langstring for: ' .. name) if not DLib.I18n.Exists(name)
 
 DPP2.ENABLE_PROTECTION = DPP2.CreateConVar('protection', '1', DPP2.TYPE_BOOL)
 DPP2.CL_ENABLE_PROTECTION = DPP2.CreateClientConVar('cl_protection', '1', DPP2.TYPE_BOOL) if CLIENT

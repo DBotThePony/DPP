@@ -39,7 +39,7 @@ createHandle = (prefix) ->
 			file.mkdir('dpp2_logs/' .. split[1] .. '/' .. split[2])
 
 			if handle
-				handle\Write(DLib.i18n.localize('message.dpp2.log.in_next', prefix .. os.date('%Y-%m-%d') .. '.txt'))
+				handle\Write(DLib.I18n.Localize('message.dpp2.log.in_next', prefix .. os.date('%Y-%m-%d') .. '.txt'))
 				handle\Close()
 
 			handle = file.Open('dpp2_logs/' .. split[1] .. '/' .. split[2] .. '/' .. prefix .. os.date('%Y-%m-%d') .. '.txt', 'ab', 'DATA')
@@ -65,7 +65,7 @@ DPP2.Log = (...) ->
 	if DPP2.ECHO_LOG_CLIENTS\GetBool()
 		for ply in *player.GetAll()
 			if watchdog\HasPermission(ply, 'dpp2_log')
-				DPP2.MessagePlayer(ply, unpack(DLib.i18n.rebuildTableByLang(varg, ply.DLib_Lang or 'en', DPP2.textcolor)))
+				DPP2.MessagePlayer(ply, unpack(DLib.I18n.LocalizeTableByLang(varg, ply.DLib_Lang or 'en', DPP2.textcolor)))
 
 	combined(makestr(...))
 

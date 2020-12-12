@@ -138,7 +138,7 @@ class DPP2.DEF.ProtectionDefinition
 		@camiwatchdog =         DLib.CAMIWatchdog('dpp2_' .. @identifier .. '_protection', 10)
 
 		@friendID = 'dpp2_' .. @identifier
-		DPP2.Message('Missing langstring for gui.dpp2.buddystatus.' .. @identifier) if DLib.i18n.localize('gui.dpp2.buddystatus.' .. @identifier) == 'gui.dpp2.buddystatus.' .. @identifier
+		DPP2.Message('Missing langstring for gui.dpp2.buddystatus.' .. @identifier) if DLib.I18n.Localize('gui.dpp2.buddystatus.' .. @identifier) == 'gui.dpp2.buddystatus.' .. @identifier
 		DLib.friends.Register(@friendID, 'gui.dpp2.buddystatus.' .. @identifier, true)
 
 		hook.Add 'DPP2_ContraptionUpdate', 'DPP2_Def' .. @identifier, (...) -> @ClearCache(...)
