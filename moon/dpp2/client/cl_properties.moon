@@ -281,7 +281,12 @@ properties.Add('dpp2_copymodel', {
 		return true
 
 	Action: (ent = NULL) =>
-		SetClipboardText(ent\GetModel())
+		gmodel = ent\GetModel()
+
+		if ent\GetClass() == 'prop_effect'
+			gmodel = ent\GetChildren()[1] and ent\GetChildren()[1]\GetModel() or ent\GetModel() -- ???
+
+		SetClipboardText(gmodel)
 })
 
 properties.Add('dpp2_copyclassname', {
@@ -429,7 +434,12 @@ properties.Add('dpp2_copyvector', {
 				elseif DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. object.add_command_identifier)
 					\AddOption('gui.dpp2.menu.add_to_' .. object.identifier .. '_restrictions', (-> object\OpenMenu(classname)))\SetIcon(Menus.Icons.Add)
 
-			if model = ent\GetModel()
+			model = ent\GetModel()
+
+			if ent\GetClass() == 'prop_effect'
+				model = ent\GetChildren()[1] and ent\GetChildren()[1]\GetModel() or ent\GetModel() -- ???
+
+			if model
 				if DPP2.ModelBlacklist\Has(model)
 					if DPP2.cmd_perm_watchdog\HasPermission('dpp2_' .. DPP2.ModelBlacklist.remove_command_identifier)
 						submenu, button = \AddSubMenu('gui.dpp2.menu.remove_from_model_blacklist')
