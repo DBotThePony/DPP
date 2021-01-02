@@ -53,13 +53,15 @@ plyMeta.DPP2Ban = (time = math.huge) =>
 
 	if time == math.huge
 		DPP2.EntityCreationBans[@SteamID()] = true
+		@DLibRemovePDataInt('dpp2_ban')
 	else
 		DPP2.EntityCreationBans[@SteamID()] = RealTime() + time
 		@DLibSetPDataInt('dpp2_ban', os.time() + time)
 
 plyMeta.DPP2Unban = =>
-	@DLibSetPDataBoolean('dpp2_ban', false)
-	@DLibSetPDataBoolean('dpp2_ban_perma', false)
+	@DLibRemovePDataBoolean('dpp2_ban')
+	@DLibRemovePDataInt('dpp2_ban')
+	@DLibRemovePDataBoolean('dpp2_ban_perma')
 	DPP2.EntityCreationBans[@SteamID()] = nil
 
 	@SetNWInt('dpp2_ban', false)
