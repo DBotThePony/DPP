@@ -22,6 +22,9 @@ import DPP2, type, table, net from _G
 import net from DLib
 
 entMeta = FindMetaTable('Entity')
+plyMeta = FindMetaTable('Player')
+
+plyMeta.DPP2IsBanned = => @GetNWBool('dpp2_ban', false)
 
 entMeta.DPP2CreatedByMap = => not @IsPlayer() and @GetNWBool('dpp2_cbm', false)
 

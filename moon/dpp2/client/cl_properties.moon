@@ -79,6 +79,42 @@ properties.Add('dpp2_cleanupvehicles', {
 	Action: (ent = NULL, tr, ply = LocalPlayer()) =>
 })
 
+ban_durations = {
+	30
+	60
+	3 * 60
+	5 * 60
+	10 * 60
+	30 * 60
+	60 * 60
+	120 * 60
+	180 * 60
+}
+
+properties.Add('dpp2_ban', {
+	MenuLabel: 'gui.dpp2.property.banning'
+	Order: 1658
+	MenuIcon: Menus.Icons.LockTool
+
+	Filter: (ent = NULL, ply = LocalPlayer()) => (ent\DPP2IsOwned() and IsValid(ent\DPP2GetOwner()) and not ent\DPP2GetOwner()\IsBot() or ent\IsPlayer() and not ent\IsBot()) and (DPP2.cmd_perm_watchdog\HasPermission('dpp2_ban') or DPP2.cmd_perm_watchdog\HasPermission('dpp2_unban'))
+
+	MenuOpen: (option, ent = NULL, tr, ply = LocalPlayer()) =>
+		getply = ent\IsPlayer() and ent or ent\DPP2GetOwner()
+		pid = getply\UserID()
+
+		with menu = option\AddSubMenu()
+			if getply\DPP2IsBanned() and DPP2.cmd_perm_watchdog\HasPermission('dpp2_unban')
+				menu\AddOption('command.dpp2.unban.do_unban', -> RunConsoleCommand('dpp2_unban', pid))\SetIcon(Menus.Icons.UnLockTool)
+
+			if DPP2.cmd_perm_watchdog\HasPermission('dpp2_ban')
+				menu\AddOption('command.dpp2.indefinitely', -> RunConsoleCommand('dpp2_permanent_ban', pid))
+
+				for time in *ban_durations
+					menu\AddOption(DLib.I18n.FormatTime(time), -> RunConsoleCommand('dpp2_ban', pid, time))
+
+	Action: (ent = NULL, tr, ply = LocalPlayer()) =>
+})
+
 properties.Add('dpp2_lock_self', {
 	MenuLabel: 'gui.dpp2.property.lock_self.top'
 	Order: 401

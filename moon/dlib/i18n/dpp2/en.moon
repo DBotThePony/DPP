@@ -326,9 +326,11 @@ command.dpp2.freezephyspanic = '#E froze everything'
 command.dpp2.cleanupdisconnected = '#E cleaned disconnected player\'s entities'
 
 command.dpp2.ban = '#E banned #E from creating anything for %s'
+command.dpp2.indefinitely = 'Indefinitely'
 command.dpp2.permanent_ban = '#E banned #E from creating anything indefinitely'
 command.dpp2.unban.not_banned = 'Target is already not banned'
 command.dpp2.unban.unbanned = '#E unbanned #E'
+command.dpp2.unban.do_unban = 'Unban'
 
 command.dpp2.hint.none = '<none>'
 command.dpp2.hint.player = '<player>'
@@ -361,6 +363,8 @@ gui.dpp2.property.transferent = 'Transfer this entity...'
 gui.dpp2.property.transfertoworldent = 'Transfer this entity to world'
 gui.dpp2.property.transfercontraption = 'Transfer this contraption...'
 gui.dpp2.property.transfertoworldcontraption = 'Transfer this contraption to world'
+
+gui.dpp2.property.banning = 'DPP/2 Ban...'
 
 gui.dpp2.property.restrictions = 'DPP/2 Restrictions'
 gui.dpp2.property.lock_self.top = 'Restrict myself...'
