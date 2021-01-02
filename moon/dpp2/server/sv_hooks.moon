@@ -42,6 +42,11 @@ DPP2.PlayerSpawnedSomething = (ply, ent, advancedCheck = false) ->
 	ent.__dpp2_hit = true
 
 	return false if ent\GetEFlags()\band(EFL_KILLME) ~= 0
+
+	if ply\DPP2IsBanned()
+		SafeRemoveEntity(ent)
+		return false
+
 	classname = ent\GetClass()
 
 	if not DPP2.SpawnRestrictions\Ask(classname, ply)
@@ -128,6 +133,17 @@ DPP2.PlayerSpawnedSomething = (ply, ent, advancedCheck = false) ->
 	return true
 
 PreventModelSpawn = (ply, model = ent and ent\GetModel() or 'wtf', ent = NULL, nonotify = false) ->
+	if ply\DPP2IsBanned()
+		value = ply\DPP2BanTimeLeft()
+
+		if value == math.huge
+			DPP2.NotifyError(ply, nil, 'message.dpp2.spawn.banned')
+		else
+			DPP2.NotifyError(ply, nil, 'message.dpp2.spawn.banned_for', DLib.I18n.FormatTimeForPlayer(ply, value\ceil()))
+
+		SafeRemoveEntity(ent)
+		return false
+
 	model = model\lower()
 
 	if not DPP2.ModelBlacklist\Ask(model, ply)

@@ -383,6 +383,7 @@ include('dpp2/server/concommands/sv_generic.lua') if SERVER
 include('dpp2/common/concommands/sh_generic.lua')
 include('dpp2/common/concommands/sh_sharing.lua')
 include('dpp2/server/concommands/sv_sharing.lua') if SERVER
+include('dpp2/server/concommands/sv_admintools.lua') if SERVER
 include('dpp2/common/concommands/sh_cmdlogic.lua')
 
 if CLIENT

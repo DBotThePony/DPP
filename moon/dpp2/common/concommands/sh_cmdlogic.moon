@@ -60,6 +60,10 @@ cmd_perms = {
 	import_fpp: 'superadmin'
 	import_fpp_reload: 'superadmin'
 	import_dpp_reload: 'superadmin'
+
+	ban: 'admin'
+	permanent_ban: 'admin'
+	unban: 'admin'
 }
 
 local watchdog

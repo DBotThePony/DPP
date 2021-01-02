@@ -307,6 +307,7 @@ command.dpp2.generic.notarget = 'Invalid target!'
 command.dpp2.generic.no_bots = 'This command can not target bots'
 command.dpp2.generic.noaccess = 'You can not execute this command (reason: %s)'
 command.dpp2.generic.noaccess_check = 'You can not execute this command on target player (reason: %s)'
+command.dpp2.generic.invalid_time = 'You must specify time for ban duration'
 
 command.dpp2.cleanup = '#E cleaned all #E\'s entities'
 command.dpp2.cleanup_plain = '#E cleaned all %s<%s/%s> entities'
@@ -323,6 +324,11 @@ command.dpp2.freezephys = '#E froze all #E\'s entities'
 command.dpp2.freezephysall = '#E froze all owned entities'
 command.dpp2.freezephyspanic = '#E froze everything'
 command.dpp2.cleanupdisconnected = '#E cleaned disconnected player\'s entities'
+
+command.dpp2.ban = '#E banned #E from creating anything for %s'
+command.dpp2.permanent_ban = '#E banned #E from creating anything indefinitely'
+command.dpp2.unban.not_banned = 'Target is already not banned'
+command.dpp2.unban.unbanned = '#E unbanned #E'
 
 command.dpp2.hint.none = '<none>'
 command.dpp2.hint.player = '<player>'
@@ -369,6 +375,8 @@ message.dpp2.property.transfercontraption.nolongervalid = 'Contraption is no lon
 message.dpp2.blacklist.model_blocked = 'Model %s is in blacklist'
 message.dpp2.blacklist.model_restricted = 'Model %s is restricted from your usergroup'
 message.dpp2.blacklist.models_blocked = '#d entities were removed since some of them had blacklisted/restricted model'
+message.dpp2.spawn.banned = 'You are banned from creating entities'
+message.dpp2.spawn.banned_for = 'You are banned from creating entities for %s'
 
 command.dpp2.lists.arg_empty = 'You provided empty argument'
 command.dpp2.lists.group_empty = 'Missing group name!'

@@ -22,7 +22,75 @@ import DPP2, type, table, player, DLib from _G
 import IsValid from FindMetaTable('Entity')
 import net from DLib
 
+DPP2.EntityCreationBans = DPP2.EntityCreationBans or {}
+
 entMeta = FindMetaTable('Entity')
+plyMeta = FindMetaTable('Player')
+
+plyMeta.DPP2IsBanned = =>
+	value = DPP2.EntityCreationBans[@SteamID()]
+	return false if not value
+	return true if value == true
+	time = RealTime()
+
+	if time > DPP2.EntityCreationBans[@SteamID()]
+		@DPP2Unban()
+		return false
+
+	return true
+
+plyMeta.DPP2BanTimeLeft = =>
+	return 0 if not @DPP2IsBanned()
+	return math.huge if DPP2.EntityCreationBans[@SteamID()] == true
+	return DPP2.EntityCreationBans[@SteamID()] - RealTime()
+
+plyMeta.DPP2Ban = (time = math.huge) =>
+	@DLibSetPDataBoolean('dpp2_ban', true)
+	@DLibSetPDataBoolean('dpp2_ban_perma', time == math.huge)
+
+	@SetNWInt('dpp2_ban', true)
+	@SetNWInt('dpp2_ban_perma', time == math.huge)
+
+	if time == math.huge
+		DPP2.EntityCreationBans[@SteamID()] = true
+	else
+		DPP2.EntityCreationBans[@SteamID()] = RealTime() + time
+		@DLibSetPDataInt('dpp2_ban', os.time() + time)
+
+plyMeta.DPP2Unban = =>
+	@DLibSetPDataBoolean('dpp2_ban', false)
+	@DLibSetPDataBoolean('dpp2_ban_perma', false)
+	DPP2.EntityCreationBans[@SteamID()] = nil
+
+	@SetNWInt('dpp2_ban', false)
+	@SetNWInt('dpp2_ban_perma', false)
+
+PlayerInitialSpawn = =>
+	return if not @SteamID()
+	return if @IsBot()
+
+	return if not @DLibGetPDataBoolean('dpp2_ban')
+
+	@SetNWInt('dpp2_ban', true)
+
+	if @DLibGetPDataBoolean('dpp2_ban_perma')
+		@SetNWInt('dpp2_ban_perma', true)
+		DPP2.EntityCreationBans[@SteamID()] = true
+	else
+		@SetNWInt('dpp2_ban_perma', false)
+		time_left = @DLibGetPDataInt('dpp2_ban') - os.time()
+
+		if time_left > 0
+			DPP2.EntityCreationBans[@SteamID()] = RealTime() + time_left
+		else
+			@DPP2Unban()
+
+hook.Add 'PlayerInitialSpawn', 'DPP2.Banning', PlayerInitialSpawn, -2
+
+PlayerDisconnected = =>
+	DPP2.EntityCreationBans[@SteamID()] = nil
+
+hook.Add 'PlayerDisconnected', 'DPP2.Banning', PlayerDisconnected, -2
 
 entMeta.DPP2CreatedByMap = => not @IsPlayer() and @CreatedByMap()
 entMeta.__DPP2_SetParent = entMeta.__DPP2_SetParent or entMeta.SetParent
