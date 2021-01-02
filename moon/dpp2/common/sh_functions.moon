@@ -160,13 +160,13 @@ DPP2.FindPlayerUserIDInCommand = (str = '', allow_any = false) ->
 	return findPly\UserID() if findPly
 	return findPly
 
-DPP2.FindPlayersInArgument = (str = '', filter, nobots = false, any_player = false) ->
+DPP2.FindPlayersInArgument = (str = '', filter, nobots = false) ->
 	filter = LocalPlayer() if CLIENT and filter == true
 
 	if nobots
 		filter = {} if not filter
 		filter = {filter} if type(filter) ~= 'table'
-		table.insert(filter, ply) for ply in *player_list when ply\IsBot()
+		table.insert(filter, ply) for ply in *player.GetAll() when ply\IsBot()
 
 	filter = {} if not filter
 	filter = {filter} if not istable(filter)
@@ -200,8 +200,8 @@ DPP2.FindPlayersInArgument = (str = '', filter, nobots = false, any_player = fal
 
 	findPly = {}
 
-	for ply in *player_list
-		if not table.qhasValue(filter, ply.uid)
+	for uid, ply in pairs(player_list)
+		if not table.qhasValue(filter, uid)
 			nick = ply.name\lower()
 
 			if nick == str or nick\find(str)

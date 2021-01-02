@@ -42,6 +42,7 @@ cmds = {
 		ply = DPP2.FindPlayerInCommand(str)
 		return 'command.dpp2.generic.notarget' if not ply
 		return 'command.dpp2.generic.no_bots' if ply\IsBot()
+		return 'command.dpp2.already_banned' if ply\DPP2IsPermanentlyBanned()
 
 		ply\DPP2Ban(math.huge)
 		DPP2.Notify(true, nil, 'command.dpp2.permanent_ban', @, ply)

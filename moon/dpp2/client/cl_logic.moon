@@ -25,6 +25,7 @@ entMeta = FindMetaTable('Entity')
 plyMeta = FindMetaTable('Player')
 
 plyMeta.DPP2IsBanned = => @GetNWBool('dpp2_ban', false)
+plyMeta.DPP2IsPermanentlyBanned = => @DPP2IsBanned() and @GetNWBool('dpp2_ban_perma', false)
 
 entMeta.DPP2CreatedByMap = => not @IsPlayer() and @GetNWBool('dpp2_cbm', false)
 

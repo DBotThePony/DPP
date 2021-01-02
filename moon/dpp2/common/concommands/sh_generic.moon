@@ -22,6 +22,11 @@ import DPP2 from _G
 
 cmds = {
 	freezephys: (args = '') => [string.format('%q', ply) for ply in *DPP2.FindPlayersInArgument(args)]
+	unban: (args = '') => [string.format('%q', ply) for ply in *DPP2.FindPlayersInArgument(args, [ply2 for ply2 in *player.GetHumans() when not ply2\DPP2IsBanned()], true)]
+	permanent_ban: (args = '') => [string.format('%q', ply) for ply in *DPP2.FindPlayersInArgument(args, [ply2 for ply2 in *player.GetHumans() when ply2\DPP2IsPermanentlyBanned()], true)]
+	ban: (args = '') =>
+		split = DPP2.SplitArguments(args)
+		return [string.format('%q %s', ply, split[2] or '') for ply in *DPP2.FindPlayersInArgument(split[1], [ply2 for ply2 in *player.GetHumans() when ply2\DPP2IsPermanentlyBanned()], true)]
 
 	cleanup: (args = '') =>
 		args = args\trim()

@@ -44,6 +44,8 @@ plyMeta.DPP2BanTimeLeft = =>
 	return math.huge if DPP2.EntityCreationBans[@SteamID()] == true
 	return DPP2.EntityCreationBans[@SteamID()] - RealTime()
 
+plyMeta.DPP2IsPermanentlyBanned = => DPP2.EntityCreationBans[@SteamID()] == true
+
 plyMeta.DPP2Ban = (time = math.huge) =>
 	@DLibSetPDataBoolean('dpp2_ban', true)
 	@DLibSetPDataBoolean('dpp2_ban_perma', time == math.huge)
