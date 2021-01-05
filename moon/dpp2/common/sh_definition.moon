@@ -493,7 +493,7 @@ class DPP2.DEF.ProtectionDefinition
 			return true, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_exclusion') if @classnameExclusionList and @classnameExclusionList\Ask(ent\GetClass(), ply)
 			return true, i18n.localize('gui.dpp2.access.status.model_exclusion') if DPP2.ModelExclusions\Ask(ent\GetModel(), ply)
 			return @CanTouchMap(ply), i18n.localize('gui.dpp2.access.status.map') if ownerSteamID == 'world' and ent\DPP2CreatedByMap()
-			return @CanTouchWorld(ply), i18n.localize('gui.dpp2.access.status.world') if ownerSteamID == 'world'
+			return @CanTouchWorld(ply) if ownerSteamID == 'world'
 			return @CanTouchOther(ply, IsValid(owner) and owner or ownerSteamID)
 
 		steamid = ply\SteamID()

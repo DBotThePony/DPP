@@ -19,13 +19,13 @@
 -- DEALINGS IN THE SOFTWARE.
 
 import NULL, type, player, DPP2, string from _G
-import HUDCommons from DLib
+import HUDCommons, I18n from DLib
 
 entMeta = FindMetaTable('Entity')
 
 entMeta.DPP2GetOwner = =>
 	if @GetNWString('dpp2_owner_steamid', '-1') == '-1'
-		return NULL, 'world', 'World', 'world', -1
+		return NULL, 'world', I18n.Localize('gui.dpp2.access.status.world'), 'world', -1
 
 	local ownerName
 

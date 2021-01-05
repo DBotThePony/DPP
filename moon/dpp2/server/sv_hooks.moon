@@ -471,7 +471,7 @@ hook.Add 'Think', 'DPP2.CheckEntitiesOwnage', ->
 				elseif ent2\DPP2IsOwned() and ent2\DPP2OwnerIsValid()
 					DPP2.PlayerSpawnedSomething(ent2\DPP2GetOwner(), constraint, true)
 		else
-			DPP2.LMessageError('message.dpp2.error.empty_constraint', ' ', constraint, ' ', type(ent1), ' ', ent1, ' ', type(ent2), ' ', ent2)
+			DPP2.LMessageError('message.dpp2.error.empty_constraint', ' ', constraint, ' ', ent1, ' ', ent2)
 
 hook.Add 'OnEntityCreated', 'DPP2.CheckEntitiesOwnage', =>
 	DPP2._Spawn_CheckFrame = CurTimeL()

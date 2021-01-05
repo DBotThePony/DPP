@@ -21,13 +21,13 @@
 gui.dpp2.access.status.contraption = 'Contraption'
 gui.dpp2.access.status.contraption_ext = 'Contraption <%d>'
 gui.dpp2.access.status.map = 'Owned by map'
-gui.dpp2.access.status.world = 'Owned by world'
+gui.dpp2.access.status.world = 'Nobody'
 gui.dpp2.access.status.friend = 'Not a friend of owner'
 gui.dpp2.access.status.invalident = 'Invalid Entity'
 gui.dpp2.access.status.disabled = 'Protection is disabled'
 gui.dpp2.access.status.ownerdisabled = 'Protection for owner is disabled'
 gui.dpp2.access.status.yoursettings = 'Your settings'
-gui.dpp2.access.status.toolgun_player = 'Cannot toolgun a player'
+gui.dpp2.access.status.toolgun_player = 'Cannot Toolgun a player'
 gui.dpp2.access.status.model_blacklist = 'Model is blacklisted'
 gui.dpp2.access.status.toolgun_mode_blocked = 'Toolgun mode restricted'
 gui.dpp2.access.status.toolgun_mode_excluded = 'Toolgun mode excluded from protection'
@@ -39,9 +39,9 @@ gui.dpp2.access.status.damage_allowed = 'Damage allowed'
 
 message.dpp2.owning.owned = 'You now own this entity'
 message.dpp2.owning.owned_contraption = 'You now own this contraption'
-message.dpp2.notice.upforgrabs = ' props are now up for grabs!'
-message.dpp2.notice.cleanup = ' props has been cleaned up.'
-message.dpp2.warn.trap = 'Your entity seems to stuck in someone. Interact with it to unghost!'
+message.dpp2.notice.upforgrabs = '%s props are now up for grabs!'
+message.dpp2.notice.cleanup = '%s props has been cleaned up.'
+message.dpp2.warn.trap = 'Your entity seems to stuck in other player. Interact with it to unghost!'
 message.dpp2.warn.collisions = 'Your entity seems to stuck in other prop. Interact with it to unghost!'
 message.dpp2.restriction.spawn = '%q classname is restricted from your usergroup'
 message.dpp2.restriction.e2fn = 'DPP/2: Expression 2 function %q is restricted from your usergroup'
@@ -67,18 +67,18 @@ message.dpp2.notice.frozen = '%s props are frozen!'
 gui.dpp2.cvars.upforgrabs = 'Enable Up For Grabs timer'
 gui.dpp2.cvars.upforgrabs_timer = 'Up for grabs timeout'
 
-gui.dpp2.cvars.no_tool_player = 'Disallow to toolgun players'
-gui.dpp2.cvars.no_tool_player_admin = 'Disallow to toolgun players as admin'
+gui.dpp2.cvars.no_tool_player = 'Disallow to Toolgun players'
+gui.dpp2.cvars.no_tool_player_admin = 'Disallow to Toolgun players as admin'
 
 gui.dpp2.cvars.no_def_cache = 'Disable CanTouch() cache. THIS IS PERFROMANCE HEAVY AND SHOULD BE UTILIZED FOR DEBUGGING PURPOSES.'
 
 for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'drive', 'Prop Drive'}, {'damage', 'Damage'}, {'pickup', 'Pickups'}, {'use', '+use'}, {'vehicle', 'Vehicles'}, {'gravgun', 'Gravity Gun'}}
 	gui.dpp2.cvars[modeID .. '_protection'] = string.format('Enable %s protection module', modeName)
 	gui.dpp2.cvars[modeID .. '_touch_any'] = string.format('%s: Admins can touch anything', modeName)
-	gui.dpp2.cvars[modeID .. '_no_world'] = string.format('%s: Players can not touch world owned props', modeName)
-	gui.dpp2.cvars[modeID .. '_no_world_admin'] = string.format('%s: Admins can not touch world owned props', modeName)
-	gui.dpp2.cvars[modeID .. '_no_map'] = string.format('%s: Players can not touch map owned props', modeName)
-	gui.dpp2.cvars[modeID .. '_no_map_admin'] = string.format('%s: Admins can not touch map owned props', modeName)
+	gui.dpp2.cvars[modeID .. '_no_world'] = string.format('%s: Players can not touch unowned props', modeName)
+	gui.dpp2.cvars[modeID .. '_no_world_admin'] = string.format('%s: Admins can not touch unowned props', modeName)
+	gui.dpp2.cvars[modeID .. '_no_map'] = string.format('%s: Players can not touch Map props', modeName)
+	gui.dpp2.cvars[modeID .. '_no_map_admin'] = string.format('%s: Admins can not touch Map props', modeName)
 
 	gui.dpp2.cvars['el_' .. modeID .. '_enable'] = string.format('%s exlusion list enabled', modeName)
 
@@ -136,7 +136,7 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 
 	command.dpp2.rlists.added[modeID] = '#E added %q to ' .. modeName .. ' restriction list with whitelist status set to %s'
 	command.dpp2.rlists.added_ext[modeID] = '#E added %q to ' .. modeName .. ' restriction list with %q groups in it and whitelist status set to %s'
-	command.dpp2.rlists.updated[modeID] = '#E updated %q in ' .. modeName .. ' restriction list with %q groups in it and whitelist status set to %s'
+	command.dpp2.rlists.updated[modeID] = '#E modified %q in ' .. modeName .. ' restriction list with %q groups in it and whitelist status set to %s'
 	command.dpp2.rlists.removed[modeID] = '#E removed %q from ' .. modeName .. ' restriction list'
 
 	command.dpp2.enabled_for[modeID] = '#E enabled ' .. modeName .. ' protection for #E'
@@ -150,17 +150,17 @@ for {modeID, modeName} in *{{'physgun', 'Physgun'}, {'toolgun', 'Toolgun'}, {'dr
 
 command.dpp2.rlists.added.model = '#E added %q to model restriction list with whitelist status set to %s'
 command.dpp2.rlists.added_ext.model = '#E added %q to model restriction list with %q groups in it and whitelist status set to %s'
-command.dpp2.rlists.updated.model = '#E updated %q in model restriction list with %q groups in it and whitelist status set to %s'
+command.dpp2.rlists.updated.model = '#E modified %q in model restriction list with %q groups in it and whitelist status set to %s'
 command.dpp2.rlists.removed.model = '#E removed %q from model restriction list'
 
 command.dpp2.rlists.added.e2fn = '#E added %q to Expression 2 Function restriction list with whitelist status set to %s'
 command.dpp2.rlists.added_ext.e2fn = '#E added %q to Expression 2 Function restriction list with %q groups in it and whitelist status set to %s'
-command.dpp2.rlists.updated.e2fn = '#E updated %q in Expression 2 Function restriction list with %q groups in it and whitelist status set to %s'
+command.dpp2.rlists.updated.e2fn = '#E modified %q in Expression 2 Function restriction list with %q groups in it and whitelist status set to %s'
 command.dpp2.rlists.removed.e2fn = '#E removed %q from Expression 2 Function restriction list'
 
 gui.dpp2.cvars.rl_e2fn_enable = 'Enable Expression 2 restrictions'
-gui.dpp2.cvars.rl_e2fn_invert = 'Enable Expression 2 restriction list is inverted'
-gui.dpp2.cvars.rl_e2fn_invert_all = 'Enable Expression 2 restriction list is fully inverted'
+gui.dpp2.cvars.rl_e2fn_invert = 'Expression 2 restriction list is inverted'
+gui.dpp2.cvars.rl_e2fn_invert_all = 'Expression 2 restriction list is fully inverted'
 
 do
 	modeID = 'model'
@@ -229,7 +229,7 @@ gui.dpp2.cvars.cl_no_contraptions = 'Don\'t fully process contraptions. Can impr
 gui.dpp2.cvars.cl_no_players = 'Don\'t show ownership status when looking at players.'
 gui.dpp2.cvars.cl_no_func = 'Don\'t show ownership status when looking at func_* or doors'
 gui.dpp2.cvars.cl_no_map = 'Don\'t show ownership status when looking at map created entities'
-gui.dpp2.cvars.cl_no_world = 'Don\'t show ownership status when looking at world owned entities'
+gui.dpp2.cvars.cl_no_world = 'Don\'t show ownership status when looking at unowned entities'
 gui.dpp2.cvars.cl_ownership_in_vehicle = 'Display ownership while in vehicle'
 gui.dpp2.cvars.cl_ownership_in_vehicle_always = 'Always display ownership while in vehicle'
 
@@ -252,7 +252,7 @@ gui.dpp2.cvars.simple_owner = 'Serverside override: Simple owner display (FPP St
 gui.dpp2.cvars.entity_name = 'Serverside override: Show entity print name'
 gui.dpp2.cvars.entity_info = 'Serverside override: Show entity info'
 
-gui.dpp2.cvars.apropkill = 'Antipropkill'
+gui.dpp2.cvars.apropkill = 'Anti-propkill'
 gui.dpp2.cvars.apropkill_damage = 'Block prop push damage'
 gui.dpp2.cvars.apropkill_damage_nworld = 'Don\'t block push damage from world props'
 gui.dpp2.cvars.apropkill_damage_nveh = 'Don\'t block push damage from world vehicles'
@@ -340,7 +340,7 @@ command.dpp2.hint.share.nothing_shared = '<nothing shared>'
 command.dpp2.hint.share.nothing_to_share = '<nothing to share>'
 command.dpp2.hint.share.not_owned = '<not an owner>'
 
-command.dpp2.transfer.none = 'There is none entities to transfer.'
+command.dpp2.transfer.none = 'There are none entities to transfer.'
 command.dpp2.transfer.already_ply = 'You already set transfer fallback as #E!'
 command.dpp2.transfer.none_ply = 'You already have none set as transfer fallback!'
 
@@ -348,7 +348,7 @@ command.dpp2.transfered = '#E transfered his entities to #E'
 command.dpp2.transferfallback = 'Successfully set #E as transfer fallback'
 command.dpp2.transferunfallback = 'Successfully removed transfer fallback'
 
-message.dpp2.transfer.as_fallback = '%s<%s> transfered %d entities to #E as fallback'
+message.dpp2.transfer.as_fallback = '%s<%s> transfered #d entities to #E as fallback'
 message.dpp2.transfer.no_more_fallback = 'Your fallback player has left the server!'
 
 command.dpp2.transferent.notarget = 'Invalid entity specified'
@@ -356,22 +356,22 @@ command.dpp2.transfercontraption.notarget = 'Invalid contraption specified'
 command.dpp2.transferent.not_owner = 'You do not own this entity!'
 command.dpp2.transfercontraption.not_owner = 'You own none of entities inside this contraption!'
 command.dpp2.transferent.success = 'Successfully transfered #E to #E'
-command.dpp2.transfertoworldent.success = 'Successfully transfered #E to World'
+command.dpp2.transfertoworldent.success = 'Successfully removed ownership of #E'
 command.dpp2.transfercontraption.success = 'Successfully transfered #d entities to #E'
-command.dpp2.transfertoworld.success = 'Successfully transfered #d entities to world'
+command.dpp2.transfertoworld.success = 'Successfully removed ownership of #d entities'
 
 gui.dpp2.property.transferent = 'Transfer this entity...'
-gui.dpp2.property.transfertoworldent = 'Transfer this entity to world'
+gui.dpp2.property.transfertoworldent = 'Remove ownership of this entity'
 gui.dpp2.property.transfercontraption = 'Transfer this contraption...'
-gui.dpp2.property.transfertoworldcontraption = 'Transfer this contraption to world'
+gui.dpp2.property.transfertoworldcontraption = 'Remove ownership of this contraption'
 
 gui.dpp2.property.banning = 'DPP/2 Ban...'
 
 gui.dpp2.property.restrictions = 'DPP/2 Restrictions'
-gui.dpp2.property.lock_self.top = 'Restrict myself...'
-gui.dpp2.property.unlock_self.top = 'Allow myself...'
-gui.dpp2.property.lock_others.top = 'Restrict others...'
-gui.dpp2.property.unlock_others.top = 'Allow others...'
+gui.dpp2.property.lock_self.top = 'Prohibit myself from...'
+gui.dpp2.property.unlock_self.top = 'Allow myself to...'
+gui.dpp2.property.lock_others.top = 'Prohibit others from...'
+gui.dpp2.property.unlock_others.top = 'Allow others to...'
 
 message.dpp2.property.transferent.nolongervalid = 'Entity is no longer valid'
 message.dpp2.property.transferent.noplayer = 'Target player has left the server'
@@ -414,11 +414,11 @@ message.dpp2.log.toolgun.world = '#E shot toolgun %s on world'
 
 command.dpp2.rlists.added.toolgun_mode = '#E added %q to toolgun modes restriction list with whitelist status set to %s'
 command.dpp2.rlists.added_ext.toolgun_mode = '#E added %q to toolgun modes restriction list with %q groups in it and whitelist status set to %s'
-command.dpp2.rlists.updated.toolgun_mode = '#E updated %q toolgun mode restriction with %q groups and whitelist status set to %s'
+command.dpp2.rlists.updated.toolgun_mode = '#E modified %q toolgun mode restriction with %q groups and whitelist status set to %s'
 command.dpp2.rlists.removed.toolgun_mode = '#E removed %q from toolgun modes restriction list'
 
 command.dpp2.rlists.added.class_spawn = '#E added %q to entity spawning restriction list with whitelist status set to %s'
-command.dpp2.rlists.updated.class_spawn = '#E added %q to entity spawning restriction list with %q groups in it and whitelist status set to %s'
+command.dpp2.rlists.updated.class_spawn = '#E modified %q to entity spawning restriction list with %q groups in it and whitelist status set to %s'
 command.dpp2.rlists.added_ext.class_spawn = '#E added %q to entity spawning restriction list with %q groups in it and whitelist status set to %s'
 command.dpp2.rlists.removed.class_spawn = '#E removed %q from entity spawning restriction list'
 
@@ -495,7 +495,7 @@ gui.dpp2.property.copyvector = 'Copy position'
 gui.dpp2.property.copyclassname = 'Copy classname'
 
 command.dpp2.setvar.none = 'ConVar wasn\'t specified'
-command.dpp2.setvar.invalid = 'ConVar is not DPP/2\'s ConVar or does not exist: %s'
+command.dpp2.setvar.invalid = 'ConVar is not DPP/2\'s ConVar: %s'
 command.dpp2.setvar.no_arg = 'No new value was specified'
 command.dpp2.setvar.changed = '#E changed value of dpp2_%s ConVar'
 
@@ -509,7 +509,7 @@ command.dpp2.sharing.no_mode = 'No sharing mode was specified'
 command.dpp2.sharing.invalid_mode = 'Invalid sharing mode was specified'
 command.dpp2.sharing.invalid_entity = 'Invalid entity was specified'
 command.dpp2.sharing.invalid_contraption = 'Invalid contraption was specified'
-command.dpp2.sharing.not_owner = 'Cannot share not own entity'
+command.dpp2.sharing.not_owner = 'You can not share entities you do not own'
 command.dpp2.sharing.already_shared = 'Entity is already shared in this mode'
 command.dpp2.sharing.shared = '#E is now shared in %s protection module'
 command.dpp2.sharing.shared_contraption = 'Everything inside contraption with ID %d is now shared in %s protection module'
@@ -588,8 +588,8 @@ message.dpp2.import.reloaded_sql_config = 'Database connection config should be 
 message.dpp2.inspect.invalid_entity = 'Trace did not hit any entity'
 message.dpp2.inspect.check_console = 'Check console for inspect results'
 
-message.dpp2.inspect.clientside = '-- CLIENTSIDE OUTPUT'
-message.dpp2.inspect.serverside = '-- SERVERSIDE OUTPUT'
+message.dpp2.inspect.clientside = '-- CLIENTSIDE OUTPUT --'
+message.dpp2.inspect.serverside = '-- SERVERSIDE OUTPUT --'
 message.dpp2.inspect.footer = '--------------------------------------'
 
 message.dpp2.inspect.result.class = 'Inspecting classname: %s'
@@ -605,7 +605,7 @@ message.dpp2.inspect.result.owner_steamid = 'Owner SteamID: %s'
 message.dpp2.inspect.result.owner_nickname = 'Owner Nickname: %s'
 message.dpp2.inspect.result.owner_uniqueid = 'Owner UniqueID: %s'
 
-message.dpp2.inspect.result.unowned = 'Entity is not owned'
+message.dpp2.inspect.result.unowned = 'Entity is unowned'
 message.dpp2.inspect.result.model = 'Model: %s'
 message.dpp2.inspect.result.skin = 'Skin: %s'
 message.dpp2.inspect.result.bodygroup_count = 'Amount of bodygroups: #d'

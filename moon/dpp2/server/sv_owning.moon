@@ -18,7 +18,8 @@
 -- OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
-import NULL, type, player from _G
+import NULL, type, player, DPP2, DLib from _G
+import I18n from DLib
 
 entMeta = FindMetaTable('Entity')
 
@@ -30,9 +31,9 @@ entMeta.DPP2SetUpForGrabs = (val) =>
 
 entMeta.DPP2GetOwner = =>
 	if @GetNWString('dpp2_owner_steamid', '-1') == '-1'
-		return NULL, 'world', 'World', 'world', -1
+		return NULL, 'world', I18n.Localize('gui.dpp2.access.status.world'), 'world', -1
 
-	return @GetNWEntity('dpp2_ownerent', NULL), @GetNWString('dpp2_owner_steamid'), @_dpp2_last_nick, @GetNWString('dpp2_owner_uid', 'world'), @GetNWInt('dpp2_owner_pid', -1)
+	return @GetNWEntity('dpp2_ownerent', NULL), @GetNWString('dpp2_owner_steamid'), @_dpp2_last_nick or I18n.Format('gui.dpp2.access.status.world'), @GetNWString('dpp2_owner_uid', 'world'), @GetNWInt('dpp2_owner_pid', -1)
 
 entMeta.DPP2SetOwner = (newOwner = NULL) =>
 	return false if type(@) == 'Player'
@@ -206,7 +207,7 @@ PlayerDisconnected = =>
 			find = DPP2.GetAllEntsBySteamID(steamid)
 			return if #find == 0
 
-			DPP2.NotifyUndoAll(6, nick, 'message.dpp2.notice.upforgrabs')
+			DPP2.NotifyUndoAll(6, 'message.dpp2.notice.upforgrabs', nick)
 			ent\DPP2SetIsUpForGrabs(true) for ent in *find
 
 	if DPP2.ENABLE_CLEANUP\GetBool()
@@ -215,7 +216,7 @@ PlayerDisconnected = =>
 			find = DPP2.GetAllEntsBySteamID(steamid)
 			return if #find == 0
 
-			DPP2.NotifyUndoAll(6, nick, 'message.dpp2.notice.cleanup')
+			DPP2.NotifyUndoAll(6, 'message.dpp2.notice.cleanup', nick)
 			SafeRemoveEntity(ent) for ent in *find
 
 	return
