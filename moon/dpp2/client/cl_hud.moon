@@ -105,6 +105,8 @@ GetOwnerText = ->
 	return if tr.Entity\DPP2CreatedByMap() and not tr.Entity\DPP2IsOwned() and DPP2.CL_DONT_SHOW_MAP_PROPS\GetBool()
 	return if not tr.Entity\DPP2IsOwned() and DPP2.CL_DONT_SHOW_WORLD_PROPS\GetBool()
 	owner, ownerSteamID, ownerName = tr.Entity\DPP2GetOwner()
+	--ownerName = DLib.I18n.Localize('gui.dpp2.access.status.map') if ownerSteamID == 'world' and tr.Entity\DPP2CreatedByMap()
+	ownerName = game.GetMap() if ownerSteamID == 'world' and tr.Entity\DPP2CreatedByMap()
 	--ownerName = tr.Entity\Nick() if tr.Entity\IsPlayer()
 	ownerName = string.format('%s\n%s', ownerName, tostring(tr.Entity)) if not CL_SIMPLE_OWNER and not tr.Entity\IsPlayer() and DPP2.CL_SHOW_ENTITY_INFO\GetBool() and DPP2.SHOW_ENTITY_INFO\GetBool()
 

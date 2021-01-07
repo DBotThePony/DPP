@@ -20,7 +20,7 @@
 
 gui.dpp2.access.status.contraption = 'Конструкция'
 gui.dpp2.access.status.contraption_ext = 'Конструкция <%d>'
-gui.dpp2.access.status.map = 'Создано картой'
+gui.dpp2.access.status.map = 'Карта'
 gui.dpp2.access.status.world = 'Без владельца'
 gui.dpp2.access.status.friend = 'Не является другом владельца'
 gui.dpp2.access.status.invalident = 'Неверная сущность'

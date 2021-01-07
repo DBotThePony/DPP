@@ -20,7 +20,7 @@
 
 gui.dpp2.access.status.contraption = 'Contraption'
 gui.dpp2.access.status.contraption_ext = 'Contraption <%d>'
-gui.dpp2.access.status.map = 'Owned by map'
+gui.dpp2.access.status.map = 'Map'
 gui.dpp2.access.status.world = 'Nobody'
 gui.dpp2.access.status.friend = 'Not a friend of owner'
 gui.dpp2.access.status.invalident = 'Invalid Entity'
