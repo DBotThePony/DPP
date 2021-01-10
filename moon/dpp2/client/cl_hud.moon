@@ -159,6 +159,7 @@ GetOwnerText = ->
 POS_OWNING = HUDCommons.Position2.DefinePosition('dpp2_owner', 0.004, 0.5, false)
 
 HUDPaint = (_, pw, ph) ->
+	return if not IsValid(LocalPlayer())
 	x, y = POS_OWNING()
 	text, color = GetOwnerText()
 	return if not text
@@ -176,6 +177,7 @@ HUDPaint = (_, pw, ph) ->
 HUDPaint2 = (_, pw, ph) ->
 	return if not DPP2.CL_DRAW_CONTRAPTION_AABB\GetBool()
 	ply = DLib.HUDCommons.SelectPlayer()
+	return if not IsValid(ply)
 	wclass = ply\GetActiveWeaponClass()
 	return if wclass ~= 'gmod_tool' and wclass ~= 'weapon_physgun'
 
