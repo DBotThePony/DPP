@@ -71,7 +71,7 @@ ComputeVolume = =>
 
 			for physID = 0, @GetPhysicsObjectCount() - 1
 				phys = @GetPhysicsObjectNum(physID)
-				num += phys\GetVolume() if IsValid(phys)
+				num += (phys\GetVolume() or 0) if IsValid(phys)
 
 			return num
 
