@@ -47,7 +47,7 @@ if undo
 		if Current_Undo and type(Current_Undo.Owner) == 'Player' and type(Current_Undo.Entities) == 'table'
 			for ent in *Current_Undo.Entities
 				if IsValid(ent) and DPP2.HookedEntityCreation(ent)
-					DPP2.PlayerSpawnedSomething(Current_Undo.Owner, ent, true) if not ent\DPP2IsOwned()
+					DPP2.PlayerSpawnedSomething(Current_Undo.Owner, ent, true) if not ent.__dpp2_hit
 					table.insert(find, ent)
 
 		return undo._DPP2_Finish(...) if #find == 0
