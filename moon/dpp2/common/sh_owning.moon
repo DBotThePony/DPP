@@ -36,10 +36,10 @@ entMeta.DPP2GetIsUpForGrabs = => @GetNWBool('dpp2_ufg', false)
 entMeta.DPP2OwnerIsValid = => @GetNWEntity('dpp2_ownerent', NULL)\IsValid()
 entMeta.DPP2IsOwnerValid = => @GetNWEntity('dpp2_ownerent', NULL)\IsValid()
 entMeta.DPP2IsOwnerTrackedByUID = => @GetNWBool('dpp2_owner_uid_track', false)
-entMeta.DPP2GetOwnerSteamID = => @GetNWString('dpp2_owner_steamid')
-entMeta.DPP2GetOwnerUID = => @GetNWString('dpp2_owner_uid', 'world')
+entMeta.DPP2GetOwnerSteamID = (def = '') => @GetNWString('dpp2_owner_steamid', def)
+entMeta.DPP2GetOwnerUID = (def = 'world') => @GetNWString('dpp2_owner_uid', def)
 entMeta.DPP2GetOwnerName = => select(3, @DPP2GetOwner())
-entMeta.DPP2GetOwnerPID = => @GetNWInt('dpp2_owner_pid', -1)
+entMeta.DPP2GetOwnerPID = (def = -1) => @GetNWInt('dpp2_owner_pid', def)
 
 plyMeta.DPP2GetAllEnts = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @]
 plyMeta.DPP2FindOwned = plyMeta.DPP2GetAllEnts
@@ -97,26 +97,40 @@ DPP2.GetAllKnownPlayersInfo = (plyID) ->
 
 	return output
 
-DPP2.GetAllEntsBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID() == @]
+DPP2.GetAllEntsBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID(false) == @]
 DPP2.GetAllEntitiesBySteamID = DPP2.GetAllEntsBySteamID
-DPP2.GetAllNPCBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID() == @ and type(ent) == 'NPC']
-DPP2.GetAllWeaponsBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID() == @ and type(ent) == 'Weapon']
-DPP2.GetAllPropsBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID() == @ and ent\GetClass() == 'prop_physics']
-DPP2.GetAllRagdollsBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID() == @ and ent\GetClass() == 'prop_ragdoll']
+DPP2.GetAllNPCBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID(false) == @ and type(ent) == 'NPC']
+DPP2.GetAllWeaponsBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID(false) == @ and type(ent) == 'Weapon']
+DPP2.GetAllPropsBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID(false) == @ and ent\GetClass() == 'prop_physics']
+DPP2.GetAllRagdollsBySteamID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerSteamID(false) == @ and ent\GetClass() == 'prop_ragdoll']
 
-DPP2.GetAllEntsByPID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerPID() == @]
+DPP2.GetAllEntsByPID = =>
+	assert(isnumber(@), 'assert(isnumber(self))')
+	return [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerPID(false) == @]
+
 DPP2.GetAllEntitiesByPID = DPP2.GetAllEntsByUID
-DPP2.GetAllNPCByPID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerPID() == @ and type(ent) == 'NPC']
-DPP2.GetAllWeaponsByPID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerPID() == @ and type(ent) == 'Weapon']
-DPP2.GetAllPropsByPID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerPID() == @ and ent\GetClass() == 'prop_physics']
-DPP2.GetAllRagdollsByPID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerPID() == @ and ent\GetClass() == 'prop_ragdoll']
+DPP2.GetAllNPCByPID = =>
+	assert(isnumber(@), 'assert(isnumber(self))')
+	return [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerPID(false) == @ and type(ent) == 'NPC']
 
-DPP2.GetAllEntsByUID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerUID() == @]
+DPP2.GetAllWeaponsByPID = =>
+	assert(isnumber(@), 'assert(isnumber(self))')
+	return [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerPID(false) == @ and type(ent) == 'Weapon']
+
+DPP2.GetAllPropsByPID = =>
+	assert(isnumber(@), 'assert(isnumber(self))')
+	return [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerPID(false) == @ and ent\GetClass() == 'prop_physics']
+
+DPP2.GetAllRagdollsByPID = =>
+	assert(isnumber(@), 'assert(isnumber(self))')
+	return [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerPID(false) == @ and ent\GetClass() == 'prop_ragdoll']
+
+DPP2.GetAllEntsByUID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerUID(false) == @]
 DPP2.GetAllEntitiesByUID = DPP2.GetAllEntsByUID
-DPP2.GetAllNPCByUID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerUID() == @ and type(ent) == 'NPC']
-DPP2.GetAllWeaponsByUID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerUID() == @ and type(ent) == 'Weapon']
-DPP2.GetAllPropsByUID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerUID() == @ and ent\GetClass() == 'prop_physics']
-DPP2.GetAllRagdollsByUID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerUID() == @ and ent\GetClass() == 'prop_ragdoll']
+DPP2.GetAllNPCByUID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerUID(false) == @ and type(ent) == 'NPC']
+DPP2.GetAllWeaponsByUID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerUID(false) == @ and type(ent) == 'Weapon']
+DPP2.GetAllPropsByUID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerUID(false) == @ and ent\GetClass() == 'prop_physics']
+DPP2.GetAllRagdollsByUID = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwnerUID(false) == @ and ent\GetClass() == 'prop_ragdoll']
 
 DPP2.GetAllEntsByUIDStrict = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2IsOwnerTrackedByUID() and ent\DPP2GetOwnerUIDStrict() == @]
 DPP2.GetAllEntitiesByUIDStrict = DPP2.GetAllEntsByUIDStrict

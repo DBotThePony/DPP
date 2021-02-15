@@ -137,7 +137,12 @@ DPP2.FindPlayerUserIDInCommand = (str = '', allow_any = false) ->
 		return getplayer
 
 	if num = str\tonumber()
-		return num if allow_any
+		num = num\floor()
+
+		if allow_any
+			return false if num < 1
+			return num
+
 		return num if IsValid(Player(num))
 
 	-- todo: better comparison
