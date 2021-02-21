@@ -232,7 +232,7 @@ class DPP2.DEF.ProtectionDefinition
 				return 'command.dpp2.generic.invalid_side' if not IsValid(@)
 				ent = DPP2.FindEntityFromArg(table.concat(args, ' '), @)
 				return 'command.dpp2.generic.notarget' if not IsValid(ent) or ent\IsPlayer() or ent\IsNPC() or type(ent) == 'NextBot'
-				return 'command.dpp2.transferent.not_owner' if ent\DPP2GetOwner() ~= @
+				return 'command.dpp2.transferent.not_owner' if ent\DPP2GetOwner() ~= @ and not self2.camiwatchdog\HasPermission(@, self2.otherPermString)
 				self2\UnLockOthers(ent)
 				DPP2.Notify(@, nil, 'command.dpp2.unlock_others.' .. identifier, ent)
 		else

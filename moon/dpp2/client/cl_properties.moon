@@ -222,7 +222,7 @@ properties.Add('dpp2_unlock_others', {
 		return false if not DPP2.CL_ENABLE_PROPERTIES\GetBool()
 		return false if not DPP2.CL_ENABLE_PROPERTIES_REGULAR\GetBool()
 		@MenuIcon = Menus.Icons.LockTool
-		return false if not ent\IsValid() or ent\DPP2GetOwner() ~= ply
+		return false if not ent\IsValid()
 		-- return false if hook.Run('CanProperty', ply, 'dpp2_unlock_others', ent) == false
 		return false if ent\IsNPC() or ent\IsPlayer() or type(ent) == 'NextBot'
 
@@ -235,12 +235,12 @@ properties.Add('dpp2_unlock_others', {
 	MenuOpen: (option, ent = NULL, tr, ply = LocalPlayer()) =>
 		with menu = option\AddSubMenu()
 			for object in *lockmodes
-				if object\IsLockedOthers(ent)
+				if object\IsLockedOthers(ent) and (ent\DPP2GetOwner() == ply or object.camiwatchdog\HasPermission(object.otherPermString))
 					menu\AddOption('gui.dpp2.property.unlock_others.' .. object.identifier, -> RunConsoleCommand('dpp2_' .. object.unlock_others_name, ent\EntIndex()))\SetIcon(Menus.Icons.LockTool)
 
 	Action: (ent = NULL, tr, ply = LocalPlayer()) =>
 		for object in *lockmodes
-			if object\IsLockedOthers(ent)
+			if object\IsLockedOthers(ent) and (ent\DPP2GetOwner() == ply or object.camiwatchdog\HasPermission(object.otherPermString))
 				RunConsoleCommand('dpp2_' .. object.unlock_others_name, ent\EntIndex())
 })
 
