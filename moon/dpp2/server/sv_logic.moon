@@ -189,17 +189,18 @@ hook.Add 'EntityRemoved', 'DPP2.Contraptions', =>
 
 	return
 
-GhostPhysObj = =>
+GhostPhysObj = (ent) =>
+	isvehicle = ent\IsVehicle()
 	motion = @IsMotionEnabled()
 	gravity = @IsGravityEnabled()
 	--mass = @GetMass()
-	collisions = @IsCollisionEnabled()
-	angvel = @GetAngleVelocity()
-	vel = @GetVelocity()
+	collisions = @IsCollisionEnabled() if not isvehicle
+	angvel = @GetAngleVelocity() if not isvehicle
+	vel = @GetVelocity() if not isvehicle
 
 	@EnableMotion(false)
 	@EnableGravity(false)
-	@EnableCollisions(false)
+	@EnableCollisions(false) if not isvehicle
 	--@SetMass(1)
 	@Sleep()
 
@@ -207,11 +208,11 @@ GhostPhysObj = =>
 		return if not @IsValid()
 		@EnableMotion(motion)
 		@EnableGravity(gravity)
-		@EnableCollisions(collisions)
+		@EnableCollisions(collisions) if not isvehicle
 		--@SetMass(mass)
 		@Wake()
-		@AddAngleVelocity(angvel)
-		@SetVelocity(vel)
+		@AddAngleVelocity(angvel) if not isvehicle
+		@SetVelocity(vel) if not isvehicle
 
 entMeta.DPP2CanGhost = => not @IsConstraint() and not @DPP2IsGhosted() and @DPP2GetPhys()
 
@@ -234,9 +235,9 @@ entMeta.DPP2Ghost = (callback) =>
 			@__dpp2_ghost_callbacks = {callback}
 
 	if type(phys) == 'table'
-		@__dpp2_old_phys = [GhostPhysObj(phys2) for phys2 in *phys]
+		@__dpp2_old_phys = [GhostPhysObj(phys2, @) for phys2 in *phys]
 	else
-		@__dpp2_old_phys = GhostPhysObj(phys)
+		@__dpp2_old_phys = GhostPhysObj(phys, @)
 
 	@SetMoveType(MOVETYPE_NONE)
 	@SetCollisionGroup(COLLISION_GROUP_WORLD)
