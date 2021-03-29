@@ -61,6 +61,8 @@ Menus.ModelBlacklistMenu = =>
 		'gui.dpp2.model_blacklist.window_title'
 	)
 
+	Menus.QCheckBox(@, 'model_blacklist_props')
+
 Menus.ModelExclusionMenu = =>
 	return if not IsValid(@)
 
@@ -72,6 +74,8 @@ Menus.ModelExclusionMenu = =>
 		'gui.dpp2.model_exclusions.window_title'
 	)
 
+	Menus.QCheckBox(@, 'model_exclusion_props')
+
 Menus.ModelRestrictionMenu = =>
 	return if not IsValid(@)
 
@@ -82,6 +86,8 @@ Menus.ModelRestrictionMenu = =>
 		DPP2.ModelRestrictions,
 		'gui.dpp2.model_restrictions.window_title'
 	)
+
+	Menus.QCheckBox(@, 'model_restrict_props')
 
 Menus.ModelLimitMenu = =>
 	return if not IsValid(@)

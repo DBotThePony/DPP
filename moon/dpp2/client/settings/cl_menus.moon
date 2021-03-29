@@ -46,6 +46,7 @@ Menus.CheckBox = (name, convar) =>
 	return DPP2.MessageError('Unknown convar: ', convar) if not _obj
 	panel = @CheckBox(name, convar)
 	panel\SetConVar(nil)
+	panel\SetTooltip(name)
 	panel.Think = -> panel\SetChecked(_obj\GetBool())
 
 	panel.Button.OnChange = (newValue) =>
