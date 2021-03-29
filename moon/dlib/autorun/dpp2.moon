@@ -65,6 +65,9 @@ DPP2.ENABLE_PROTECTION = DPP2.CreateConVar('protection', '1', DPP2.TYPE_BOOL)
 DPP2.CL_ENABLE_PROTECTION = DPP2.CreateClientConVar('cl_protection', '1', DPP2.TYPE_BOOL) if CLIENT
 DPP2.NO_TOOLGUN_PLAYER = DPP2.CreateConVar('no_tool_player', '1', DPP2.TYPE_BOOL)
 DPP2.NO_TOOLGUN_PLAYER_ADMIN = DPP2.CreateConVar('no_tool_player_admin', '0', DPP2.TYPE_BOOL)
+DPP2.MODEL_RESTRICT_PROPS = DPP2.CreateConVar('model_restrict_props', '0', DPP2.TYPE_BOOL)
+DPP2.MODEL_BLACKLIST_PROPS = DPP2.CreateConVar('model_blacklist_props', '0', DPP2.TYPE_BOOL)
+DPP2.MODEL_EXCLUSIONS_PROPS = DPP2.CreateConVar('model_exclusion_props', '0', DPP2.TYPE_BOOL)
 
 DPP2.PHYSGUN_UNDO = DPP2.CreateConVar('physgun_undo', '1', DPP2.TYPE_BOOL)
 
@@ -349,7 +352,24 @@ with AllowMapPrefab = DPP2.DEF.DefinitionConVarsPrefab()
 
 DPP2.ModelRestrictions = DPP2.DEF.RestrictionList('model', DPP2.ModelAutocomplete)
 DPP2.ModelBlacklist = DPP2.DEF.Blacklist('model', DPP2.ModelAutocomplete)
+
+DPP2.IsModelRestricted = (ent, ply) ->
+	return not DPP2.ModelRestrictions\Ask(ent, ply) if isstring(ent)
+	return false if DPP2.MODEL_RESTRICT_PROPS\GetBool() and not ent\GetClass()\startsWith('prop_')
+	return not DPP2.ModelRestrictions\Ask(ent\GetModel(), ply)
+
+DPP2.IsModelBlacklisted = (ent, ply) ->
+	return not DPP2.ModelBlacklist\Ask(ent, ply) if isstring(ent)
+	return false if DPP2.MODEL_BLACKLIST_PROPS\GetBool() and not ent\GetClass()\startsWith('prop_')
+	return not DPP2.ModelBlacklist\Ask(ent\GetModel(), ply)
+
 DPP2.ModelExclusions = DPP2.DEF.Exclusion('model', DPP2.ModelAutocomplete)
+
+DPP2.IsModelExcluded = (ent, ply) ->
+	return DPP2.ModelExclusions\Ask(ent, ply) if isstring(ent)
+	return false if DPP2.MODEL_EXCLUSIONS_PROPS\GetBool() and not ent\GetClass()\startsWith('prop_')
+	return DPP2.ModelExclusions\Ask(ent\GetModel(), ply)
+
 DPP2.ToolgunModeExclusions = DPP2.DEF.Exclusion('toolgun_mode', DPP2.ToolgunModeAutocomplete)
 
 DPP2.ToolgunModeRestrictions = DPP2.DEF.RestrictionList('toolgun_mode', DPP2.ToolgunModeAutocomplete)

@@ -146,12 +146,12 @@ PreventModelSpawn = (ply, model = ent and ent\GetModel() or 'wtf', ent = NULL, n
 
 	model = model\lower()
 
-	if not DPP2.ModelBlacklist\Ask(model, ply)
+	if DPP2.IsModelBlacklisted(IsValid(ent) and ent or model, ply)
 		DPP2.NotifyError(ply, nil, 'message.dpp2.blacklist.model_blocked', model) if not nonotify
 		SafeRemoveEntity(ent)
 		return false
 
-	if not DPP2.ModelRestrictions\Ask(model, ply)
+	if DPP2.IsModelRestricted(IsValid(ent) and ent or model, ply)
 		DPP2.NotifyError(ply, nil, 'message.dpp2.blacklist.model_restricted', model) if not nonotify
 		SafeRemoveEntity(ent)
 		return false

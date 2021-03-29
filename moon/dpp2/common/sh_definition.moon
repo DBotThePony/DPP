@@ -462,7 +462,7 @@ class DPP2.DEF.ProtectionDefinition
 		return false, i18n.localize('gui.dpp2.access.status.lock_other') if ent\DPP2GetOwner() ~= ply and @IsLockedOthers(ent)
 		return true if ent\IsPlayer()
 		classname = ent\GetClass()
-		return false, i18n.localize('gui.dpp2.access.status.model_blacklist') if not DPP2.ModelBlacklist\Ask(ent\GetModel(), ply)
+		return false, i18n.localize('gui.dpp2.access.status.model_blacklist') if DPP2.IsModelBlacklisted(ent, ply)
 		return false, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_restriction') if @classnameRestriction and not @classnameRestriction\Ask(classname, ply)
 		return false, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_blacklist') if @classnameBlacklist and not @classnameBlacklist\Ask(classname, ply)
 		return true, i18n.localize('gui.dpp2.access.status.disabled') if not @IsEnabled()
@@ -491,7 +491,7 @@ class DPP2.DEF.ProtectionDefinition
 			owner, ownerSteamID, ownerNick = ent\DPP2GetOwner()
 			return true if owner == ply
 			return true, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_exclusion') if @classnameExclusionList and @classnameExclusionList\Ask(ent\GetClass(), ply)
-			return true, i18n.localize('gui.dpp2.access.status.model_exclusion') if DPP2.ModelExclusions\Ask(ent\GetModel(), ply)
+			return true, i18n.localize('gui.dpp2.access.status.model_exclusion') if DPP2.IsModelExcluded(ent, ply)
 			return @CanTouchMap(ply) if ownerSteamID == 'world' and ent\DPP2CreatedByMap()
 			return @CanTouchWorld(ply) if ownerSteamID == 'world'
 			return @CanTouchOther(ply, IsValid(owner) and owner or ownerSteamID)
@@ -514,10 +514,9 @@ class DPP2.DEF.ProtectionDefinition
 				if IsValid(ent2)
 					owner, ownerSteamID, ownerNick = ent2\DPP2GetOwner()
 					classname2 = ent2\GetClass()
-					mdl2 = ent2\GetModel()
-					return false, i18n.localize('gui.dpp2.access.status.model_blacklist') if not DPP2.ModelBlacklist\Ask(mdl2, ply)
+					return false, i18n.localize('gui.dpp2.access.status.model_blacklist') if DPP2.IsModelBlacklisted(ent2, ply)
 
-					if (not @classnameExclusionList or not @classnameExclusionList\Ask(classname2, ply)) and not DPP2.ModelExclusions\Ask(mdl2, ply)
+					if (not @classnameExclusionList or not @classnameExclusionList\Ask(classname2, ply)) and DPP2.IsModelExcluded(ent2, ply)
 						return false, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_restriction') if @classnameRestriction and not @classnameRestriction\Ask(classname2, ply)
 						return false, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_blacklist') if @classnameBlacklist and not @classnameBlacklist\Ask(classname2, ply)
 
