@@ -633,3 +633,7 @@ gui.dpp2.toolmenu.playertransferfallback = 'Mark %s player as trasnfer fallback'
 gui.dpp2.property.cleanup = 'Cleanup entities of owner'
 gui.dpp2.property.cleanupnpcs = 'Cleanup NPCs of owner'
 gui.dpp2.property.cleanupvehicles = 'Cleanup Vehicles of owner'
+
+gui.dpp2.cvars.model_restrict_props = 'Model restriction list apply only to prop_*'
+gui.dpp2.cvars.model_blacklist_props = 'Model blacklist apply only to prop_*'
+gui.dpp2.cvars.model_exclusion_props = 'Model exclusion list apply only to prop_*'
