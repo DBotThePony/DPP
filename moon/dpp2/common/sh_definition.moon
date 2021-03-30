@@ -516,7 +516,7 @@ class DPP2.DEF.ProtectionDefinition
 					classname2 = ent2\GetClass()
 					return false, i18n.localize('gui.dpp2.access.status.model_blacklist') if DPP2.IsModelBlacklisted(ent2, ply)
 
-					if (not @classnameExclusionList or not @classnameExclusionList\Ask(classname2, ply)) and DPP2.IsModelExcluded(ent2, ply)
+					if (not @classnameExclusionList or not @classnameExclusionList\Ask(classname2, ply)) and not DPP2.IsModelExcluded(ent2, ply)
 						return false, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_restriction') if @classnameRestriction and not @classnameRestriction\Ask(classname2, ply)
 						return false, i18n.localize('gui.dpp2.access.status.' .. @identifier .. '_blacklist') if @classnameBlacklist and not @classnameBlacklist\Ask(classname2, ply)
 
