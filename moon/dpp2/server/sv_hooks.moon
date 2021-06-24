@@ -108,7 +108,7 @@ DPP2.PlayerSpawnedSomething = (ply, ent, advancedCheck = false) ->
 							break
 	else
 		return if not DPP2.AntispamCheck(ply, true, ent, nil, true)
-		ent.__dpp2_dupe_fix = engine.TickCount() + 5
+		ent.__dpp2_dupe_fix = engine.TickCount() + 5 if DPP2.ENABLE_ANTISPAM_ALTERNATIVE_DUPE\GetBool()
 
 	if DPP2.ENABLE_ANTIPROPKILL\GetBool() and DPP2.ANTIPROPKILL_TRAP\GetBool() and ent\GetSolid() ~= SOLID_NONE
 		timer.Simple 0, -> DPP2.APKTriggerPhysgunDrop(ply, ent) if IsValid(ply) and IsValid(ent)

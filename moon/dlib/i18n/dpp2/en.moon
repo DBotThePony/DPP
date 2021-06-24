@@ -263,6 +263,7 @@ gui.dpp2.cvars.apropkill_punt = 'Prevent gravgun punt'
 gui.dpp2.cvars.apropkill_surf = 'Prevent prop surf\n(depends on antiproppush and\nsitting mod like DSit)'
 
 gui.dpp2.cvars.antispam = 'Antispam main switch'
+gui.dpp2.cvars.antispam_alt_dupes = 'Alternative advdupe(2) antispam. This might weaken antispam protection against griefers.'
 gui.dpp2.cvars.antispam_ignore_admins = 'Antispam ignores administration'
 gui.dpp2.help.antispam_ignore_admins = 'Keep in mind that turning\nantispam_ignore_admins on might make you forget\nto tune antispam settngs properly\nfor regular players\n(and make them feel insulted by antispam)'
 gui.dpp2.cvars.antispam_unfreeze = 'Unfreeze antispam'

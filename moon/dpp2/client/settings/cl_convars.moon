@@ -63,6 +63,7 @@ Menus.AntispamMenu = =>
 	return if not IsValid(@)
 
 	Menus.QCheckBox(@, 'antispam')
+	Menus.QCheckBox(@, 'antispam_alt_dupes')
 	Menus.QCheckBox(@, 'antispam_ignore_admins')
 	@Help('gui.dpp2.help.antispam_ignore_admins')
 	Menus.QCheckBox(@, 'antispam_unfreeze')
