@@ -40,6 +40,7 @@ log_blacklist = {
 DPP2.PlayerSpawnedSomething = (ply, ent, advancedCheck = false) ->
 	return if ent.__dpp2_hit
 	ent.__dpp2_hit = true
+	ent.__dpp2_dupe_fix = nil
 
 	return false if ent\GetEFlags()\band(EFL_KILLME) ~= 0
 
@@ -107,6 +108,7 @@ DPP2.PlayerSpawnedSomething = (ply, ent, advancedCheck = false) ->
 							break
 	else
 		return if not DPP2.AntispamCheck(ply, true, ent, nil, true)
+		ent.__dpp2_dupe_fix = engine.TickCount() + 5
 
 	if DPP2.ENABLE_ANTIPROPKILL\GetBool() and DPP2.ANTIPROPKILL_TRAP\GetBool() and ent\GetSolid() ~= SOLID_NONE
 		timer.Simple 0, -> DPP2.APKTriggerPhysgunDrop(ply, ent) if IsValid(ply) and IsValid(ent)
@@ -455,7 +457,15 @@ hook.Add 'Think', 'DPP2.CheckEntitiesOwnage', ->
 							break if fail
 
 					if not fail
-						DPP2.QueueAntispam(ply, ent, found)
+						should_queue = not ent.__dpp2_dupe_fix or engine.TickCount() >= ent.__dpp2_dupe_fix
+
+						if should_queue
+							for ent2 in *found
+								if ent.__dpp2_dupe_fix and engine.TickCount() < ent.__dpp2_dupe_fix
+									should_queue = false
+									break
+
+						DPP2.QueueAntispam(ply, ent, found) if should_queue
 					else
 						SafeRemoveEntity(ent)
 						SafeRemoveEntity(ent2) for ent2 in *found
