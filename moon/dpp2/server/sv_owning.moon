@@ -203,7 +203,7 @@ PlayerDisconnected = =>
 
 	if DPP2.ENABLE_UP_FOR_GRABS\GetBool() and not (DPP2.ENABLE_CLEANUP\GetBool() and DPP2.UP_FOR_GRABS_TIMER\GetFloat() >= DPP2.CLEANUP_TIMER\GetFloat())
 		timer.Create 'DPP2.UpForGrabs.' .. steamid, DPP2.UP_FOR_GRABS_TIMER\GetFloat(), 1, ->
-			return if @IsValid()
+			return if @IsValid() or not (DPP2.ENABLE_UP_FOR_GRABS\GetBool() and not (DPP2.ENABLE_CLEANUP\GetBool() and DPP2.UP_FOR_GRABS_TIMER\GetFloat() >= DPP2.CLEANUP_TIMER\GetFloat()))
 			find = DPP2.GetAllEntsBySteamID(steamid)
 			return if #find == 0
 
@@ -212,7 +212,7 @@ PlayerDisconnected = =>
 
 	if DPP2.ENABLE_CLEANUP\GetBool()
 		timer.Create 'DPP2.Cleanup.' .. steamid, DPP2.CLEANUP_TIMER\GetFloat(), 1, ->
-			return if @IsValid()
+			return if @IsValid() or not DPP2.ENABLE_CLEANUP\GetBool()
 			find = DPP2.GetAllEntsBySteamID(steamid)
 			return if #find == 0
 
