@@ -161,14 +161,14 @@ Menus.BuildTransferFallbackPanel = =>
 						\Dock(FILL)
 						\DockMargin(0, 5, 0, 0)
 						\SetText('gui.dpp2.toolmenu.playertransferfallback', ply\Nick())
-						\SetChecked(lply\GetNWEntity('dpp2_transfer_fallback', NULL) == ply)
+						\SetChecked(lply\DLibGetNWEntity('dpp2_transfer_fallback', NULL) == ply)
 
 						ignore = false
 
 						.Think = ->
 							ignore = true
 
-							if lply\GetNWEntity('dpp2_transfer_fallback', NULL) == ply
+							if lply\DLibGetNWEntity('dpp2_transfer_fallback', NULL) == ply
 								\SetChecked(true)
 							else
 								\SetChecked(false)
@@ -178,7 +178,7 @@ Menus.BuildTransferFallbackPanel = =>
 						.Button.OnChange = (newvalue) ->
 							return if ignore
 
-							if lply\GetNWEntity('dpp2_transfer_fallback', NULL) ~= ply
+							if lply\DLibGetNWEntity('dpp2_transfer_fallback', NULL) ~= ply
 								RunConsoleCommand('dpp2_transferfallback', ply\UserID())
 							else
 								RunConsoleCommand('dpp2_transferunfallback')

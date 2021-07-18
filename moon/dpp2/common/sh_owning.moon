@@ -30,16 +30,16 @@ DPP2.UP_FOR_GRABS_TIMER = DPP2.CreateConVar('upforgrabs_timer', '360', DPP2.TYPE
 entMeta = FindMetaTable('Entity')
 plyMeta = FindMetaTable('Player')
 
-entMeta.DPP2IsOwned = => @GetNWString('dpp2_owner_uid', '-1') ~= '-1'
-entMeta.DPP2IsUpForGrabs = => @GetNWBool('dpp2_ufg', false)
-entMeta.DPP2GetIsUpForGrabs = => @GetNWBool('dpp2_ufg', false)
-entMeta.DPP2OwnerIsValid = => @GetNWEntity('dpp2_ownerent', NULL)\IsValid()
-entMeta.DPP2IsOwnerValid = => @GetNWEntity('dpp2_ownerent', NULL)\IsValid()
-entMeta.DPP2IsOwnerTrackedByUID = => @GetNWBool('dpp2_owner_uid_track', false)
-entMeta.DPP2GetOwnerSteamID = (def = '') => @GetNWString('dpp2_owner_steamid', def)
-entMeta.DPP2GetOwnerUID = (def = 'world') => @GetNWString('dpp2_owner_uid', def)
+entMeta.DPP2IsOwned = => @DLibGetNWString('dpp2_owner_uid', '-1') ~= '-1'
+entMeta.DPP2IsUpForGrabs = => @DLibGetNWBool('dpp2_ufg', false)
+entMeta.DPP2GetIsUpForGrabs = => @DLibGetNWBool('dpp2_ufg', false)
+entMeta.DPP2OwnerIsValid = => @DLibGetNWEntity('dpp2_ownerent', NULL)\IsValid()
+entMeta.DPP2IsOwnerValid = => @DLibGetNWEntity('dpp2_ownerent', NULL)\IsValid()
+entMeta.DPP2IsOwnerTrackedByUID = => @DLibGetNWBool('dpp2_owner_uid_track', false)
+entMeta.DPP2GetOwnerSteamID = (def = '') => @DLibGetNWString('dpp2_owner_steamid', def)
+entMeta.DPP2GetOwnerUID = (def = 'world') => @DLibGetNWString('dpp2_owner_uid', def)
 entMeta.DPP2GetOwnerName = => select(3, @DPP2GetOwner())
-entMeta.DPP2GetOwnerPID = (def = -1) => @GetNWInt('dpp2_owner_pid', def)
+entMeta.DPP2GetOwnerPID = (def = -1) => @DLibGetNWInt('dpp2_owner_pid', def)
 
 plyMeta.DPP2GetAllEnts = => [ent for i, ent in ipairs(ents.GetAll()) when ent\DPP2GetOwner() == @]
 plyMeta.DPP2FindOwned = plyMeta.DPP2GetAllEnts

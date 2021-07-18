@@ -24,10 +24,10 @@ import net from DLib
 entMeta = FindMetaTable('Entity')
 plyMeta = FindMetaTable('Player')
 
-plyMeta.DPP2IsBanned = => @GetNWBool('dpp2_ban', false)
-plyMeta.DPP2IsPermanentlyBanned = => @DPP2IsBanned() and @GetNWBool('dpp2_ban_perma', false)
+plyMeta.DPP2IsBanned = => @DLibGetNWBool('dpp2_ban', false)
+plyMeta.DPP2IsPermanentlyBanned = => @DPP2IsBanned() and @DLibGetNWBool('dpp2_ban_perma', false)
 
-entMeta.DPP2CreatedByMap = => not @IsPlayer() and @GetNWBool('dpp2_cbm', false)
+entMeta.DPP2CreatedByMap = => not @IsPlayer() and @DLibGetNWBool('dpp2_cbm', false)
 
 net.receive 'dpp2_contraption_create', ->
 	id = net.ReadUInt32()

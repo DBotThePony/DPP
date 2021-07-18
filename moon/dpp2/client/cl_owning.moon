@@ -24,12 +24,12 @@ import HUDCommons, I18n from DLib
 entMeta = FindMetaTable('Entity')
 
 entMeta.DPP2GetOwner = =>
-	if @GetNWString('dpp2_owner_steamid', '-1') == '-1'
+	if @DLibGetNWString('dpp2_owner_steamid', '-1') == '-1'
 		return NULL, 'world', I18n.Localize('gui.dpp2.access.status.world'), 'world', -1
 
 	local ownerName
 
-	owner, ownerSteamID = @GetNWEntity('dpp2_ownerent', NULL), @GetNWString('dpp2_owner_steamid')
+	owner, ownerSteamID = @DLibGetNWEntity('dpp2_ownerent', NULL), @DLibGetNWString('dpp2_owner_steamid')
 
 	if IsValid(owner) and owner\IsPlayer()
 		ownerName = owner\Nick()
@@ -37,4 +37,4 @@ entMeta.DPP2GetOwner = =>
 	else
 		ownerName = DLib.LastNickFormatted(ownerSteamID)
 
-	return owner, ownerSteamID, ownerName, @GetNWString('dpp2_owner_uid', 'world'), @GetNWInt('dpp2_owner_pid', -1)
+	return owner, ownerSteamID, ownerName, @DLibGetNWString('dpp2_owner_uid', 'world'), @DLibGetNWInt('dpp2_owner_pid', -1)

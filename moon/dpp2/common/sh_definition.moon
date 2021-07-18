@@ -264,56 +264,56 @@ class DPP2.DEF.ProtectionDefinition
 
 	EnableProtectionFor: (ply) =>
 		error('Invalid side') if CLIENT
-		ply\SetNWBool(@disableNWName, false)
+		ply\DLibSetNWBool(@disableNWName, false)
 		return @
 
 	DisableProtectionFor: (ply) =>
 		error('Invalid side') if CLIENT
-		ply\SetNWBool(@disableNWName, true)
+		ply\DLibSetNWBool(@disableNWName, true)
 		return @
 
 	LockSelf: (ply, ent) =>
 		error('Invalid side') if CLIENT
-		--ent\SetNWBool(@lock_self_nwname, true)
+		--ent\DLibSetNWBool(@lock_self_nwname, true)
 		--ply[@lock_self_nwname] = ply[@lock_self_nwname] or {}
 		--ply[@lock_self_nwname][ent] = true
-		ent\SetNWBool(@lock_self_nwname .. '_' .. (game.SinglePlayer() and '0' or ply\SteamID64()), true)
+		ent\DLibSetNWBool(@lock_self_nwname .. '_' .. (game.SinglePlayer() and '0' or ply\SteamID64()), true)
 		return @
 
 	IsLockedSelf: (ply, ent) =>
 		--return false if not ply[@lock_self_nwname]
 		--return ply[@lock_self_nwname][ent] == true
-		return ent\GetNWBool(@lock_self_nwname .. '_' .. (game.SinglePlayer() and '0' or ply\SteamID64()), false)
+		return ent\DLibGetNWBool(@lock_self_nwname .. '_' .. (game.SinglePlayer() and '0' or ply\SteamID64()), false)
 
 	UnLockSelf: (ply, ent) =>
 		error('Invalid side') if CLIENT
-		--ent\SetNWBool(@lock_self_nwname, false)
+		--ent\DLibSetNWBool(@lock_self_nwname, false)
 		--return @ if not ply[@lock_self_nwname]
 		--ply[@lock_self_nwname][ent] = nil
-		ent\SetNWBool(@lock_self_nwname .. '_' .. (game.SinglePlayer() and '0' or ply\SteamID64()), false)
+		ent\DLibSetNWBool(@lock_self_nwname .. '_' .. (game.SinglePlayer() and '0' or ply\SteamID64()), false)
 		return @
 
 	LockOthers: (ent) =>
 		error('Invalid side') if CLIENT
-		ent\SetNWBool(@lock_others_nwname, true)
+		ent\DLibSetNWBool(@lock_others_nwname, true)
 		return @
 
 	IsLockedOthers: (ent) =>
 		return false if not ent\IsValid()
-		return ent\GetNWBool(@lock_others_nwname, false)
+		return ent\DLibGetNWBool(@lock_others_nwname, false)
 
 	UnLockOthers: (ent) =>
 		error('Invalid side') if CLIENT
-		ent\SetNWBool(@lock_others_nwname, false)
+		ent\DLibSetNWBool(@lock_others_nwname, false)
 		return @
 
 	IsDisabledForPlayer: (ply = NULL) =>
 		return false if not ply\IsValid()
-		return not ply\GetInfoBool('dpp2_cl_protection', true) or not ply\GetInfoBool(@clEnabledName, true) or ply\GetNWBool(@disableNWName, false)
+		return not ply\GetInfoBool('dpp2_cl_protection', true) or not ply\GetInfoBool(@clEnabledName, true) or ply\DLibGetNWBool(@disableNWName, false)
 
 	IsDisabledForPlayerByAdmin: (ply = NULL) =>
 		return false if not ply\IsValid()
-		return ply\GetNWBool(@disableNWName, false)
+		return ply\DLibGetNWBool(@disableNWName, false)
 
 	IsDisabledForSteamID: (steamid) =>
 		return @disabledCache[steamid] if @disabledCache[steamid] ~= nil
@@ -323,16 +323,16 @@ class DPP2.DEF.ProtectionDefinition
 
 	IsShared: (ent = NULL) =>
 		return false if not ent\IsValid()
-		return ent\GetNWBool(@sharingVarID, false)
+		return ent\DLibGetNWBool(@sharingVarID, false)
 
 	SetIsShared: (ent = NULL, newMode = false, flush = true) =>
 		return false if not ent\IsValid()
-		return false if ent\GetNWBool(@sharingVarID, false) == newMode
+		return false if ent\DLibGetNWBool(@sharingVarID, false) == newMode
 
 		if newMode
-			ent\SetNWBool(@sharingVarID, true)
+			ent\DLibSetNWBool(@sharingVarID, true)
 		else
-			ent\SetNWBool(@sharingVarID, false)
+			ent\DLibSetNWBool(@sharingVarID, false)
 
 		if flush and not newMode
 			hit = false
@@ -343,11 +343,11 @@ class DPP2.DEF.ProtectionDefinition
 					break
 
 			if not hit
-				ent\SetNWBool('dpp2_s', false)
+				ent\DLibSetNWBool('dpp2_s', false)
 			else
-				ent\SetNWBool('dpp2_s', true)
+				ent\DLibSetNWBool('dpp2_s', true)
 		elseif flush and newMode
-			ent\SetNWBool('dpp2_s', true)
+			ent\DLibSetNWBool('dpp2_s', true)
 
 		if contraption = ent\DPP2GetContraption()
 			timer.Create 'DPP2_UpdateSharedContraption_' .. contraption.id, 0.2, 1, ->
@@ -532,8 +532,8 @@ entMeta = FindMetaTable('Entity')
 entMeta.DPP2IsShared = (mode) =>
 	return false if @IsPlayer()
 	return false if not @IsValid()
-	return @GetNWBool('dpp2_s', false) if not mode
-	return @GetNWBool('dpp2_s_' .. mode, false)
+	return @DLibGetNWBool('dpp2_s', false) if not mode
+	return @DLibGetNWBool('dpp2_s_' .. mode, false)
 
 entMeta.DPP2SetIsShared = (mode, newMode, flush) =>
 	return false if @IsPlayer()

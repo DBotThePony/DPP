@@ -50,8 +50,8 @@ plyMeta.DPP2Ban = (time = math.huge) =>
 	@DLibSetPDataBoolean('dpp2_ban', true)
 	@DLibSetPDataBoolean('dpp2_ban_perma', time == math.huge)
 
-	@SetNWInt('dpp2_ban', true)
-	@SetNWInt('dpp2_ban_perma', time == math.huge)
+	@DLibSetNWInt('dpp2_ban', true)
+	@DLibSetNWInt('dpp2_ban_perma', time == math.huge)
 
 	if time == math.huge
 		DPP2.EntityCreationBans[@SteamID()] = true
@@ -66,8 +66,8 @@ plyMeta.DPP2Unban = =>
 	@DLibRemovePDataBoolean('dpp2_ban_perma')
 	DPP2.EntityCreationBans[@SteamID()] = nil
 
-	@SetNWInt('dpp2_ban', false)
-	@SetNWInt('dpp2_ban_perma', false)
+	@DLibSetNWInt('dpp2_ban', false)
+	@DLibSetNWInt('dpp2_ban_perma', false)
 
 PlayerInitialSpawn = =>
 	return if not @SteamID()
@@ -75,13 +75,13 @@ PlayerInitialSpawn = =>
 
 	return if not @DLibGetPDataBoolean('dpp2_ban')
 
-	@SetNWInt('dpp2_ban', true)
+	@DLibSetNWInt('dpp2_ban', true)
 
 	if @DLibGetPDataBoolean('dpp2_ban_perma')
-		@SetNWInt('dpp2_ban_perma', true)
+		@DLibSetNWInt('dpp2_ban_perma', true)
 		DPP2.EntityCreationBans[@SteamID()] = true
 	else
-		@SetNWInt('dpp2_ban_perma', false)
+		@DLibSetNWInt('dpp2_ban_perma', false)
 		time_left = @DLibGetPDataInt('dpp2_ban') - os.time()
 
 		if time_left > 0
@@ -142,10 +142,10 @@ net.pool('dpp2_contraption_invalidate')
 net.pool('dpp2_contraption_diff')
 
 hook.Add 'Think', 'DPP2.CheckOwnedByMap', ->
-	ent\SetNWBool('dpp2_cbm', true) for ent in *ents.GetAll() when ent\CreatedByMap()
+	ent\DLibSetNWBool('dpp2_cbm', true) for ent in *ents.GetAll() when ent\CreatedByMap()
 	hook.Remove 'Think', 'DPP2.CheckOwnedByMap'
 
-hook.Add 'PostCleanupMap', 'DPP2.CheckOwnedByMap', -> timer.Simple 0, -> ent\SetNWBool('dpp2_cbm', true) for ent in *ents.GetAll() when ent\CreatedByMap()
+hook.Add 'PostCleanupMap', 'DPP2.CheckOwnedByMap', -> timer.Simple 0, -> ent\DLibSetNWBool('dpp2_cbm', true) for ent in *ents.GetAll() when ent\CreatedByMap()
 
 WalkConstraint = =>
 	if not @__dpp2_contraption
@@ -221,7 +221,7 @@ entMeta.DPP2Ghost = (callback) =>
 	return false if @IsConstraint()
 	phys = @DPP2GetPhys()
 	return false if not phys
-	@SetNWBool('dpp2_ghost', true)
+	@DLibSetNWBool('dpp2_ghost', true)
 
 	@__dpp2_old_collisions_group = @GetCollisionGroup()
 	@__dpp2_old_movetype = @GetMoveType()
@@ -247,7 +247,7 @@ entMeta.DPP2Ghost = (callback) =>
 entMeta.DPP2UnGhost = (withConstraption) =>
 	@__dpp2_contraption\UnGhost() if withConstraption and @__dpp2_contraption
 	return if not @DPP2IsGhosted()
-	@SetNWBool('dpp2_ghost', false)
+	@DLibSetNWBool('dpp2_ghost', false)
 
 	if type(@__dpp2_old_phys) == 'function'
 		@__dpp2_old_phys()

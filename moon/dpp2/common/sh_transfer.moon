@@ -27,7 +27,7 @@ DPP2.cmd_autocomplete.transfer = (args = '') =>
 
 DPP2.cmd_autocomplete.transferfallback = (args = '') =>
 	return if not IsValid(@)
-	[string.format('%q', ply) for ply in *DPP2.FindPlayersInArgument(args, {LocalPlayer(), @GetNWEntity('dpp2_transfer_fallback', NULL)}, true)]
+	[string.format('%q', ply) for ply in *DPP2.FindPlayersInArgument(args, {LocalPlayer(), @DLibGetNWEntity('dpp2_transfer_fallback', NULL)}, true)]
 
 DPP2.cmd_autocomplete.transferent = (args = '', margs = '') =>
 	return if not IsValid(@)

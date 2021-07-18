@@ -24,16 +24,16 @@ import I18n from DLib
 entMeta = FindMetaTable('Entity')
 
 entMeta.DPP2SetIsUpForGrabs = (val) =>
-	@SetNWBool('dpp2_ufg', val)
+	@DLibSetNWBool('dpp2_ufg', val)
 
 entMeta.DPP2SetUpForGrabs = (val) =>
-	@SetNWBool('dpp2_ufg', val)
+	@DLibSetNWBool('dpp2_ufg', val)
 
 entMeta.DPP2GetOwner = =>
-	if @GetNWString('dpp2_owner_steamid', '-1') == '-1'
+	if @DLibGetNWString('dpp2_owner_steamid', '-1') == '-1'
 		return NULL, 'world', I18n.Localize('gui.dpp2.access.status.world'), 'world', -1
 
-	return @GetNWEntity('dpp2_ownerent', NULL), @GetNWString('dpp2_owner_steamid'), @_dpp2_last_nick or I18n.Format('gui.dpp2.access.status.world'), @GetNWString('dpp2_owner_uid', 'world'), @GetNWInt('dpp2_owner_pid', -1)
+	return @DLibGetNWEntity('dpp2_ownerent', NULL), @DLibGetNWString('dpp2_owner_steamid'), @_dpp2_last_nick or I18n.Format('gui.dpp2.access.status.world'), @DLibGetNWString('dpp2_owner_uid', 'world'), @DLibGetNWInt('dpp2_owner_pid', -1)
 
 entMeta.DPP2SetOwner = (newOwner = NULL) =>
 	return false if type(@) == 'Player'
@@ -49,31 +49,31 @@ entMeta.DPP2SetOwner = (newOwner = NULL) =>
 		else
 			error('Invalid new owner provided. typeof ' .. type(newOwner)) if type(newOwner) ~= 'Player' and newOwner ~= NULL
 
-	return false if newOwner == @GetNWEntity('dpp2_ownerent', NULL)
+	return false if newOwner == @DLibGetNWEntity('dpp2_ownerent', NULL)
 
 	hookStatus = hook.Run('CPPIAssignOwnership', newOwner\IsValid() and newOwner or nil, @, newOwner\IsValid() and newOwner\UniqueID() or nil)
 	return false if hookStatus ~= nil and hookStatus ~= false
 
 	@DPP2SetIsUpForGrabs(false)
-	@SetNWBool('dpp2_owner_uid_track', false)
+	@DLibSetNWBool('dpp2_owner_uid_track', false)
 
-	if @GetNWString('dpp2_owner_steamid', '-1') ~= (newOwner\IsValid() and newOwner\SteamID() or '-1')
-		hook.Run('DPP2.NotifyOwnerChange', @, @GetNWEntity('dpp2_ownerent', NULL), newOwner)
-		hook.Run('DPP2.NotifySteamIDOwnerChange', @, @GetNWString('dpp2_owner_steamid', '-1'), newOwner\IsValid() and newOwner\SteamID() or '-1')
-		hook.Run('DPP2.NotifyUIDOwnerChange', @, @GetNWString('dpp2_owner_uid', '-1'), newOwner\IsValid() and newOwner\UniqueID() or '-1')
-		hook.Run('DPP2.NotifyPlayerIDOwnerChange', @, @GetNWInt('dpp2_owner_pid', -1), newOwner\IsValid() and newOwner\UserID() or -1)
+	if @DLibGetNWString('dpp2_owner_steamid', '-1') ~= (newOwner\IsValid() and newOwner\SteamID() or '-1')
+		hook.Run('DPP2.NotifyOwnerChange', @, @DLibGetNWEntity('dpp2_ownerent', NULL), newOwner)
+		hook.Run('DPP2.NotifySteamIDOwnerChange', @, @DLibGetNWString('dpp2_owner_steamid', '-1'), newOwner\IsValid() and newOwner\SteamID() or '-1')
+		hook.Run('DPP2.NotifyUIDOwnerChange', @, @DLibGetNWString('dpp2_owner_uid', '-1'), newOwner\IsValid() and newOwner\UniqueID() or '-1')
+		hook.Run('DPP2.NotifyPlayerIDOwnerChange', @, @DLibGetNWInt('dpp2_owner_pid', -1), newOwner\IsValid() and newOwner\UserID() or -1)
 
 	if newOwner == NULL
-		@SetNWEntity('dpp2_ownerent', NULL)
-		@SetNWString('dpp2_owner_steamid', '-1')
-		@SetNWString('dpp2_owner_uid', '-1')
-		@SetNWInt('dpp2_owner_pid', -1)
+		@DLibSetNWEntity('dpp2_ownerent', NULL)
+		@DLibSetNWString('dpp2_owner_steamid', '-1')
+		@DLibSetNWString('dpp2_owner_uid', '-1')
+		@DLibSetNWInt('dpp2_owner_pid', -1)
 		@_dpp2_last_nick = nil
 	else
-		@SetNWEntity('dpp2_ownerent', newOwner)
-		@SetNWString('dpp2_owner_steamid', newOwner\SteamID())
-		@SetNWString('dpp2_owner_uid', newOwner\UniqueID())
-		@SetNWInt('dpp2_owner_pid', newOwner\UserID())
+		@DLibSetNWEntity('dpp2_ownerent', newOwner)
+		@DLibSetNWString('dpp2_owner_steamid', newOwner\SteamID())
+		@DLibSetNWString('dpp2_owner_uid', newOwner\UniqueID())
+		@DLibSetNWInt('dpp2_owner_pid', newOwner\UserID())
 		@_dpp2_last_nick = newOwner\Nick()
 		@_dpp2_last_nick = @_dpp2_last_nick .. ' (' .. newOwner\SteamName() .. ')' if newOwner.SteamName and newOwner\SteamName() ~= newOwner\Nick()
 
@@ -84,7 +84,7 @@ entMeta.DPP2SetOwner = (newOwner = NULL) =>
 entMeta.DPP2SetOwnerSteamID = (newOwner = '-1') =>
 	error('Invalid new owner type, typeof ' .. type(newOwner) .. '. It must be a string!') if type(newOwner) ~= 'string'
 	return false if type(@) == 'Player'
-	return false if newOwner == @GetNWString('dpp2_owner_steamid', '-1')
+	return false if newOwner == @DLibGetNWString('dpp2_owner_steamid', '-1')
 
 	getPly = player.GetBySteamID(newOwner)
 	return @DPP2SetOwner(getPly) if getPly
@@ -93,20 +93,20 @@ entMeta.DPP2SetOwnerSteamID = (newOwner = '-1') =>
 	return false if hookStatus ~= nil and hookStatus ~= false
 
 	@DPP2SetIsUpForGrabs(false)
-	@SetNWBool('dpp2_owner_uid_track', false)
+	@DLibSetNWBool('dpp2_owner_uid_track', false)
 
-	hook.Run('DPP2.NotifySteamIDOwnerChange', @, @GetNWString('dpp2_owner_steamid', '-1'), newOwner)
-	hook.Run('DPP2.NotifyUIDOwnerChange', @, @GetNWString('dpp2_owner_uid', '-1'), newOwner ~= '-1' and util.CRC('gm_' .. newOwner .. '_gm') or '-1')
+	hook.Run('DPP2.NotifySteamIDOwnerChange', @, @DLibGetNWString('dpp2_owner_steamid', '-1'), newOwner)
+	hook.Run('DPP2.NotifyUIDOwnerChange', @, @DLibGetNWString('dpp2_owner_uid', '-1'), newOwner ~= '-1' and util.CRC('gm_' .. newOwner .. '_gm') or '-1')
 
-	@SetNWEntity('dpp2_ownerent', '-1')
+	@DLibSetNWEntity('dpp2_ownerent', '-1')
 
 	if newOwner == '-1'
-		@SetNWString('dpp2_owner_steamid', '-1')
-		@SetNWString('dpp2_owner_uid', '-1')
+		@DLibSetNWString('dpp2_owner_steamid', '-1')
+		@DLibSetNWString('dpp2_owner_uid', '-1')
 		@_dpp2_last_nick = nil
 	else
-		@SetNWString('dpp2_owner_steamid', newOwner)
-		@SetNWString('dpp2_owner_uid', util.CRC('gm_' .. newOwner .. '_gm'))
+		@DLibSetNWString('dpp2_owner_steamid', newOwner)
+		@DLibSetNWString('dpp2_owner_uid', util.CRC('gm_' .. newOwner .. '_gm'))
 		@_dpp2_last_nick = 'Unknown one #' .. util.CRC(newOwner)\sub(1, 4)
 
 	@DPP2InvalidateContraption()
@@ -117,7 +117,7 @@ entMeta.DPP2SetOwnerSteamID = (newOwner = '-1') =>
 entMeta.DPP2SetOwnerUID = (newOwner = '-1') =>
 	error('Invalid new owner type, typeof ' .. type(newOwner) .. '. It must be a string!') if type(newOwner) ~= 'string'
 	return false if type(@) == 'Player'
-	return false if newOwner == @GetNWString('dpp2_owner_uid', '-1')
+	return false if newOwner == @DLibGetNWString('dpp2_owner_uid', '-1')
 
 	getPly = player.GetByUniqueID(newOwner)
 	return @DPP2SetOwner(getPly) if getPly
@@ -127,18 +127,18 @@ entMeta.DPP2SetOwnerUID = (newOwner = '-1') =>
 
 	@DPP2SetIsUpForGrabs(false)
 
-	hook.Run('DPP2.NotifyUIDOwnerChange', @, @GetNWString('dpp2_owner_uid', '-1'), newOwner)
+	hook.Run('DPP2.NotifyUIDOwnerChange', @, @DLibGetNWString('dpp2_owner_uid', '-1'), newOwner)
 
-	@SetNWEntity('dpp2_ownerent', '-1')
-	@SetNWString('dpp2_owner_steamid', '-1')
+	@DLibSetNWEntity('dpp2_ownerent', '-1')
+	@DLibSetNWString('dpp2_owner_steamid', '-1')
 
 	if newOwner == '-1'
-		@SetNWString('dpp2_owner_uid', '-1')
-		@SetNWBool('dpp2_owner_uid_track', '-1')
+		@DLibSetNWString('dpp2_owner_uid', '-1')
+		@DLibSetNWBool('dpp2_owner_uid_track', '-1')
 		@_dpp2_last_nick = nil
 	else
-		@SetNWString('dpp2_owner_uid', newOwner)
-		@SetNWBool('dpp2_owner_uid_track', true)
+		@DLibSetNWString('dpp2_owner_uid', newOwner)
+		@DLibSetNWBool('dpp2_owner_uid_track', true)
 		@_dpp2_last_nick = 'Unknown one #' .. newOwner\sub(1, 4)
 
 	@DPP2InvalidateContraption()

@@ -149,18 +149,18 @@ DPP2.cmd.transferfallback = (args = {}) =>
 	ply = DPP2.FindPlayerInCommand(str)
 	return 'command.dpp2.generic.notarget' if not ply or ply == @
 	return 'command.dpp2.generic.no_bots' if ply\IsBot()
-	return 'command.dpp2.transfer.already_ply', ply if @GetNWEntity('dpp2_transfer_fallback', NULL) == ply
-	@SetNWEntity('dpp2_transfer_fallback', ply)
+	return 'command.dpp2.transfer.already_ply', ply if @DLibGetNWEntity('dpp2_transfer_fallback', NULL) == ply
+	@DLibSetNWEntity('dpp2_transfer_fallback', ply)
 	DPP2.Notify(@, nil, 'command.dpp2.transferfallback', ply)
 
 DPP2.cmd.transferunfallback = (args = {}) =>
 	return 'command.dpp2.generic.invalid_side' if not IsValid(@)
-	return 'command.dpp2.transfer.none_ply' if not IsValid(@GetNWEntity('dpp2_transfer_fallback', NULL))
-	@SetNWEntity('dpp2_transfer_fallback', NULL)
+	return 'command.dpp2.transfer.none_ply' if not IsValid(@DLibGetNWEntity('dpp2_transfer_fallback', NULL))
+	@DLibSetNWEntity('dpp2_transfer_fallback', NULL)
 	DPP2.Notify(@, nil, 'command.dpp2.transferunfallback', ply)
 
 PlayerDisconnected = =>
-	ply = @GetNWEntity('dpp2_transfer_fallback', NULL)
+	ply = @DLibGetNWEntity('dpp2_transfer_fallback', NULL)
 
 	if IsValid(ply)
 		fents = @DPP2FindOwned()
@@ -172,7 +172,7 @@ PlayerDisconnected = =>
 
 	for ply in *player.GetAll()
 		if ply ~= @
-			if @GetNWEntity('dpp2_transfer_fallback', NULL) == @
+			if @DLibGetNWEntity('dpp2_transfer_fallback', NULL) == @
 				DPP2.Notify(ply, nil, 'message.dpp2.transfer.no_more_fallback')
 
 hook.Add 'PlayerDisconnected', 'DPP2.Fallback', PlayerDisconnected, -1

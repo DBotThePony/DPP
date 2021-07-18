@@ -43,7 +43,7 @@ patch = ->
 		assert(isnumber(minus), 'Minus should be a number')
 		return 0 if not @IsValid()
 
-		return @GetNWUInt('dpp2_count_' .. mode, 0) if CLIENT
+		return @DLibGetNWUInt('dpp2_count_' .. mode, 0) if CLIENT
 		steamid = @IsBot() and @UniqueID() or @SteamID()
 		return 0 if not PlayerCounts[steamid]
 		return 0 if not PlayerCounts[steamid][mode]
@@ -53,7 +53,7 @@ patch = ->
 				PlayerCounts[steamid][mode] = [ent2 for ent2 in *PlayerCounts[steamid][mode] when IsValid(ent2)]
 				break
 
-		@SetNWUInt('dpp2_count_' .. mode, #PlayerCounts[steamid][mode])
+		@DLibSetNWUInt('dpp2_count_' .. mode, #PlayerCounts[steamid][mode])
 		return #PlayerCounts[steamid][mode]
 
 	plyMeta.AddCount = (mode, ent) =>
