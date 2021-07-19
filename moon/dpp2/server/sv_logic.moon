@@ -50,8 +50,8 @@ plyMeta.DPP2Ban = (time = math.huge) =>
 	@DLibSetPDataBoolean('dpp2_ban', true)
 	@DLibSetPDataBoolean('dpp2_ban_perma', time == math.huge)
 
-	@DLibSetNWInt('dpp2_ban', true)
-	@DLibSetNWInt('dpp2_ban_perma', time == math.huge)
+	@DLibSetNWBool('dpp2_ban', true)
+	@DLibSetNWBool('dpp2_ban_perma', time == math.huge)
 
 	if time == math.huge
 		DPP2.EntityCreationBans[@SteamID()] = true
@@ -66,8 +66,8 @@ plyMeta.DPP2Unban = =>
 	@DLibRemovePDataBoolean('dpp2_ban_perma')
 	DPP2.EntityCreationBans[@SteamID()] = nil
 
-	@DLibSetNWInt('dpp2_ban', false)
-	@DLibSetNWInt('dpp2_ban_perma', false)
+	@DLibSetNWBool('dpp2_ban', false)
+	@DLibSetNWBool('dpp2_ban_perma', false)
 
 PlayerInitialSpawn = =>
 	return if not @SteamID()
@@ -75,13 +75,13 @@ PlayerInitialSpawn = =>
 
 	return if not @DLibGetPDataBoolean('dpp2_ban')
 
-	@DLibSetNWInt('dpp2_ban', true)
+	@DLibSetNWBool('dpp2_ban', true)
 
 	if @DLibGetPDataBoolean('dpp2_ban_perma')
-		@DLibSetNWInt('dpp2_ban_perma', true)
+		@DLibSetNWBool('dpp2_ban_perma', true)
 		DPP2.EntityCreationBans[@SteamID()] = true
 	else
-		@DLibSetNWInt('dpp2_ban_perma', false)
+		@DLibSetNWBool('dpp2_ban_perma', false)
 		time_left = @DLibGetPDataInt('dpp2_ban') - os.time()
 
 		if time_left > 0
