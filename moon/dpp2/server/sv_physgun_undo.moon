@@ -80,27 +80,23 @@ PhysgunPickup = (ply = NULL, ent = NULL) ->
 	snapshot(ply, ent)
 	return
 
+IsValid = FindMetaTable('Entity').IsValid
+
 EntityRemoved = (ent) ->
 	for ply in *player.GetAll()
 		if history = ply.__dpp2_physgun_undo
-			local toremove
+			for histroy_index = #history, 1, -1
+				history_entry = history[histroy_index]
 
-			for i, historyEntry in ipairs(history)
-				local toremove2
+				if #history_entry == 0
+					table.remove(history, histroy_index)
+				else
+					for entry_index = #history_entry, 1, -1
+						if not IsValid(history_entry[entry_index][1])
+							table.remove(history_entry, entry_index)
 
-				for i2, historyEntry2 in ipairs(history)
-					if not IsValid(historyEntry2[1])
-						toremove2 = toremove2 or {}
-						table.insert(toremove2, i2)
-
-				if toremove2
-					if #toremove2 == #historyEntry
-						toremove = toremove or {}
-						table.insert(toremove, i)
-					else
-						table.removeValues(historyEntry, toremove2)
-
-			table.removeValues(history, toremove) if toremove
+					if #history_entry == 0
+						table.remove(history, histroy_index)
 
 OnPhysgunReload = (physgun = NULL, ply = NULL) ->
 	return if not DPP2.PHYSGUN_UNDO\GetBool()
