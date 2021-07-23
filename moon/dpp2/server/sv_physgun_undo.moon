@@ -82,21 +82,33 @@ PhysgunPickup = (ply = NULL, ent = NULL) ->
 
 IsValid = FindMetaTable('Entity').IsValid
 
+invalidate_history_ticks = 0
+
+player_GetAll = player.GetAll
+table_remove = table.remove
+
 EntityRemoved = (ent) ->
-	for ply in *player.GetAll()
+	return if invalidate_history_ticks >= 2
+	invalidate_history_ticks += 1
+
+ProcessPhysgunInvalidate = ->
+	return if invalidate_history_ticks <= 0
+	invalidate_history_ticks -= 1
+
+	for ply in *player_GetAll()
 		if history = ply.__dpp2_physgun_undo
 			for histroy_index = #history, 1, -1
 				history_entry = history[histroy_index]
 
 				if #history_entry == 0
-					table.remove(history, histroy_index)
+					table_remove(history, histroy_index)
 				else
 					for entry_index = #history_entry, 1, -1
 						if not IsValid(history_entry[entry_index][1])
-							table.remove(history_entry, entry_index)
+							table_remove(history_entry, entry_index)
 
 					if #history_entry == 0
-						table.remove(history, histroy_index)
+						table_remove(history, histroy_index)
 
 OnPhysgunReload = (physgun = NULL, ply = NULL) ->
 	return if not DPP2.PHYSGUN_UNDO\GetBool()
@@ -111,6 +123,7 @@ OnPhysgunReload = (physgun = NULL, ply = NULL) ->
 hook.Add 'PhysgunPickup', 'DPP2.PhysgunHistory', PhysgunPickup, 3
 hook.Add 'OnPhysgunReload', 'DPP2.PhysgunHistory', OnPhysgunReload, 3
 hook.Add 'EntityRemoved', 'DPP2.PhysgunHistory', EntityRemoved
+hook.Add 'Think', 'DPP2.ProcessPhysgunInvalidate', ProcessPhysgunInvalidate
 
 DPP2.cmd.undo_physgun = (args = {}) =>
 	if not @__dpp2_physgun_undo
