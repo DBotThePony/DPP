@@ -536,6 +536,16 @@ class DPP2.DEF.RestrictionList
 		file.Write('dpp2/backup/' .. @identifier .. '_restrictions_' .. os.date('%Y-%m-%d-%H_%M_%S') .. '.json', file.Read(path, 'data'))
 		return true
 
+	MoveToBackup: =>
+		path = @DefaultSavePath()
+		return false if not file.Exists(path, 'data')
+
+		if not file.Rename(path, 'dpp2/backup/' .. @identifier .. '_restrictions_' .. os.date('%Y-%m-%d-%H_%M_%S') .. '.json')
+			DPP2.MessageWarning('Unable to rename ', path, ' to ', 'dpp2/backup/' .. @identifier .. '_restrictions_' .. os.date('%Y-%m-%d-%H_%M_%S') .. '.json!')
+			return @MakeBackup()
+
+		return true
+
 	LoadFromDisk: (path = @DefaultSavePath()) =>
 		return false if not file.Exists(path, 'data')
 		return @LoadFrom(file.Read(path, 'data'))
@@ -744,6 +754,16 @@ class DPP2.DEF.Blacklist
 		path = @DefaultSavePath()
 		return false if not file.Exists(path, 'data')
 		file.Write('dpp2/backup/' .. @identifier .. '_' .. @@REGULAR_NAME .. '_' .. os.date('%Y-%m-%d-%H_%M_%S') .. '.json', file.Read(path, 'data'))
+		return true
+
+	MoveToBackup: =>
+		path = @DefaultSavePath()
+		return false if not file.Exists(path, 'data')
+
+		if not file.Rename(path, 'dpp2/backup/' .. @identifier .. '_' .. @@REGULAR_NAME .. '_' .. os.date('%Y-%m-%d-%H_%M_%S') .. '.json')
+			DPP2.MessageWarning('Unable to rename ', path, ' to ', 'dpp2/backup/' .. @identifier .. '_' .. @@REGULAR_NAME .. '_' .. os.date('%Y-%m-%d-%H_%M_%S') .. '.json')
+			return @MakeBackup()
+
 		return true
 
 	LoadFromDisk: (path = @DefaultSavePath()) =>
