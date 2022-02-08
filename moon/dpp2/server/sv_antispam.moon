@@ -115,11 +115,13 @@ DPP2.AntispamCheck = (ply = NULL, doNotify = true, ent, constrained, autoGhost =
 
 	if ent and autoGhost
 		if DPP2.AUTO_GHOST_BY_SIZE\GetBool() and ComputeVolume(ent) >= DPP2.AUTO_GHOST_SIZE\GetFloat()
-			DPP2.NotifyHint(ply, nil, 'message.dpp2.antispam.hint_ghosted_big_single') if doNotify
-			ent\DPP2Ghost()
+			if hook.Run('DPP2_PreventAutoGhost', ply, ent) ~= false
+				DPP2.NotifyHint(ply, nil, 'message.dpp2.antispam.hint_ghosted_big_single') if doNotify
+				ent\DPP2Ghost()
 		elseif DPP2.AUTO_GHOST_BY_AABB\GetBool() and ComputeVolume2(ent) >= DPP2.AUTO_GHOST_AABB_SIZE\GetFloat() / DPP2.ANTISPAM_VOLUME_AABB_DIV\GetFloat()
-			DPP2.NotifyHint(ply, nil, 'message.dpp2.antispam.hint_ghosted_big_single') if doNotify
-			ent\DPP2Ghost()
+			if hook.Run('DPP2_PreventAutoGhost', ply, ent) ~= false
+				DPP2.NotifyHint(ply, nil, 'message.dpp2.antispam.hint_ghosted_big_single') if doNotify
+				ent\DPP2Ghost()
 
 	return true
 
