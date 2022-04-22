@@ -77,6 +77,14 @@ PhysgunPickup = (ply = NULL, ent = NULL) ->
 	return if not DPP2.PHYSGUN_UNDO\GetBool()
 	return if not ply\GetInfoBool('dpp2_cl_physgun_undo', true)
 	return if ent\IsPlayer()
+
+	level = 1
+	while true
+		info = debug.getinfo(level, 'S')
+		level += 1
+		break if not info
+		return if info.source and info.source\endsWith('wire/gates/entity.lua')
+
 	snapshot(ply, ent)
 	return
 
