@@ -77,14 +77,6 @@ PhysgunPickup = (ply = NULL, ent = NULL) ->
 	return if not DPP2.PHYSGUN_UNDO\GetBool()
 	return if not ply\GetInfoBool('dpp2_cl_physgun_undo', true)
 	return if ent\IsPlayer()
-
-	level = 1
-	while true
-		info = debug.getinfo(level, 'S')
-		level += 1
-		break if not info
-		return if info.source and info.source\endsWith('wire/gates/entity.lua')
-
 	snapshot(ply, ent)
 	return
 
@@ -128,7 +120,7 @@ OnPhysgunReload = (physgun = NULL, ply = NULL) ->
 	snapshot(ply, ent)
 	return
 
-hook.Add 'PhysgunPickup', 'DPP2.PhysgunHistory', PhysgunPickup, 3
+hook.Add 'OnPhysgunPickup', 'DPP2.PhysgunHistory', PhysgunPickup, 3
 hook.Add 'OnPhysgunReload', 'DPP2.PhysgunHistory', OnPhysgunReload, 3
 hook.Add 'EntityRemoved', 'DPP2.PhysgunHistory', EntityRemoved
 hook.Add 'Think', 'DPP2.ProcessPhysgunInvalidate', ProcessPhysgunInvalidate
