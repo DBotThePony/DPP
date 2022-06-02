@@ -154,15 +154,16 @@ GetOwnerText = ->
 	if canTouch
 		return ownerName, CAN_TOUCH()
 
-	return ownerName, CAN_NOT_TOUCH()
+	return ownerName, CAN_NOT_TOUCH(), tr.Entity
 
 POS_OWNING = HUDCommons.Position2.DefinePosition('dpp2_owner', 0.004, 0.5, false)
 
 HUDPaint = (_, pw, ph) ->
 	return if not IsValid(LocalPlayer())
 	x, y = POS_OWNING()
-	text, color = GetOwnerText()
+	text, color, ent = GetOwnerText()
 	return if not text
+	return if hook.Run('DPP2DrawOwnerText', text, color, ent) == false
 
 	surface.SetFont('DPP2.OwnerFont')
 	w, h = surface.GetTextSize(text)
