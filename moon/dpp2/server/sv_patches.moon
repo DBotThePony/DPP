@@ -97,7 +97,8 @@ PatchE2 = ->
 		instance.__dpp2_owner = varvalue\DPP2GetOwner() if IsValid(varvalue) and varvalue\DPP2IsOwned()
 
 		if E2Lib
-			return xpcall(Compiler.Process, E2Lib.errorHandler, instance, ...)
+			ok, script = xpcall(Compiler.Process, E2Lib.errorHandler, instance, ...)
+			return ok, script, instance
 		else
 			return pcall(Compiler.Process, instance, ...)
 
