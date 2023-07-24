@@ -194,12 +194,11 @@ PlayerDisconnected = =>
 				ent\DPP2Ghost() for ent in *find
 			else
 				for ent in *find
-					phys = ent\DPP2GetPhys()
-
-					if istable(phys)
-						phys2\EnableMotion(false) for phys2 in *phys
-					else
-						phys\EnableMotion(false)
+					if phys = ent\DPP2GetPhys()
+						if istable(phys)
+							phys2\EnableMotion(false) for phys2 in *phys
+						else
+							phys\EnableMotion(false)
 
 	if DPP2.ENABLE_UP_FOR_GRABS\GetBool() and not (DPP2.ENABLE_CLEANUP\GetBool() and DPP2.UP_FOR_GRABS_TIMER\GetFloat() >= DPP2.CLEANUP_TIMER\GetFloat())
 		timer.Create 'DPP2.UpForGrabs.' .. steamid, DPP2.UP_FOR_GRABS_TIMER\GetFloat(), 1, ->
